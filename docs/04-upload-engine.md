@@ -1,19 +1,16 @@
 # 04 — Upload engine (UploadKit)
 
-Module: `Packages/UploadKit` — **package độc lập, không biết gì về SiteLog**
+Module: `Packages/UploadKit` — standalone, knows nothing about SiteLog
 
-Đây là phần lõi và là phần sẽ bị hỏi kỹ nhất trong phỏng vấn. Làm chậm và làm đúng.
+## Goal
 
-## 1. Mục tiêu
+Move 150–250 files and several GB to object storage, surviving network loss, app suspension, OS
+termination, device reboot, and presigned URL expiry.
 
-Đưa 150–250 file, vài GB, từ máy người dùng lên object storage, **sống sót qua**: mất mạng
-giữa chừng, app bị suspend, app bị OS kill, người dùng reboot máy, và presigned URL hết hạn
-trong lúc chờ.
+## Package boundary
 
-## 2. Ranh giới package
-
-`UploadKit` nhận: **file URL + metadata + endpoint + một `UploadStore` do host inject**. Nó
-không import `Core`, không biết `Capture`, `Issue`, `Session` là gì.
+`UploadKit` receives a file URL, metadata, an endpoint, and an injected `UploadStore`. It does not
+import `Core` and has no knowledge of `Capture`, `Issue`, or `Session`.
 
 ```swift
 public protocol UploadStore: Sendable {
@@ -26,141 +23,95 @@ public protocol UploadStore: Sendable {
 }
 ```
 
-`UploadJobRecord` / `UploadPartRecord` là **struct thuần, `Sendable`, `Codable`**, định nghĩa
-trong `UploadKit`. App implement `UploadStore` bằng SwiftData ở tầng `Persistence` và map sang
-struct này ở biên.
-
-Đây là chỗ sửa mâu thuẫn của bản context đầu: nếu `UploadKit` tra thẳng SwiftData model của app
-thì nó không còn độc lập, và cũng không test được nếu không dựng cả app. Với protocol này,
-`UploadKit` ship kèm `InMemoryUploadStore` và toàn bộ state machine test được không cần app,
-không cần DB, không cần mạng.
+- Records are plain `Sendable`, `Codable` structs defined in `UploadKit`; the app implements the
+  protocol over SwiftData in `Persistence` and maps at the boundary.
+- A package that reaches into the app's SwiftData models is neither standalone nor testable without
+  the app. With this protocol, `UploadKit` ships `InMemoryUploadStore` and the whole state machine
+  is testable with no app, no DB, no network.
 
 ```
-Packages/UploadKit/
-  Sources/UploadKit/
-    UploadCoordinator.swift      # actor, entry point công khai
-    UploadStateMachine.swift     # thuần, không async, không I/O  ← test dày nhất ở đây
-    ChunkPlanner.swift           # chia part, ghi file tạm
-    PresignedURLProvider.swift   # protocol + implementation HTTP
-    BackgroundSessionDelegate.swift
-    Models/                      # UploadJobRecord, UploadPartRecord, UploadState
-  Tests/UploadKitTests/
-    InMemoryUploadStore.swift
-    MockTransport.swift
+Sources/UploadKit/
+  UploadCoordinator.swift      # actor, public entry point
+  UploadStateMachine.swift     # pure, synchronous, no I/O
+  ChunkPlanner.swift           # part planning, temp file materialization
+  PresignedURLProvider.swift   # protocol + HTTP implementation
+  BackgroundSessionDelegate.swift
+  Models/
+Tests/UploadKitTests/
+  InMemoryUploadStore.swift  MockTransport.swift
 ```
 
-## 3. Giao thức
+## Protocol
 
-S3 multipart upload qua presigned URL. Backend **không đụng vào bytes** (~100 dòng):
+Backend never touches bytes (~100 LOC).
 
-```
-1. POST /uploads                     { key, byteSize, contentType, sha256 }
-   → { uploadId, parts: [{ number, url, expiresAt }] }
+| # | Call | Returns |
+|---|---|---|
+| 1 | `POST /uploads` `{key, byteSize, contentType, sha256}` | `{uploadId, parts:[{number, url, expiresAt}]}` |
+| 2 | `PUT <presigned url>` (part temp file) | 200 + ETag |
+| 3 | `POST /uploads/:id/complete` `{parts:[{number, etag}]}` | `{remoteKey, verificationCode}` |
+| 4 | `POST /uploads/:id/parts/refresh` `{numbers:[…]}` | fresh URLs — **required** |
+| 5 | `DELETE /uploads/:id` | abort, clean orphaned parts |
 
-2. PUT <presigned url>               body = file tạm của part
-   → 200, header ETag
+- Endpoint 4 is mandatory: the core scenario is an app killed and reopened hours later, when signed
+  URLs have expired and resume returns 403 across the board — indistinguishable from a retry bug.
+- Every request carries a Firebase ID token, verified before signing. Without that, the signing
+  endpoint is an open relay into the bucket.
 
-3. POST /uploads/:id/complete        { parts: [{ number, etag }] }
-   → { remoteKey }
+## iOS constraints
 
-4. POST /uploads/:id/parts/refresh   { numbers: [3, 4, 5] }        ← BẮT BUỘC
-   → { parts: [{ number, url, expiresAt }] }
+| # | Constraint | Consequence |
+|---|---|---|
+| 1 | Background `URLSession` accepts only `uploadTask(with:fromFile:)` | Every part is written to a temp file first |
+| 2 | Tasks created while backgrounded are treated as discretionary regardless of the flag | Enqueue the first batch in the foreground; say "will upload when idle" when the OS holds it |
+| 3 | `taskIdentifier` is session-scoped and reused | Key on `taskDescription`, preserved across relaunch |
+| 4 | Nothing survives in RAM after termination | Recreate the session with the same identifier and reconcile against the store |
 
-5. DELETE /uploads/:id               abort, dọn part mồ côi trên R2
-```
+Disk discipline for constraint 1:
 
-Endpoint (4) là thứ bản context đầu thiếu và là thứ sẽ hỏng chắc chắn: kịch bản lõi của app là
-app bị kill rồi mở lại sau vài giờ, lúc đó presigned URL đã ký từ trước đã chết. Không có
-refresh thì cold-launch resume trả về 403 hàng loạt và trông y hệt một bug retry.
-
-Mọi request tới backend mang Firebase ID token; backend verify token trước khi ký URL. Không có
-bước đó thì endpoint ký là một open relay ghi vào bucket của mình.
-
-## 4. Ràng buộc iOS bắt buộc phải tuân
-
-### 4.1 Chỉ dùng được upload task dạng file
-
-Background `URLSession` chỉ nhận `uploadTask(with:fromFile:)`. Không data task, không stream,
-không body in-memory. → **mỗi part phải ghi ra file tạm rồi mới enqueue**.
-
-Hệ quả về dung lượng: một session vài GB mà giữ cả chunk tạm là nhân đôi disk. Bắt buộc:
-
-1. Chỉ materialize trước **tối đa 2 part** cho mỗi job.
-2. Xoá file part **ngay khi** nhận 200 + ETag.
-3. Check free space trước khi plan job; dưới `minFreeDiskBytes` thì hoãn và báo người dùng.
-
-### 4.2 `isDiscretionary` không phải lúc nào cũng được tôn trọng
-
-Đặt `isDiscretionary = false` cho upload do người dùng chủ động — mặc định OS có thể dời tới
-đêm khi máy vừa có mạng vừa cắm sạc, sai hoàn toàn với người muốn upload xong trước khi rời
-công trường.
-
-Nhưng: **task tạo ra khi app đang ở background bị OS coi là discretionary bất kể set gì.** Nên:
-
-1. Enqueue đợt đầu **lúc app còn foreground** (người dùng bấm "Bắt đầu upload", hoặc tự động
-   khi màn hình session mở và có WiFi).
-2. UI nói đúng sự thật: "Đang tải lên" vs. "Sẽ tải khi máy rảnh" — đừng hứa cái OS không đảm bảo.
-3. `sessionSendsLaunchEvents = true` để OS đánh thức app khi xong.
-
-### 4.3 Cold launch: `taskIdentifier` không dùng làm khoá được
-
-Sau khi app bị kill và mở lại, tạo lại session **cùng identifier**, xử lý
-`application(_:handleEventsForBackgroundURLSession:completionHandler:)`, rồi tra ngược task →
-part. Process hoàn toàn mới, không có gì trong RAM sống sót.
-
-`taskIdentifier` chỉ unique trong phạm vi một session và **bị tái sử dụng** — dùng nó làm khoá
-chính là đặt một quả bom hẹn giờ. Khoá đúng:
+- Materialize at most `maxMaterializedPartsPerJob` parts ahead per job.
+- Delete each part file on 200 + ETag.
+- Check free space before planning; below `minFreeDiskBytes`, defer and inform the user.
 
 ```swift
 task.taskDescription = "\(jobID.rawValue)#\(partNumber)"
-```
 
-`taskDescription` được `URLSession` giữ nguyên qua relaunch. Lookup:
-
-```swift
 func urlSession(_ s: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     guard let key = task.taskDescription else { /* log + abandon */ return }
     Task { await coordinator.handleCompletion(key: key, response: task.response, error: error) }
 }
 ```
 
-Lúc khởi động, gọi `session.allTasks` và **đối chiếu hai chiều** với store:
+Also set `isDiscretionary = false`, `sessionSendsLaunchEvents = true`,
+`timeoutIntervalForResource = 604_800` (a three-day trip without WiFi must still upload on return),
+and handle `application(_:handleEventsForBackgroundURLSession:completionHandler:)`.
 
-| Tình huống | Xử lý |
+### Cold-launch reconciliation
+
+| Situation | Action |
 |---|---|
-| Task còn sống, store có record | Attach lại, không enqueue thêm |
-| Task còn sống, store không có | Cancel task, log — record đã mất, không tin được |
-| Store có `uploading`, không có task | Reset về `pending`, enqueue lại part đó |
+| Task alive, record exists | Reattach, do not re-enqueue |
+| Task alive, no record | Cancel and log — the record is untrustworthy |
+| Record `uploading`, no task | Reset to `pending`, re-enqueue |
 
-Bước đối chiếu này là phần dễ bỏ sót nhất và là nguyên nhân của "upload treo mãi ở 60%".
+- Usual cause of "stuck at 60% forever".
+- Client reconciliation cannot see server state; [10](10-realtime-progress.md) supplies a snapshot
+  in one round trip. `UploadKit` does not import it — the app layer applies events via `UploadStore`.
 
-Đối chiếu ở trên chỉ thấy phía client. Phía server có thể đã `complete` xong một job mà app
-chưa kịp nhận response trước khi bị kill — kênh WebSocket ở [10-realtime-progress.md](10-realtime-progress.md)
-gửi một `snapshot` giải quyết việc đó trong một round-trip. `UploadKit` **không import** package
-đó; app layer nhận event rồi ghi qua `UploadStore`.
+## Strategy by size
 
-### 4.4 `timeoutIntervalForResource`
-
-Đặt 7 ngày (`604800`). Một người dùng đi công trường 3 ngày không có WiFi vẫn phải upload được
-khi về. Mặc định của background session đủ dài, nhưng đặt tường minh để không phụ thuộc mặc định.
-
-## 5. Chọn chiến lược theo kích thước file
-
-| File | Chiến lược |
+| Size | Strategy |
 |---|---|
-| < 5 MB (hầu hết ảnh) | **Single PUT** presigned, 1 request |
-| >= 5 MB (video, ảnh RAW) | Multipart, part đều nhau `8 MB` |
+| < 5 MB (most photos) | Single presigned PUT, one request |
+| ≥ 5 MB (video, RAW) | Multipart, uniform 8 MB parts |
 
-S3 quy định part tối thiểu 5MB (trừ part cuối), và **R2 còn nghiêm hơn: mọi part trừ part cuối
-phải bằng nhau đúng byte**. Vì vậy `ChunkPlanner` chia theo kích thước cố định, không chia
-"thành N phần bằng nhau".
+S3 requires 5 MB minimum per non-final part; **R2 additionally requires every non-final part to be
+exactly equal**. `ChunkPlanner` splits by fixed size, never into "N equal pieces". Routing a 3 MB
+photo through multipart costs 3 round trips for a 1-request job — minutes lost across 200 photos.
 
-Đưa ảnh 3MB qua multipart là 3 round-trip cho một thứ 1 request làm xong — với 200 ảnh trên
-mạng 3G, đó là vài phút mất trắng.
+## State machine
 
-## 6. State machine
-
-Đây là trái tim của package và là thứ đem đi phỏng vấn được. **Thuần, đồng bộ, không I/O.**
+Pure, synchronous, no I/O.
 
 ```
                   ┌──────────────────────────────┐
@@ -185,67 +136,55 @@ public struct UploadStateMachine {
         case completed(remoteKey: String)
         case cancelledByUser
     }
-
     public enum Effect {
         case enqueuePart(Int)
         case refreshURLs(numbers: [Int])
         case callComplete(etags: [Int: String])
         case scheduleRetry(number: Int, after: TimeInterval)
-        case abort(reason: FailureReason)
         case deleteTempFile(number: Int)
+        case abort(reason: FailureReason)
     }
-
     public func reduce(state: UploadJobState, event: Event) -> (UploadJobState, [Effect])
 }
 ```
 
-`reduce` là hàm thuần: cùng input luôn cho cùng output, không đụng mạng, disk hay clock.
-`UploadCoordinator` (actor) là thứ duy nhất thực thi `Effect`. Tách như vậy thì mọi kịch bản
-khó — kill giữa chừng, URL hết hạn, part cuối fail — test được bằng vài dòng, không cần mạng.
+`reduce` is deterministic and touches no network, disk, or clock. `UploadCoordinator` (actor) is
+the only executor of `Effect`. This split makes kill-mid-flight, expired URLs, and a failing final
+part testable in a few lines.
 
-### Phân loại lỗi
+### Failure classification
 
-Đây là chỗ quyết định engine chạy đúng hay chạy loạn:
-
-| Nguyên nhân | `FailureReason` | Xử lý |
+| Cause | Reason | Handling |
 |---|---|---|
-| 403 / 401 trên presigned URL | `.urlExpired` | → `waitingForURL`, **không tính retry budget** |
-| Không có mạng, `NSURLErrorNotConnectedToInternet` | `.offline` | → `waitingForNetwork`, không tính budget |
-| 500, 502, 503, 504 | `.serverTransient` | retry, có tính budget |
-| Timeout | `.timeout` | retry, có tính budget |
-| 400, 404, 411, 413 | `.permanent` | abort ngay, không retry |
-| Checksum lệch, ETag không khớp | `.integrity` | abort, đánh dấu để người dùng thấy |
+| 403 / 401 on a presigned URL | `.urlExpired` | → `waitingForURL`, **no budget consumed** |
+| `NSURLErrorNotConnectedToInternet` | `.offline` | → `waitingForNetwork`, no budget consumed |
+| 500, 502, 503, 504 | `.serverTransient` | retry, budget consumed |
+| Timeout | `.timeout` | retry, budget consumed |
+| 400, 404, 411, 413 | `.permanent` | abort immediately |
+| ETag or checksum mismatch | `.integrity` | abort, flag for the user |
 
-URL hết hạn và mất mạng **không được tính vào retry budget**. Cả hai đều là trạng thái bình
-thường của app này, không phải lỗi; tính vào budget thì một chuyến đi công trường nửa ngày là
-đủ đốt sạch retry và mọi thứ rơi vào `failed`.
+Expired URLs and offline are normal operating conditions, not failures. Charging them to the budget
+means half a day on site exhausts it and everything lands in `failed`.
 
 ### Retry
 
 ```
 delay = min(base * 2^attempt, cap) * jitter
-base = 2s, cap = 300s, jitter = random(0.8...1.2)
-maxAttempts = 5 (chỉ đếm .serverTransient và .timeout)
+base 2s   cap 300s   jitter 0.8...1.2   maxAttempts 5
 ```
 
-Jitter bắt buộc: 200 file cùng fail lúc mất sóng, không có jitter thì cả 200 cùng retry một
-lúc lúc có sóng lại và tự tạo ra một đợt DDoS vào chính backend của mình.
+Attempts count only `.serverTransient` and `.timeout`. Jitter is mandatory — 200 files failing at
+one signal loss would otherwise retry simultaneously.
 
-## 7. Chính sách
+## Policy
 
-1. **Thứ tự ưu tiên** theo `priority` do host truyền vào (bảng ở
-   [03-issue-tracking.md](03-issue-tracking.md)): ảnh của issue nghiêm trọng trước, video sau.
-   Hàng đợi là priority queue, không phải FIFO.
-2. **Toggle "chỉ upload qua WiFi"** — `allowsCellularAccess = false`, mặc định **bật**. Người
-   dùng đi công trường cả ngày, upload vài GB qua 4G là hoá đơn không ai muốn.
-3. **Dedupe bằng `sha256`.** Cùng hash trong cùng project → bỏ qua, trỏ `remoteKey` sang object
-   đã có, log rõ. Người dùng chụp lại cùng một chỗ nhiều lần là chuyện bình thường.
-4. **Song song**: tối đa 3 job cùng lúc, `httpMaximumConnectionsPerHost = 4`. Cao hơn thì trên
-   mạng công trường yếu, mọi request cùng timeout.
-5. **Không tự xoá file local** sau khi `synced`. Chỉ dọn khi người dùng chủ động, và chỉ những
-   file đã `synced` (xem [09-diagnostics.md](09-diagnostics.md)).
-
-## 8. Constants
+| Policy | Detail |
+|---|---|
+| Priority queue, not FIFO | Host-supplied `priority` ([03](03-issue-tracking.md)); plans at `PlanConstants.uploadPriority`; derived stamped images never upload |
+| WiFi-only toggle | `allowsCellularAccess = false`, **on by default** |
+| Dedupe by `sha256` within a project | Same hash → skip, point `remoteKey` at the existing object, log it |
+| Concurrency | 3 jobs, `httpMaximumConnectionsPerHost = 4` — higher makes everything time out together on weak networks |
+| Never auto-delete local files | Cleanup is user-initiated and touches only `synced` files ([09](09-diagnostics.md)) |
 
 ```swift
 public enum UploadConstants {
@@ -264,9 +203,7 @@ public enum UploadConstants {
 }
 ```
 
-## 9. Logging
-
-Mọi chuyển trạng thái đều log, kèm data. Success cũng log.
+## Logging
 
 ```swift
 logger.info("Upload part succeeded", metadata: [
@@ -280,48 +217,42 @@ logger.error("Upload part failed", metadata: [
 ])
 ```
 
-**Không log presigned URL** — nó chứa credential ký. Log `key` và `partNumber` là đủ để debug.
+Never log presigned URLs — they carry signing credentials.
 
-## 10. Rủi ro đã biết
+## Known risks
 
-1. **Part mồ côi trên R2** khi job bị abort. Gọi `DELETE /uploads/:id`; nếu không gọi được thì
-   bucket lifecycle rule dọn multipart dở sau 7 ngày — cấu hình phía R2, ghi vào runbook.
-2. **Đầy disk giữa chừng** → dừng plan job mới, giữ job đang chạy, báo người dùng số cụ thể.
-3. **Đổi tài khoản khi còn job pending** → job của user cũ phải bị cancel + xoá temp, không
-   được upload vào bucket của user mới.
-4. **Clock skew** làm `expiresAt` tính sai. Đừng tin đồng hồ máy: coi 403 là nguồn sự thật, còn
-   `expiresAt` chỉ để refresh chủ động sớm.
-
-## 11. Definition of done
-
-1. 200 file / 2GB upload xong qua WiFi, tất cả `synced`, hash server khớp hash local.
-2. **Kill app** giữa chừng (`Stop` trong Xcode) → mở lại → tự resume, không mất, không upload lại
-   part đã xong.
-3. **Chế độ máy bay** giữa chừng → về `waitingForNetwork`, bật lại mạng → tự tiếp, retry budget
-   không giảm.
-4. Presigned URL hết hạn (test bằng TTL 60s) → tự refresh, không vào `failed`.
-5. Toggle "chỉ WiFi" bật + đang 4G → không có byte nào bay.
-6. Zero warning, `UploadKit` build được **độc lập** không cần app.
-
-## 12. Test
-
-State machine phải có unit test độc lập với network. Mock transport layer.
-**Đây là thứ đem đi phỏng vấn được** — viết cho ra hồn.
-
-| Test | Loại |
+| Risk | Handling |
 |---|---|
-| `reduce` cho mọi cặp (state × event) — bảng đầy đủ, không bỏ ô nào | unit, thuần |
-| Part cuối fail → job không `synced`, không gọi `complete` | unit |
-| `.urlExpired` không giảm retry budget; `.serverTransient` có giảm | unit |
-| Hết budget → `failed`, temp file được xoá, file gốc **không** bị xoá | unit |
-| Backoff sinh đúng dãy delay với jitter bị stub cố định | unit, inject RNG |
-| `ChunkPlanner`: part đều nhau, part cuối lẻ, file đúng bội số `partSize` | unit |
-| File < ngưỡng → chọn single PUT, không tạo `uploadId` | unit |
-| Dedupe: hai job cùng `sha256` → job thứ hai `synced` ngay, 0 request | unit |
-| Cold launch reconcile: 3 tình huống ở §4.3 | unit, `InMemoryUploadStore` |
-| Priority queue trả đúng thứ tự với 5 job trộn severity và kind | unit |
-| Full flow qua `MockTransport` có inject 503 ở part 3 | integration, `UploadKit` |
-| Kill app thật giữa chừng trên máy thật | manual, checklist trong PR |
+| Orphaned parts on R2 after abort | `DELETE /uploads/:id`, backed by a 7-day bucket lifecycle rule |
+| Disk fills mid-session | Stop planning new jobs, keep running ones, report concrete numbers |
+| Account switch with pending jobs | Cancel the old uid's jobs, delete temp files, never write into the new uid's prefix |
+| Clock skew breaking `expiresAt` | 403 is the source of truth; `expiresAt` only drives proactive refresh |
 
-`MockTransport` implement `protocol UploadTransport` (cùng surface với phần bọc `URLSession`),
-cho phép script sẵn response theo từng part: 200, 403, 503, timeout, ETag sai.
+## Definition of done
+
+- 200 files / 2 GB complete over WiFi; server hashes match local hashes.
+- Kill mid-transfer → relaunch resumes without re-uploading completed parts.
+- Airplane mode mid-transfer → `waitingForNetwork`; restoring resumes with the budget untouched.
+- Presigned URL expiry (60 s TTL test) → automatic refresh, never `failed`.
+- WiFi-only on cellular → zero bytes transferred.
+- Zero warnings; builds independently of the app.
+
+## Tests
+
+| Test | Kind |
+|---|---|
+| `reduce` across the full (state × event) matrix, no cell skipped | unit, pure |
+| Final part fails → not `synced`, `complete` never called | unit |
+| `.urlExpired` spends no budget; `.serverTransient` does | unit |
+| Budget exhausted → `failed`, temp deleted, **original kept** | unit |
+| Backoff sequence with a stubbed RNG | unit |
+| `ChunkPlanner`: uniform parts, odd final part, exact multiples | unit |
+| Sub-threshold file selects single PUT, no `uploadId` | unit |
+| Dedupe: identical `sha256` → `synced` with zero requests | unit |
+| Cold-launch reconciliation, all three cases | unit, `InMemoryUploadStore` |
+| Priority ordering across 5 mixed jobs | unit |
+| Full flow through `MockTransport` with 503 at part 3 | integration |
+| Real kill mid-transfer on device | manual |
+
+`MockTransport` implements `protocol UploadTransport` and scripts per-part responses: 200, 403,
+503, timeout, wrong ETag.

@@ -1,52 +1,91 @@
-# 05 — Xuất PDF biên bản
+# 05 — PDF & spreadsheet export
 
 Module: `Packages/Reporting`
 
-**Đây là đầu ra người dùng trả tiền.** Không được cắt, không được xuất thiếu ảnh, không được
-để một biên bản 40 trang crash ở trang 38.
+The paid deliverable. Never truncated, never missing images, never crashing on page 38 of 40.
 
-## 1. Mục tiêu
+## Goal
 
-Từ một `Session`, sinh ra file PDF biên bản có chữ ký hai bên, chia sẻ được qua Zalo/email ngay
-tại chỗ, **không cần mạng**.
+Turn a `Session` into a branded, signed PDF plus a CSV/XLSX, shareable on the spot, with no network.
 
-## 2. Phạm vi
+## Scope
 
-**Trong phạm vi**
+| In | Out |
+|---|---|
+| Branded cover (logo, client block) | Fully custom per-company layouts (v2) |
+| Summary by severity, floor, assignee | PKI digital signatures — these are captured handwritten signatures with internal acceptance value only, and the app must say so |
+| Plan pin maps per sheet ([11](11-floorplan-pins.md)) | |
+| Checklist result tables ([13](13-checklists.md)) | |
+| Issue blocks with annotated photos | |
+| Before/after pairs, stale-issue section | |
+| Signature page, two parties | |
+| Footer: report ID, page, hash prefix, verification code | |
+| Grouping by location or by assignee | |
+| PDF + CSV/XLSX, share via Files / `UIActivityViewController` | |
 
-1. Trang bìa: tên công trình, địa chỉ, chủ đầu tư, ngày, người khảo sát.
-2. Bảng tổng hợp: số lỗi theo mức độ, theo tầng.
-3. Nội dung theo `Location`, mỗi `Issue` một khối: ảnh + mô tả + mức độ + hạn.
-4. Cặp ảnh trước/sau đặt cạnh nhau cho lỗi đã ghép (xem [03-issue-tracking.md](03-issue-tracking.md)).
-5. Mục riêng "Lỗi tồn quá 3 đợt".
-6. Trang chữ ký: hai ô ký tay trên màn hình, ghi tên + chức danh + thời điểm ký.
-7. Footer mỗi trang: mã biên bản, số trang, và **8 ký tự đầu của SHA-256** từng ảnh dưới ảnh đó.
-8. Xuất ra `Files`, `UIActivityViewController`.
+## Sections
 
-**Ngoài phạm vi**
+| Section | Source |
+|---|---|
+| Cover — project, client, dates, surveyor, logo | Project + `ReportBranding` |
+| Summary — counts by severity, floor, assignee | Issues |
+| Plan pin maps — one page per `PlanSheet` | [11](11-floorplan-pins.md) |
+| Checklist results — item / outcome / note per location | [13](13-checklists.md) |
+| Issue detail — annotated photos, severity, assignee, due date | [03](03-issue-tracking.md), [12](12-annotation.md) |
+| Before/after pairs | [03](03-issue-tracking.md) |
+| Stale issues | Issues |
+| Signatures | This spec |
 
-1. Template tuỳ biến của từng công ty (v2).
-2. Ký số PKI. Chữ ký ở đây là chữ ký tay chụp lại, có giá trị nghiệm thu nội bộ, không phải
-   chữ ký điện tử pháp lý — **nói rõ điều này trong app**, đừng để người dùng hiểu nhầm.
+Grouping is a parameter, not a second code path: `by location` (how the walk happens) or
+`by assignee` (how the work is handed out).
 
-## 3. Kỹ thuật sinh PDF
+## Branding
 
-`UIGraphicsPDFRenderer`, không dùng thư viện ngoài, không dùng WebView + `print`.
+```swift
+struct ReportBranding: Codable, Sendable {
+    let companyName: String
+    let logoFileURL: URL?
+    let accentColorHex: String
+    let clientBlock: String
+    let footerNote: String
+}
+```
 
-Lý do loại WebView: HTML→PDF phụ thuộc timing load ảnh, và với 200 ảnh thì hoặc là chậm khủng
-khiếp hoặc là ra trang trắng. `UIGraphicsPDFRenderer` cho kiểm soát trực tiếp và **quan trọng
-nhất là cho phép vẽ từng trang rồi thả ảnh ra khỏi RAM**.
+Stored per user, synced with metadata. Even free competitors ship branded exports
+([00-project-info.md](00-project-info.md)); a report that looks like a form template undercuts what
+the user can charge.
 
-### Bộ nhớ — ràng buộc quyết định thiết kế
+## Spreadsheet export
 
-Một biên bản 40 trang × 4 ảnh = 160 ảnh. Nạp full-size hết một lượt là **chắc chắn bị jetsam
-kill**. Quy tắc:
+CSV always; XLSX above `csvOnlyRowThreshold`. One row per issue:
 
-1. Ảnh đưa vào PDF là **downsample bằng `CGImageSourceCreateThumbnailAtIndex`** với
-   `kCGImageSourceThumbnailMaxPixelSize`, không phải `UIImage(contentsOfFile:)` rồi resize.
-2. Downsample tới đúng kích thước ô in (`maxImagePixelSize`), không hơn.
-3. Vẽ xong một trang thì **giải phóng ảnh của trang đó ngay**, mỗi trang một `autoreleasepool`.
-4. Render trên background queue, `@MainActor` chỉ nhận progress.
+```
+report_id, project, session_date, location_code, plan_sheet, pin_x, pin_y,
+issue_id, title, detail, severity, status, assignee, trade, due_date,
+capture_count, first_capture_sha256, verification_code, created_at
+```
+
+Streamed with `FileHandle`, never built as one string. This is what the site office pastes into
+their own tracker.
+
+## Rendering
+
+`UIGraphicsPDFRenderer`. No third-party library, no WebView printing — HTML→PDF depends on image
+load timing and with 200 images produces blank pages or extreme slowness.
+
+```
+SessionSnapshot → ReportLayoutEngine → [ReportPage] → PDFPageRenderer → PDF
+                  (pure, no UIKit)                     (UIKit drawing)
+```
+
+| Rule | Reason |
+|---|---|
+| Layout counts images, renderer draws them | The only way to guarantee no dropped evidence |
+| `CGImageSourceCreateThumbnailAtIndex`, never `UIImage` + resize | 160 full-size images = jetsam |
+| Downsample to printed cell size (`maxImagePixelSize`) | |
+| One `autoreleasepool` per page | |
+| Background queue; `@MainActor` receives progress only | |
+| Render to temp, then `moveItem` | A kill mid-render never surfaces a partial file |
 
 ```swift
 for (index, page) in pages.enumerated() {
@@ -58,39 +97,20 @@ for (index, page) in pages.enumerated() {
 }
 ```
 
-### Layout
+## Signatures
 
-Tách hai pha rõ ràng:
+- `PencilKit` (`PKCanvasView`) or a hand-rolled `UIBezierPath`.
+- Transparent PNG embedded on the final page, with `signedAt`, `signerName`, `signerRole` per party.
+- Signing sets `Session.state = .exported`; the session becomes read-only.
+- Re-signing creates a `-R2` revision; the original is preserved.
 
-```
-SessionSnapshot → ReportLayoutEngine → [ReportPage] → PDFPageRenderer → PDF
-                  (thuần, không UIKit)                 (UIKit, vẽ)
-```
+## Integrity
 
-`ReportLayoutEngine` là code thuần trong `Reporting`: nhận snapshot, tính ra danh sách trang và
-vị trí từng khối. **Không import UIKit**, nên test được hoàn toàn — assert số trang, thứ tự,
-không có issue nào bị rơi, không có khối nào tràn.
-
-Đây là cách duy nhất để đảm bảo "không xuất thiếu ảnh": đếm ở tầng layout, không đếm ở tầng vẽ.
-
-## 4. Chữ ký
-
-1. `PencilKit` (`PKCanvasView`) hoặc `UIBezierPath` tự vẽ — cả hai đều được, `PencilKit` rẻ hơn.
-2. Xuất ra PNG nền trong suốt, nhúng vào trang cuối.
-3. Lưu kèm `signedAt`, `signerName`, `signerRole` cho từng bên.
-4. **Ký xong thì `Session.state = .exported`** và session thành chỉ đọc. Sửa sau khi ký là thứ
-   phá giá trị của biên bản.
-5. Ký lại (do sai tên) → phải tạo bản sửa đổi mới, mã biên bản có hậu tố `-R2`, bản cũ giữ nguyên.
-
-## 5. Toàn vẹn
-
-Footer in 8 ký tự đầu SHA-256 của mỗi ảnh, và trang cuối in **hash của toàn bộ danh sách hash**
-(Merkle-style, đơn giản: SHA-256 của chuỗi các hash đã sắp theo `captureID`).
-
-Nghĩa là: bên nhận biên bản có thể yêu cầu file gốc và tự kiểm chứng ảnh trong PDF chưa bị thay.
-Đó là toàn bộ lý do app này ghi hash ngay lúc chụp ([02-capture.md](02-capture.md)).
-
-## 6. Constants
+- Under each image: first 8 hash characters, the server verification code when synced, and the time
+  confidence when below `.serverVerified` ([12](12-annotation.md) §5–6).
+- Final page: SHA-256 over the `captureID`-sorted hash list.
+- Images render from the **stamped, annotated derivative**; the archive keeps the clean original.
+- Unsynced captures print "not yet verified", never a fabricated code.
 
 ```swift
 enum ReportConstants {
@@ -101,41 +121,42 @@ enum ReportConstants {
     static let jpegCompressionQuality: CGFloat = 0.8
     static let hashPrefixLength: Int = 8
     static let staleIssueSessionThreshold: Int = 3
+    static let csvOnlyRowThreshold: Int = 5000
+    static let maxLogoPixelSize: CGFloat = 600
 }
 ```
 
-Mọi spacing/màu/font qua `DesignSystem` token, kể cả trong PDF — biên bản là mặt tiền của sản
-phẩm và không được lệch với UI.
+All spacing, color, and type come from `DesignSystem` tokens, including inside the PDF.
 
-## 7. Rủi ro đã biết
+## Known risks
 
-1. **Bị kill giữa lúc render** biên bản lớn. Render ra file tạm rồi `moveItem` atomically; file
-   dở không bao giờ lộ ra cho người dùng.
-2. **Ảnh trên disk đã mất** (người dùng dọn dẹp, restore backup lỗi). Layout engine phải xử lý
-   `Capture` thiếu file: in ô placeholder ghi rõ "Ảnh không còn trên thiết bị — {hash}", **không
-   crash và không im lặng bỏ qua**.
-3. **Tên tiếng Việt có dấu** trong tên file → dùng `addingPercentEncoding` khi share, và test
-   với tên "Chung cư Ánh Dương – Block B".
-4. **PDF vài trăm MB** không gửi được qua Zalo. Hiện dung lượng ước tính trước khi export và cho
-   chọn mức nén.
-
-## 8. Definition of done
-
-1. Session 200 ảnh / 40 lỗi → PDF xuất xong trên iPhone đời thấp, **RAM đỉnh < 200MB**, không crash.
-2. Số ảnh trong PDF **bằng đúng** số `Capture` không bị `isExcludedFromReport`. Đếm bằng test,
-   không đếm bằng mắt.
-3. Cặp trước/sau đúng cặp, đúng thứ tự, có nhãn `Location.code` dưới mỗi ảnh.
-4. Xuất ở chế độ máy bay thành công.
-5. Zero warning.
-
-## 9. Test
-
-| Test | Loại |
+| Risk | Handling |
 |---|---|
-| `ReportLayoutEngine`: tổng số ảnh in ra == số capture đầu vào, không sót | unit, thuần |
-| Session rỗng / 1 issue / 500 issue → không crash, số trang hợp lý | unit |
-| Issue có 20 ảnh không tràn khỏi khối, chia trang đúng | unit |
-| Capture thiếu file trên disk → sinh placeholder, không throw | unit |
-| Merkle hash của danh sách ổn định khi đổi thứ tự đầu vào | unit |
-| Render 200 ảnh, đo RAM đỉnh | performance, `XCTMemoryMetric` |
-| PDF mở được bằng Preview/Acrobat, không lỗi font | manual, checklist |
+| Killed mid-render | Temp file + atomic move |
+| Referenced image missing from disk | Placeholder block "Image no longer on device — {hash}". Never crash, never silently skip |
+| Non-ASCII filenames | `addingPercentEncoding` on share; test with "Ánh Dương – Block B" |
+| Reports too large to send over chat apps | Show estimated size before export, offer a compression level |
+
+## Definition of done
+
+- 200 images / 40 issues exports on a low-end iPhone with peak memory under 200 MB.
+- Image count equals non-excluded capture count, asserted by test.
+- Before/after pairs correctly matched and ordered, each labeled with `Location.code`.
+- Export succeeds in airplane mode.
+- Zero warnings.
+
+## Tests
+
+| Test | Kind |
+|---|---|
+| Rendered image count equals input capture count | unit, pure |
+| Empty / 1 issue / 500 issues → no crash, sane page count | unit |
+| A 20-image issue paginates without overflow | unit |
+| Missing file → placeholder, no throw | unit |
+| Hash-of-hashes stable under input reordering | unit |
+| Grouping by assignee and by location give the same issue total | unit |
+| CSV escapes quotes, commas, newlines in user text | unit |
+| Unsynced capture renders "not yet verified" | unit |
+| Plan pin numbering matches the detail section | unit |
+| 200-image render peak memory | performance |
+| Opens in Preview and Acrobat without font errors | manual |

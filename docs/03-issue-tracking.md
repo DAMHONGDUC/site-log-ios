@@ -1,97 +1,85 @@
-# 03 — Ghi nhận lỗi & ghép cặp trước/sau
+# 03 — Issue tracking & before/after pairing
 
-Module: `App/Features/Issues`, `Packages/Core`
+Modules: `App/Features/Issues`, `Core`
 
-Đây là **tính năng nghiệp vụ chính**. Chụp ảnh thì app nào cũng làm được; thứ giám sát trả tiền
-là chứng minh được "chỗ này tuần trước hỏng, tuần này đã sửa" bằng hai tấm ảnh cùng vị trí.
+The core business feature. Any app takes photos; what supervisors pay for is proving "this was
+broken last week, it is fixed now" with two photos of the same spot.
 
-## 1. Mục tiêu
+## Goal
 
-1. Ghi một lỗi trong dưới 20 giây, khi đang đứng và cầm máy một tay.
-2. Ở đợt khảo sát sau, mở đúng lỗi cũ tại đúng vị trí và chụp ảnh đối chứng.
-3. Xuất ra PDF cặp ảnh trước/sau đặt cạnh nhau (xem [05-reporting.md](05-reporting.md)).
+- Log an issue in under 20 seconds, standing, one-handed.
+- In a later session, reopen the exact prior issue at the exact location and shoot verification.
+- Render the pair side by side in the PDF ([05](05-reporting.md)).
 
-## 2. Phạm vi
+## Scope
 
-**Trong phạm vi**
+| In | Out |
+|---|---|
+| Issue CRUD, multiple captures per issue | Push notifications |
+| Severity, status, due date | Account-linked assignment — the subcontractor has no app |
+| Assignee and trade (free text) | Multi-user comment threads (v2) |
+| Carry-over of open issues per location | |
+| Pairing and closure by verification photo | |
+| Phrase library + on-device dictation + voice notes | |
 
-1. CRUD `Issue`, gắn nhiều `Capture` vào một `Issue`.
-2. Mức độ (`critical` / `major` / `minor`), trạng thái, hạn xử lý.
-3. Danh sách lỗi tồn theo `Location`, mang sang đợt sau.
-4. Ghép cặp trước/sau và đóng lỗi bằng ảnh đối chứng.
-5. Thư viện mô tả lỗi hay dùng, để gõ ít đi.
+## Flows
 
-**Ngoài phạm vi**
-
-1. Giao việc cho người khác, thông báo push. Đây là app ghi nhận, không phải app quản lý công việc.
-2. Bình luận nhiều người trên một issue (v2).
-
-## 3. Luồng chính
-
-### 3.1 Ghi lỗi mới
+### Log an issue
 
 ```
-Màn hình Capture → chụp xong → thumbnail hiện lên
-  → [Gắn lỗi] → sheet:
-      • Mô tả (gõ, hoặc chọn từ thư viện cụm hay dùng)
-      • Mức độ: [Nghiêm trọng] [Nặng] [Nhẹ]     ← 3 nút to, mặc định "Nặng"
-      • Hạn xử lý (tuỳ chọn)
-  → Lưu → quay lại camera, sẵn sàng chụp tiếp
+Capture screen → shoot → thumbnail
+  → [Attach issue] → sheet:
+      • Description (typed, dictated, or from the phrase library)
+      • Severity: [Critical] [Major] [Minor]   ← default Major
+      • Assignee / trade (autocomplete from prior entries)
+      • Due date (optional)
+      • [🎤] dictate · [🔊] voice note · [📍] pin on plan
+  → Save → back to camera
 ```
 
-Sheet phải **quay lại camera**, không quay ra danh sách. Người dùng đang đi một vòng phòng,
-mỗi lần bật lại camera tốn gần một giây và phá nhịp làm việc.
+| Decision | Reason |
+|---|---|
+| Sheet returns to the camera, not a list | The user is walking a room; each camera restart costs ~1 s |
+| Default severity `.major` | Defaulting to minor makes everything minor — nobody changes defaults |
+| `assigneeName` is free text | Competitors assign to accounts; on site the subcontractor has none. A name that groups the PDF is the part that gets used |
 
-Mặc định `severity = .major`: người dùng ghi lỗi vì nó đáng ghi, chọn mặc định "nhẹ" sẽ khiến
-tất cả lỗi thành nhẹ vì không ai đổi mặc định.
+Dictation and voice notes: [12](12-annotation.md) §4. Plan pinning: [11](11-floorplan-pins.md).
 
-### 3.2 Ghép cặp trước/sau
+### Before/after pairing
 
 ```
-Đợt khảo sát mới → chọn Location
-  → Banner: "3 lỗi tồn từ đợt 12/08"
-  → Chọn lỗi → [Chụp ảnh đối chứng]
-      → Overlay ảnh cũ mờ 30% lên preview để canh đúng góc
-  → Chụp → chọn kết quả: [Đã xử lý] [Chưa xử lý] [Phát sinh thêm]
+New session → select location
+  → Banner: "3 open issues from 12 Aug"
+  → Select issue → [Shoot verification]
+      → Prior photo overlaid at 30% on the live preview
+  → Shoot → outcome: [Resolved] [Still open] [Worse]
 ```
 
-**Overlay ảnh cũ lên preview** là chi tiết nhỏ nhưng quyết định chất lượng biên bản — không có
-nó thì hai ảnh chụp lệch góc và cặp trước/sau vô nghĩa.
+- The overlay is what makes the pair meaningful; without it the angles differ and the comparison is
+  worthless.
+- `Issue` anchors to `Location`, so history surfaces across sessions — this is why `Location`
+  belongs to `Project` ([00-project-info.md](00-project-info.md) §C).
 
-Cơ chế: `Issue` neo vào `Location` (không phải `Session`), nên cùng một `Location` ở hai đợt
-khác nhau vẫn thấy được lỗi của nhau. Đây là lý do `Location` thuộc `Project` trong
-[data-model.md](data-model.md).
+### Closing an issue
 
-### 3.3 Đóng lỗi
-
-Chọn "Đã xử lý" thì:
-
-1. Tạo `Issue` mới ở đợt hiện tại, `status = .verified`, mang ảnh đối chứng.
+1. Create a new `Issue` in the current session, `status = .verified`, carrying the verification photo.
 2. Set `oldIssue.resolvedByIssue = newIssue`, `oldIssue.status = .resolved`.
-3. **Không sửa, không xoá** `Capture` cũ. Lịch sử là thứ đang bán.
+3. Never modify or delete the original captures. The history is the product.
 
-## 4. Thư viện cụm mô tả
+## Phrase library
 
-Gõ trên điện thoại giữa công trường là chậm. Giữ một danh sách cụm hay dùng, sắp theo tần suất
-người dùng đã chọn:
+- Seed ~30 construction/handover phrases; new typed phrases are added automatically.
+- Sorted by usage count, most recent first on ties.
+- Local, synced via Firestore ([08](08-auth-sync.md)).
 
-```
-"Nứt chân chim trần"   "Thấm chân tường"   "Gạch phồng"
-"Sơn không đều"        "Ron gạch hở"       "Cửa cong vênh"
-```
-
-1. Seed sẵn ~30 cụm cho lĩnh vực xây dựng/bàn giao căn hộ.
-2. Người dùng gõ cụm mới → tự thêm vào thư viện của họ.
-3. Sắp theo số lần dùng, cụm mới nhất lên trước khi hoà.
-4. Lưu local, đồng bộ qua Firestore (xem [08-auth-sync.md](08-auth-sync.md)).
-
-## 5. Thiết kế kỹ thuật
+## Technical design
 
 ```swift
 @MainActor
 final class IssueEditorViewModel: ObservableObject {
     @Published var title: String
     @Published var severity: IssueSeverity
+    @Published var assigneeName: String?
     @Published var dueDate: Date?
     @Published private(set) var suggestions: [PhraseSuggestion]
 
@@ -99,67 +87,60 @@ final class IssueEditorViewModel: ObservableObject {
     func save() async throws -> PersistentIdentifier
 }
 
-struct IssuePairing {
+struct IssuePairing: Sendable, Equatable {
     let previous: IssueSnapshot
     let current: IssueSnapshot?
     let outcome: PairingOutcome   // .resolved / .stillOpen / .worsened
 }
-```
 
-Logic ghép cặp (`IssuePairingService`) nằm trong `Core`, **không import framework**, nhận vào
-array snapshot và trả về array `IssuePairing`. Đây là thứ test được dày và là logic dễ sai nhất
-trong app.
-
-### Thứ tự ưu tiên upload
-
-`severity` được truyền xuống `UploadKit` làm `priority`:
-
-| Severity | Priority |
-|---|---|
-| `.critical` | 100 |
-| `.major` | 50 |
-| `.minor` | 10 |
-| Capture không gắn issue | 5 |
-| Video (bất kể severity) | trừ 20 |
-
-Video trừ điểm vì nó chiếm băng thông đủ lâu để chặn hàng chục ảnh phía sau. Chi tiết:
-[04-upload-engine.md](04-upload-engine.md).
-
-## 6. Constants
-
-```swift
 enum IssueDefaults {
     static let severity: IssueSeverity = .major
     static let dueDateOffsetDays: Int = 7
     static let maxCapturesPerIssue: Int = 20
     static let phraseSuggestionCount: Int = 6
+    static let assigneeSuggestionCount: Int = 5
     static let overlayOpacity: Double = 0.30
+    static let staleIssueSessionThreshold: Int = 3
 }
 ```
 
-## 7. Rủi ro đã biết
+`IssuePairingService` lives in `Core`, imports no frameworks, takes snapshots and returns pairings.
+It is the most error-prone logic in the app.
 
-1. **Location bị xoá/đổi tên giữa hai đợt** → mất neo ghép cặp. `Location` không cho xoá khi
-   còn `Issue` mở; đổi `code` thì giữ nguyên `id`, ghi audit log.
-2. **Người dùng chụp đối chứng sai vị trí.** Overlay giảm rủi ro, nhưng PDF vẫn phải in kèm
-   `Location.code` dưới mỗi ảnh để bên nhận tự kiểm tra được.
-3. **Lỗi tồn dồn nhiều đợt.** Sau 3 đợt chưa xử lý, banner đổi màu và PDF có mục riêng
-   "Lỗi tồn quá 3 đợt" — đây là thứ giám sát cần để làm việc với thầu.
+## Upload priority
 
-## 8. Definition of done
-
-1. Ghi một lỗi có ảnh trong dưới 20 giây, đo thật bằng đồng hồ.
-2. Đợt 2 mở đúng 3 lỗi tồn của đợt 1 tại cùng Location, offline.
-3. Đóng lỗi bằng ảnh đối chứng → `Capture` cũ không đổi một byte, hash kiểm lại vẫn khớp.
-4. Zero warning.
-
-## 9. Test
-
-| Test | Loại |
+| Input | Priority |
 |---|---|
-| `IssuePairingService` ghép đúng khi Location có 0 / 1 / n lỗi tồn | unit, `Core` |
-| Ghép cặp bỏ qua issue đã `.verified` ở đợt trước | unit |
-| Đóng lỗi không mutate `Capture` cũ (so sánh snapshot toàn bộ field) | unit |
-| `priority` tính đúng cho 5 tổ hợp severity × kind | unit |
-| Xoá Location còn issue mở bị chặn | unit |
-| Thư viện cụm sắp đúng theo tần suất, tie-break bằng thời gian | unit |
+| `.critical` | 100 |
+| `.major` | 50 |
+| `.minor` | 10 |
+| Capture with no issue | 5 |
+| Video (any severity) | −20 |
+
+Video is penalized because it occupies bandwidth long enough to block dozens of photos behind it.
+
+## Known risks
+
+| Risk | Handling |
+|---|---|
+| Location deleted or renamed between sessions | Deletion blocked while open issues exist; rename keeps `id` + audit entry |
+| Verification shot at the wrong spot | Overlay reduces it; the PDF prints `Location.code` under every image |
+| Issues accumulating across sessions | Past `staleIssueSessionThreshold` the banner changes color and the PDF gets a dedicated section |
+
+## Definition of done
+
+- Logging one issue with a photo takes under 20 seconds, measured.
+- Session 2 surfaces exactly the 3 open issues from session 1, offline.
+- Closing leaves the original `Capture` byte-identical; hash still verifies.
+- Zero warnings.
+
+## Tests
+
+| Test | Kind |
+|---|---|
+| Pairing with 0 / 1 / n open issues per location | unit, `Core` |
+| Pairing skips issues already `.verified` | unit |
+| Closing does not mutate prior captures (full snapshot comparison) | unit |
+| `priority` across 5 severity × kind combinations | unit |
+| Deleting a location with open issues is rejected | unit |
+| Phrase and assignee ordering by usage with a stable tie-break | unit |

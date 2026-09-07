@@ -1,66 +1,53 @@
-# 01 — Công trình, đợt khảo sát, vị trí
+# 01 — Projects, sessions, locations
 
-Module: `App/Features/Projects`, `Packages/Core`, `Packages/Persistence`
+Modules: `App/Features/Projects`, `Core`, `Persistence`
 
-## 1. Mục tiêu
+## Goal
 
-Cho người dùng dựng được cây `Project → Session → Location` nhanh hơn cầm sổ, **hoàn toàn
-offline**, và điều hướng được trong đó bằng một tay khi đang đứng giữa công trường.
+Build the `Project → Session → Location` tree faster than paper, fully offline, navigable
+one-handed.
 
-## 2. Phạm vi
+## Scope
 
-**Trong phạm vi**
+| In | Out |
+|---|---|
+| CRUD for all three entities | Multi-user sharing (v2, [08](08-auth-sync.md)) |
+| 3-level location tree (`floor → unit → room`) | Excel/CAD import |
+| Bulk location generation from a template | |
+| Cloning a location tree from another project | |
+| Closing and reopening sessions | |
 
-1. CRUD `Project`, `Session`, `Location`.
-2. Cây `Location` tối đa 3 cấp (`floor → unit → room`).
-3. Tạo nhanh hàng loạt Location theo mẫu ("Tầng 1–20, mỗi tầng 4 căn").
-4. Nhân bản cây Location từ Session/Project khác.
-5. Đóng session (`closed`) và mở lại (chỉ khi chưa `exported`).
-
-**Ngoài phạm vi**
-
-1. Chia sẻ project cho nhiều người dùng (v2 — xem [08-auth-sync.md](08-auth-sync.md)).
-2. Import cây từ file Excel/CAD.
-
-## 3. Luồng người dùng
+## Flow
 
 ```
-Danh sách Project
-  → [+] Tạo Project (tên, địa chỉ, chủ đầu tư)
-  → Chi tiết Project: tab [Đợt khảo sát] [Sơ đồ vị trí]
-      → [+] Bắt đầu đợt khảo sát (tên người khảo sát, ghi chú)
-      → Màn hình khảo sát: danh sách Location kèm badge số capture / số issue
-          → Chọn Location → mở Capture (feature 02)
-      → [Kết thúc đợt] → state = closed
+Project list
+  → [+] New project (name, address, client)
+  → Project detail: [Sessions] [Locations] [Plans]
+      → [+] Start session (surveyor, notes)
+      → Survey screen: location list + capture/issue badges
+          → Select location → Capture (02) / Checklist (13) / Plan (11)
+      → [End session] → state = closed
 ```
 
-Màn hình khảo sát là màn hình người dùng ở lâu nhất. Ba yêu cầu:
+Survey screen rules:
 
-1. **Một tay, ngón cái.** Nút mở camera nằm nửa dưới màn hình.
-2. **Badge cập nhật tức thì**, không đợi upload — số liệu đọc từ local store.
-3. **Không có spinner chặn.** Không thao tác nào trong feature này chạm mạng.
+- Camera entry point in the lower half — thumb reach.
+- Badges read from the local store and update instantly, independent of upload.
+- No blocking spinner; nothing here touches the network.
 
-## 4. Tạo nhanh Location theo mẫu
-
-Đây là tính năng tiết kiệm thời gian rõ nhất và là thứ đầu tiên người dùng thật sẽ khen.
-
-Input: tiền tố, dải tầng, số căn mỗi tầng, mẫu mã căn.
+## Bulk generation
 
 ```
-Tầng: 1...20        Căn/tầng: 4        Mẫu: "{floor}-{unit:02}"
-→ 1-01, 1-02, 1-03, 1-04, 2-01, ... 20-04   (80 Location)
+Floors 1...20   Units/floor 4   Template "{floor}-{unit:02}"
+→ 1-01 … 20-04   (80 locations)
 ```
 
-Quy tắc:
+- Single transaction, never row by row.
+- Preview before commit: first 5 codes, last 3, total.
+- Duplicate codes rejected, naming the exact collisions.
+- Hard cap `maxGeneratedPerBatch`.
 
-1. Sinh trong một transaction duy nhất, không ghi từng cái một.
-2. **Preview trước khi commit** — hiện 5 mã đầu, 3 mã cuối và tổng số.
-3. Mã trùng trong cùng Project thì chặn, hiện đúng mã nào trùng.
-4. Giới hạn cứng 2000 Location một lần để không có ai vô tình tạo 1 triệu record.
-
-## 5. Thiết kế kỹ thuật
-
-### ViewModel
+## Technical design
 
 ```swift
 @MainActor
@@ -73,22 +60,15 @@ final class SurveySessionViewModel: ObservableObject {
     func generateLocations(_ spec: LocationTemplateSpec) async throws -> LocationTemplatePreview
     func commitLocations(_ preview: LocationTemplatePreview) async throws
 }
-```
 
-`LocationRow` là struct phẳng cho View (`id`, `code`, `captureCount`, `openIssueCount`,
-`pendingUploadCount`) — View không cầm `PersistentModel`.
+struct LocationRow: Identifiable, Sendable {
+    let id: PersistentIdentifier
+    let code: String
+    let captureCount: Int
+    let openIssueCount: Int
+    let pendingUploadCount: Int
+}
 
-### Đếm badge
-
-Đừng fetch toàn bộ `Capture` để đếm. Dùng `fetchCount` với `#Predicate` theo `locationID`, và
-gộp một lần cho cả màn hình thay vì mỗi row tự query — 80 Location × 2 query mỗi lần scroll là
-cách chắc chắn để list bị giật.
-
-### Constants
-
-Mọi giới hạn nằm trong một chỗ:
-
-```swift
 enum LocationTemplateLimits {
     static let maxGeneratedPerBatch: Int = 2000
     static let maxDepth: Int = 3
@@ -97,28 +77,32 @@ enum LocationTemplateLimits {
 }
 ```
 
-## 6. Rủi ro đã biết
+- Views never hold `PersistentModel`.
+- Badges use `fetchCount` batched once per screen; per-row queries across 80 locations stutter on
+  scroll.
 
-1. **Đóng session nhầm.** `closed` chặn capture mới; phải có nút mở lại và hiện rõ trạng thái
-   ở header, không giấu trong menu.
-2. **Xoá Project = xoá vài GB media.** Cascade delete phải hỏi lại kèm số liệu cụ thể
-   ("3 đợt, 412 ảnh, 2.1 GB, 87 file chưa upload"), không phải "Bạn có chắc không?".
-3. **Xoá khi còn file `pending`** thì dữ liệu mất vĩnh viễn. Chặn, không cảnh báo suông.
+## Known risks
 
-## 7. Definition of done
-
-1. Tạo được Project → Session → 80 Location → mở Capture, **ở chế độ máy bay**, không lỗi.
-2. Danh sách 500 Location scroll 60fps trên máy thật.
-3. Kill app giữa lúc đang tạo Location hàng loạt → mở lại không có record nửa vời.
-4. Zero warning, `swiftlint` sạch.
-
-## 8. Test
-
-| Test | Loại |
+| Risk | Handling |
 |---|---|
-| `LocationTemplateSpec` sinh đúng mã cho các mẫu biên (1 tầng, 1 căn, mã trùng) | unit, `Core` |
-| Chặn tạo quá `maxGeneratedPerBatch` | unit |
-| Chặn tạo Location cấp 4 | unit |
-| Session `closed` từ chối `addCapture` | unit |
-| Cascade delete Project xoá hết file trên disk, không để orphan | integration, `Persistence` |
-| Migration từ `SchemaV1` với fixture có sẵn 100 Location | integration |
+| Accidentally closing a session | Reopen button; state in the header, not in a menu |
+| Project delete removes GB of media | Confirmation states numbers: "3 sessions, 412 photos, 2.1 GB, 87 not uploaded" |
+| Delete while files are `pending` | Blocked outright, not warned |
+
+## Definition of done
+
+- Project → session → 80 locations → open capture, in airplane mode, no errors.
+- 500-location list scrolls at 60fps on device.
+- Kill mid bulk-generation → no partial records on relaunch.
+- Zero warnings.
+
+## Tests
+
+| Test | Kind |
+|---|---|
+| Template generates correct codes for edge cases (1 floor, 1 unit, collisions) | unit, `Core` |
+| Rejects batches over `maxGeneratedPerBatch` | unit |
+| Rejects depth-4 locations | unit |
+| `closed` session rejects `addCapture` | unit |
+| Cascade delete removes files, leaves no orphans | integration |
+| Migration from a `SchemaV1` fixture with 100 locations | integration |
