@@ -1,35 +1,46 @@
-# 08 — Auth & metadata sync
+# 08 — Auth & sync
 
 Modules: `App/Features/Auth`, `App/Features/Sync`
 
-Firebase covers auth, metadata, and crash only. File bytes go through
-[UploadKit](04-upload-engine.md) to R2.
+Firebase provides **identity and crash reporting only**. All application data lives in Postgres
+behind the backend ([14](14-backend.md)); there is no Firestore.
 
-## Goal
+## 1. Goal
 
 - Sign in once, keep the session, work fully offline.
-- Sync metadata (not media) across devices.
+- Sync all metadata across devices over a hand-written delta protocol.
 - Authorize the backend to sign presigned URLs.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
-| Firebase Auth (Sign in with Apple, email/password) | Media in Firestore (1 MB doc limit) |
-| ID token as `Authorization` for backend calls | Multi-user sharing and roles (v2) |
-| Two-way offline-first Firestore sync | Enterprise SSO |
+| Firebase Auth (Sign in with Apple, email/password) | Firestore, in any role |
+| ID token as `Authorization` for every backend call | Multi-user sharing and roles (v2) |
+| Cursor-based delta pull, batched push | Real-time collaborative editing |
+| Tombstones, LWW, monotonic session state | Enterprise SSO |
+| Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to R2 |
 | Account deletion | |
 
-## Offline-first rules
+Dropping Firestore removes an SDK that handled three things for free. All three are now ours
+([00](00-project-info.md) §7):
 
-**Local is the source of truth while recording. Server is the source of truth once synced.**
+| Lost | Replaced by |
+|---|---|
+| Offline persistence | A mutation queue in SwiftData that survives termination |
+| Delete propagation | Tombstones + a purge window |
+| Listener fan-out | `pg_notify` ([14](14-backend.md) §10) |
 
-- Writes land in SwiftData first and return immediately; Firestore follows.
+## 3. Offline-first rules
+
+**Local is the source of truth while recording. The server is the source of truth once synced.**
+
+- Writes land in SwiftData first and return to the UI immediately; the sync engine follows.
 - No screen waits on the network; no blocking spinners on primary screens.
-- Launching offline after prior sign-in goes straight in. Only refresh-token expiry or revocation
+- Launching offline after a prior sign-in goes straight in. Only refresh-token expiry or revocation
   forces re-authentication.
 
-## Backend authorization
+## 4. Auth
 
 ```swift
 func authorizedRequest(_ base: URLRequest) async throws -> URLRequest {
@@ -43,83 +54,147 @@ func authorizedRequest(_ base: URLRequest) async throws -> URLRequest {
 | Rule | Detail |
 |---|---|
 | Never hand-cache the token | `getIDToken` refreshes near expiry (1 h lifetime) |
-| Backend verifies before signing | Firebase Admin SDK |
-| Keys embed the uid | `{uid}/{projectID}/{sessionID}/{captureID}.{ext}`; signing is refused on mismatch |
-| 401 → `waitingForURL` | No retry budget consumed; same path as URL expiry |
+| Backend verifies every request | `verifyIdToken(token, checkRevoked: true)` |
+| Object keys embed the uid | `{uid}/{projectID}/…`; signing is refused on mismatch |
+| 401 → `waitingForURL` | No retry budget consumed; same path as URL expiry ([04](04-upload-engine.md)) |
 
-## Firestore layout
+## 5. Sync protocol
+
+Two endpoints, both batched, both idempotent. Full backend behaviour: [14](14-backend.md).
 
 ```
-users/{uid}/projects/{projectID}
-users/{uid}/projects/{projectID}/{sessions|locations|issues|planSheets}/{id}
-users/{uid}/checklistTemplates/{id}
-users/{uid}/phrases/{id}
-users/{uid}/branding/default
+POST /sync/pull  { since: <rev>, limit }
+  → { changes: { projects: [...], sessions: [...], … }, nextRev, hasMore }
+
+POST /sync/push  { mutations: [ { table, id, op, clientUpdatedAt, fields } ] }
+  → { results: [ { id, status: "applied"|"superseded", serverRow? } ], serverRev }
 ```
 
-`Capture` syncs as a lightweight descriptor only: id, kind, sha256, capturedAt, remoteKey,
-verificationCode, locationID.
+### 5.1 Revisions, not timestamps
 
-### Conflict resolution
+Every row carries a server-assigned `rev`. The client stores one cursor per account and asks for
+`rev > cursor`.
 
-| Type | Strategy |
+Timestamps cannot be the cursor:
+
+- Two rows written in the same millisecond are indistinguishable.
+- A clock that steps backwards silently skips records.
+
+`rev` comes from a per-user counter incremented inside the same transaction as the write, so it is
+gap-free **and** commit-ordered for that user ([14](14-backend.md) §7).
+
+### 5.2 Conflict resolution
+
+| Data | Rule |
 |---|---|
-| `Capture` | Never conflicts — immutable, client-generated UUID |
-| `Issue`, `Location`, `Project`, `Annotation` | Last-write-wins on server `updatedAt` |
-| `Session.state` | Monotonic: `draft < active < closed < exported`, **advance only** |
-| `ChecklistRun` results | Append-only per item; last answer wins per `ChecklistResult` |
+| `captures`, `issue_captures` | Insert-only, client-generated UUID — cannot conflict |
+| `projects`, `locations`, `issues`, `plan_sheets`, `annotations`, templates, phrases, branding | Last-write-wins on `clientUpdatedAt`, tie-broken by row `id` |
+| `sessions.state` | **Monotonic**: `draft < active < closed < exported`, advance only |
+| `checklist_results` | LWW per `(run_id, template_item_id)` — re-answering an item overwrites only that item |
 
-`Session.state` must be monotonic — an offline device could otherwise write `active` over another
+`sessions.state` must be monotonic. An offline device could otherwise write `active` over another
 device's `exported` and reopen a signed report.
 
-### Sync worker
+- LWW uses the device clock, which is not trustworthy — hence `trustedTime` on captures
+  ([12](12-annotation.md) §7).
+- Acceptable here: metadata conflicts are rare in a single-owner model, and the cost of a wrong
+  winner is an edited title, not lost evidence.
 
-- `actor MetadataSyncEngine`, runs on foreground entry, network restore, and every `syncInterval`.
-- Never per write — bulk-generating 80 locations would become 80 writes.
-- Batches up to `maxBatchWrites`, exponential backoff, logs `{pushed, pulled, conflicts, elapsedMs}`.
+### 5.3 Deletes
 
-## Account deletion
+Firestore propagated deletes through its listeners. Without it, a delete that only removes a local
+row is invisible to every other device, and the row returns on the next pull.
 
-1. In-app, not via support email.
-2. Reauthenticate first.
-3. Delete: Firestore subtree, R2 objects under `{uid}/`, local store, Keychain, media files.
-4. Show concrete numbers before deleting.
-5. Write a final audit entry ([07](07-security.md)).
+- Deletes are **soft**: set `deleted_at`, bump `rev`, push like any other mutation.
+- Pull returns tombstones; the client deletes locally and keeps nothing.
+- The server purges tombstones older than `tombstoneRetention` (90 days).
+- A client whose cursor is older than the purge window must **full resync** (`since: 0`). The server
+  signals this by returning `{ resyncRequired: true }`.
+
+### 5.4 Push ordering
+
+A child row rejected because its parent has not arrived yet is the most common failure in a
+hand-written sync engine.
+
+- The client queues mutations in dependency order:
+  `projects → locations → plan_sheets → sessions → captures → issues → issue_captures → annotations → checklist_*`
+- The server applies one batch in one transaction with deferred constraints, so order **within** a
+  batch does not matter.
+- Ordering still matters **across** batches, which is why the queue preserves it.
+
+## 6. Client engine
+
+```swift
+actor MetadataSyncEngine {
+    func sync() async throws          // pull, then push, then pull again if push advanced serverRev
+    func enqueue(_ mutation: Mutation) async
+    func fullResync() async throws
+}
+```
+
+| Trigger | Note |
+|---|---|
+| Foreground entry | |
+| Network restored | |
+| Every `syncInterval` (5 min) | |
+| After a push queue reaches `pushBatchSize` | Never per write — 80 bulk-generated locations must not be 80 requests |
+
+- The mutation queue is a SwiftData table, so it survives termination.
+- Failed pushes retry with backoff; a `superseded` result is not a failure — the client adopts the
+  returned `serverRow` and drops its own.
+- Every cycle logs `{pulled, pushed, superseded, conflicts, elapsedMs, cursor}`.
 
 ```swift
 enum SyncConstants {
     static let syncInterval: TimeInterval = 300
-    static let maxBatchWrites: Int = 400          // Firestore caps at 500
+    static let pullPageSize: Int = 500
+    static let pushBatchSize: Int = 200
     static let backoffBaseDelay: TimeInterval = 5
     static let backoffMaxDelay: TimeInterval = 600
+    static let tombstoneRetentionDays: Int = 90
 }
 ```
 
-## Known risks
+## 7. Account deletion
+
+1. In-app, not via support email.
+2. Reauthenticate first.
+3. `DELETE /account` removes R2 objects, upload rows, and every metadata row for the uid
+   ([14](14-backend.md)) — the app never holds R2 credentials.
+4. Then delete the local store, Keychain items, and media files.
+5. Show concrete numbers before deleting; write a final audit entry ([07](07-security.md)).
+
+## 8. Known risks
 
 | Risk | Handling |
 |---|---|
-| Account switch with pending uploads | Cancel old jobs, delete temp files, never write into the new prefix |
-| Firestore quota | ~280 docs per session; batch writes and track volume from day one |
+| Account switch with pending uploads or mutations | Cancel old jobs, delete temp files, clear the mutation queue; never write into the new uid's prefix |
+| Cursor lost or corrupted | Full resync from `rev 0`; expensive but always correct |
+| Clock skew making LWW pick the wrong winner | Accepted for metadata; never applied to captures, which are immutable |
 | Token revoked elsewhere | Handle 401 in one interceptor, not scattered checks |
 | Sign in with Apple hides the email | Nothing may depend on a real email address |
+| Backend unreachable for days | The app is fully usable; only cross-device visibility is delayed |
 
-## Definition of done
+## 9. Definition of done
 
 - Sign in → airplane mode → kill → relaunch enters directly with all recording features.
-- A project created offline on device A appears on B within 60 s of connectivity.
-- A exports a session, B offline sets `active`; after sync the state is still `exported`.
-- Token expiry mid-upload refreshes automatically; the job never enters `failed`.
-- Account deletion leaves no object under `{uid}/`.
+- A project created offline on device A appears on B within one `syncInterval` of connectivity.
+- Deleting a location on A removes it on B; it does not reappear on the next pull.
+- A exports a session; B offline sets `active`; after sync the state is still `exported`.
+- 80 bulk-generated locations sync as one batch, not 80 requests.
+- Full resync from `rev 0` reproduces an identical local store.
+- Token expiry mid-sync refreshes automatically; no mutation is lost.
 
-## Tests
+## 10. Tests
 
 | Test | Kind |
 |---|---|
 | Monotonic `SessionState` merge across all 16 pairs | unit, `Core` |
-| LWW on `updatedAt` with a stable id tie-break | unit |
-| Account switch cancels old jobs and deletes temp files | unit |
+| LWW on `clientUpdatedAt` with a stable id tie-break | unit |
+| Tombstone applied locally deletes the row and does not resurrect it | unit |
+| Cursor older than the purge window triggers full resync | unit |
+| Mutation queue survives termination and preserves dependency order | integration |
+| `superseded` result replaces the local row without user-visible loss | unit |
+| Push of 200 mutations is one request | unit |
+| Account switch clears the queue and cancels jobs | unit |
 | 401 triggers exactly one refresh when 10 requests fail concurrently | unit, mock |
-| 500 documents split into exactly 2 batches | unit |
-| Security rules: uid A cannot read `users/{B}` | integration, emulator |
-| Backend rejects signing a key that does not match the token uid | integration |

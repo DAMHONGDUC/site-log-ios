@@ -5,14 +5,14 @@ Module: `Packages/DeviceLink`
 Targets real hardware: laser distance meters (Bosch GLM, Leica Disto) and wall moisture meters.
 All advertise over BLE; today users read the display and retype the number.
 
-## Goal
+## 1. Goal
 
 Scan → connect → read measurement → attach directly to a `Capture`.
 
 Architecture mirrors the real stack: **BLE for control and small values, WiFi for large files.**
 This is why DeviceLink and [UploadKit](04-upload-engine.md) are separate packages.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -23,7 +23,7 @@ This is why DeviceLink and [UploadKit](04-upload-engine.md) are separate package
 | Auto-reconnect to paired devices | |
 | macOS mock peripheral | |
 
-## Structure
+## 3. Structure
 
 ```
 DeviceLink/
@@ -54,7 +54,7 @@ public struct Measurement: Sendable, Codable, Equatable {
 - Adding a vendor is one file, with no change to connection code.
 - `parse` is pure over `Data`, testable against byte arrays captured from real hardware.
 
-## CoreBluetooth lifecycle
+## 4. CoreBluetooth lifecycle
 
 The four things most often gotten wrong:
 
@@ -76,7 +76,7 @@ poweredOff → poweredOn → scanning → connecting → discovering → ready
 - `disconnected` is not inherently an error — these meters power off when idle. Reconnect backoff
   is independent of upload retry.
 
-## macOS mock peripheral
+## 5. macOS mock peripheral
 
 ```
 Tools/MockPeripheral/
@@ -87,7 +87,7 @@ Tools/MockPeripheral/
 Scripts what is hard to produce in the field: invalid values, mid-session disconnects, malformed
 payloads, garbage bytes. Also what makes CI possible.
 
-## UX rules
+## 6. UX rules
 
 - Measurement overlays the camera preview, readable at arm's length.
 - Shutter freezes the current measurement into the `Capture`; no measurement still captures.
@@ -110,7 +110,7 @@ enum DeviceLinkConstants {
 Measurements older than `measurementStaleAfter` are not attached — the user has moved rooms, and
 attaching the previous reading corrupts data silently.
 
-## Known risks
+## 7. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -119,7 +119,7 @@ attaching the previous reading corrupts data silently.
 | Battery drain | No background scanning; stop after `scanTimeout`; disconnect after `backgroundDisconnectDelay` |
 | App Store review of the usage string | Describe the actual purpose, not a generic line |
 
-## Definition of done
+## 8. Definition of done
 
 - Connects to the macOS mock, reads a sequence, attaches to a `Capture`.
 - Killing the mock: no crash, dot greys, capture still works.
@@ -127,7 +127,7 @@ attaching the previous reading corrupts data silently.
 - Denied Bluetooth: every other feature works.
 - Zero warnings; builds independently.
 
-## Tests
+## 9. Tests
 
 | Test | Kind |
 |---|---|

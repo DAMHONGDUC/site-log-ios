@@ -2,17 +2,16 @@
 
 Modules: `App/Features/Checklists`, `Core`
 
-Vietnamese handover guidance is published as room-by-room checklists of 5–12 steps, and
-checklist-driven inspection is a whole competitor category
-([00-project-info.md](00-project-info.md) §Market). Free-form capture alone leaves the inspector
-remembering what to check.
+- Vietnamese handover guidance is published as room-by-room checklists of 5–12 steps.
+- Checklist-driven inspection is a whole competitor category ([00](00-project-info.md) §2).
+- Free-form capture alone leaves the inspector remembering what to check.
 
-## Goal
+## 1. Goal
 
 Walk a location against a template, tick items, and turn any failed item into an issue without
 re-typing it.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -23,7 +22,7 @@ re-typing it.
 | Seeded handover and structural templates | |
 | Template export/import as JSON | |
 
-## Model
+## 3. Model
 
 ```swift
 @Model final class ChecklistTemplate {
@@ -66,7 +65,7 @@ re-typing it.
 A run stores its own results. Editing a template later never rewrites completed runs — a signed
 report must stay reproducible.
 
-## Flow
+## 4. Flow
 
 ```
 Location detail → [Checklist] → pick a template (recent first)
@@ -82,7 +81,7 @@ Location detail → [Checklist] → pick a template (recent first)
 - Unanswered items are visible and block completion, but never block leaving the screen.
 - Runs are resumable; sessions get interrupted.
 
-## Seeded templates
+## 5. Seeded templates
 
 Built-ins ship with the app: editable and duplicable, not deletable. User edits fork a copy.
 
@@ -97,11 +96,11 @@ Built-ins ship with the app: editable and duplicable, not deletable. User edits 
 | Plumbing and drainage | ~12 |
 | Structural — walls, floors, ceilings | ~14 |
 
-## Reporting
+## 6. Reporting
 
-The PDF ([05](05-reporting.md)) gains a per-location checklist table: item, outcome, note, and the
-generated issue reference. This is what makes a handover record complete — it shows what was checked
-and passed, not only what failed.
+- The PDF ([05](05-reporting.md)) gains a per-location table: item, outcome, note, generated issue.
+- This is what makes a handover record complete — it shows what was checked **and passed**, not only
+  what failed.
 
 ```swift
 enum ChecklistConstants {
@@ -111,7 +110,7 @@ enum ChecklistConstants {
 }
 ```
 
-## Known risks
+## 7. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -120,7 +119,7 @@ enum ChecklistConstants {
 | Template sprawl | Sort by `usageCount`, cap items, prefer duplicate-and-edit over new-from-scratch |
 | Untrusted imported JSON | Validate `templateExportVersion`, cap item counts, treat all text as data |
 
-## Definition of done
+## 8. Definition of done
 
 - Run a 22-item template offline; two fails create two issues with prefilled fields.
 - Kill mid-run; relaunch resumes with answers intact.
@@ -128,7 +127,7 @@ enum ChecklistConstants {
 - Checklist results appear in the PDF grouped under their location.
 - Zero warnings.
 
-## Tests
+## 9. Tests
 
 | Test | Kind |
 |---|---|

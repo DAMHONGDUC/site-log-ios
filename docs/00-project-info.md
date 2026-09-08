@@ -3,9 +3,9 @@
 Everything that is not a single feature: product, market, data model, architecture, data flows,
 configuration, CI, and conventions. Feature specs are `01`–`13`.
 
----
+**Contents** — 1. [Product](#1-product) · 2. [Market](#2-market) · 3. [Data model](#3-data-model) · 4. [Architecture](#4-architecture) · 5. [Data flows](#5-data-flows) · 6. [Infrastructure](#6-infrastructure) · 7. [Schedule](#7-schedule) · 8. [Conventions](#8-conventions) · 9. [Feature specs](#9-feature-specs)
 
-# A. Product
+## 1. Product
 
 Offline-first iOS app for recording construction site conditions. Output: a signed PDF inspection
 report.
@@ -17,13 +17,17 @@ Create project → start session → walk floors/rooms, capture + log issues
 → reach WiFi, background upload → export signed PDF report
 ```
 
-## A.1 Positioning
+### 1.1 Positioning
 
-The recurring complaint about every competitor is lost evidence — uploads that stall or complete
-with photos missing, photos that vanish on reload, sync that fails silently. SiteLog assumes the
-network is bad and is built around that.
+Every competitor loses evidence the same three ways:
 
-## A.2 Context constraints
+- Uploads stall, or complete with photos missing.
+- Photos vanish on reload; comments fail silently when the device reconnects.
+- Sync fails with no explanation the user can act on.
+
+SiteLog assumes the network is bad and is built around that.
+
+### 1.2 Context constraints
 
 | Constraint | Consequence |
 |---|---|
@@ -32,13 +36,13 @@ network is bad and is built around that.
 | User closes the app and keeps walking | No state lives only in RAM |
 | The PDF is the paid deliverable | Never truncate, never silently drop images |
 
-## A.3 Core rule
+### 1.3 Core rule
 
 - `Capture` is immutable after creation; only descriptive metadata is editable.
 - Each carries a `sha256` computed after the file closes, before the DB write.
 - Annotations are a separate vector layer, so markup never invalidates a hash.
 
-## A.4 Stack
+### 1.4 Stack
 
 | Area | Choice |
 |---|---|
@@ -52,26 +56,26 @@ network is bad and is built around that.
 | External devices | CoreBluetooth |
 | Transport | Hand-written `URLSession` background configuration |
 | Object storage | Cloudflare R2, S3 multipart + presigned URLs |
-| Auth / metadata / crash | Firebase (Auth, Firestore, Crashlytics) |
+| Auth / crash | Firebase (Auth, Crashlytics) — **no Firestore** |
+| All application data | PostgreSQL behind the backend ([14](14-backend.md)) |
+| Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL ([14](14-backend.md)) |
 
-## A.5 Non-goals
+### 1.5 Non-goals
 
 | Excluded | Reason |
 |---|---|
 | Firebase Storage `putFile()` | Cannot reattach after cold launch, cannot control `isDiscretionary` or priority |
 | `UIImagePickerController` / `PhotosPicker` | Hides `AVCaptureSession` control; a hash only means something for a file the app produced |
 | Third-party upload libraries | The transfer engine is the core of the product |
-| Firebase touching file bytes | Auth, metadata, crash only |
+| Firebase touching file bytes or data | Identity and crash reporting only |
 | Burning annotations into original pixels | Destroys the hash |
 | RFIs, scheduling, budgets, CAD | Different product |
 
----
-
-# B. Market
+## 2. Market
 
 Research date: September 2026. Basis for features 11–13 and the amendments to 02, 03, 05.
 
-## B.1 Competitive set
+### 2.1 Competitive set
 
 | App | Position | Notable |
 |---|---|---|
@@ -85,7 +89,7 @@ Research date: September 2026. Basis for features 11–13 and the amendments to 
 | Timemark | Photo proof of work | Tamper-resistant timestamp, visible stamp, per-photo code |
 | GoAudits / SafetyCulture | Checklist audits | Template inspections, scoring, offline |
 
-## B.2 Table stakes that were missing
+### 2.2 Table stakes that were missing
 
 | Feature | Evidence | Decision |
 |---|---|---|
@@ -98,7 +102,7 @@ Research date: September 2026. Basis for features 11–13 and the amendments to 
 | Checklist templates | GoAudits, SafetyCulture; VN handover guides publish room-by-room checklists | **Add** → [13](13-checklists.md) |
 | Visible timestamp/GPS stamp | Timemark's entire product | **Add as derived copy** → [12](12-annotation.md) |
 
-## B.3 Documented user pain → SiteLog's answer
+### 2.3 Documented user pain → SiteLog's answer
 
 | Reported pain | Answer |
 |---|---|
@@ -109,19 +113,19 @@ Research date: September 2026. Basis for features 11–13 and the amendments to 
 | "Sync lags with large plan sets" | Plan tiles cached on disk, rendered on demand ([11](11-floorplan-pins.md)) |
 | "Too expensive, steep learning curve" | Single-operator scope; no RFIs, schedules, org hierarchy |
 
-## B.4 Differentiator: verifiable capture
+### 2.4 Differentiator: verifiable capture
 
-Timemark sells tamper-resistant timestamps plus a per-photo verification code. SiteLog's original
-specs used `Date()` — trivially spoofed by changing the device clock, which undermines the
-chain-of-custody claim that justifies the whole app.
+- Timemark sells tamper-resistant timestamps plus a per-photo verification code.
+- SiteLog's original specs used `Date()` — spoofed by changing the device clock in Settings.
+- That undermines the chain-of-custody claim the whole app rests on. Fixed by:
 
 1. Record device wall clock, monotonic uptime, and a signed server offset when reachable.
 2. Store a `timeConfidence` and print it in the report — never claim absent precision.
 3. Countersign the capture hash server-side at upload; the report prints a resolvable code.
 
-Detail: [12](12-annotation.md) §5–6.
+Detail: [12](12-annotation.md) §7–8.
 
-## B.5 Vietnamese handover market
+### 2.5 Vietnamese handover market
 
 | Observation | Consequence |
 |---|---|
@@ -129,7 +133,7 @@ Detail: [12](12-annotation.md) §5–6.
 | Buyers are advised not to sign until every defect is fixed and re-inspected | The before/after loop ([03](03-issue-tracking.md)) is the legally central feature |
 | Inspection is checklist-driven and room-by-room | Templates ([13](13-checklists.md)) match how the market already works |
 
-## B.6 Explicitly not adopted
+### 2.6 Explicitly not adopted
 
 | Feature | Why not |
 |---|---|
@@ -138,11 +142,9 @@ Detail: [12](12-annotation.md) §5–6.
 | Cloud AI defect detection | No training data, indefensible accuracy in a dispute |
 | DWG/CAD viewing | Large parsing surface; PDF and image plans cover this market |
 
----
+## 3. Data model
 
-# C. Data model
-
-## C.1 Hierarchy
+### 3.1 Hierarchy
 
 ```
 Project
@@ -160,7 +162,7 @@ Project
 `Location` belongs to `Project`, not `Session` — this is what makes cross-session before/after
 pairing possible. Entities for 11–13 are defined in their own specs.
 
-## C.2 Immutability
+### 3.2 Immutability
 
 | Set | Fields |
 |---|---|
@@ -170,9 +172,9 @@ pairing possible. Entities for 11–13 are defined in their own specs.
 No API deletes a `Capture` from an exported `Session`; hiding sets `isExcludedFromReport` and writes
 an audit entry ([07](07-security.md)).
 
-## C.3 Entities
+### 3.3 Entities
 
-### Project
+#### Project
 
 | Field | Type | Note |
 |---|---|---|
@@ -181,7 +183,7 @@ an audit entry ([07](07-security.md)).
 | `createdAt` | `Date` | |
 | `sessions`, `locations`, `planSheets` | relationships | cascade delete |
 
-### Session
+#### Session
 
 | Field | Type | Note |
 |---|---|---|
@@ -192,7 +194,7 @@ an audit entry ([07](07-security.md)).
 
 `closed` blocks new captures. `exported` is terminal and read-only.
 
-### Location
+#### Location
 
 | Field | Type | Note |
 |---|---|---|
@@ -202,7 +204,7 @@ an audit entry ([07](07-security.md)).
 | `parent` | `Location?` | Self-referencing, max depth 3 |
 | `sortIndex` | `Int` | |
 
-### Capture
+#### Capture
 
 | Field | Type | Note |
 |---|---|---|
@@ -225,7 +227,7 @@ an audit entry ([07](07-security.md)).
 
 App container UUIDs change after reinstall or restore — absolute paths lose all media.
 
-### Issue
+#### Issue
 
 | Field | Type | Note |
 |---|---|---|
@@ -243,7 +245,7 @@ App container UUIDs change after reinstall or restore — absolute paths lose al
 
 `severity` drives upload priority ([04](04-upload-engine.md)).
 
-## C.4 UploadState
+### 3.4 UploadState
 
 ```
 pending → uploading → synced
@@ -260,18 +262,16 @@ pending → uploading → synced
 
 `failed` is not terminal and never deletes local files.
 
-## C.5 Schema versioning
+### 3.5 Schema versioning
 
 - `VersionedSchema` + `SchemaMigrationPlan` from v1, even with one version.
 - Per change: add `SchemaV{n}`, keep `SchemaV{n-1}`, declare a `MigrationStage`
   (`.lightweight` for added optionals, `.custom` when semantics change).
 - Test migrations against an old-version fixture store, never an empty one.
 
----
+## 4. Architecture
 
-# D. Architecture
-
-## D.1 Repo layout
+### 4.1 Repo layout
 
 ```
 site_log/
@@ -288,12 +288,12 @@ site_log/
 │   ├── Core/ DesignSystem/ Persistence/
 │   ├── Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
 ├── Tools/MockPeripheral/             # macOS BLE simulator
-├── Backend/                          # presigned URL signer (~100 LOC)
+├── Backend/                          # Node.js + Postgres: signing, job store, WebSocket → 14
 ├── docs/
 └── .github/workflows/
 ```
 
-## D.2 Package graph
+### 4.2 Package graph
 
 ```
                     ┌──────────┐
@@ -312,7 +312,7 @@ site_log/
    UploadKit   ──► (nothing)      Realtime ──► (nothing)
 ```
 
-### Dependency rules
+#### Dependency rules
 
 | Rule | Enforcement |
 |---|---|
@@ -323,7 +323,7 @@ site_log/
 | Only `App` imports more than two packages | Code review |
 | Cross-module access via `public` surface only | `internal` by default |
 
-### Module responsibilities
+#### Module responsibilities
 
 | Module | Owns | Never |
 |---|---|---|
@@ -337,7 +337,7 @@ site_log/
 | `DeviceLink` | BLE lifecycle, vendor profiles, parsing | Block capture |
 | `Realtime` | WebSocket lifecycle, event decoding | Mutate app state directly |
 
-## D.3 Layers inside a feature
+### 4.3 Layers inside a feature
 
 | Layer | Type | Rules |
 |---|---|---|
@@ -349,7 +349,7 @@ site_log/
 Views receive row structs — `LocationRow`, `IssueSnapshot`, `SessionSnapshot` — never
 `PersistentModel`.
 
-## D.4 Composition root
+### 4.4 Composition root
 
 ```swift
 @MainActor
@@ -373,7 +373,7 @@ final class AppDependencies {
 | `CaptureSessionControlling` | State machine tests run on CI without a camera |
 | `RandomNumberGenerator` | Jitter is assertable |
 
-## D.5 Startup sequence
+### 4.5 Startup sequence
 
 Each step guarded and logged separately. Never one `try` around init.
 
@@ -388,11 +388,9 @@ Each step guarded and logged separately. Never one `try` around init.
 | 7 | Sweep orphan files, temp parts, stale derived images | Log only |
 | 8 | Face ID gate at `RootView` | Retry / passcode fallback |
 
----
+## 5. Data flows
 
-# E. Data flows
-
-## E.1 Capture → stored evidence
+### 5.1 Capture → stored evidence
 
 | # | Step | Thread | Failure |
 |---|---|---|---|
@@ -407,7 +405,7 @@ Each step guarded and logged separately. Never one `try` around init.
 
 **Invariant:** no DB row without a hash; no file without a row for longer than one launch cycle.
 
-## E.2 Upload
+### 5.2 Upload
 
 ```
 pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → completing → synced
@@ -425,7 +423,7 @@ pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → com
 | 7 | `POST /complete` → `remoteKey` + verification code | |
 | 8 | Store update via `UploadStore` | The only path that mutates job state |
 
-## E.3 Cold launch reconciliation
+### 5.3 Cold launch reconciliation
 
 | Source | Situation | Action |
 |---|---|---|
@@ -436,7 +434,7 @@ pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → com
 
 Forward-only: nothing moves a job backwards from `synced`.
 
-## E.4 Report export
+### 5.4 Report export
 
 ```
 Session → SessionSnapshot (one fetch)
@@ -452,17 +450,18 @@ Session → SessionSnapshot (one fetch)
 | Renders the stamped/annotated derivative | The original stays clean and hashed |
 | Temp file + `moveItem` | A kill mid-render never surfaces a partial file |
 
-## E.5 Metadata sync
+### 5.5 Metadata sync
 
 | Direction | Trigger | Conflict rule |
 |---|---|---|
-| Push | Foreground, network restore, `syncInterval` | LWW on server `updatedAt` |
-| Pull | Same | `Capture` never conflicts (immutable, client UUID) |
-| Both | — | `Session.state` merges monotonically, advance only |
+| Pull `POST /sync/pull` | Foreground, network restore, `syncInterval` | Server rows win for anything the client has not touched |
+| Push `POST /sync/push` | Same, plus a full queue batch | LWW on `clientUpdatedAt`, enforced in SQL |
+| Both | — | `Session.state` monotonic; `captures` insert-only; deletes are tombstones |
 
-Media never enters Firestore.
+Cursors are server-assigned `rev` counters, never timestamps ([08](08-auth-sync.md)). Media never
+enters the sync protocol — bytes go to R2.
 
-## E.6 Concurrency map
+### 5.6 Concurrency map
 
 | Context | Type | Holds |
 |---|---|---|
@@ -481,11 +480,9 @@ Media never enters Firestore.
 | Never call `startRunning()` on main | Blocks 300–800 ms |
 | No `@unchecked Sendable` to silence a warning | It hides the actual race |
 
----
+## 6. Infrastructure
 
-# F. Infrastructure
-
-## F.1 Filesystem
+### 6.1 Filesystem
 
 | Path | Protection | Backed up | Evidence |
 |---|---|---|---|
@@ -499,7 +496,7 @@ Media never enters Firestore.
 
 The DB stores **relative paths**; absolute paths break on reinstall or restore.
 
-## F.2 Configuration
+### 6.2 Configuration
 
 | Item | Where | Committed |
 |---|---|---|
@@ -510,7 +507,7 @@ The DB stores **relative paths**; absolute paths break on reinstall or restore.
 
 Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`.
 
-## F.3 CI
+### 6.3 CI
 
 Green from week 1, runs per PR.
 
@@ -523,10 +520,9 @@ Green from week 1, runs per PR.
 | `grep -rn "print(" Sources/` | Must be empty |
 | Secret scan | No env/plist values in the diff |
 | SwiftLint / SwiftFormat | Clean |
+| Backend: `vitest`, `tsc --noEmit`, ESLint, migrations against a fresh DB | Clean; key-prefix and idempotency tests must pass |
 
----
-
-# G. Schedule
+## 7. Schedule
 
 | Week | Work |
 |---|---|
@@ -534,23 +530,30 @@ Green from week 1, runs per PR.
 | 3–4 | Upload engine: background session, chunking, resume, retry, state machine |
 | 5–6 | Hash + trusted time, annotation layer, PDF/CSV export with branding, Face ID + Data Protection |
 | 7–8 | Floor plan pins, checklist templates, BLE, diagnostics, test expansion |
-| 9–10 | WebSocket channel, pre-record buffer, polish, TestFlight feedback |
+| — | Backend ([14](14-backend.md)) is built alongside week 3–4; the WebSocket half lands with week 9 |
+| 9–10 | Sync engine: pull/push, tombstones, mutation queue, full resync |
+| 11–12 | WebSocket channel, pre-record buffer, polish, TestFlight feedback |
 
 TestFlight from end of week 4.
 
 | Tier | Items | Reason |
 |---|---|---|
-| Never cut | Upload engine, hash + trusted time, PDF export | The product's entire claim |
+| Never cut | Upload engine, hash + trusted time, PDF export, backend endpoints 1–4 | The product's entire claim |
 | High | Annotation, branding, assignee, CSV | Cheap; absence reads as unfinished |
 | Medium | Floor plan pins, checklist templates | Table stakes, ~1 week each |
 | Cut first | Pre-record buffer, audio, real BLE hardware (keep the mock), WebSocket | Impressive, not load-bearing |
 
-Features 11–13 grew the plan from 8 to 10 weeks. The original scope produces a technically strong
-app that a working supervisor would not adopt.
+**Escape hatch:** single-device use needs no sync at all. If week 9 arrives and the upload engine is
+not solid, ship single-device and add sync after TestFlight — the schema and endpoints already
+support it.
 
----
+Why 12 weeks and not 8:
 
-# H. Conventions
+- Features 11–13 (plan pins, annotation, checklists) added two weeks — they are category table stakes.
+- Dropping Firestore added two more: offline persistence, delete propagation, and listener fan-out
+  were all things the SDK did for free.
+
+## 8. Conventions
 
 | Rule | Detail |
 |---|---|
@@ -563,7 +566,7 @@ app that a working supervisor would not adopt.
 | No business logic in views | Views lay out, view models orchestrate |
 | Explicit types, `let` by default | |
 
-## H.1 Naming
+### 8.1 Naming
 
 | Kind | Pattern | Example |
 |---|---|---|
@@ -575,7 +578,7 @@ app that a working supervisor would not adopt.
 | Row/snapshot struct | `<Entity>Row` / `<Entity>Snapshot` | `LocationRow` |
 | Test file | `<Type>Tests.swift` | `UploadStateMachineTests.swift` |
 
-## H.2 Definition of done (every change)
+### 8.2 Definition of done (every change)
 
 - Clean build, zero warnings, each package independently.
 - Scoped tests for what changed, not the full suite.
@@ -583,7 +586,7 @@ app that a working supervisor would not adopt.
   constants bolted onto models.
 - No env or secret value in the diff or in logs.
 
-## H.3 Adding a feature — checklist
+### 8.3 Adding a feature — checklist
 
 1. Does it belong in an existing package? A new package needs a dependency reason, not a size reason.
 2. Business rules go in `Core`, testable without a device.
@@ -594,9 +597,7 @@ app that a working supervisor would not adopt.
 7. Scoped tests for the change only.
 8. Diff review as in H.2.
 
----
-
-# I. Feature specs
+## 9. Feature specs
 
 | # | Document |
 |---|---|
@@ -607,9 +608,10 @@ app that a working supervisor would not adopt.
 | 05 | [PDF & spreadsheet export](05-reporting.md) |
 | 06 | [DeviceLink: BLE measuring tools](06-device-link.md) |
 | 07 | [Security & audit log](07-security.md) |
-| 08 | [Auth & metadata sync](08-auth-sync.md) |
+| 08 | [Auth & sync](08-auth-sync.md) |
 | 09 | [Diagnostics & observability](09-diagnostics.md) |
 | 10 | [Realtime progress channel](10-realtime-progress.md) |
 | 11 | [Floor plans & issue pins](11-floorplan-pins.md) |
 | 12 | [Annotation & verifiable stamps](12-annotation.md) |
 | 13 | [Checklist templates](13-checklists.md) |
+| 14 | [Backend](14-backend.md) |

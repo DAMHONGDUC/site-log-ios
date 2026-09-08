@@ -13,11 +13,12 @@ report.
 | 05 | [05-reporting.md](05-reporting.md) | PDF & spreadsheet export |
 | 06 | [06-device-link.md](06-device-link.md) | DeviceLink: BLE measuring tools |
 | 07 | [07-security.md](07-security.md) | Security & audit log |
-| 08 | [08-auth-sync.md](08-auth-sync.md) | Auth & metadata sync |
+| 08 | [08-auth-sync.md](08-auth-sync.md) | Auth & sync |
 | 09 | [09-diagnostics.md](09-diagnostics.md) | Diagnostics & observability |
 | 10 | [10-realtime-progress.md](10-realtime-progress.md) | Realtime progress channel |
 | 11 | [11-floorplan-pins.md](11-floorplan-pins.md) | Floor plans & issue pins |
 | 12 | [12-annotation.md](12-annotation.md) | Annotation & verifiable stamps |
 | 13 | [13-checklists.md](13-checklists.md) | Checklist templates |
+| 14 | [14-backend.md](14-backend.md) | Backend (Node.js) |
 
 Start with [00-project-info.md](00-project-info.md).

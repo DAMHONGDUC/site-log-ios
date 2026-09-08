@@ -2,12 +2,12 @@
 
 Module: `Packages/UploadKit` — standalone, knows nothing about SiteLog
 
-## Goal
+## 1. Goal
 
 Move 150–250 files and several GB to object storage, surviving network loss, app suspension, OS
 termination, device reboot, and presigned URL expiry.
 
-## Package boundary
+## 2. Package boundary
 
 `UploadKit` receives a file URL, metadata, an endpoint, and an injected `UploadStore`. It does not
 import `Core` and has no knowledge of `Capture`, `Issue`, or `Session`.
@@ -41,24 +41,28 @@ Tests/UploadKitTests/
   InMemoryUploadStore.swift  MockTransport.swift
 ```
 
-## Protocol
+## 3. Protocol
 
-Backend never touches bytes (~100 LOC).
+Backend never touches bytes on the upload path. Full contract: [14-backend.md](14-backend.md).
 
 | # | Call | Returns |
 |---|---|---|
-| 1 | `POST /uploads` `{key, byteSize, contentType, sha256}` | `{uploadId, parts:[{number, url, expiresAt}]}` |
+| 1 | `POST /uploads` `{key, byteSize, contentType, sha256}` | `{mode:"single", uploadId, url, expiresAt}` **or** `{mode:"multipart", uploadId, partSizeBytes, parts:[…]}` |
 | 2 | `PUT <presigned url>` (part temp file) | 200 + ETag |
-| 3 | `POST /uploads/:id/complete` `{parts:[{number, etag}]}` | `{remoteKey, verificationCode}` |
+| 3 | `POST /uploads/:id/complete` `{parts:[{number, etag}]}` | `{remoteKey, verificationCode, verified}` — idempotent |
 | 4 | `POST /uploads/:id/parts/refresh` `{numbers:[…]}` | fresh URLs — **required** |
 | 5 | `DELETE /uploads/:id` | abort, clean orphaned parts |
 
 - Endpoint 4 is mandatory: the core scenario is an app killed and reopened hours later, when signed
   URLs have expired and resume returns 403 across the board — indistinguishable from a retry bug.
-- Every request carries a Firebase ID token, verified before signing. Without that, the signing
-  endpoint is an open relay into the bucket.
+- The backend picks the mode from `byteSize`; the client does not choose. Both sides must agree on
+  `singlePutThresholdBytes` and `partSizeBytes`.
+- Every request carries a Firebase ID token, verified before signing, and the key prefix must match
+  the token's uid. Without that, the signing endpoint is an open relay into the bucket.
+- `complete` is idempotent: a client killed before reading the response calls it again, and a `400`
+  there would abort a finished job.
 
-## iOS constraints
+## 4. iOS constraints
 
 | # | Constraint | Consequence |
 |---|---|---|
@@ -82,11 +86,16 @@ func urlSession(_ s: URLSession, task: URLSessionTask, didCompleteWithError erro
 }
 ```
 
-Also set `isDiscretionary = false`, `sessionSendsLaunchEvents = true`,
-`timeoutIntervalForResource = 604_800` (a three-day trip without WiFi must still upload on return),
-and handle `application(_:handleEventsForBackgroundURLSession:completionHandler:)`.
+Session configuration:
 
-### Cold-launch reconciliation
+| Setting | Value | Reason |
+|---|---|---|
+| `isDiscretionary` | `false` | The OS would otherwise defer to overnight charging |
+| `sessionSendsLaunchEvents` | `true` | Wakes the app when transfers finish |
+| `timeoutIntervalForResource` | `604_800` (7 days) | A three-day trip without WiFi must still upload on return |
+| App delegate | `application(_:handleEventsForBackgroundURLSession:completionHandler:)` | Required to resume after a launch event |
+
+### 4.1 Cold-launch reconciliation
 
 | Situation | Action |
 |---|---|
@@ -98,18 +107,19 @@ and handle `application(_:handleEventsForBackgroundURLSession:completionHandler:
 - Client reconciliation cannot see server state; [10](10-realtime-progress.md) supplies a snapshot
   in one round trip. `UploadKit` does not import it — the app layer applies events via `UploadStore`.
 
-## Strategy by size
+## 5. Strategy by size
 
 | Size | Strategy |
 |---|---|
 | < 5 MB (most photos) | Single presigned PUT, one request |
 | ≥ 5 MB (video, RAW) | Multipart, uniform 8 MB parts |
 
-S3 requires 5 MB minimum per non-final part; **R2 additionally requires every non-final part to be
-exactly equal**. `ChunkPlanner` splits by fixed size, never into "N equal pieces". Routing a 3 MB
-photo through multipart costs 3 round trips for a 1-request job — minutes lost across 200 photos.
+- S3 requires 5 MB minimum per non-final part.
+- **R2 additionally requires every non-final part to be exactly equal in size.**
+- So `ChunkPlanner` splits by fixed size, never into "N equal pieces".
+- A 3 MB photo through multipart costs 3 round trips for a 1-request job — minutes lost across 200 photos.
 
-## State machine
+## 6. State machine
 
 Pure, synchronous, no I/O.
 
@@ -148,11 +158,11 @@ public struct UploadStateMachine {
 }
 ```
 
-`reduce` is deterministic and touches no network, disk, or clock. `UploadCoordinator` (actor) is
-the only executor of `Effect`. This split makes kill-mid-flight, expired URLs, and a failing final
-part testable in a few lines.
+- `reduce` is deterministic and touches no network, disk, or clock.
+- `UploadCoordinator` (an actor) is the only executor of `Effect`.
+- The split makes kill-mid-flight, expired URLs, and a failing final part testable in a few lines.
 
-### Failure classification
+### 6.1 Failure classification
 
 | Cause | Reason | Handling |
 |---|---|---|
@@ -160,13 +170,14 @@ part testable in a few lines.
 | `NSURLErrorNotConnectedToInternet` | `.offline` | → `waitingForNetwork`, no budget consumed |
 | 500, 502, 503, 504 | `.serverTransient` | retry, budget consumed |
 | Timeout | `.timeout` | retry, budget consumed |
-| 400, 404, 411, 413 | `.permanent` | abort immediately |
+| 400, 404, 411, 413 | `.permanent` | abort immediately — the backend must never return these for a retryable condition ([14](14-backend.md)) |
+| 429 | `.serverTransient` | retry after `Retry-After` |
 | ETag or checksum mismatch | `.integrity` | abort, flag for the user |
 
 Expired URLs and offline are normal operating conditions, not failures. Charging them to the budget
 means half a day on site exhausts it and everything lands in `failed`.
 
-### Retry
+### 6.2 Retry
 
 ```
 delay = min(base * 2^attempt, cap) * jitter
@@ -176,7 +187,7 @@ base 2s   cap 300s   jitter 0.8...1.2   maxAttempts 5
 Attempts count only `.serverTransient` and `.timeout`. Jitter is mandatory — 200 files failing at
 one signal loss would otherwise retry simultaneously.
 
-## Policy
+## 7. Policy
 
 | Policy | Detail |
 |---|---|
@@ -203,7 +214,7 @@ public enum UploadConstants {
 }
 ```
 
-## Logging
+## 8. Logging
 
 ```swift
 logger.info("Upload part succeeded", metadata: [
@@ -219,7 +230,7 @@ logger.error("Upload part failed", metadata: [
 
 Never log presigned URLs — they carry signing credentials.
 
-## Known risks
+## 9. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -228,7 +239,7 @@ Never log presigned URLs — they carry signing credentials.
 | Account switch with pending jobs | Cancel the old uid's jobs, delete temp files, never write into the new uid's prefix |
 | Clock skew breaking `expiresAt` | 403 is the source of truth; `expiresAt` only drives proactive refresh |
 
-## Definition of done
+## 10. Definition of done
 
 - 200 files / 2 GB complete over WiFi; server hashes match local hashes.
 - Kill mid-transfer → relaunch resumes without re-uploading completed parts.
@@ -237,7 +248,7 @@ Never log presigned URLs — they carry signing credentials.
 - WiFi-only on cellular → zero bytes transferred.
 - Zero warnings; builds independently of the app.
 
-## Tests
+## 11. Tests
 
 | Test | Kind |
 |---|---|

@@ -2,17 +2,17 @@
 
 Modules: `App/Features/Security`, `Core`
 
-## Goal
+## 1. Goal
 
 Media and reports are acceptance evidence: unreadable if the device is lost, unmodifiable without a
 trace, never leaked into logs or analytics.
 
-## At-rest: Data Protection, not AES-GCM for media
+## 2. At-rest: Data Protection, not AES-GCM for media
 
-Background `URLSession` uploads only raw files on disk ([04](04-upload-engine.md)). AES-GCM media
-would have to be decrypted to a plaintext temp file before every upload — leaving the content in
-the clear for the whole upload window, in the background. Hand-rolled encryption there makes
-security **worse** than doing nothing, and doubles disk use.
+- Background `URLSession` uploads only raw files on disk ([04](04-upload-engine.md)).
+- AES-GCM media would have to be decrypted to a plaintext temp file before every upload.
+- That leaves the content in the clear for the whole upload window, in the background.
+- Hand-rolled encryption there makes security **worse** than doing nothing, and doubles disk use.
 
 | Data | Protection |
 |---|---|
@@ -23,14 +23,15 @@ security **worse** than doing nothing, and doubles disk use.
 | Audit log chain | **HMAC-SHA256 (CryptoKit)**, key in Keychain |
 | Firebase tokens | Keychain, `.whenUnlockedThisDeviceOnly` |
 
-`.completeUnlessOpen` is the key choice: files encrypt when the device locks, but already-open files
-stay readable — what background upload needs. `.complete` would kill uploads the moment the phone
-goes into a pocket, which is the entire use case.
+`.completeUnlessOpen` is the load-bearing choice:
+
+- Files encrypt when the device locks, but already-open files stay readable — what background upload needs.
+- `.complete` would kill uploads the moment the phone goes into a pocket, which is the entire use case.
 
 CryptoKit is used where it is genuinely correct: export bundles and the audit chain, both of which
 leave iOS's protection domain.
 
-## Face ID
+## 3. Face ID
 
 - `LAContext.evaluatePolicy(.deviceOwnerAuthentication)` — passcode fallback, because Face ID fails
   under helmets and masks.
@@ -40,7 +41,7 @@ leave iOS's protection domain.
 - Sensitive Keychain items use `SecAccessControl` with `.biometryCurrentSet`.
 - The gate belongs on `RootView`; on a sheet it is bypassable by killing the app.
 
-## Audit log
+## 4. Audit log
 
 Records every view, delete, export, report exclusion, metadata change, pin move, and annotation edit.
 
@@ -63,7 +64,7 @@ struct AuditEntry: Codable, Sendable {
   a Crashlytics non-fatal.
 - Entries are never deleted by user action, including project deletion.
 
-## Leak prevention
+## 5. Leak prevention
 
 | Rule | Detail |
 |---|---|
@@ -80,7 +81,7 @@ logger.info("Report exported", metadata: [
 // NOT: "\(session.note)", "\(presignedURL)", "\(user.email)"
 ```
 
-## Secrets & privacy
+## 6. Secrets & privacy
 
 - `GoogleService-Info.plist` and endpoints are not committed; CI writes them from secrets.
 - **R2 credentials live only on the backend** — the app never sees an access key. That is the point
@@ -99,14 +100,14 @@ enum SecurityConstants {
 }
 ```
 
-## Known risks
+## 7. Known risks
 
 | Risk | Position |
 |---|---|
 | HMAC key lost on device migration | Accepted — the log is per-device; state it in Diagnostics rather than raise a false alarm |
 | `.completeUnlessOpen` allows reads while unlocked | Deliberate trade-off for background upload, documented in the threat model |
 
-## Definition of done
+## 8. Definition of done
 
 - Locked device: media unreadable via file sharing or unencrypted backup.
 - Background upload continues while locked.
@@ -114,7 +115,7 @@ enum SecurityConstants {
 - `grep -rn "print(" Sources/` returns nothing.
 - A 20-photo session's logs contain no signed URL, token, or free text.
 
-## Tests
+## 9. Tests
 
 | Test | Kind |
 |---|---|

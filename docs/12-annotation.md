@@ -5,13 +5,13 @@ Modules: `Packages/Capture` (rendering), `Core` (models)
 Two market-standard features that appear to conflict with capture immutability, resolved the same
 way: **the original file is never touched; everything is a separate layer or a derived copy.**
 
-## Goal
+## 1. Goal
 
 - Mark up a photo with arrows, boxes, circles, and text in under 10 seconds.
 - Produce a shareable image stamped with time, location, and project.
 - Make the timestamp defensible rather than trivially spoofable.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -21,7 +21,7 @@ way: **the original file is never touched; everything is a separate layer or a d
 | On-device dictation and voice notes | |
 | Per-capture verification code | |
 
-## 1. Annotations as a vector layer
+## 3. Annotations as a vector layer
 
 ```swift
 @Model final class Annotation {
@@ -56,7 +56,7 @@ meaningless. Keeping vectors separate gives:
 
 Annotation edits write an audit entry; the layer is explicitly **not** part of the immutable set.
 
-## 2. Editor
+## 4. Editor
 
 ```
 Thumbnail → [Annotate]
@@ -68,7 +68,7 @@ Thumbnail → [Annotate]
 - Undo/redo capped at `maxUndoSteps`.
 - No save button; changes commit on exit.
 
-## 3. Stamped derivatives
+## 5. Stamped derivatives
 
 Reports and shared images carry a burned-in stamp: date/time, coordinates and accuracy, project and
 location code, company logo.
@@ -81,7 +81,7 @@ derived/<…>/<captureID>-stamped.jpg    ← regenerable, never hashed, never ev
 Generated on demand, cached, safe to delete. Excluded from integrity checks
 ([09](09-diagnostics.md)) precisely because they are not evidence.
 
-## 4. Dictation and voice notes
+## 6. Dictation and voice notes
 
 - `SFSpeechRecognizer` with `requiresOnDeviceRecognition = true`. Sending site audio to a server
   conflicts with [07](07-security.md).
@@ -89,7 +89,7 @@ Generated on demand, cached, safe to delete. Excluded from integrity checks
 - A voice note is an ordinary audio `Capture` — hashed and uploaded like any other file. Dictated
   text lands in `Issue.detail` and stays editable.
 
-## 5. Trusted time
+## 7. Trusted time
 
 `Date()` reflects the device clock, which anyone can change in Settings. For an app whose premise is
 chain of custody that is a real weakness — and the point a competitor built a product on.
@@ -114,13 +114,25 @@ struct TrustedTimestamp: Codable, Sendable {
 - **Confidence is printed in the report**, never hidden.
 - A capture is never rejected for low confidence. Basements have no signal; that is the use case.
 
-## 6. Verification code
+## 8. Verification code
 
-- On upload completion the backend countersigns the capture hash and returns a short code.
-- The report prints it under each image; the recipient resolves it to `{sha256, receivedAt, uid}`.
+- On upload completion the backend records the capture hash and returns a short code
+  ([14](14-backend.md)).
+- The report prints it under each image; the recipient resolves it at `GET /verify/:code` to
+  `{sha256, byteSize, receivedAt, verified}` — never a uid, URL, or coordinate.
 - Without a server-side record, a hash printed by the app that computed it proves only internal
   consistency.
-- Unsynced captures print "not yet verified", never a fabricated code.
+
+**Two distinct claims, never conflated:**
+
+| State | Meaning | Report wording |
+|---|---|---|
+| `registered` | The server recorded a client-supplied hash at a known time | "registered {code}" |
+| `verified` | A server-side worker read the object back and recomputed the hash | "verified {code}" |
+| unsynced | Nothing left the device | "not yet verified" |
+
+Never print a code the server does not hold, and never print "verified" for a merely registered
+capture.
 
 ```swift
 enum AnnotationConstants {
@@ -136,7 +148,7 @@ enum TrustedTimeConstants {
 }
 ```
 
-## Known risks
+## 9. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -145,7 +157,7 @@ enum TrustedTimeConstants {
 | Speech permission denied | Falls back to keyboard and phrase library with no error |
 | Backend clock poisoning the offset | Offsets above `maxAcceptableOffset` are discarded; confidence drops to `.sessionConsistent` |
 
-## Definition of done
+## 10. Definition of done
 
 - Annotate with 5 shapes, relaunch, the layer renders identically over an untouched original whose
   hash still verifies.
@@ -155,7 +167,7 @@ enum TrustedTimeConstants {
 - Dictation runs offline in airplane mode.
 - Zero warnings.
 
-## Tests
+## 11. Tests
 
 | Test | Kind |
 |---|---|

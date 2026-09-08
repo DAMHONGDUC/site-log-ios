@@ -4,11 +4,11 @@ Module: `Packages/Reporting`
 
 The paid deliverable. Never truncated, never missing images, never crashing on page 38 of 40.
 
-## Goal
+## 1. Goal
 
 Turn a `Session` into a branded, signed PDF plus a CSV/XLSX, shareable on the spot, with no network.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -23,7 +23,7 @@ Turn a `Session` into a branded, signed PDF plus a CSV/XLSX, shareable on the sp
 | Grouping by location or by assignee | |
 | PDF + CSV/XLSX, share via Files / `UIActivityViewController` | |
 
-## Sections
+## 3. Sections
 
 | Section | Source |
 |---|---|
@@ -39,7 +39,7 @@ Turn a `Session` into a branded, signed PDF plus a CSV/XLSX, shareable on the sp
 Grouping is a parameter, not a second code path: `by location` (how the walk happens) or
 `by assignee` (how the work is handed out).
 
-## Branding
+## 4. Branding
 
 ```swift
 struct ReportBranding: Codable, Sendable {
@@ -51,11 +51,11 @@ struct ReportBranding: Codable, Sendable {
 }
 ```
 
-Stored per user, synced with metadata. Even free competitors ship branded exports
-([00-project-info.md](00-project-info.md)); a report that looks like a form template undercuts what
-the user can charge.
+- One row per user in `report_branding` ([14](14-backend.md)); the logo uploads to R2 like any other file.
+- Even free competitors ship branded exports ([00](00-project-info.md) §2) — a report that looks like
+  a form template undercuts what the user can charge.
 
-## Spreadsheet export
+## 5. Spreadsheet export
 
 CSV always; XLSX above `csvOnlyRowThreshold`. One row per issue:
 
@@ -68,7 +68,7 @@ capture_count, first_capture_sha256, verification_code, created_at
 Streamed with `FileHandle`, never built as one string. This is what the site office pastes into
 their own tracker.
 
-## Rendering
+## 6. Rendering
 
 `UIGraphicsPDFRenderer`. No third-party library, no WebView printing — HTML→PDF depends on image
 load timing and with 200 images produces blank pages or extreme slowness.
@@ -97,17 +97,18 @@ for (index, page) in pages.enumerated() {
 }
 ```
 
-## Signatures
+## 7. Signatures
 
 - `PencilKit` (`PKCanvasView`) or a hand-rolled `UIBezierPath`.
 - Transparent PNG embedded on the final page, with `signedAt`, `signerName`, `signerRole` per party.
 - Signing sets `Session.state = .exported`; the session becomes read-only.
 - Re-signing creates a `-R2` revision; the original is preserved.
 
-## Integrity
+## 8. Integrity
 
-- Under each image: first 8 hash characters, the server verification code when synced, and the time
-  confidence when below `.serverVerified` ([12](12-annotation.md) §5–6).
+- Under each image: first 8 hash characters, the verification code when synced, its state
+  (`registered` / `verified`), and the time confidence when below `.serverVerified`
+  ([12](12-annotation.md) §7–8, [14](14-backend.md)).
 - Final page: SHA-256 over the `captureID`-sorted hash list.
 - Images render from the **stamped, annotated derivative**; the archive keeps the clean original.
 - Unsynced captures print "not yet verified", never a fabricated code.
@@ -128,7 +129,7 @@ enum ReportConstants {
 
 All spacing, color, and type come from `DesignSystem` tokens, including inside the PDF.
 
-## Known risks
+## 9. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -137,7 +138,7 @@ All spacing, color, and type come from `DesignSystem` tokens, including inside t
 | Non-ASCII filenames | `addingPercentEncoding` on share; test with "Ánh Dương – Block B" |
 | Reports too large to send over chat apps | Show estimated size before export, offer a compression level |
 
-## Definition of done
+## 10. Definition of done
 
 - 200 images / 40 issues exports on a low-end iPhone with peak memory under 200 MB.
 - Image count equals non-excluded capture count, asserted by test.
@@ -145,7 +146,7 @@ All spacing, color, and type come from `DesignSystem` tokens, including inside t
 - Export succeeds in airplane mode.
 - Zero warnings.
 
-## Tests
+## 11. Tests
 
 | Test | Kind |
 |---|---|

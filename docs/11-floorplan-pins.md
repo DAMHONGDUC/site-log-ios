@@ -2,14 +2,14 @@
 
 Modules: `Packages/Plans`, `App/Features/Plans`
 
-The defining feature of the category ([00-project-info.md](00-project-info.md) §Market). A location
+The defining feature of the category ([00](00-project-info.md) §2). A location
 code says "A-12.05"; a pin on a drawing says *there*, and removes the argument.
 
-## Goal
+## 1. Goal
 
 Import a floor plan, pin issues onto exact coordinates, print a per-floor pin map in the report.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -20,7 +20,7 @@ Import a floor plan, pin issues onto exact coordinates, print a per-floor pin ma
 | Pin ↔ issue navigation | |
 | Pin map pages in the PDF ([05](05-reporting.md)) | |
 
-## Model
+## 3. Model
 
 ```swift
 @Model final class PlanSheet {
@@ -48,7 +48,7 @@ Import a floor plan, pin issues onto exact coordinates, print a per-floor pin ma
 - One `Issue` has at most one `PlanPin`. Pins are mutable; every move writes an audit entry
   ([07](07-security.md)).
 
-## Rendering
+## 4. Rendering
 
 | Concern | Approach |
 |---|---|
@@ -69,7 +69,7 @@ func planPoint(from viewPoint: CGPoint, in view: PlanView) -> CGPoint {
 }
 ```
 
-## Interaction
+## 5. Interaction
 
 ```
 Location detail → [Plan] tab
@@ -84,7 +84,7 @@ Location detail → [Plan] tab
 - Below `clusterZoomThreshold`, overlapping pins collapse into a count badge.
 - `.resolved` issues render hollow, so a walkthrough shows remaining work at a glance.
 
-## Import
+## 6. Import
 
 1. Source: Files, or the share sheet from email.
 2. Multi-page PDFs prompt for pages; each becomes one `PlanSheet`.
@@ -105,7 +105,7 @@ enum PlanConstants {
 }
 ```
 
-## Known risks
+## 7. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -114,7 +114,7 @@ enum PlanConstants {
 | Very large plans | Tiled rendering + hard size cap; verified with an A0 fixture |
 | Pinning on the wrong sheet | Sheet name pinned to the viewer top and printed under every pin map |
 
-## Definition of done
+## 8. Definition of done
 
 - Import a 20-page A1 PDF, pin 50 issues, pan and zoom at 60fps on device.
 - Peak memory viewing an A0 plan under 150 MB.
@@ -122,7 +122,7 @@ enum PlanConstants {
 - Import and pinning work fully offline.
 - Zero warnings; builds independently.
 
-## Tests
+## 9. Tests
 
 | Test | Kind |
 |---|---|

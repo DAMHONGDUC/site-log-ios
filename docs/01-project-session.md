@@ -2,12 +2,12 @@
 
 Modules: `App/Features/Projects`, `Core`, `Persistence`
 
-## Goal
+## 1. Goal
 
 Build the `Project → Session → Location` tree faster than paper, fully offline, navigable
 one-handed.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -17,7 +17,7 @@ one-handed.
 | Cloning a location tree from another project | |
 | Closing and reopening sessions | |
 
-## Flow
+## 3. Flow
 
 ```
 Project list
@@ -35,7 +35,7 @@ Survey screen rules:
 - Badges read from the local store and update instantly, independent of upload.
 - No blocking spinner; nothing here touches the network.
 
-## Bulk generation
+## 4. Bulk generation
 
 ```
 Floors 1...20   Units/floor 4   Template "{floor}-{unit:02}"
@@ -47,7 +47,7 @@ Floors 1...20   Units/floor 4   Template "{floor}-{unit:02}"
 - Duplicate codes rejected, naming the exact collisions.
 - Hard cap `maxGeneratedPerBatch`.
 
-## Technical design
+## 5. Technical design
 
 ```swift
 @MainActor
@@ -81,7 +81,7 @@ enum LocationTemplateLimits {
 - Badges use `fetchCount` batched once per screen; per-row queries across 80 locations stutter on
   scroll.
 
-## Known risks
+## 6. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -89,14 +89,14 @@ enum LocationTemplateLimits {
 | Project delete removes GB of media | Confirmation states numbers: "3 sessions, 412 photos, 2.1 GB, 87 not uploaded" |
 | Delete while files are `pending` | Blocked outright, not warned |
 
-## Definition of done
+## 7. Definition of done
 
 - Project → session → 80 locations → open capture, in airplane mode, no errors.
 - 500-location list scrolls at 60fps on device.
 - Kill mid bulk-generation → no partial records on relaunch.
 - Zero warnings.
 
-## Tests
+## 8. Tests
 
 | Test | Kind |
 |---|---|

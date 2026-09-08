@@ -5,13 +5,13 @@ Module: `App/Features/Diagnostics`
 An offline-first app with background uploads is one where the user cannot see what is happening.
 This is how "where are my photos?" gets answered without Xcode.
 
-## Goal
+## 1. Goal
 
 - Users answer for themselves: how much uploaded, what is stuck, why.
 - One exported file is enough for a developer to diagnose a report.
 - Disk cleanup that cannot delete anything not yet uploaded.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -22,7 +22,7 @@ This is how "where are my photos?" gets answered without Xcode.
 | Redacted diagnostic bundle | |
 | System status flags | |
 
-## Upload status screen
+## 3. Upload status screen
 
 ```
 ┌──────────────────────────────────────┐
@@ -45,7 +45,7 @@ This is how "where are my photos?" gets answered without Xcode.
 | Estimates use the trailing `throughputWindow` | Whole-session averages mislead |
 | A closed [realtime channel](10-realtime-progress.md) is not an error | The screen is still correct, only slower |
 
-## Integrity checks
+## 4. Integrity checks
 
 | Check | Detects |
 |---|---|
@@ -60,7 +60,7 @@ This is how "where are my photos?" gets answered without Xcode.
 Full verification over several GB is slow — default to a random sample of `integritySampleSize`,
 with a background "verify everything" option.
 
-## Cleanup
+## 5. Cleanup
 
 Until `synced`, local media is the only copy.
 
@@ -70,7 +70,7 @@ Until `synced`, local media is the only copy.
   confirmation; storage stats list them as a separate "reclaimable" line.
 - Every cleanup writes an audit entry.
 
-## Diagnostic bundle
+## 6. Diagnostic bundle
 
 ```
 diagnostic-<date>.zip
@@ -85,7 +85,7 @@ diagnostic-<date>.zip
 enums, counters, status codes. Users send this over chat — if it carries sensitive data, every bug
 report is a leak.
 
-## System status flags
+## 7. System status flags
 
 | Flag | Red when |
 |---|---|
@@ -97,7 +97,7 @@ report is a leak.
 | Audit chain | verification failed |
 | Metadata sync | older than `staleSyncThreshold` |
 
-## App-wide logging rules
+## 8. App-wide logging rules
 
 - `Logger` (os.log), subsystem `com.sitelog`, category per module: `capture`, `upload`, `report`,
   `plans`, `devicelink`, `sync`, `security`.
@@ -116,7 +116,7 @@ enum DiagnosticsConstants {
 }
 ```
 
-## Definition of done
+## 9. Definition of done
 
 - All seven integrity conditions reproduced manually are detected.
 - The bundle contains no signed URL, token, email, free text, or coordinate.
@@ -124,7 +124,7 @@ enum DiagnosticsConstants {
 - `grep -rn "print(" Sources/` is empty.
 - Zero warnings.
 
-## Tests
+## 10. Tests
 
 | Test | Kind |
 |---|---|

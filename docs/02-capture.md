@@ -5,12 +5,12 @@ Module: `Packages/Capture`
 Hand-written. `UIImagePickerController` and `PhotosPicker` are excluded — they hide
 `AVCaptureSession` control, and a hash only means something for a file the app produced.
 
-## Goal
+## 1. Goal
 
 One `AVCaptureSession` serving photo, video, and audio without teardown. Every file hashed before
 it reaches the DB.
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -21,7 +21,7 @@ it reaches the DB.
 | SHA-256 on close | |
 | 30-second pre-record buffer (later phase) | |
 
-## Session topology
+## 3. Session topology
 
 ```
 AVCaptureSession
@@ -46,7 +46,7 @@ bitrate control that matters when GB travel over 3G. Cost: manual state, timesta
 
 Never call `startRunning()` on main — it blocks 300–800 ms.
 
-## State machine
+## 4. State machine
 
 ```
 idle → configuring → ready → capturingPhoto → ready
@@ -59,7 +59,7 @@ idle → configuring → ready → capturingPhoto → ready
 `interrupted` is a separate branch (call, backgrounding, camera claimed elsewhere). If recording,
 **finalize rather than discard** — 8 seconds beats none.
 
-## Metadata
+## 5. Metadata
 
 | Field | Source | When unavailable |
 |---|---|---|
@@ -71,11 +71,11 @@ idle → configuring → ready → capturingPhoto → ready
 | `sha256` | computed from the closed file | always present |
 
 - The device clock is user-settable, so `capturedAt` alone cannot support a chain-of-custody claim;
-  `TrustedTimestamp` and its confidence levels are in [12](12-annotation.md) §5.
+  `TrustedTimestamp` and its confidence levels are in [12](12-annotation.md) §7.
 - GPS never blocks capture. `desiredAccuracy = .nearestTenMeters`; a fix older than
   `locationStaleAfter` is written as `nil`, never as a wrong coordinate.
 
-## Hashing
+## 6. Hashing
 
 ```swift
 func sha256(ofFileAt url: URL) throws -> String {
@@ -94,14 +94,14 @@ func sha256(ofFileAt url: URL) throws -> String {
 - The DB row is written only after the hash exists; files orphaned by a crash between the two are
   swept at launch ([09](09-diagnostics.md)).
 
-## File layout
+## 7. File layout
 
 - `<AppSupport>/media/<projectID>/<sessionID>/<captureID>.<ext>`
 - `FileProtectionType.completeUnlessOpen` per file ([07](07-security.md) explains why not AES-GCM).
 - `media/` marked `isExcludedFromBackup` — R2 is the source of truth.
 - DB stores relative paths.
 
-## Pre-record buffer (later phase)
+## 8. Pre-record buffer (later phase)
 
 Keep the last 30 seconds so pressing record also saves what came before.
 
@@ -111,7 +111,7 @@ Keep the last 30 seconds so pressing record also saves what came before.
   `AVAssetExportSession`.
 - Off by default; disables itself below `minBatteryLevel`. First to cut.
 
-## Constants
+## 9. Constants
 
 ```swift
 enum CaptureConstants {
@@ -133,7 +133,7 @@ enum HashConstants {
 }
 ```
 
-## Known risks
+## 10. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -142,7 +142,7 @@ enum HashConstants {
 | Denied permissions | Camera/mic/location handled separately, never one combined alert |
 | Rotation | Preview transform must match writer transform, or exported video is rotated 90° and only shows up in the PDF |
 
-## Definition of done
+## 11. Definition of done
 
 - 50 consecutive photos: flat memory, no dropped preview frames.
 - 3-minute 1080p: plays back, hash reproduces, metadata complete.
@@ -150,7 +150,7 @@ enum HashConstants {
 - Airplane mode + denied location: capture completes, `latitude == nil`.
 - Zero warnings.
 
-## Tests
+## 12. Tests
 
 | Test | Kind |
 |---|---|

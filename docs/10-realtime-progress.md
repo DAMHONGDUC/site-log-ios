@@ -5,7 +5,7 @@ Module: `Packages/Realtime`
 An **observation** channel over a hand-written `URLSessionWebSocketTask`. Complements
 [UploadKit](04-upload-engine.md); never controls it.
 
-## Problem it solves
+## 1. Problem it solves
 
 After the final PUT and `complete`, the server assembles parts and verifies checksums. Three cases
 where the server knows before the app:
@@ -16,7 +16,7 @@ where the server knows before the app:
 | 2 | Cold launch hours later | 243 individual status requests |
 | 3 | Server-side hash mismatch | No path back to the client at all |
 
-## Why WebSocket
+## 2. Why WebSocket
 
 | Alternative | Rejected because |
 |---|---|
@@ -28,7 +28,7 @@ where the server knows before the app:
 Transport split: **BLE for control ([06](06-device-link.md)), WebSocket for state, HTTPS for bytes
 ([04](04-upload-engine.md))**.
 
-## Boundary
+## 3. Boundary
 
 **Uploads must work at 100% with the channel dead.**
 
@@ -43,7 +43,7 @@ Realtime   ──→ RealtimeEvent ──→ App layer ──→ reconciled into
 - Disabling the feature flag leaves behavior identical, only slower to learn outcomes.
 - Without this boundary, a bug here becomes data loss.
 
-## Protocol
+## 4. Protocol
 
 Line-delimited JSON.
 
@@ -58,7 +58,9 @@ Line-delimited JSON.
 - Token expiry mid-connection returns close code `4001`; refresh and reconnect, matching the 401
   path in [08](08-auth-sync.md).
 
-## Lifecycle
+Server-side obligations for this protocol: [14-backend.md](14-backend.md).
+
+## 5. Lifecycle
 
 ```
 disconnected → connecting → authenticating → subscribed
@@ -66,9 +68,14 @@ disconnected → connecting → authenticating → subscribed
       └────────── backoff ←── failed ←───────────┘
 ```
 
-Connect only when: foreground **and** at least one job is not `synced` **and** the current network
-is permitted (honors the WiFi-only toggle). Disconnect immediately on backgrounding — iOS closes it
-anyway; background state is the background `URLSession`'s job.
+Connect only when **all three** hold:
+
+1. The app is in the foreground.
+2. At least one job is not `synced`.
+3. The current network is permitted (honors the WiFi-only toggle).
+
+Disconnect immediately on backgrounding — iOS closes it anyway, and background state is the
+background `URLSession`'s job.
 
 | Mechanism | Detail |
 |---|---|
@@ -95,7 +102,7 @@ private func listen() {
 }
 ```
 
-## Event handling
+## 6. Event handling
 
 | Event | Action |
 |---|---|
@@ -123,7 +130,7 @@ public enum RealtimeConstants {
 Messages above `maxMessageBytes` close the connection — never parse arbitrarily sized JSON from the
 network.
 
-## Known risks
+## 7. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -132,7 +139,7 @@ network.
 | Account switch with the socket open | Close immediately, discard queued messages |
 | The channel becoming a dependency | CI job drops `Realtime`; the app must still build and upload |
 
-## Definition of done
+## 8. Definition of done
 
 - 50 jobs with the socket open reach `synced` via events, no polling.
 - Feature flag off → the same 50 jobs still reach `synced`, only slower.
@@ -141,7 +148,7 @@ network.
 - Backgrounding closes the connection within one second.
 - Zero warnings; does not import `UploadKit`.
 
-## Tests
+## 9. Tests
 
 | Test | Kind |
 |---|---|

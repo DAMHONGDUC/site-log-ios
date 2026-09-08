@@ -5,13 +5,13 @@ Modules: `App/Features/Issues`, `Core`
 The core business feature. Any app takes photos; what supervisors pay for is proving "this was
 broken last week, it is fixed now" with two photos of the same spot.
 
-## Goal
+## 1. Goal
 
 - Log an issue in under 20 seconds, standing, one-handed.
 - In a later session, reopen the exact prior issue at the exact location and shoot verification.
 - Render the pair side by side in the PDF ([05](05-reporting.md)).
 
-## Scope
+## 2. Scope
 
 | In | Out |
 |---|---|
@@ -22,9 +22,9 @@ broken last week, it is fixed now" with two photos of the same spot.
 | Pairing and closure by verification photo | |
 | Phrase library + on-device dictation + voice notes | |
 
-## Flows
+## 3. Flows
 
-### Log an issue
+### 3.1 Log an issue
 
 ```
 Capture screen → shoot → thumbnail
@@ -43,9 +43,9 @@ Capture screen → shoot → thumbnail
 | Default severity `.major` | Defaulting to minor makes everything minor — nobody changes defaults |
 | `assigneeName` is free text | Competitors assign to accounts; on site the subcontractor has none. A name that groups the PDF is the part that gets used |
 
-Dictation and voice notes: [12](12-annotation.md) §4. Plan pinning: [11](11-floorplan-pins.md).
+Dictation and voice notes: [12](12-annotation.md) §6. Plan pinning: [11](11-floorplan-pins.md).
 
-### Before/after pairing
+### 3.2 Before/after pairing
 
 ```
 New session → select location
@@ -58,21 +58,21 @@ New session → select location
 - The overlay is what makes the pair meaningful; without it the angles differ and the comparison is
   worthless.
 - `Issue` anchors to `Location`, so history surfaces across sessions — this is why `Location`
-  belongs to `Project` ([00-project-info.md](00-project-info.md) §C).
+  belongs to `Project` ([00](00-project-info.md) §3).
 
-### Closing an issue
+### 3.3 Closing an issue
 
 1. Create a new `Issue` in the current session, `status = .verified`, carrying the verification photo.
 2. Set `oldIssue.resolvedByIssue = newIssue`, `oldIssue.status = .resolved`.
 3. Never modify or delete the original captures. The history is the product.
 
-## Phrase library
+## 4. Phrase library
 
 - Seed ~30 construction/handover phrases; new typed phrases are added automatically.
 - Sorted by usage count, most recent first on ties.
-- Local, synced via Firestore ([08](08-auth-sync.md)).
+- Local, synced through the backend's `phrases` table ([08](08-auth-sync.md)).
 
-## Technical design
+## 5. Technical design
 
 ```swift
 @MainActor
@@ -107,7 +107,7 @@ enum IssueDefaults {
 `IssuePairingService` lives in `Core`, imports no frameworks, takes snapshots and returns pairings.
 It is the most error-prone logic in the app.
 
-## Upload priority
+## 6. Upload priority
 
 | Input | Priority |
 |---|---|
@@ -119,7 +119,7 @@ It is the most error-prone logic in the app.
 
 Video is penalized because it occupies bandwidth long enough to block dozens of photos behind it.
 
-## Known risks
+## 7. Known risks
 
 | Risk | Handling |
 |---|---|
@@ -127,14 +127,14 @@ Video is penalized because it occupies bandwidth long enough to block dozens of 
 | Verification shot at the wrong spot | Overlay reduces it; the PDF prints `Location.code` under every image |
 | Issues accumulating across sessions | Past `staleIssueSessionThreshold` the banner changes color and the PDF gets a dedicated section |
 
-## Definition of done
+## 8. Definition of done
 
 - Logging one issue with a photo takes under 20 seconds, measured.
 - Session 2 surfaces exactly the 3 open issues from session 1, offline.
 - Closing leaves the original `Capture` byte-identical; hash still verifies.
 - Zero warnings.
 
-## Tests
+## 9. Tests
 
 | Test | Kind |
 |---|---|
