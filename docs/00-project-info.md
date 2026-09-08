@@ -524,17 +524,19 @@ Green from week 1, runs per PR.
 
 ## 7. Schedule
 
-| Week | Work |
-|---|---|
-| 1–2 | SPM scaffold, **green CI from day one**, SwiftData model, project/session/location screens, basic camera |
-| 3–4 | Upload engine: background session, chunking, resume, retry, state machine |
-| 5–6 | Hash + trusted time, annotation layer, PDF/CSV export with branding, Face ID + Data Protection |
-| 7–8 | Floor plan pins, checklist templates, BLE, diagnostics, test expansion |
-| — | Backend ([14](14-backend.md)) is built alongside week 3–4; the WebSocket half lands with week 9 |
-| 9–10 | Sync engine: pull/push, tombstones, mutation queue, full resync |
-| 11–12 | WebSocket channel, pre-record buffer, polish, TestFlight feedback |
+Twelve weeks. **[15-roadmap.md](15-roadmap.md) is the source of truth** — milestones, per-week
+breakdown, and 205 task cards. Summary only:
 
-TestFlight from end of week 4.
+| Week | Focus | Milestone |
+|---|---|---|
+| 1–2 | Scaffold, green CI, data model, first screens, basic camera | M0, M1 |
+| 3–4 | Upload engine and backend core, in parallel | **M2** · TestFlight #1 |
+| 5–6 | Trusted time, annotation, PDF/CSV, Face ID + Data Protection | M3 |
+| 7–8 | Plan pins, checklists, BLE, diagnostics | M4 · TestFlight #2 |
+| 9–10 | Sync engine: pull/push, tombstones, mutation queue | M5 |
+| 11–12 | WebSocket, verification worker, pre-record, polish | M6 |
+
+M2 is the real milestone: everything before it is setup, everything after it is addition.
 
 | Tier | Items | Reason |
 |---|---|---|
@@ -615,3 +617,4 @@ Why 12 weeks and not 8:
 | 12 | [Annotation & verifiable stamps](12-annotation.md) |
 | 13 | [Checklist templates](13-checklists.md) |
 | 14 | [Backend](14-backend.md) |
+| 15 | [Roadmap & task board](15-roadmap.md) |

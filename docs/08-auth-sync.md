@@ -5,6 +5,8 @@ Modules: `App/Features/Auth`, `App/Features/Sync`
 Firebase provides **identity and crash reporting only**. All application data lives in Postgres
 behind the backend ([14](14-backend.md)); there is no Firestore.
 
+**Contents** — 1. [Goal](#1-goal) · 2. [Scope](#2-scope) · 3. [Offline-first rules](#3-offline-first-rules) · 4. [Auth](#4-auth) · 5. [Sync protocol](#5-sync-protocol) · 6. [Client engine](#6-client-engine) · 7. [Account deletion](#7-account-deletion) · 8. [Known risks](#8-known-risks) · 9. [Definition of done](#9-definition-of-done) · 10. [Tests](#10-tests)
+
 ## 1. Goal
 
 - Sign in once, keep the session, work fully offline.

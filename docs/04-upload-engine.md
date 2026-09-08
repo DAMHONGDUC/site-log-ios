@@ -2,6 +2,8 @@
 
 Module: `Packages/UploadKit` — standalone, knows nothing about SiteLog
 
+**Contents** — 1. [Goal](#1-goal) · 2. [Package boundary](#2-package-boundary) · 3. [Protocol](#3-protocol) · 4. [iOS constraints](#4-ios-constraints) · 5. [Strategy by size](#5-strategy-by-size) · 6. [State machine](#6-state-machine) · 7. [Policy](#7-policy) · 8. [Logging](#8-logging) · 9. [Known risks](#9-known-risks) · 10. [Definition of done](#10-definition-of-done) · 11. [Tests](#11-tests)
+
 ## 1. Goal
 
 Move 150–250 files and several GB to object storage, surviving network loss, app suspension, OS
@@ -45,7 +47,7 @@ Tests/UploadKitTests/
 
 Backend never touches bytes on the upload path. Full contract: [14-backend.md](14-backend.md).
 
-| # | Call | Returns |
+| Step | Call | Returns |
 |---|---|---|
 | 1 | `POST /uploads` `{key, byteSize, contentType, sha256}` | `{mode:"single", uploadId, url, expiresAt}` **or** `{mode:"multipart", uploadId, partSizeBytes, parts:[…]}` |
 | 2 | `PUT <presigned url>` (part temp file) | 200 + ETag |
@@ -53,7 +55,8 @@ Backend never touches bytes on the upload path. Full contract: [14-backend.md](1
 | 4 | `POST /uploads/:id/parts/refresh` `{numbers:[…]}` | fresh URLs — **required** |
 | 5 | `DELETE /uploads/:id` | abort, clean orphaned parts |
 
-- Endpoint 4 is mandatory: the core scenario is an app killed and reopened hours later, when signed
+- Step 4, the refresh call, is mandatory ([14](14-backend.md) §3 numbers the endpoints
+  independently — this table is a sequence, not an endpoint index): the core scenario is an app killed and reopened hours later, when signed
   URLs have expired and resume returns 403 across the board — indistinguishable from a retry bug.
 - The backend picks the mode from `byteSize`; the client does not choose. Both sides must agree on
   `singlePutThresholdBytes` and `partSizeBytes`.

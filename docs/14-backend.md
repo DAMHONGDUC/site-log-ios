@@ -159,8 +159,9 @@ full shape.
 
 ## 6. Database
 
-17 tables: one for uploads, one sync counter, and one per synced entity. Migrations are numbered
-`.sql` files under `Backend/migrations/`.
+**16 tables** created by migrations — one for uploads, one sync counter, and 14 synced entities —
+plus `pgmigrations`, which the migration tool owns. Migrations are numbered `.sql` files under
+`Backend/migrations/`.
 
 | File | Contents |
 |---|---|
