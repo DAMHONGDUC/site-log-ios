@@ -46,10 +46,10 @@ SiteLog assumes the network is bad and is built around that.
 
 | Area | Choice |
 |---|---|
-| UI | SwiftUI, iOS 17+ |
+| UI | SwiftUI, iOS 18+ |
 | Architecture | MVVM, SPM modules |
 | Concurrency | Swift Concurrency — `actor` for upload, `@MainActor` for view models |
-| Local store | SwiftData |
+| Local store | SwiftData (`#Unique`, `#Index` need iOS 18) |
 | Media | AVFoundation (`AVCaptureSession`, `AVAssetWriter`) |
 | Plans | PDFKit + `CATiledLayer` |
 | Crypto | CryptoKit + iOS Data Protection, keys in Keychain |
@@ -265,6 +265,9 @@ pending → uploading → synced
 ### 3.5 Schema versioning
 
 - `VersionedSchema` + `SchemaMigrationPlan` from v1, even with one version.
+- iOS 18 is the minimum specifically so `#Unique` and `#Index` are available: the uniqueness rules
+  already enforced in Postgres (`locations` code per project, `captures` sha256 per project) can be
+  declared on the SwiftData models too, instead of being checked in application code.
 - Per change: add `SchemaV{n}`, keep `SchemaV{n-1}`, declare a `MigrationStage`
   (`.lightweight` for added optionals, `.custom` when semantics change).
 - Test migrations against an old-version fixture store, never an empty one.
@@ -509,18 +512,36 @@ Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`.
 
 ### 6.3 CI
 
-Green from week 1, runs per PR.
+Green from week 1, runs per PR. The repository is **private**, so GitHub-hosted macOS minutes bill
+at a 10x multiplier — 2 000 included minutes become 200 macOS minutes per month, roughly one full
+run per day. The split below keeps almost everything off that budget.
+
+#### Ubuntu jobs — 1x multiplier, run on every push
 
 | Job | Gate |
 |---|---|
-| Build each package standalone | Zero warnings (`-warnings-as-errors`) |
-| Unit tests per package | Scoped to the changed package + `Core` |
-| `Core` purity check | No framework imports |
-| Boundary check | Remove `Realtime` → app still builds |
+| `Core` purity check | No import beyond `Foundation` |
+| Boundary check | `UploadKit` and `Realtime` import nothing from the project |
 | `grep -rn "print(" Sources/` | Must be empty |
-| Secret scan | No env/plist values in the diff |
-| SwiftLint / SwiftFormat | Clean |
-| Backend: `vitest`, `tsc --noEmit`, ESLint, migrations against a fresh DB | Clean; key-prefix and idempotency tests must pass |
+| Secret scan (`gitleaks`) | No env, plist or key material in the diff |
+| SwiftLint / swift-format | Clean — both run on Linux |
+| Backend: `vitest`, `tsc --noEmit`, ESLint, migrations against a throwaway Postgres | Clean; key-prefix and idempotency tests must pass |
+
+#### macOS jobs — self-hosted runner on the development Mac
+
+| Job | Gate | When |
+|---|---|---|
+| Build each package standalone | Zero warnings (`-warnings-as-errors`) | Every PR |
+| Unit tests | Scoped to the changed package + `Core` | Every PR |
+| Remove `Realtime` from `Package.swift`, build the app | Still compiles | Nightly |
+| Full test suite across all packages | Green | Nightly |
+
+| Decision | Reason |
+|---|---|
+| Self-hosted runner rather than GitHub-hosted macOS | The Mac already exists and its minutes are free; 200 hosted minutes is about one run a day, which is not a usable gate |
+| Safe here specifically because the repo is private | A self-hosted runner on a public repo executes code from fork pull requests |
+| Nightly, not per-PR, for the expensive jobs | The boundary and full-suite checks catch drift, and drift is a daily-scale problem |
+| Keep a GitHub-hosted macOS fallback job, disabled | If the Mac is unavailable, enable it and accept the minute cost for that week |
 
 ## 7. Schedule
 

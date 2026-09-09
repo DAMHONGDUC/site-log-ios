@@ -1,6 +1,6 @@
 # 15 — Roadmap & task board
 
-Twelve weeks, seven milestones, 215 cards. Card titles are ready to paste into Trello — one card
+Twelve weeks, seven milestones, 217 cards. Card titles are ready to paste into Trello — one card
 per line.
 
 **Contents** — 1. [Notation](#1-notation) · 2. [Milestones](#2-milestones) · 3. [Epics](#3-epics) · 4. [Dependency order](#4-dependency-order) · 5. [Week by week](#5-week-by-week) · 6. [Trello board setup](#6-trello-board-setup) · 7. [Card titles](#7-card-titles) · 8. [Working rules](#8-working-rules)
@@ -151,7 +151,8 @@ blocked until the accounts exist.
 [00] Create Cloudflare R2 buckets for dev, staging and prod
 [00] Create the Fly.io app and provision Postgres
 [00] Store every secret in the GitHub Actions secret store
-[00] Decide public vs private repo — macOS CI minutes bill 10x on private
+[00] Register a self-hosted macOS runner on the development Mac
+[00] Split CI into ubuntu jobs and self-hosted macOS jobs
 [00] Add .gitignore and a root README before the first Xcode-generated file
 [00] Confirm a physical iPhone is available for background upload and BLE testing
 ```
@@ -169,11 +170,12 @@ blocked until the accounts exist.
 [00] Declare package dependency graph and forbid cross-feature imports
 [00] Add xcconfig for Debug, Staging, Release with feature flags
 [00] Add SwiftLint and SwiftFormat configuration
-[00] CI: build every package standalone with warnings-as-errors
-[00] CI: run unit tests scoped per package
-[00] CI: fail the build on any print( in Sources
-[00] CI: assert Core imports no Apple frameworks beyond Foundation
-[00] CI: secret scan over the diff
+[00] CI macOS: build every package standalone with warnings-as-errors
+[00] CI macOS: run unit tests scoped per package
+[00] CI: nightly job for the full suite and the Realtime boundary check
+[00] CI ubuntu: fail the build on any print( in Sources
+[00] CI ubuntu: assert Core imports no Apple frameworks beyond Foundation
+[00] CI ubuntu: secret scan over the diff with gitleaks
 [00] Wire Crashlytics as startup step 1
 [00] Add AppLogger wrapper with per-module os.log categories
 [00] Add AppDependencies container with an injected Clock

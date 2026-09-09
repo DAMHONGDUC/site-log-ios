@@ -73,7 +73,7 @@ failing final part are all testable without a network.
 
 | Area | Choice |
 |---|---|
-| App | SwiftUI, SwiftData, Swift Concurrency, SPM modules |
+| App | SwiftUI, SwiftData, Swift Concurrency, SPM modules · iOS 18+ |
 | Media | AVFoundation, PDFKit, CryptoKit |
 | Backend | Node 22, TypeScript, Fastify, PostgreSQL, raw SQL |
 | Storage | Cloudflare R2, S3 multipart with presigned URLs |
