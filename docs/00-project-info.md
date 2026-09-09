@@ -220,7 +220,7 @@ an audit entry ([07](07-security.md)).
 | `horizontalAccuracy` | `Double?` | Lets the report print "±35 m" instead of implying precision |
 | `deviceModel` | `String` | |
 | `duration` | `TimeInterval?` | video/audio |
-| `measurement` | `Measurement?` | From BLE ([06](06-device-link.md)) |
+| `deviceReading` | `DeviceReading?` | From BLE ([06](06-device-link.md)) |
 | `uploadState` | `UploadState` | |
 | `remoteKey` | `String?` | R2 key once synced |
 | `isExcludedFromReport` | `Bool` | |
@@ -361,7 +361,7 @@ final class AppDependencies {
     let planRenderer: PlanRendering
     let realtime: RealtimeChannel?          // nil when the flag is off
     let logger: Logging
-    let clock: Clock
+    let clock: any Clock
 }
 ```
 

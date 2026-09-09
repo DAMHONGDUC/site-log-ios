@@ -38,13 +38,15 @@ Import a floor plan, pin issues onto exact coordinates, print a per-floor pin ma
     var id: UUID
     var sheet: PlanSheet
     var issue: Issue
-    var normalizedPoint: CGPoint  // 0...1 in both axes
+    var normalizedPoint: NormalizedPoint  // Core type, 0…1 in both axes
     var createdAt: Date
 }
 ```
 
 - **`normalizedPoint` is 0…1, never pixels.** Pixel coordinates break when the plan re-renders at a
   different scale or the device changes.
+- It reuses `NormalizedPoint` from `Core` ([12](12-annotation.md) §3); `CGPoint` appears only inside
+  `Plans`, which may import CoreGraphics.
 - One `Issue` has at most one `PlanPin`. Pins are mutable; every move writes an audit entry
   ([07](07-security.md)).
 

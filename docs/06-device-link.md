@@ -18,7 +18,7 @@ This is why DeviceLink and [UploadKit](04-upload-engine.md) are separate package
 |---|---|
 | Scan filtered by service UUID, with RSSI | Writing configuration to devices |
 | Connect, discover, subscribe to notify | File transfer over BLE |
-| Parse into `Measurement` | Continuous background scanning |
+| Parse into `DeviceReading` | Continuous background scanning |
 | Attach to the in-flight capture or issue | |
 | Auto-reconnect to paired devices | |
 | macOS mock peripheral | |
@@ -30,8 +30,8 @@ DeviceLink/
   DeviceLinkManager.swift        # actor wrapping CBCentralManager
   DeviceProfile.swift            # one profile per vendor
   Profiles/{BoschGLM,LeicaDisto,GenericMoisture}Profile.swift
-  MeasurementParser.swift        # pure bytes → Measurement
-  Models/Measurement.swift
+  ReadingParser.swift            # pure bytes → DeviceReading
+  Models/DeviceReading.swift
 ```
 
 ```swift
@@ -39,10 +39,10 @@ public protocol DeviceProfile: Sendable {
     static var serviceUUID: CBUUID { get }
     static var notifyCharacteristicUUID: CBUUID { get }
     static var displayName: String { get }
-    static func parse(_ data: Data) throws -> Measurement
+    static func parse(_ data: Data) throws -> DeviceReading
 }
 
-public struct Measurement: Sendable, Codable, Equatable {
+public struct DeviceReading: Sendable, Codable, Equatable {
     public let value: Double
     public let unit: MeasurementUnit      // .meter / .millimeter / .percentMoisture
     public let kind: MeasurementKind      // .distance / .area / .moisture
@@ -53,6 +53,8 @@ public struct Measurement: Sendable, Codable, Equatable {
 
 - Adding a vendor is one file, with no change to connection code.
 - `parse` is pure over `Data`, testable against byte arrays captured from real hardware.
+- Named `DeviceReading`, not `Measurement`: `Foundation.Measurement<UnitType>` already exists, and
+  the collision surfaces as an ambiguity error wherever both are in scope.
 
 ## 4. CoreBluetooth lifecycle
 
@@ -89,7 +91,7 @@ payloads, garbage bytes. Also what makes CI possible.
 
 ## 6. UX rules
 
-- Measurement overlays the camera preview, readable at arm's length.
+- The reading overlays the camera preview, readable at arm's length.
 - Shutter freezes the current measurement into the `Capture`; no measurement still captures.
 - Connection status is a colored dot, not a banner. Disconnection greys it with **no alert**.
 - **DeviceLink never blocks capture.** It is an accessory.
@@ -107,7 +109,7 @@ enum DeviceLinkConstants {
 }
 ```
 
-Measurements older than `measurementStaleAfter` are not attached — the user has moved rooms, and
+Readings older than `measurementStaleAfter` are not attached — the user has moved rooms, and
 attaching the previous reading corrupts data silently.
 
 ## 7. Known risks
@@ -134,7 +136,7 @@ attaching the previous reading corrupts data silently.
 | `BoschGLMProfile.parse` against captured real byte arrays | unit, pure |
 | `parse` with empty / truncated / bad-checksum payloads throws precisely | unit |
 | Unit conversion (m ↔ mm ↔ ft) | unit |
-| Measurement past `measurementStaleAfter` is not attached | unit, injected clock |
+| Reading past `measurementStaleAfter` is not attached | unit, injected clock |
 | `disconnected` during `discovering` returns to `scanning`, no leaked tasks | unit |
 | Reconnect backoff never exceeds `reconnectMaxDelay` | unit |
 | Full flow against the mock peripheral | integration |

@@ -1,0 +1,50 @@
+# ---- macOS ----
+.DS_Store
+
+# ---- Xcode ----
+build/
+DerivedData/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Packages/*/.build/
+.swiftpm/
+timeline.xctimeline
+playground.xcworkspace
+
+# ---- Swift Package Manager ----
+.build/
+Package.resolved.bak
+
+# ---- Secrets: see docs/07-security.md §6 ----
+GoogleService-Info.plist
+*.xcconfig
+!*.example.xcconfig
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.mobileprovision
+*.certSigningRequest
+
+# ---- Backend (Node) ----
+Backend/node_modules/
+Backend/dist/
+Backend/coverage/
+Backend/.env
+npm-debug.log*
+yarn-error.log*
+
+# ---- Tooling ----
+.idea/
+*.log
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png

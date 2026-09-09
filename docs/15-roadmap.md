@@ -1,6 +1,6 @@
 # 15 — Roadmap & task board
 
-Twelve weeks, seven milestones, 205 cards. Card titles are ready to paste into Trello — one card
+Twelve weeks, seven milestones, 215 cards. Card titles are ready to paste into Trello — one card
 per line.
 
 **Contents** — 1. [Notation](#1-notation) · 2. [Milestones](#2-milestones) · 3. [Epics](#3-epics) · 4. [Dependency order](#4-dependency-order) · 5. [Week by week](#5-week-by-week) · 6. [Trello board setup](#6-trello-board-setup) · 7. [Card titles](#7-card-titles) · 8. [Working rules](#8-working-rules)
@@ -139,7 +139,30 @@ ship single-device. The schema and endpoints already support adding sync later.
 
 Paste each block into Trello's "Add a card" field — it creates one card per line.
 
-### 7.1 E0 — Foundation · `M0`
+### 7.1 Day 0 — accounts and access · `M0`
+
+Start these **before** writing code. Apple enrollment alone can take days, and three E0 cards are
+blocked until the accounts exist.
+
+```
+[00] Enroll in the Apple Developer Program
+[00] Reserve the bundle identifier and create the App Store Connect record
+[00] Create the Firebase project and download GoogleService-Info.plist
+[00] Create Cloudflare R2 buckets for dev, staging and prod
+[00] Create the Fly.io app and provision Postgres
+[00] Store every secret in the GitHub Actions secret store
+[00] Decide public vs private repo — macOS CI minutes bill 10x on private
+[00] Add .gitignore and a root README before the first Xcode-generated file
+[00] Confirm a physical iPhone is available for background upload and BLE testing
+```
+
+| Blocks | Because |
+|---|---|
+| `Wire Crashlytics as startup step 1` | Needs `GoogleService-Info.plist` |
+| `POST /uploads` and everything in E5 | Needs R2 buckets and credentials |
+| TestFlight #1 at week 4 | Needs a completed Apple enrollment |
+
+### 7.2 E0 — Foundation · `M0`
 
 ```
 [00] Init SPM workspace with App target and 9 empty packages
@@ -152,17 +175,21 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [00] CI: assert Core imports no Apple frameworks beyond Foundation
 [00] CI: secret scan over the diff
 [00] Wire Crashlytics as startup step 1
-[00] Add Logger wrapper with per-module os.log categories
+[00] Add AppLogger wrapper with per-module os.log categories
 [00] Add AppDependencies container with an injected Clock
 [00] Write guarded startup sequence, one log line per step
 ```
 
-### 7.2 E1 — Persistence · `M1`
+### 7.3 E1 — Persistence · `M1`
+
+Declare **every** model in `SchemaV1`, including the ones whose features land in weeks 7–8. Empty
+tables cost nothing; a migration against installed TestFlight builds does.
 
 ```
 [00] Define Core entities as framework-free structs
 [00] Define SwiftData models for Project, Session, Location
 [00] Define SwiftData models for Capture, Issue, Annotation
+[00] Declare PlanSheet, PlanPin and the four checklist models in SchemaV1 too
 [00] Add SchemaV1 and SchemaMigrationPlan
 [00] Add ModelActor for background writes
 [00] Add relative-path resolver for Capture.fileURL
@@ -170,7 +197,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [00] Test: PersistentIdentifier crosses actors, models never do
 ```
 
-### 7.3 E2 — Projects, sessions, locations · `M1`
+### 7.4 E2 — Projects, sessions, locations · `M1`
 
 ```
 [01] Project list and create screen
@@ -186,7 +213,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [01] Test: closed session rejects addCapture
 ```
 
-### 7.4 E3 — Capture pipeline · `M1` `never-cut`
+### 7.5 E3 — Capture pipeline · `M1` `never-cut`
 
 ```
 [02] AVCaptureSession setup on a serial sessionQueue
@@ -206,7 +233,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [02] Test: stale location yields nil coordinates
 ```
 
-### 7.5 E4 — Upload engine · `M2` `never-cut`
+### 7.6 E4 — Upload engine · `M2` `never-cut`
 
 ```
 [04] Define UploadJobRecord and UploadPartRecord
@@ -233,7 +260,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [04] Device test: kill the app mid-transfer and resume
 ```
 
-### 7.6 E5 — Backend core · `M2` `backend` `never-cut`
+### 7.7 E5 — Backend core · `M2` `backend` `never-cut`
 
 ```
 [14] Init Fastify + TypeScript project with TypeBox validation
@@ -254,7 +281,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [14] Test: aborted job cannot be completed
 ```
 
-### 7.7 E6 — Security & audit · `M3`
+### 7.8 E6 — Security & audit · `M3`
 
 ```
 [07] Keychain wrapper with SecAccessControl and biometryCurrentSet
@@ -269,7 +296,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [07] Test: log metadata contains no free text
 ```
 
-### 7.8 E7 — Annotation & trusted time · `M3`
+### 7.9 E7 — Annotation & trusted time · `M3`
 
 ```
 [12] AnnotationShape enum with Codable round-trip
@@ -286,7 +313,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [12] Test: confidence across fresh offset, stale offset, clock jump
 ```
 
-### 7.9 E8 — Reporting · `M3` `never-cut`
+### 7.10 E8 — Reporting · `M3` `never-cut`
 
 ```
 [05] SessionSnapshot single-fetch loader
@@ -309,7 +336,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [05] Test: 200-image render peak memory under 200 MB
 ```
 
-### 7.10 E9 — Floor plans & pins · `M4`
+### 7.11 E9 — Floor plans & pins · `M4`
 
 ```
 [11] PlanSheet and PlanPin models
@@ -326,7 +353,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [11] Test: A0 plan render peak memory under 150 MB
 ```
 
-### 7.11 E10 — Checklists · `M4`
+### 7.12 E10 — Checklists · `M4`
 
 ```
 [13] ChecklistTemplate, TemplateItem, Run and Result models
@@ -341,10 +368,10 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [13] Test: fail to pass resolves the generated issue
 ```
 
-### 7.12 E11 — DeviceLink · `M4` `blocked-on-hardware`
+### 7.13 E11 — DeviceLink · `M4` `blocked-on-hardware`
 
 ```
-[06] DeviceProfile protocol and Measurement model
+[06] DeviceProfile protocol and DeviceReading model
 [06] DeviceLinkManager as an actor over CBCentralManager
 [06] Bosch GLM profile and byte parser
 [06] Leica Disto profile
@@ -352,13 +379,13 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [06] macOS mock peripheral tool with scripted measurements
 [06] Reconnect with independent backoff
 [06] Paired device identifiers persisted and restored
-[06] Measurement overlay on the camera preview
+[06] Device reading overlay on the camera preview
 [06] Staleness rule before attaching to a capture
 [06] Test: parser against captured real byte arrays
 [06] Test: disconnect during discovery returns to scanning
 ```
 
-### 7.13 E12 — Diagnostics · `M4`
+### 7.14 E12 — Diagnostics · `M4`
 
 ```
 [09] Upload status screen separating waiting from failed
@@ -372,7 +399,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [09] Test: cleanup with 12 pending files deletes none
 ```
 
-### 7.14 E13 — Sync engine · `M5`
+### 7.15 E13 — Sync engine · `M5`
 
 ```
 [14] Migration 0002_sync_core with the per-user rev counter
@@ -394,7 +421,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [08] Integration test: two devices converge
 ```
 
-### 7.15 E14 — Realtime channel · `M6`
+### 7.16 E14 — Realtime channel · `M6`
 
 ```
 [14] WebSocket route with auth handshake and timeout
@@ -410,7 +437,7 @@ Paste each block into Trello's "Add a card" field — it creates one card per li
 [10] Test: snapshot applies only forward transitions
 ```
 
-### 7.16 E15 — Verification worker & polish · `M6`
+### 7.17 E15 — Verification worker & polish · `M6`
 
 ```
 [14] Async verification worker reading objects back from R2

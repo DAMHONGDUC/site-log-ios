@@ -32,17 +32,25 @@ way: **the original file is never touched; everything is a separate layer or a d
     var updatedAt: Date
 }
 
+/// Normalized 0…1 geometry, defined in Core so it needs no CoreGraphics.
+struct NormalizedPoint: Codable, Sendable, Equatable { var x: Double; var y: Double }
+struct NormalizedRect:  Codable, Sendable, Equatable { var origin: NormalizedPoint; var width: Double; var height: Double }
+
 enum AnnotationShape: Codable, Sendable, Equatable {
-    case arrow(from: CGPoint, to: CGPoint, style: ShapeStyle)
-    case rect(CGRect, style: ShapeStyle)
-    case ellipse(CGRect, style: ShapeStyle)
-    case freehand(points: [CGPoint], style: ShapeStyle)
-    case text(String, at: CGPoint, style: TextStyle)
+    case arrow(from: NormalizedPoint, to: NormalizedPoint, style: AnnotationStyle)
+    case rect(NormalizedRect, style: AnnotationStyle)
+    case ellipse(NormalizedRect, style: AnnotationStyle)
+    case freehand(points: [NormalizedPoint], style: AnnotationStyle)
+    case text(String, at: NormalizedPoint, style: AnnotationTextStyle)
 }
 ```
 
-Coordinates are normalized 0…1 against the original image, so a layer drawn on a phone renders
-correctly at report resolution.
+- Coordinates are normalized 0…1 against the original image, so a layer drawn on a phone renders
+  correctly at report resolution.
+- `NormalizedPoint`/`NormalizedRect` exist because `Core` may not import CoreGraphics
+  ([00](00-project-info.md) §4.2). Rendering code converts to `CGPoint` at the boundary.
+- `AnnotationStyle`, not `ShapeStyle` — `SwiftUI.ShapeStyle` collides wherever the renderer imports
+  SwiftUI. Same reason for `AnnotationTextStyle` against `Font.TextStyle`.
 
 Competitors burn annotations into the stored JPEG, which destroys the original and makes the hash
 meaningless. Keeping vectors separate gives:
