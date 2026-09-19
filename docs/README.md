@@ -21,5 +21,6 @@ report.
 | 13 | [13-checklists.md](13-checklists.md) | Checklist templates |
 | 14 | [14-backend.md](14-backend.md) | Backend (Node.js) |
 | 15 | [15-roadmap.md](15-roadmap.md) | Roadmap & Trello task board |
+| 16 | [16-learning-swiftui.md](16-learning-swiftui.md) | Swift & SwiftUI learning plan |
 
 Start with [00-project-info.md](00-project-info.md).
