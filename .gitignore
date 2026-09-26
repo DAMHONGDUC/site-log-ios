@@ -22,7 +22,7 @@ playground.xcworkspace
 .build/
 Package.resolved.bak
 
-# ---- Secrets: see docs/07-security.md §6 ----
+# ---- Secrets: see docs/feature-docs/07-security.md §6 ----
 GoogleService-Info.plist
 *.xcconfig
 !*.example.xcconfig

@@ -84,9 +84,9 @@ failing final part are all testable without a network.
 Sixteen specifications covering product, market, architecture, data flows, every feature, the
 backend contract, and a twelve-week plan.
 
-Start at [docs/00-project-info.md](docs/00-project-info.md) · index in [docs/README.md](docs/README.md)
+Start at [docs/feature-docs/00-project-info.md](docs/feature-docs/00-project-info.md) · index in [docs/README.md](docs/README.md)
 
 ## Status
 
 Specifications complete. Implementation starts at week 1; see
-[docs/15-roadmap.md](docs/15-roadmap.md) for milestones and the task board.
+[docs/feature-docs/15-roadmap.md](docs/feature-docs/15-roadmap.md) for milestones and the task board.
