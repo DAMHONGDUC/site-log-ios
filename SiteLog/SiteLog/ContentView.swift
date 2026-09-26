@@ -8,6 +8,12 @@
 import SwiftUI
 import Core
 
+struct TotoItemModel: Identifiable {
+    let id: Int = UUID()
+    var title: String
+    var isDone: Bool = false
+}
+
 struct ContentView: View {
     var body: some View {
         VStack {
