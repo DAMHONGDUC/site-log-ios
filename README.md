@@ -82,9 +82,34 @@ failing final part are all testable without a network.
 ## Documentation
 
 Sixteen specifications covering product, market, architecture, data flows, every feature, the
-backend contract, and a twelve-week plan.
+backend contract, and a twelve-week plan. Start at [00-project-info.md](docs/feature-docs/00-project-info.md).
 
-Start at [docs/feature-docs/00-project-info.md](docs/feature-docs/00-project-info.md) · index in [docs/README.md](docs/README.md)
+| # | Document | Contents |
+|---|---|---|
+| 00 | [00-project-info.md](docs/feature-docs/00-project-info.md) | Product, market, data model, architecture, data flows, CI, conventions |
+| 01 | [01-project-session.md](docs/feature-docs/01-project-session.md) | Projects, sessions, locations |
+| 02 | [02-capture.md](docs/feature-docs/02-capture.md) | Capture pipeline |
+| 03 | [03-issue-tracking.md](docs/feature-docs/03-issue-tracking.md) | Issue tracking & before/after pairing |
+| 04 | [04-upload-engine.md](docs/feature-docs/04-upload-engine.md) | Upload engine |
+| 05 | [05-reporting.md](docs/feature-docs/05-reporting.md) | PDF & spreadsheet export |
+| 06 | [06-device-link.md](docs/feature-docs/06-device-link.md) | DeviceLink: BLE measuring tools |
+| 07 | [07-security.md](docs/feature-docs/07-security.md) | Security & audit log |
+| 08 | [08-auth-sync.md](docs/feature-docs/08-auth-sync.md) | Auth & sync |
+| 09 | [09-diagnostics.md](docs/feature-docs/09-diagnostics.md) | Diagnostics & observability |
+| 10 | [10-realtime-progress.md](docs/feature-docs/10-realtime-progress.md) | Realtime progress channel |
+| 11 | [11-floorplan-pins.md](docs/feature-docs/11-floorplan-pins.md) | Floor plans & issue pins |
+| 12 | [12-annotation.md](docs/feature-docs/12-annotation.md) | Annotation & verifiable stamps |
+| 13 | [13-checklists.md](docs/feature-docs/13-checklists.md) | Checklist templates |
+| 14 | [14-backend.md](docs/feature-docs/14-backend.md) | Backend (Node.js) |
+| 15 | [15-roadmap.md](docs/feature-docs/15-roadmap.md) | Roadmap & Trello task board |
+| 16 | [16-learning-swiftui.md](docs/feature-docs/16-learning-swiftui.md) | Swift & SwiftUI learning plan |
+
+Developer tooling and workflow setup notes (editor config, local scripts, environment setup) live
+separately in `docs/dev-docs/`:
+
+| Document | Contents |
+|---|---|
+| [xcode-format-on-save.md](docs/dev-docs/xcode-format-on-save.md) | Auto-run `swift-format` on ⌘S in Xcode via Hammerspoon |
 
 ## Status
 
