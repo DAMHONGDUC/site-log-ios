@@ -48,3 +48,6 @@ yarn-error.log*
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
+
+# ---- Editor (SweetPad / sourcekit-lsp, machine-specific) ----
+buildServer.json
