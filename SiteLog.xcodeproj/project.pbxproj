@@ -46,16 +46,6 @@
 		F2F658D5305E3F3B00C8C5E5 /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-format"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F2F658CE305E3E9F00C8C5E5 /* Exceptions for "Packages" folder in "SiteLog" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Core,
-			);
-			target = F2F6588D305E390800C8C5E5 /* SiteLog */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F2F65890305E390800C8C5E5 /* SiteLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -70,14 +60,6 @@
 		F2F658A8305E390900C8C5E5 /* SiteLogUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SiteLogUITests;
-			sourceTree = "<group>";
-		};
-		F2F658B8305E3AE000C8C5E5 /* Packages */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				F2F658CE305E3E9F00C8C5E5 /* Exceptions for "Packages" folder in "SiteLog" target */,
-			);
-			path = Packages;
 			sourceTree = "<group>";
 		};
 		F2F658D1305E3F3B00C8C5E5 /* docs */ = {
@@ -117,7 +99,6 @@
 		F2F65885305E390800C8C5E5 = {
 			isa = PBXGroup;
 			children = (
-				F2F658B8305E3AE000C8C5E5 /* Packages */,
 				F2F65890305E390800C8C5E5 /* SiteLog */,
 				F2F6589E305E390900C8C5E5 /* SiteLogTests */,
 				F2F658A8305E390900C8C5E5 /* SiteLogUITests */,
@@ -219,7 +200,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				F2F65890305E390800C8C5E5 /* SiteLog */,
-				F2F658B8305E3AE000C8C5E5 /* Packages */,
 			);
 			name = SiteLog;
 			packageProductDependencies = (
