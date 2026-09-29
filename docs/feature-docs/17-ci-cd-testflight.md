@@ -1,8 +1,8 @@
 # 17 — CI/CD & TestFlight
 
-Module: `fastlane/`, `.github/workflows/`
+Modules: `fastlane/`, `.github/workflows/`
 
-How a commit becomes a tester's build without anyone's laptop being involved.
+How a commit becomes a tester's build with no manual Xcode step.
 
 ## 1. Goal
 
@@ -16,7 +16,7 @@ How a commit becomes a tester's build without anyone's laptop being involved.
 |---|---|
 | Fastlane lanes `test`, `beta`, `release` | Automatic App Store review submission |
 | GitHub Actions for PR checks and TestFlight | Screenshot / metadata automation |
-| Build number from TestFlight | Self-hosted runners |
+| Build number from TestFlight | |
 | Xcode-managed signing via App Store Connect API key | `match` certificate repo |
 
 ## 3. Lanes
@@ -38,6 +38,8 @@ Every lane starts with `xcodegen` because `project.yml` is the source of truth
 | TestFlight | tag `v*`, manual | lane `beta` |
 
 - Concurrent runs of the same ref cancel the older one.
+- macOS jobs run on the self-hosted runner and Ubuntu jobs run on GitHub-hosted, as decided in
+  [00](00-project-info.md) §6.3; the repo is private, so hosted macOS minutes bill at 10x.
 - TestFlight job runs in a protected GitHub environment holding the secrets.
 
 ## 5. Signing and versions

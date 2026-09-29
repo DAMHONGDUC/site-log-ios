@@ -94,8 +94,8 @@ logger.info("Report exported", metadata: [
 ```swift
 enum SecurityConstants {
     static let lockTimeout: TimeInterval = 300
-    static let keychainService: String = "com.sitelog.keys"
-    static let auditHMACKeyTag: String = "com.sitelog.audit.hmac"
+    static let keychainService: String = "app.dd.site.log.keys"
+    static let auditHMACKeyTag: String = "app.dd.site.log.audit.hmac"
     static let exportKeyLengthBytes: Int = 32
 }
 ```

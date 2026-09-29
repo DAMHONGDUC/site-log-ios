@@ -1,9 +1,10 @@
 # 00 — Project info
 
 Everything that is not a single feature: product, market, data model, architecture, data flows,
-configuration, CI, and conventions. Feature specs are `01`–`13`.
+configuration, CI, and conventions. Feature specs are `01`–`14`; `16` is the learning plan and
+`17`–`19` cover release and tooling.
 
-**Contents** — 1. [Product](#1-product) · 2. [Market](#2-market) · 3. [Data model](#3-data-model) · 4. [Architecture](#4-architecture) · 5. [Data flows](#5-data-flows) · 6. [Infrastructure](#6-infrastructure) · 7. [Schedule](#7-schedule) · 8. [Conventions](#8-conventions) · 9. [Feature specs](#9-feature-specs)
+**Contents** — 1. [Product](#1-product) · 2. [Market](#2-market) · 3. [Data model](#3-data-model) · 4. [Architecture](#4-architecture) · 5. [Data flows](#5-data-flows) · 6. [Infrastructure](#6-infrastructure) · 7. [Roadmap](#7-roadmap) · 8. [Conventions](#8-conventions) · 9. [Feature specs](#9-feature-specs)
 
 ## 1. Product
 
@@ -285,6 +286,7 @@ site_log/
 │   ├── Features/
 │   │   ├── Projects/ Capture/ Issues/ Plans/ Checklists/
 │   │   ├── Auth/ Sync/ Security/ Diagnostics/
+│   │   ├── Notifications/ DeepLinks/     → 18
 │   ├── Resources/                    # assets, localization, seeded templates
 │   └── Config/                       # *.xcconfig, Info.plist, entitlements
 ├── Packages/
@@ -292,6 +294,7 @@ site_log/
 │   ├── Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
 ├── Tools/MockPeripheral/             # macOS BLE simulator
 ├── Backend/                          # Node.js + Postgres: signing, job store, WebSocket → 14
+├── fastlane/                         # lanes: test, beta, release → 17
 ├── docs/
 └── .github/workflows/
 ```
@@ -345,7 +348,7 @@ site_log/
 | Layer | Type | Rules |
 |---|---|---|
 | View | `SwiftUI.View` | Layout only. No business `if`, no `ModelContext`, no async work |
-| ViewModel | `@MainActor final class … : ObservableObject` | Orchestration; publishes plain `Sendable` structs |
+| ViewModel | `@MainActor @Observable final class` | Orchestration; exposes plain `Sendable` structs |
 | Service | `actor` or `struct` in a package | I/O, one responsibility, protocol-fronted |
 | Model | `@Model` in `Persistence`, structs in `Core` | Never crosses into a View |
 
@@ -512,8 +515,9 @@ Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`.
 
 ### 6.3 CI
 
-Green from week 1, runs per PR. The repository is **private**, so GitHub-hosted macOS minutes bill
-at a 10x multiplier — 2 000 included minutes become 200 macOS minutes per month, roughly one full
+Green from M0, runs per PR. Fastlane lanes and release workflows: [17](17-ci-cd-testflight.md).
+
+The repository is **private**, so GitHub-hosted macOS minutes bill at a 10x multiplier — 2 000 included minutes become 200 macOS minutes per month, roughly one full
 run per day. The split below keeps almost everything off that budget.
 
 #### Ubuntu jobs — 1x multiplier, run on every push
@@ -543,38 +547,26 @@ run per day. The split below keeps almost everything off that budget.
 | Nightly, not per-PR, for the expensive jobs | The boundary and full-suite checks catch drift, and drift is a daily-scale problem |
 | Keep a GitHub-hosted macOS fallback job, disabled | If the Mac is unavailable, enable it and accept the minute cost for that week |
 
-## 7. Schedule
+## 7. Roadmap
 
-**[ROADMAP.md](../../ROADMAP.md) is the source of truth** — milestones and ordered parts with hour
-estimates. The week-based table below is an earlier summary and no longer authoritative:
-
-| Week | Focus | Milestone |
-|---|---|---|
-| 1–2 | Scaffold, green CI, data model, first screens, basic camera | M0, M1 |
-| 3–4 | Upload engine and backend core, in parallel | **M2** · TestFlight #1 |
-| 5–6 | Trusted time, annotation, PDF/CSV, Face ID + Data Protection | M3 |
-| 7–8 | Plan pins, checklists, BLE, diagnostics | M4 · TestFlight #2 |
-| 9–10 | Sync engine: pull/push, tombstones, mutation queue | M5 |
-| 11–12 | WebSocket, verification worker, pre-record, polish | M6 |
-
-M2 is the real milestone: everything before it is setup, everything after it is addition.
+**[ROADMAP.md](../../ROADMAP.md) is the source of truth**: milestones `M0`–`M6` and ordered parts
+with hour estimates. `M2` is the real milestone; everything before it is setup, everything after it
+is addition.
 
 | Tier | Items | Reason |
 |---|---|---|
-| Never cut | Upload engine, hash + trusted time, PDF export, backend endpoints 1–4 | The product's entire claim |
+| Never cut | Upload engine, hash + trusted time, PDF export, backend upload endpoints | The product's entire claim |
 | High | Annotation, branding, assignee, CSV | Cheap; absence reads as unfinished |
-| Medium | Floor plan pins, checklist templates | Table stakes, ~1 week each |
+| Medium | Floor plan pins, checklist templates | Table stakes |
 | Cut first | Pre-record buffer, audio, real BLE hardware (keep the mock), WebSocket | Impressive, not load-bearing |
 
-**Escape hatch:** single-device use needs no sync at all. If week 9 arrives and the upload engine is
-not solid, ship single-device and add sync after TestFlight — the schema and endpoints already
-support it.
+**Escape hatch:** single-device use needs no sync. If `M4` is done and the upload engine is not
+solid, ship single-device and add sync after TestFlight; the schema and endpoints already support it.
 
-Why 12 weeks and not 8:
+Two decisions added the most scope:
 
-- Features 11–13 (plan pins, annotation, checklists) added two weeks — they are category table stakes.
-- Dropping Firestore added two more: offline persistence, delete propagation, and listener fan-out
-  were all things the SDK did for free.
+- Features 11–13 (plan pins, annotation, checklists) are category table stakes.
+- Dropping Firestore made offline persistence, delete propagation, and listener fan-out ours.
 
 ## 8. Conventions
 
@@ -618,7 +610,7 @@ Why 12 weeks and not 8:
 5. Every action and every `catch` logs with structured data.
 6. Schema change → new `SchemaV{n}` + migration test against an old-version fixture.
 7. Scoped tests for the change only.
-8. Diff review as in H.2.
+8. Diff review as in §8.2.
 
 ## 9. Feature specs
 

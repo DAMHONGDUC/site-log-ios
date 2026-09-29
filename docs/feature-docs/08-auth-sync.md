@@ -24,8 +24,7 @@ behind the backend ([14](14-backend.md)); there is no Firestore.
 | Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to R2 |
 | Account deletion | |
 
-Dropping Firestore removes an SDK that handled three things for free. All three are now ours
-([00](00-project-info.md) §7):
+Dropping Firestore removes an SDK that handled three things for free. All three are now ours:
 
 | Lost | Replaced by |
 |---|---|

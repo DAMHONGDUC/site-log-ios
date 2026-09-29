@@ -15,7 +15,7 @@ broken last week, it is fixed now" with two photos of the same spot.
 
 | In | Out |
 |---|---|
-| Issue CRUD, multiple captures per issue | Push notifications |
+| Issue CRUD, multiple captures per issue | Notifying subcontractors (app push is [18](18-push-deep-links.md)) |
 | Severity, status, due date | Account-linked assignment — the subcontractor has no app |
 | Assignee and trade (free text) | Multi-user comment threads (v2) |
 | Carry-over of open issues per location | |
@@ -75,13 +75,13 @@ New session → select location
 ## 5. Technical design
 
 ```swift
-@MainActor
-final class IssueEditorViewModel: ObservableObject {
-    @Published var title: String
-    @Published var severity: IssueSeverity
-    @Published var assigneeName: String?
-    @Published var dueDate: Date?
-    @Published private(set) var suggestions: [PhraseSuggestion]
+@MainActor @Observable
+final class IssueEditorViewModel {
+    var title: String
+    var severity: IssueSeverity
+    var assigneeName: String?
+    var dueDate: Date?
+    private(set) var suggestions: [PhraseSuggestion]
 
     func attach(captureIDs: [PersistentIdentifier]) async throws
     func save() async throws -> PersistentIdentifier

@@ -1,6 +1,6 @@
 # 18 — Push notifications & deep links
 
-Module: `App/Notifications`, `App/DeepLinks`
+Modules: `App/Features/Notifications`, `App/Features/DeepLinks`
 
 Two ways for the outside world to bring the user to a specific place in the app. They share one
 destination type so a push tap and a tapped URL behave identically.
@@ -43,7 +43,7 @@ destination type so a push tap and a tapped URL behave identically.
 - The payload carries a destination only, never data the app then trusts. State comes from the
   local store ([04](04-upload-engine.md)).
 
-## 4.1 Registration
+### 4.1 Registration
 
 ```
 launch → request authorization (once) → register with APNs → token → app layer

@@ -1,18 +1,14 @@
 # Roadmap
 
-Work is split into **parts, each with an hour estimate**. No calendar, no week numbers: do the
-parts in order, tick them off, and a milestone is done when its demo runs on a real device.
+Work is split into parts, done in order. A milestone is done when its demo runs on a real device.
 
-Estimates are dev-hours for **one developer with 4 years of cross-platform mobile experience,
-new to Swift and SwiftUI**. They include learning time: UI and architecture concepts transfer, but
-SwiftUI state, SwiftData, background `URLSession`, CoreBluetooth and Xcode signing do not, so those
-parts cost about twice a native developer's time. Backend parts carry no such penalty. Time the
+Format: `PXX - [docs-number] - [context] - [est hours] - description`.
+
+- `[docs-number]` is the spec in `docs/feature-docs/` (`-` if none).
+- `[Backend]` parts are Node.js work in `Backend/`; every other context is the iOS app.
+
+Estimates are dev-hours for one developer new to Swift and SwiftUI, learning time included. Time the
 first few parts, then scale the rest.
-
-Detailed specs live in [`docs/feature-docs/`](docs/feature-docs/); the doc number is in `[brackets]`.
-
-Parts tagged `[backend]` are Node.js + TypeScript work in `Backend/` ([14](docs/feature-docs/14-backend.md));
-untagged parts are the iOS app.
 
 ```mermaid
 flowchart TD
@@ -27,94 +23,96 @@ flowchart TD
     class M2,M4 ship
 ```
 
-49 open parts ≈ 351 hours (P01 already done). `M2` is the milestone that matters: everything before it is setup,
-everything after it is addition. If `M5` is not reachable, stop after `M4` and ship single-device;
-the schema and endpoints already allow adding sync later.
+| | |
+|---|---|
+| Total | 49 open parts ≈ 351 hours (`P01` done) |
+| Key milestone | `M2`: everything before it is setup, everything after it is addition |
+| Stop rule | If `M5` is not reachable, stop after `M4` and ship single-device; sync can be added later |
 
 ## M0 — Scaffold · 15h
 
 Demo: every package builds on its own, CI is green, zero warnings.
 
-- [x] **P01** Xcode project, XcodeGen, SwiftLint, hot reload, tooling
-- [ ] **P02** `Core` package: logging, `AppDependencies` container, injected `Clock` [00] · **6h**
-- [ ] **P03** Fastlane `test` lane and GitHub Actions PR checks [17] · **5h**
-- [ ] **P04** CI guards: packages build standalone with warnings as errors, no `print(`, secret scan [17] · **4h**
+- [x] **P01** - [-] - [Tooling] - [done] - Xcode project, XcodeGen, SwiftLint, hot reload, tooling
+- [ ] **P02** - [00] - [Core] - [6h] - `Core` package: logging, `AppDependencies` container, injected `Clock`
+- [ ] **P03** - [17] - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
+- [ ] **P04** - [17] - [CI] - [4h] - CI guards: packages build standalone with warnings as errors, no `print(`, secret scan
 
 ## M1 — Record offline · 50h
 
 Demo: project → 80 locations → photo captured and hashed, **in airplane mode**.
 
-- [ ] **P05** Domain entities and SwiftData schema [00] · **8h**
-- [ ] **P06** Schema versioning, migrations, store tests [00] · **8h**
-- [ ] **P07** Projects: list and create [01] · **6h**
-- [ ] **P08** Sessions: start, resume, and the location list [01] · **6h**
-- [ ] **P09** Import 80 locations offline [01] · **5h**
-- [ ] **P10** Capture: camera session and permissions [02] · **8h**
-- [ ] **P11** Capture: write to disk and SHA-256 hash [02] · **5h**
-- [ ] **P12** Capture: metadata linked to a location, airplane-mode demo [02] · **4h**
+- [ ] **P05** - [00] - [Persistence] - [8h] - Domain entities and SwiftData schema
+- [ ] **P06** - [00] - [Persistence] - [8h] - Schema versioning, migrations, store tests
+- [ ] **P07** - [01] - [Projects] - [6h] - Projects: list and create
+- [ ] **P08** - [01] - [Sessions] - [6h] - Sessions: start, resume, and the location list
+- [ ] **P09** - [01] - [Locations] - [5h] - Import 80 locations offline
+- [ ] **P10** - [02] - [Capture] - [8h] - Capture: camera session and permissions
+- [ ] **P11** - [02] - [Capture] - [5h] - Capture: write to disk and SHA-256 hash
+- [ ] **P12** - [02] - [Capture] - [4h] - Capture: metadata linked to a location, airplane-mode demo
 
 ## M2 — Bytes land · TestFlight #1 · 77h
 
 Demo: 200 files reach storage and survive app kill and airplane mode.
 
-- [ ] **P13** `[backend]` Backend skeleton and first migrations [14] · **6h**
-- [ ] **P14** `[backend]` Presigned upload endpoint and object storage [14] · **5h**
-- [ ] **P15** `[backend]` Complete and status endpoints [14] · **4h**
-- [ ] **P16** `UploadKit`: job model and local store [04] · **6h**
-- [ ] **P17** `UploadKit`: single PUT through a background `URLSession` [04] · **10h**
-- [ ] **P18** `UploadKit`: state machine, retry, backoff [04] · **6h**
-- [ ] **P19** `UploadKit`: multipart and resume [04] · **14h**
-- [ ] **P20** `UploadKit`: kill and relaunch reconciliation [04] · **10h**
-- [ ] **P21** Network policy (Wi-Fi only) and upload-URL refresh [04] · **6h**
-- [ ] **P22** Signing, App Store Connect API key, first TestFlight build [17] · **10h**
+- [ ] **P13** - [14] - [Backend] - [6h] - Backend skeleton and first migrations
+- [ ] **P14** - [14] - [Backend] - [5h] - Presigned upload endpoint and object storage
+- [ ] **P15** - [14] - [Backend] - [4h] - Refresh, complete and abort endpoints
+- [ ] **P16** - [04] - [UploadKit] - [6h] - `UploadKit`: job model and local store
+- [ ] **P17** - [04] - [UploadKit] - [10h] - `UploadKit`: single PUT through a background `URLSession`
+- [ ] **P18** - [04] - [UploadKit] - [6h] - `UploadKit`: state machine, retry, backoff
+- [ ] **P19** - [04] - [UploadKit] - [14h] - `UploadKit`: multipart and resume
+- [ ] **P20** - [04] - [UploadKit] - [10h] - `UploadKit`: kill and relaunch reconciliation
+- [ ] **P21** - [04] - [UploadKit] - [6h] - Network policy (Wi-Fi only) and upload-URL refresh
+- [ ] **P22** - [17] - [Release] - [10h] - Signing, App Store Connect API key, first TestFlight build
 
 ## M3 — Deliverable · 52h
 
 Demo: a signed, branded PDF and a CSV exported from a real session.
 
-- [ ] **P23** Face ID lock and Keychain storage [07] · **6h**
-- [ ] **P24** Audit chain [07] · **5h**
-- [ ] **P25** Annotation model and drawing layer [12] · **10h**
-- [ ] **P26** Trusted time and the stamped derivative [12] · **8h**
-- [ ] **P27** Report data model and CSV export [05] · **5h**
-- [ ] **P28** PDF renderer [05] · **12h**
-- [ ] **P29** Signature, branding, share sheet [05] · **6h**
+- [ ] **P23** - [07] - [Security] - [6h] - Face ID lock and Keychain storage
+- [ ] **P24** - [07] - [Security] - [5h] - Audit chain
+- [ ] **P25** - [12] - [Annotation] - [10h] - Annotation model and drawing layer
+- [ ] **P26** - [12] - [Annotation] - [8h] - Trusted time and the stamped derivative
+- [ ] **P27** - [05] - [Reporting] - [5h] - Report data model and CSV export
+- [ ] **P28** - [05] - [Reporting] - [12h] - PDF renderer
+- [ ] **P29** - [05] - [Reporting] - [6h] - Signature, branding, share sheet
 
 ## M4 — Field-ready · TestFlight #2 · 62h
 
 Demo: pins on a real floor plan, checklists, BLE mock, diagnostics.
 
-- [ ] **P30** Floor plan import and viewer [11] · **10h**
-- [ ] **P31** Pin placement and persistence [11] · **8h**
-- [ ] **P32** Checklist templates [13] · **6h**
-- [ ] **P33** Checklist run and results [13] · **6h**
-- [ ] **P34** DeviceLink protocol and BLE mock [06] · **14h**
-- [ ] **P35** Diagnostics: upload status screen [09] · **6h**
-- [ ] **P36** Diagnostics: storage breakdown, cleanup, diagnostic bundle [09] · **6h**
-- [ ] **P37** Crash reporting, first Instruments pass, TestFlight build [09] [19] · **6h**
+- [ ] **P30** - [11] - [Plans] - [10h] - Floor plan import and viewer
+- [ ] **P31** - [11] - [Plans] - [8h] - Pin placement and persistence
+- [ ] **P32** - [13] - [Checklists] - [6h] - Checklist templates
+- [ ] **P33** - [13] - [Checklists] - [6h] - Checklist run and results
+- [ ] **P34** - [06] - [DeviceLink] - [14h] - DeviceLink protocol and BLE mock
+- [ ] **P35** - [09] - [Diagnostics] - [6h] - Diagnostics: upload status screen
+- [ ] **P36** - [09] - [Diagnostics] - [6h] - Diagnostics: storage breakdown, cleanup, diagnostic bundle
+- [ ] **P37** - [09,19] - [Diagnostics] - [6h] - Crash reporting, first Instruments pass, TestFlight build
 
 ## M5 — Multi-device · 50h
 
 Demo: a second device sees the same data and deletes propagate.
 
-- [ ] **P38** Sign-in (OAuth/OIDC) and token refresh [08] (app side; server-side token check is in `Backend/`) · **10h**
-- [ ] **P39** `[backend]` Backend pull and push endpoints [14] · **6h**
-- [ ] **P40** Sync engine: pull [08] · **8h**
-- [ ] **P41** Sync engine: push and conflict rules [08] · **12h**
-- [ ] **P42** Deletes propagate (tombstones) [08] · **6h**
-- [ ] **P43** Two-device convergence test [08] · **8h**
+- [ ] **P38** - [08] - [Auth] - [10h] - Firebase Auth sign-in (Apple, email) and ID-token handling (server-side check is in `P13`)
+- [ ] **P39** - [14] - [Backend] - [6h] - Backend pull and push endpoints
+- [ ] **P40** - [08] - [Sync] - [8h] - Sync engine: pull
+- [ ] **P41** - [08] - [Sync] - [12h] - Sync engine: push and conflict rules
+- [ ] **P42** - [08] - [Sync] - [6h] - Deletes propagate (tombstones)
+- [ ] **P43** - [08] - [Sync] - [8h] - Two-device convergence test
 
 ## M6 — Polish · 45h
 
 Demo: realtime state, push, deep links, accessibility, ready for submission.
 
-- [ ] **P44** Realtime client: connect, auth, ping, reconnect [10] · **6h**
-- [ ] **P45** Realtime events reconciled into the upload store [10] · **6h**
-- [ ] **P46** `[backend]` Verification worker [14] · **6h**
-- [ ] **P47** Push notifications [18] · **6h**
-- [ ] **P48** Deep links [18] · **3h**
-- [ ] **P49** Accessibility pass (Dynamic Type, VoiceOver, contrast) · **8h**
-- [ ] **P50** Instruments budgets, TestFlight feedback closed, submission prep [19] [17] · **10h**
+- [ ] **P44** - [10] - [Realtime] - [6h] - Realtime client: connect, auth, ping, reconnect
+- [ ] **P45** - [10] - [Realtime] - [6h] - Realtime events reconciled into the upload store
+- [ ] **P46** - [14] - [Backend] - [6h] - Verification worker
+- [ ] **P47** - [18] - [Push] - [6h] - Push notifications
+- [ ] **P48** - [18] - [DeepLinks] - [3h] - Deep links
+- [ ] **P49** - [-] - [Accessibility] - [8h] - Accessibility pass (Dynamic Type, VoiceOver, contrast)
+- [ ] **P50** - [19,17] - [Release] - [10h] - Instruments budgets, TestFlight feedback closed, submission prep
 
 ## Rules
 

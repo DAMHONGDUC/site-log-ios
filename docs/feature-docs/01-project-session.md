@@ -50,10 +50,10 @@ Floors 1...20   Units/floor 4   Template "{floor}-{unit:02}"
 ## 5. Technical design
 
 ```swift
-@MainActor
-final class SurveySessionViewModel: ObservableObject {
-    @Published private(set) var locations: [LocationRow]
-    @Published private(set) var state: SessionState
+@MainActor @Observable
+final class SurveySessionViewModel {
+    private(set) var locations: [LocationRow]
+    private(set) var state: SessionState
 
     func startSession(surveyor: String, note: String) async throws
     func closeSession() async throws

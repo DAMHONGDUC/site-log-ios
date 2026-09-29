@@ -42,8 +42,8 @@ already builds Release.
 | Module | Intervals |
 |---|---|
 | Realtime ([10](10-realtime-progress.md)) | `Connection`, `Message` |
-| Upload ([04](04-upload-engine.md)) | `HashFile`, `UploadPart`, `Assemble` |
-| Capture ([02](02-capture.md)) | `Capture`, `Thumbnail` |
+| Upload ([04](04-upload-engine.md)) | `UploadPart`, `Reconcile` |
+| Capture ([02](02-capture.md)) | `Capture`, `HashFile`, `Thumbnail` |
 
 ## 5. Scenarios and budgets
 

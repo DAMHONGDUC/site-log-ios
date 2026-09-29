@@ -2,7 +2,7 @@
 
 Modules: all. Audience: one developer, experienced outside Apple platforms, new to Swift.
 
-- The other fifteen documents assume the reader already writes SwiftUI. This one removes that
+- The other documents assume the reader already writes SwiftUI. This one removes that
   assumption.
 - Learning happens **inside this repository**, not in throwaway sample apps: every exercise below
   produces a file that survives into the shipped app.
@@ -21,25 +21,14 @@ Modules: all. Audience: one developer, experienced outside Apple platforms, new 
 
 ## 2. Effect on the roadmap
 
-[ROADMAP.md](../../ROADMAP.md) plans the implementation at full speed. Learning while building is
-slower, and pretending otherwise turns into a missed M2 with no explanation.
-
-| Roadmap milestone | Original week | With this plan |
-|---|---|---|
-| M0 Scaffold | 1 | 3 |
-| M1 Record offline | 2 | 5 |
-| M2 Bytes land · TestFlight #1 | 4 | 8 |
-| M3 Deliverable | 6 | 10 |
-| M4 Field-ready | 8 | 12 |
-| M5 Multi-device | 10 | 14 |
-| M6 Polish | 12 | 16 |
-
-Two weeks are added up front for the language, and the early implementation weeks run at roughly
-70% speed. From week 9 onward the tax is gone and the original pace resumes.
-
-**If the deadline is fixed at twelve weeks:** apply the stop rule already written into
-[ROADMAP.md](../../ROADMAP.md) — stop after M4 (skip sync and the realtime channel), ship single-device. Do not compress the language phase;
-an upload engine written without understanding `actor` isolation costs more than it saves.
+- The hour estimates in [ROADMAP.md](../../ROADMAP.md) already include learning each feature area
+  while building it, so the phases below are an order to learn in, not extra time on top.
+- **Phase 0** (language and concurrency, about 20–30 hours) comes before `P02` and is not in those
+  estimates.
+- **If time is fixed:** apply the stop rule in [ROADMAP.md](../../ROADMAP.md) (stop after `M4`, skip
+  sync and the realtime channel, ship single-device).
+- **Never compress Phase 0:** an upload engine written without understanding `actor` isolation
+  costs more than it saves.
 
 ## 3. Daily rhythm
 
@@ -57,16 +46,16 @@ is a liability in an offline-first app where failures appear hours later in a ba
 
 ## 4. Phases
 
-| Phase | Week | Subject | Produces | Epic |
+| Phase | Week | Subject | Produces | Roadmap parts |
 |---|---|---|---|---|
-| P0 | 0.1 | Swift: the language | Domain types, pure state machine, tests | E1 |
-| P0 | 0.2 | Swift: concurrency and Swift 6 isolation | Async repository layer, actor-based queue skeleton | E1 |
-| P1 | 1–2 | SwiftUI: views, layout, navigation | Project → session → location screens | E2 |
-| P2 | 3–4 | State, observation, SwiftData | The same screens, backed by real storage | E1, E2 |
-| P3 | 5–6 | UIKit bridging, AVFoundation, progress UI | Capture screen, upload queue screen | E3, E4 |
-| P4 | 7–8 | Canvas, gestures, transforms, PDFKit | Annotation, plan pins, report preview | E7, E8, E9 |
-| P5 | 9–10 | Module boundaries, DI, testable views | Feature packages split as E0 specifies | E0 |
-| P6 | 11–12 | Performance, animation, accessibility | M6 polish pass | E15 |
+| Phase 0 | 0.1 | Swift: the language | Domain types, pure state machine, tests | before P02 |
+| Phase 0 | 0.2 | Swift: concurrency and Swift 6 isolation | Async repository layer, actor-based queue skeleton | before P02 |
+| Phase 1 | 1–2 | SwiftUI: views, layout, navigation | Project → session → location screens | P07–P09 |
+| Phase 2 | 3–4 | State, observation, SwiftData | The same screens, backed by real storage | P05–P09 |
+| Phase 3 | 5–6 | UIKit bridging, AVFoundation, progress UI | Capture screen, upload queue screen | P10–P21 |
+| Phase 4 | 7–8 | Canvas, gestures, transforms, PDFKit | Annotation, plan pins, report preview | P25–P31 |
+| Phase 5 | 9–10 | Module boundaries, DI, testable views | Feature packages split as [00](00-project-info.md) §4 specifies | P02–P04 |
+| Phase 6 | 11–12 | Performance, animation, accessibility | M6 polish pass | P49–P50 |
 
 ## 5. Phase 0.1 — the language (week 0.1)
 
@@ -77,15 +66,15 @@ Xcode, a Swift package, and `swift test`. No app target yet.
 | 1 | Xcode, SPM layout, `let`/`var`, optionals, value semantics | `Project`, `Session`, `Location` as `struct`; understand why mutation copies |
 | 2 | `enum` with associated values, exhaustive `switch` | `UploadState` as a pure state machine — the one [04](04-upload-engine.md) requires |
 | 3 | Protocols, extensions, generics, `some` vs `any` | `protocol CaptureStore` plus an in-memory implementation |
-| 4 | Closures, `throws`, `Result`, XCTest | Tests for day 2: expired presigned URL, failing final part, kill mid-flight |
+| 4 | Closures, `throws`, `Result`, Swift Testing | Tests for day 2: expired presigned URL, failing final part, kill mid-flight |
 | 5 | Reference types, `class`, identity, ARC, retain cycles | Explain-back: why `Capture` is a value and the upload engine is not |
 
 **Gate:** `swift test` passes with at least eight tests over the state machine, and every
-transition in [04](04-upload-engine.md) §4 is either implemented or explicitly listed as missing.
+transition in [04](04-upload-engine.md) §6 is either implemented or explicitly listed as missing.
 
 ## 6. Phase 0.2 — concurrency (week 0.2)
 
-Swift 6.3 with strict concurrency. This week exists because E4 is unwritable without it.
+Swift 6.3 with strict concurrency. This week exists because the upload engine ([04](04-upload-engine.md)) is unwritable without it.
 
 | Day | Concept | Exercise |
 |---|---|---|
@@ -114,7 +103,7 @@ never a mutable object held onto.
    [01](01-project-session.md).
 7. **Previews** — `#Preview` with fixture data, the fastest feedback loop on this platform.
 
-**Build:** the E2 screens — project list, project detail, session start, location tree — on
+**Build:** the `P07`–`P09` screens — project list, project detail, session start, location tree — on
 in-memory fixtures, no persistence.
 
 **Gate (M0 territory):** navigate list → detail → session → 80 locations on a device, zero
@@ -148,7 +137,7 @@ relaunch — everything intact, in airplane mode.
 5. **Progress UI** — `AsyncStream` from phase 0.2 rendered without redrawing the whole list.
 6. **Error surfaces** — a failed upload states what the user can do, per [09](09-diagnostics.md).
 
-**Build:** capture screen (E3) and upload queue screen (E4).
+**Build:** capture screen (`P10`–`P12`) and upload queue screen (`P16`–`P21`).
 
 **Gate (M2 territory):** 200 files reach R2, surviving app kill and airplane mode.
 
@@ -203,7 +192,7 @@ relaunch — everything intact, in airplane mode.
 | WWDC sessions on Observation, SwiftData, and Swift concurrency | The reasoning behind iOS 17+ API shapes |
 | Swift Programming Language (official book) | Language reference during phase 0 |
 | Hacking with Swift, 100 Days of SwiftUI | Extra drills when a topic does not land |
-| This repository's fifteen specs | The actual requirements; everything above is scaffolding |
+| This repository's specs | The actual requirements; everything above is scaffolding |
 
 ## 15. Definition of done
 
