@@ -39,6 +39,10 @@
 		F2F658C6305E3C7C00C8C5E5 /* SiteLogUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogUITests.swift; sourceTree = "<group>"; };
 		F2F658C7305E3C7C00C8C5E5 /* SiteLogUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		F2F658C9305E3C7C00C8C5E5 /* SiteLog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SiteLog.xcodeproj; sourceTree = "<group>"; };
+		F2F658D2305E3F3B00C8C5E5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F2F658D3305E3F3B00C8C5E5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		F2F658D4305E3F3B00C8C5E5 /* .gitattributes */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitattributes; sourceTree = "<group>"; };
+		F2F658D5305E3F3B00C8C5E5 /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-format"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -73,6 +77,11 @@
 				F2F658CE305E3E9F00C8C5E5 /* Exceptions for "Packages" folder in "SiteLog" target */,
 			);
 			path = Packages;
+			sourceTree = "<group>";
+		};
+		F2F658D1305E3F3B00C8C5E5 /* docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -110,6 +119,11 @@
 				F2F65890305E390800C8C5E5 /* SiteLog */,
 				F2F6589E305E390900C8C5E5 /* SiteLogTests */,
 				F2F658A8305E390900C8C5E5 /* SiteLogUITests */,
+				F2F658D1305E3F3B00C8C5E5 /* docs */,
+				F2F658D2305E3F3B00C8C5E5 /* README.md */,
+				F2F658D3305E3F3B00C8C5E5 /* .gitignore */,
+				F2F658D4305E3F3B00C8C5E5 /* .gitattributes */,
+				F2F658D5305E3F3B00C8C5E5 /* .swift-format */,
 				F2F658BD305E3C7C00C8C5E5 /* Frameworks */,
 				F2F6588F305E390800C8C5E5 /* Products */,
 			);
@@ -195,6 +209,7 @@
 				F2F6588A305E390800C8C5E5 /* Sources */,
 				F2F6588B305E390800C8C5E5 /* Frameworks */,
 				F2F6588C305E390800C8C5E5 /* Resources */,
+				7E3AEEFE53AD44E5AC0F0AF6 /* Run SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -331,6 +346,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7E3AEEFE53AD44E5AC0F0AF6 /* Run SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n  export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, run 'brew install swiftlint'\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F2F6588A305E390800C8C5E5 /* Sources */ = {
@@ -500,6 +537,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = WNG5UWNJ6H;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -533,6 +571,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = WNG5UWNJ6H;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
