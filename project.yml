@@ -1,0 +1,150 @@
+# Source of truth for SiteLog.xcodeproj. Edit this file, then run `xcodegen`.
+# See docs/dev-docs/xcodegen.md.
+name: SiteLog
+
+options:
+  bundleIdPrefix: app.dd
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: true
+  xcodeVersion: "26.4"
+  deploymentTarget:
+    iOS: "26.4"
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: WNG5UWNJ6H
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    GENERATE_INFOPLIST_FILE: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
+    CODE_SIGN_IDENTITY: Apple Development
+    CLANG_CXX_LANGUAGE_STANDARD: gnu++20
+    GCC_C_LANGUAGE_STANDARD: gnu17
+  configs:
+    Release:
+      VALIDATE_PRODUCT: YES
+
+packages:
+  Core:
+    path: Packages/Core
+  Inject:
+    url: https://github.com/krzysztofzablocki/Inject
+    from: 1.6.0
+
+fileGroups:
+  - docs
+  - README.md
+  - .gitignore
+  - .gitattributes
+  - .swift-format
+  - .swiftlint.yml
+  - project.yml
+
+targets:
+  SiteLog:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.6"
+    sources:
+      - SiteLog
+    dependencies:
+      - package: Core
+      - package: Inject
+    postBuildScripts:
+      - name: Run SwiftLint
+        basedOnDependencyAnalysis: false
+        script: |
+          if [[ "$(uname -m)" == arm64 ]]; then
+            export PATH="/opt/homebrew/bin:$PATH"
+          fi
+
+          if which swiftlint > /dev/null; then
+            swiftlint
+          else
+            echo "warning: SwiftLint not installed, run 'brew install swiftlint'"
+          fi
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.dd.site.log
+        CODE_SIGN_IDENTITY: Apple Development
+        SWIFT_VERSION: "6.0"
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_EMIT_LOC_STRINGS: YES
+        STRING_CATALOG_GENERATE_SYMBOLS: YES
+        ENABLE_PREVIEWS: YES
+        # SwiftLint must read the repo; sandboxing blocks it.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: >-
+          UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
+          UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: >-
+          UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft
+          UIInterfaceOrientationLandscapeRight
+        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks"]
+      configs:
+        # Hot reload (Inject + InjectionNext), Debug only.
+        Debug:
+          EMIT_FRONTEND_COMMAND_LINES: YES
+          OTHER_LDFLAGS: ["-Xlinker", "-interposable"]
+
+  SiteLogTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - SiteLogTests
+    dependencies:
+      - target: SiteLog
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogTests
+        SWIFT_VERSION: "5.0"
+        SWIFT_EMIT_LOC_STRINGS: NO
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+
+  SiteLogUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - SiteLogUITests
+    dependencies:
+      - target: SiteLog
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogUITests
+        SWIFT_VERSION: "5.0"
+        SWIFT_EMIT_LOC_STRINGS: NO
+        STRING_CATALOG_GENERATE_SYMBOLS: NO
+
+schemes:
+  SiteLog:
+    build:
+      targets:
+        SiteLog: all
+    run:
+      config: Debug
+      environmentVariables:
+        # Lets InjectionNext find the project when the app is launched outside Xcode.
+        INJECTION_PROJECT_ROOT: $(SRCROOT)
+    test:
+      config: Debug
+      targets:
+        - SiteLogTests
+        - SiteLogUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
