@@ -16,7 +16,7 @@ How a commit becomes a tester's build without anyone's laptop being involved.
 |---|---|
 | Fastlane lanes `test`, `beta`, `release` | Automatic App Store review submission |
 | GitHub Actions for PR checks and TestFlight | Screenshot / metadata automation |
-| Build number from TestFlight | Self-hosted runners (see [15](15-roadmap.md)) |
+| Build number from TestFlight | Self-hosted runners |
 | Xcode-managed signing via App Store Connect API key | `match` certificate repo |
 
 ## 3. Lanes
@@ -89,4 +89,4 @@ Every lane starts with `xcodegen` because `project.yml` is the source of truth
 |---|---|
 | `fastlane test` passes on a clean clone | manual, once per change to the lane |
 | Dry run of `beta` against a throwaway app record | manual |
-| gitleaks over the diff | CI (see [15](15-roadmap.md)) |
+| gitleaks over the diff | CI |

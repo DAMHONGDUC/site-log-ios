@@ -101,8 +101,10 @@ backend contract, and a twelve-week plan. Start at [00-project-info.md](docs/fea
 | 12 | [12-annotation.md](docs/feature-docs/12-annotation.md) | Annotation & verifiable stamps |
 | 13 | [13-checklists.md](docs/feature-docs/13-checklists.md) | Checklist templates |
 | 14 | [14-backend.md](docs/feature-docs/14-backend.md) | Backend (Node.js) |
-| 15 | [15-roadmap.md](docs/feature-docs/15-roadmap.md) | Roadmap & Trello task board |
 | 16 | [16-learning-swiftui.md](docs/feature-docs/16-learning-swiftui.md) | Swift & SwiftUI learning plan |
+| 17 | [17-ci-cd-testflight.md](docs/feature-docs/17-ci-cd-testflight.md) | CI/CD & TestFlight |
+| 18 | [18-push-deep-links.md](docs/feature-docs/18-push-deep-links.md) | Push notifications & deep links |
+| 19 | [19-instruments.md](docs/feature-docs/19-instruments.md) | Performance profiling with Instruments |
 
 Developer tooling and workflow setup notes (editor config, local scripts, environment setup) live
 separately in `docs/dev-docs/`:
@@ -116,5 +118,5 @@ separately in `docs/dev-docs/`:
 
 ## Status
 
-Specifications complete. Implementation starts at week 1; see
-[docs/feature-docs/15-roadmap.md](docs/feature-docs/15-roadmap.md) for milestones and the task board.
+Specifications complete. See [ROADMAP.md](ROADMAP.md) for milestones and the ordered task list with
+hour estimates.

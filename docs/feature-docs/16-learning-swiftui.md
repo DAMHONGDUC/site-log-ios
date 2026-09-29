@@ -7,7 +7,7 @@ Modules: all. Audience: one developer, experienced outside Apple platforms, new 
 - Learning happens **inside this repository**, not in throwaway sample apps: every exercise below
   produces a file that survives into the shipped app.
 - The plan is written to be gated, not read. A phase ends when its checkpoint passes on a device,
-  the same rule [15](15-roadmap.md) applies to milestones.
+  the same rule [ROADMAP.md](../../ROADMAP.md) applies to milestones.
 
 ## 1. Learner profile
 
@@ -17,11 +17,11 @@ Modules: all. Audience: one developer, experienced outside Apple platforms, new 
 | No Swift, no Xcode, no Apple frameworks | Two weeks of language and tooling before any UI |
 | Toolchain is Xcode 26.4 / Swift 6.3 | Strict concurrency is on from line one; it is taught early, not patched in later |
 | 10–15 hours per week, ~2 hours per day | One lesson per day, one checkpoint per week |
-| Target is SiteLog itself | Every exercise is an epic card from [15](15-roadmap.md) §7 |
+| Target is SiteLog itself | Every exercise is a part from [ROADMAP.md](../../ROADMAP.md) |
 
 ## 2. Effect on the roadmap
 
-[15](15-roadmap.md) plans twelve weeks of implementation at full speed. Learning while building is
+[ROADMAP.md](../../ROADMAP.md) plans the implementation at full speed. Learning while building is
 slower, and pretending otherwise turns into a missed M2 with no explanation.
 
 | Roadmap milestone | Original week | With this plan |
@@ -37,8 +37,8 @@ slower, and pretending otherwise turns into a missed M2 with no explanation.
 Two weeks are added up front for the language, and the early implementation weeks run at roughly
 70% speed. From week 9 onward the tax is gone and the original pace resumes.
 
-**If the deadline is fixed at twelve weeks:** apply the slip plan already written into
-[15](15-roadmap.md) §5 — cut E13 and E14, ship single-device. Do not compress the language phase;
+**If the deadline is fixed at twelve weeks:** apply the stop rule already written into
+[ROADMAP.md](../../ROADMAP.md) — stop after M4 (skip sync and the realtime channel), ship single-device. Do not compress the language phase;
 an upload engine written without understanding `actor` isolation costs more than it saves.
 
 ## 3. Daily rhythm
@@ -182,7 +182,7 @@ relaunch — everything intact, in airplane mode.
 3. **Accessibility** — labels, Dynamic Type, VoiceOver on the capture flow.
 4. **Appearance** — dark mode, and a UI readable in direct sunlight on a site.
 
-**Gate:** M6 as written in [15](15-roadmap.md).
+**Gate:** M6 as written in [ROADMAP.md](../../ROADMAP.md).
 
 ## 13. Rules of engagement
 

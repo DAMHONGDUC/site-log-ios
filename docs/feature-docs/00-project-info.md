@@ -545,8 +545,8 @@ run per day. The split below keeps almost everything off that budget.
 
 ## 7. Schedule
 
-Twelve weeks. **[15-roadmap.md](15-roadmap.md) is the source of truth** — milestones, per-week
-breakdown, and 205 task cards. Summary only:
+**[ROADMAP.md](../../ROADMAP.md) is the source of truth** — milestones and ordered parts with hour
+estimates. The week-based table below is an earlier summary and no longer authoritative:
 
 | Week | Focus | Milestone |
 |---|---|---|
@@ -638,4 +638,7 @@ Why 12 weeks and not 8:
 | 12 | [Annotation & verifiable stamps](12-annotation.md) |
 | 13 | [Checklist templates](13-checklists.md) |
 | 14 | [Backend](14-backend.md) |
-| 15 | [Roadmap & task board](15-roadmap.md) |
+| 16 | [Learning Swift & SwiftUI](16-learning-swiftui.md) |
+| 17 | [CI/CD & TestFlight](17-ci-cd-testflight.md) |
+| 18 | [Push notifications & deep links](18-push-deep-links.md) |
+| 19 | [Performance profiling with Instruments](19-instruments.md) |
