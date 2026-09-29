@@ -1,6 +1,9 @@
 {
   "recommendations": [
+    "swiftlang.swift-vscode",
     "sweetpad.sweetpad",
-    "swiftlang.swift-vscode"
+    "vadimcn.vscode-lldb",
+    "vknabel.vscode-swiftlint",
+    "usernamehw.errorlens"
   ]
 }

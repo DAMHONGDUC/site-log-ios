@@ -1,0 +1,50 @@
+{
+  "SwiftUI View": {
+    "scope": "swift",
+    "prefix": "swiftview",
+    "description": "SwiftUI view with Inject hot reload and a preview",
+    "body": [
+      "import Inject",
+      "import SwiftUI",
+      "",
+      "struct ${1:${TM_FILENAME_BASE}}: View {",
+      "    @ObserveInjection var inject",
+      "",
+      "    var body: some View {",
+      "        ${0:Text(\"${1}\")}",
+      "            .enableInjection()",
+      "    }",
+      "}",
+      "",
+      "#Preview {",
+      "    ${1}()",
+      "}"
+    ]
+  },
+  "Model struct": {
+    "scope": "swift",
+    "prefix": "swiftmodel",
+    "description": "Identifiable value model",
+    "body": [
+      "import Foundation",
+      "",
+      "struct ${1:${TM_FILENAME_BASE}}: Identifiable, Hashable {",
+      "    let id: UUID",
+      "    $0",
+      "}"
+    ]
+  },
+  "Observable class": {
+    "scope": "swift",
+    "prefix": "swiftobservable",
+    "description": "@Observable class for view state",
+    "body": [
+      "import Observation",
+      "",
+      "@Observable",
+      "final class ${1:${TM_FILENAME_BASE}} {",
+      "    $0",
+      "}"
+    ]
+  }
+}
