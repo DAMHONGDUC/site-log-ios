@@ -111,6 +111,8 @@ separately in `docs/dev-docs/`:
 |---|---|
 | [xcode-format-on-save.md](docs/dev-docs/xcode-format-on-save.md) | Auto-run `swift-format` on ⌘S in Xcode via Hammerspoon |
 | [swiftlint.md](docs/dev-docs/swiftlint.md) | SwiftLint build phase, rules, and split with `swift-format` |
+| [xcodegen.md](docs/dev-docs/xcodegen.md) | `project.yml` is the source of truth for `SiteLog.xcodeproj` |
+| [hot-reload.md](docs/dev-docs/hot-reload.md) | Hot reload in the simulator with Inject + InjectionNext |
 
 ## Status
 
