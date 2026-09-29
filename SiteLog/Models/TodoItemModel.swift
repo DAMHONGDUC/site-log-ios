@@ -1,10 +1,3 @@
-//
-//  TodoItemModel.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 29/9/26.
-//
-
 import Foundation
 
 struct TodoItemModel: Identifiable {
