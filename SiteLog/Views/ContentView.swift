@@ -15,6 +15,7 @@ struct ContentView: View {
             List(todos) { todo in
                 Text(todo.title)
                 Text(todo.title)
+                Text(todo.title)
 
             }
             .navigationTitle("Todo")
