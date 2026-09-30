@@ -34,24 +34,35 @@
 
 | | |
 |---|---|
-| Architecture | MVVM with SPM feature packages; `Core` imports nothing beyond Foundation |
+| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM in Presentation, SPM packages per layer |
 | Encryption | Planned: Data Protection `.completeUnlessOpen` for media, AES-GCM for export bundles, HMAC-SHA256 audit chain, Keychain for keys and tokens |
 
-Only `Packages/Core` exists today; the other modules are specified in the feature docs.
+Only `Packages/Core` exists today; the rest is specified in [00-project-info.md](docs/feature-docs/00-project-info.md) §4.
 
 ```mermaid
 flowchart TD
-  View["Views (SwiftUI)"] --> VM["ViewModels (@MainActor, @Observable)"]
-  VM --> Feat["Capture · Reporting · Plans · DeviceLink"]
-  VM --> Persist["Persistence (SwiftData)"]
-  VM --> Upload["UploadKit (standalone)"]
-  VM --> RT["Realtime (standalone)"]
-  Feat --> Core["Core (entities, business rules)"]
-  Persist --> Core
-  Persist -. implements UploadStore .-> Upload
-  Upload -->|"sign, complete"| BE["Backend (Fastify + PostgreSQL)"]
-  Upload -->|"PUT bytes"| R2[("Cloudflare R2")]
-  RT -->|"WebSocket"| BE
+  subgraph Presentation
+    View["Views (SwiftUI)"] --> VM["ViewModels (@Observable)"]
+  end
+  subgraph Domain["Domain · Packages/Core"]
+    UC["Use cases"] --> RP["Repository protocols"]
+    UC --> ENT["Entities"]
+  end
+  subgraph Data["Data · Packages/Data"]
+    RI["Repository impls, DTOs, mappers"]
+  end
+  subgraph Sources["Data sources"]
+    SD["Persistence (SwiftData)"]
+    NET["Networking"]
+    FW["Capture · UploadKit · Reporting · Plans · DeviceLink · Realtime"]
+  end
+  VM --> UC
+  RI -. implements .-> RP
+  RI --> SD
+  RI --> NET
+  RI --> FW
+  NET --> BE["Backend (Fastify + PostgreSQL)"]
+  FW --> R2[("Cloudflare R2")]
 ```
 
 ## Local database

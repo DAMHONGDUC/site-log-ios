@@ -1,6 +1,6 @@
 # 03 — Issue tracking & before/after pairing
 
-Modules: `App/Features/Issues`, `Core`
+Modules: `App/Features/Issues`, `Core`, `Data`
 
 The core business feature. Any app takes photos; what supervisors pay for is proving "this was
 broken last week, it is fixed now" with two photos of the same spot.
@@ -104,8 +104,8 @@ enum IssueDefaults {
 }
 ```
 
-`IssuePairingService` lives in `Core`, imports no frameworks, takes snapshots and returns pairings.
-It is the most error-prone logic in the app.
+`PairIssuesUseCase` lives in `Core`, imports no frameworks, reads through `IssueRepository` and
+returns pairings. It is the most error-prone logic in the app.
 
 ## 6. Upload priority
 

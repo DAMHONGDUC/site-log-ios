@@ -34,7 +34,7 @@ flowchart TD
 Demo: every package builds on its own, CI is green, zero warnings.
 
 - [x] **P01** - [-] - [Tooling] - [done] - Xcode project, XcodeGen, SwiftLint, hot reload, tooling
-- [ ] **P02** - [00] - [Core] - [6h] - `Core` package: logging, `AppDependencies` container, injected `Clock`
+- [ ] **P02** - [00] - [Core] - [6h] - Clean Architecture skeleton: `Core` (Domain), `Data`, `Networking` packages, `AppDependencies`, injected `Clock`
 - [ ] **P03** - [17] - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **P04** - [17] - [CI] - [4h] - CI guards: packages build standalone with warnings as errors, no `print(`, secret scan
 

@@ -48,7 +48,7 @@ enum AnnotationShape: Codable, Sendable, Equatable {
 - Coordinates are normalized 0…1 against the original image, so a layer drawn on a phone renders
   correctly at report resolution.
 - `NormalizedPoint`/`NormalizedRect` exist because `Core` may not import CoreGraphics
-  ([00](00-project-info.md) §4.2). Rendering code converts to `CGPoint` at the boundary.
+  ([00](00-project-info.md) §4.3). Rendering code converts to `CGPoint` at the boundary.
 - `AnnotationStyle`, not `ShapeStyle` — `SwiftUI.ShapeStyle` collides wherever the renderer imports
   SwiftUI. Same reason for `AnnotationTextStyle` against `Font.TextStyle`.
 

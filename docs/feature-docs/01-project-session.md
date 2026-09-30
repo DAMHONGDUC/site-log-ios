@@ -1,6 +1,6 @@
 # 01 — Projects, sessions, locations
 
-Modules: `App/Features/Projects`, `Core`, `Persistence`
+Modules: `App/Features/Projects`, `Core`, `Data`, `Persistence`
 
 ## 1. Goal
 
@@ -78,8 +78,8 @@ enum LocationTemplateLimits {
 ```
 
 - Views never hold `PersistentModel`.
-- Badges use `fetchCount` batched once per screen; per-row queries across 80 locations stutter on
-  scroll.
+- Badge counts come from one batched repository call per screen (`fetchCount` inside `Data`);
+  per-row queries across 80 locations stutter on scroll.
 
 ## 6. Known risks
 

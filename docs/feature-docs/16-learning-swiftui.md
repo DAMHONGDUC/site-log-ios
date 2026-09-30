@@ -54,7 +54,7 @@ is a liability in an offline-first app where failures appear hours later in a ba
 | Phase 2 | 3–4 | State, observation, SwiftData | The same screens, backed by real storage | P05–P09 |
 | Phase 3 | 5–6 | UIKit bridging, AVFoundation, progress UI | Capture screen, upload queue screen | P10–P21 |
 | Phase 4 | 7–8 | Canvas, gestures, transforms, PDFKit | Annotation, plan pins, report preview | P25–P31 |
-| Phase 5 | 9–10 | Module boundaries, DI, testable views | Feature packages split as [00](00-project-info.md) §4 specifies | P02–P04 |
+| Phase 5 | 9–10 | Module boundaries, DI, testable views | Clean Architecture layers split as [00](00-project-info.md) §4 specifies | P02–P04 |
 | Phase 6 | 11–12 | Performance, animation, accessibility | M6 polish pass | P49–P50 |
 
 ## 5. Phase 0.1 — the language (week 0.1)

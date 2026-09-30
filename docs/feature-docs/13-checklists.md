@@ -1,6 +1,6 @@
 # 13 — Checklist templates
 
-Modules: `App/Features/Checklists`, `Core`
+Modules: `App/Features/Checklists`, `Core`, `Data`
 
 - Vietnamese handover guidance is published as room-by-room checklists of 5–12 steps.
 - Checklist-driven inspection is a whole competitor category ([00](00-project-info.md) §2).
