@@ -1,9 +1,10 @@
 # 00 — Project info
 
 Everything that is not a single feature: product, market, data model, architecture, data flows,
-configuration, CI, and conventions. Feature specs are `01`–`13`.
+configuration, CI, and conventions. Feature specs are `01`–`14`; `16` is the learning plan and
+`17`–`19` cover release and tooling.
 
-**Contents** — 1. [Product](#1-product) · 2. [Market](#2-market) · 3. [Data model](#3-data-model) · 4. [Architecture](#4-architecture) · 5. [Data flows](#5-data-flows) · 6. [Infrastructure](#6-infrastructure) · 7. [Schedule](#7-schedule) · 8. [Conventions](#8-conventions) · 9. [Feature specs](#9-feature-specs)
+**Contents** — 1. [Product](#1-product) · 2. [Market](#2-market) · 3. [Data model](#3-data-model) · 4. [Architecture](#4-architecture) · 5. [Data flows](#5-data-flows) · 6. [Infrastructure](#6-infrastructure) · 7. [Roadmap](#7-roadmap) · 8. [Conventions](#8-conventions) · 9. [Feature specs](#9-feature-specs)
 
 ## 1. Product
 
@@ -47,7 +48,7 @@ SiteLog assumes the network is bad and is built around that.
 | Area | Choice |
 |---|---|
 | UI | SwiftUI, iOS 18+ |
-| Architecture | MVVM, SPM modules |
+| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM in Presentation, SPM modules |
 | Concurrency | Swift Concurrency — `actor` for upload, `@MainActor` for view models |
 | Local store | SwiftData (`#Unique`, `#Index` need iOS 18) |
 | Media | AVFoundation (`AVCaptureSession`, `AVAssetWriter`) |
@@ -274,109 +275,160 @@ pending → uploading → synced
 
 ## 4. Architecture
 
+Clean Architecture, strictly: three layers, dependencies point inward to the domain, and the app
+target is the only place that wires them together. The presentation layer uses MVVM.
+
+```mermaid
+flowchart LR
+    App["App: composition root"] --> P["Presentation<br/>App/Features: View + ViewModel"]
+    App --> Data["Data<br/>Packages/Data: repository impls, DTOs, mappers"]
+    P --> D["Domain<br/>Packages/Core: entities, use cases,<br/>repository protocols"]
+    Data --> D
+    Data --> DS["Data sources<br/>Persistence · Networking · Capture · UploadKit<br/>Reporting · Plans · DeviceLink · Realtime"]
+```
+
 ### 4.1 Repo layout
 
 ```
 site_log/
 ├── App/
-│   ├── SiteLogApp.swift              # @main, composition root
-│   ├── AppDependencies.swift         # DI container
+│   ├── SiteLogApp.swift              # @main
+│   ├── AppDependencies.swift         # composition root: binds Data impls to Domain protocols
 │   ├── Startup/                      # guarded startup steps
-│   ├── Features/
+│   ├── Features/                     # Presentation layer
 │   │   ├── Projects/ Capture/ Issues/ Plans/ Checklists/
 │   │   ├── Auth/ Sync/ Security/ Diagnostics/
+│   │   ├── Notifications/ DeepLinks/     → 18
 │   ├── Resources/                    # assets, localization, seeded templates
 │   └── Config/                       # *.xcconfig, Info.plist, entitlements
 ├── Packages/
-│   ├── Core/ DesignSystem/ Persistence/
-│   ├── Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
+│   ├── Core/                         # Domain layer
+│   ├── Data/                         # Data layer: repositories, DTOs, mappers
+│   ├── Persistence/ Networking/      # data sources: SwiftData, backend HTTP client
+│   ├── Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/   # data sources: frameworks
+│   └── DesignSystem/                 # tokens and shared UI components
 ├── Tools/MockPeripheral/             # macOS BLE simulator
 ├── Backend/                          # Node.js + Postgres: signing, job store, WebSocket → 14
+├── fastlane/                         # lanes: test, beta, release → 17
 ├── docs/
 └── .github/workflows/
 ```
 
-### 4.2 Package graph
+### 4.2 Layers
+
+| Layer | Lives in | Contains | May import |
+|---|---|---|---|
+| Presentation | `App/Features/<Feature>/` | `View`, `ViewModel`, row structs | `Core`, `DesignSystem` |
+| Domain | `Packages/Core` | Entities, use cases, repository protocols, domain errors, pure domain services | `Foundation` only |
+| Data | `Packages/Data` | Repository implementations, DTOs, mappers | `Core` and data sources |
+| Data sources | `Packages/Persistence`, `Networking`, `Capture`, … | Framework and I/O code (SwiftData, `URLSession`, AVFoundation, PDFKit, CoreBluetooth) | Frameworks; see §4.3 |
+| Composition root | `App/AppDependencies.swift` | Builds data sources, repositories and use cases; injects them | Everything |
 
 ```
-                    ┌──────────┐
-                    │   App    │  the only place that wires modules
-                    └────┬─────┘
-       ┌──────────┬──────┴──────┬───────────┬──────────┐
-       ▼          ▼             ▼           ▼          ▼
-  Persistence  Capture     Reporting     Plans     DeviceLink
-       │          │             │           │          │
-       └──────────┴──────┬──────┴───────────┘          │
-                         ▼                             │
-                  ┌────────────┐                       │
-                  │    Core    │ ◄─────────────────────┘
-                  └────────────┘
-   DesignSystem ──► (UI packages only)
-   UploadKit   ──► (nothing)      Realtime ──► (nothing)
+View ──► ViewModel ──► UseCase ──► Repository (protocol, Core)
+                                        ▲
+                                        │ implements
+                              Repository impl (Data) ──► data source ──► disk / network / hardware
 ```
 
-#### Dependency rules
+### 4.3 Dependency rules
 
 | Rule | Enforcement |
 |---|---|
 | `Core` imports nothing beyond `Foundation` | CI grep for framework imports |
-| `UploadKit` and `Realtime` import nothing from the project | CI builds each standalone |
+| Presentation imports `Core` and `DesignSystem` only; never `Data` or a data source | CI dependency-graph assertion |
+| ViewModels call use cases only; never a repository, `ModelContext`, or `URLSession` | Code review |
+| Repository protocols are declared in `Core`, implemented in `Data` | CI: no `protocol …Repository` outside `Core` |
+| DTOs and `@Model` types never cross into `Core` or Presentation; mappers live in `Data` | Code review |
+| Data sources may import `Core` for shared value types, never `Data` | CI dependency-graph assertion |
+| `UploadKit` and `Realtime` import nothing from the project; `Data` adapts them | CI builds each standalone |
 | `UploadKit` ⊥ `Realtime` | CI removes `Realtime`; app must still build |
-| Feature packages never import each other | CI dependency-graph assertion |
-| Only `App` imports more than two packages | Code review |
+| Data sources never import each other | CI dependency-graph assertion |
 | Cross-module access via `public` surface only | `internal` by default |
 
-#### Module responsibilities
+### 4.4 Module responsibilities
 
-| Module | Owns | Never |
-|---|---|---|
-| `Core` | Entities, business rules, pairing logic, state merges | Touch disk, network, UI |
-| `DesignSystem` | Spacing/color/type tokens, shared components | Contain business logic |
-| `Persistence` | Schema, migrations, `ModelActor`s, `UploadStore` impl | Leak `PersistentModel` outward |
-| `Capture` | Session, writer, hashing, annotation rendering | Know about projects or issues |
-| `UploadKit` | Transfer state machine, chunking, background session | Know what a `Capture` is |
-| `Reporting` | Layout engine, PDF/CSV rendering | Fetch data — it receives a snapshot |
-| `Plans` | Plan tiling, pin coordinate math | Own issue semantics |
-| `DeviceLink` | BLE lifecycle, vendor profiles, parsing | Block capture |
-| `Realtime` | WebSocket lifecycle, event decoding | Mutate app state directly |
+| Module | Layer | Owns | Never |
+|---|---|---|---|
+| `Core` | Domain | Entities, use cases, repository protocols, pairing logic, state merges | Touch disk, network, UI |
+| `Data` | Data | Repository impls, DTO ↔ entity mappers, `UploadStore` impl | Contain business rules |
+| `DesignSystem` | Presentation | Spacing/color/type tokens, shared components | Contain business logic |
+| `Persistence` | Data source | Schema, migrations, `ModelActor`s | Leak `PersistentModel` outward |
+| `Networking` | Data source | Authorized HTTP client, backend endpoints, DTOs | Know about entities |
+| `Capture` | Data source | Session, writer, hashing, annotation rendering | Know about projects or issues |
+| `UploadKit` | Data source | Transfer state machine, chunking, background session | Know what a `Capture` is |
+| `Reporting` | Data source | Layout engine, PDF/CSV rendering | Fetch data — it receives a snapshot |
+| `Plans` | Data source | Plan tiling, pin coordinate math | Own issue semantics |
+| `DeviceLink` | Data source | BLE lifecycle, vendor profiles, parsing | Block capture |
+| `Realtime` | Data source | WebSocket lifecycle, event decoding | Mutate app state directly |
 
-### 4.3 Layers inside a feature
+### 4.5 Presentation layer (MVVM)
 
-| Layer | Type | Rules |
-|---|---|---|
-| View | `SwiftUI.View` | Layout only. No business `if`, no `ModelContext`, no async work |
-| ViewModel | `@MainActor final class … : ObservableObject` | Orchestration; publishes plain `Sendable` structs |
-| Service | `actor` or `struct` in a package | I/O, one responsibility, protocol-fronted |
-| Model | `@Model` in `Persistence`, structs in `Core` | Never crosses into a View |
+| Type | Rules |
+|---|---|
+| `View` (`SwiftUI.View`) | Layout only. No business `if`, no `ModelContext`, no async work |
+| `ViewModel` (`@MainActor @Observable final class`) | Calls use cases; exposes plain `Sendable` row structs |
+| Row struct | `LocationRow`, `IssueSnapshot`, `SessionSnapshot`; never an entity or `PersistentModel` |
 
-Views receive row structs — `LocationRow`, `IssueSnapshot`, `SessionSnapshot` — never
-`PersistentModel`.
+### 4.6 Use cases and repositories
 
-### 4.4 Composition root
+- One use case per user action: a `struct` with a single `execute` method.
+- A use case depends on repository protocols and other domain types only.
+- One repository per aggregate: `ProjectRepository`, `CaptureRepository`, `IssueRepository`, …
+
+```swift
+// Core (Domain)
+public protocol ProjectRepository: Sendable {
+    func all() async throws -> [Project]
+    func save(_ project: Project) async throws
+}
+
+public struct CreateProjectUseCase: Sendable {
+    let repository: any ProjectRepository
+    let clock: any Clock
+
+    public func execute(name: String, address: String, client: String) async throws -> Project
+}
+
+// Data
+struct SwiftDataProjectRepository: ProjectRepository { /* maps ProjectModel ↔ Project */ }
+```
+
+### 4.7 Composition root
 
 ```swift
 @MainActor
 final class AppDependencies {
+    // Data sources
     let container: ModelContainer
-    let uploadStore: UploadStore            // Persistence impl of UploadKit's protocol
+    let apiClient: APIClient
     let uploadCoordinator: UploadCoordinator
-    let captureService: CaptureServicing
-    let planRenderer: PlanRendering
     let realtime: RealtimeChannel?          // nil when the flag is off
+
+    // Repositories: Data impls behind Core protocols
+    let projects: any ProjectRepository
+    let captures: any CaptureRepository
+    let issues: any IssueRepository
+    let uploads: any UploadRepository
+
+    // Cross-cutting
     let logger: Logging
     let clock: any Clock
+
+    func makeCreateProject() -> CreateProjectUseCase
 }
 ```
 
 | Injected seam | Why it exists |
 |---|---|
+| Repository protocols | Use cases and view models test against in-memory fakes, no SwiftData |
 | `Clock` | Stale GPS, trusted time, and backoff test deterministically |
-| `UploadStore` | Keeps `UploadKit` free of SwiftData |
+| `UploadStore` | Keeps `UploadKit` free of SwiftData; implemented in `Data` |
 | `UploadTransport` | `MockTransport` scripts 503/403/timeout per part |
 | `CaptureSessionControlling` | State machine tests run on CI without a camera |
 | `RandomNumberGenerator` | Jitter is assertable |
 
-### 4.5 Startup sequence
+### 4.8 Startup sequence
 
 Each step guarded and logged separately. Never one `try` around init.
 
@@ -512,8 +564,9 @@ Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`.
 
 ### 6.3 CI
 
-Green from week 1, runs per PR. The repository is **private**, so GitHub-hosted macOS minutes bill
-at a 10x multiplier — 2 000 included minutes become 200 macOS minutes per month, roughly one full
+Green from M0, runs per PR. Fastlane lanes and release workflows: [17](17-ci-cd-testflight.md).
+
+The repository is **private**, so GitHub-hosted macOS minutes bill at a 10x multiplier — 2 000 included minutes become 200 macOS minutes per month, roughly one full
 run per day. The split below keeps almost everything off that budget.
 
 #### Ubuntu jobs — 1x multiplier, run on every push
@@ -543,44 +596,32 @@ run per day. The split below keeps almost everything off that budget.
 | Nightly, not per-PR, for the expensive jobs | The boundary and full-suite checks catch drift, and drift is a daily-scale problem |
 | Keep a GitHub-hosted macOS fallback job, disabled | If the Mac is unavailable, enable it and accept the minute cost for that week |
 
-## 7. Schedule
+## 7. Roadmap
 
-Twelve weeks. **[15-roadmap.md](15-roadmap.md) is the source of truth** — milestones, per-week
-breakdown, and 205 task cards. Summary only:
-
-| Week | Focus | Milestone |
-|---|---|---|
-| 1–2 | Scaffold, green CI, data model, first screens, basic camera | M0, M1 |
-| 3–4 | Upload engine and backend core, in parallel | **M2** · TestFlight #1 |
-| 5–6 | Trusted time, annotation, PDF/CSV, Face ID + Data Protection | M3 |
-| 7–8 | Plan pins, checklists, BLE, diagnostics | M4 · TestFlight #2 |
-| 9–10 | Sync engine: pull/push, tombstones, mutation queue | M5 |
-| 11–12 | WebSocket, verification worker, pre-record, polish | M6 |
-
-M2 is the real milestone: everything before it is setup, everything after it is addition.
+**[ROADMAP.md](../../ROADMAP.md) is the source of truth**: milestones `M0`–`M6` and ordered parts
+with hour estimates. `M2` is the real milestone; everything before it is setup, everything after it
+is addition.
 
 | Tier | Items | Reason |
 |---|---|---|
-| Never cut | Upload engine, hash + trusted time, PDF export, backend endpoints 1–4 | The product's entire claim |
+| Never cut | Upload engine, hash + trusted time, PDF export, backend upload endpoints | The product's entire claim |
 | High | Annotation, branding, assignee, CSV | Cheap; absence reads as unfinished |
-| Medium | Floor plan pins, checklist templates | Table stakes, ~1 week each |
+| Medium | Floor plan pins, checklist templates | Table stakes |
 | Cut first | Pre-record buffer, audio, real BLE hardware (keep the mock), WebSocket | Impressive, not load-bearing |
 
-**Escape hatch:** single-device use needs no sync at all. If week 9 arrives and the upload engine is
-not solid, ship single-device and add sync after TestFlight — the schema and endpoints already
-support it.
+**Escape hatch:** single-device use needs no sync. If `M4` is done and the upload engine is not
+solid, ship single-device and add sync after TestFlight; the schema and endpoints already support it.
 
-Why 12 weeks and not 8:
+Two decisions added the most scope:
 
-- Features 11–13 (plan pins, annotation, checklists) added two weeks — they are category table stakes.
-- Dropping Firestore added two more: offline persistence, delete propagation, and listener fan-out
-  were all things the SDK did for free.
+- Features 11–13 (plan pins, annotation, checklists) are category table stakes.
+- Dropping Firestore made offline persistence, delete propagation, and listener fan-out ours.
 
 ## 8. Conventions
 
 | Rule | Detail |
 |---|---|
-| Group by feature | Dependencies point inward; `Core` imports no frameworks |
+| Clean Architecture layers | Dependencies point inward; `Core` imports no frameworks ([§4](#4-architecture)) |
 | Constants in dedicated `enum`s | No raw literals at call sites; spacing/color/type via `DesignSystem` |
 | Log every action with data | `"Upload failed — {captureId, part: 3/12, bytes: 4.1MB, status: 503}"`, successes included |
 | Log the error object | `String(reflecting:)`, never a hand-written message. Catch broad, not narrow. **No `print`** |
@@ -595,7 +636,11 @@ Why 12 weeks and not 8:
 |---|---|---|
 | Package | Noun, no prefix | `UploadKit`, `Plans` |
 | ViewModel | `<Screen>ViewModel` | `SurveySessionViewModel` |
-| Service protocol | `<Noun>ing` / `<Noun>Providing` | `PlanRendering` |
+| Use case | `<Verb><Noun>UseCase` | `CreateProjectUseCase` |
+| Repository protocol (Core) | `<Noun>Repository` | `ProjectRepository` |
+| Repository impl (Data) | `<Source><Noun>Repository` | `SwiftDataProjectRepository` |
+| DTO / mapper (Data) | `<Noun>DTO` / `<Noun>Mapper` | `ProjectDTO` |
+| Data source protocol | `<Noun>ing` / `<Noun>Providing` | `PlanRendering` |
 | Actor | `<Noun>Coordinator` / `<Noun>Manager` | `UploadCoordinator` |
 | Constants | `enum <Domain>Constants` | `UploadConstants` |
 | Row/snapshot struct | `<Entity>Row` / `<Entity>Snapshot` | `LocationRow` |
@@ -612,13 +657,14 @@ Why 12 weeks and not 8:
 ### 8.3 Adding a feature — checklist
 
 1. Does it belong in an existing package? A new package needs a dependency reason, not a size reason.
-2. Business rules go in `Core`, testable without a device.
-3. Constants get their own `enum` before the first literal is written.
-4. Views get a row struct; no `PersistentModel` crosses the boundary.
-5. Every action and every `catch` logs with structured data.
-6. Schema change → new `SchemaV{n}` + migration test against an old-version fixture.
-7. Scoped tests for the change only.
-8. Diff review as in H.2.
+2. Domain first: entity, use case and repository protocol in `Core`, testable without a device.
+3. Data next: repository impl, DTO and mapper in `Data`; framework code in a data source package.
+4. Presentation last: the view model calls the use case, the view renders row structs.
+5. Constants get their own `enum` before the first literal is written.
+6. Every action and every `catch` logs with structured data.
+7. Schema change → new `SchemaV{n}` + migration test against an old-version fixture.
+8. Scoped tests for the change only.
+9. Diff review as in §8.2.
 
 ## 9. Feature specs
 
@@ -638,4 +684,7 @@ Why 12 weeks and not 8:
 | 12 | [Annotation & verifiable stamps](12-annotation.md) |
 | 13 | [Checklist templates](13-checklists.md) |
 | 14 | [Backend](14-backend.md) |
-| 15 | [Roadmap & task board](15-roadmap.md) |
+| 16 | [Learning Swift & SwiftUI](16-learning-swiftui.md) |
+| 17 | [CI/CD & TestFlight](17-ci-cd-testflight.md) |
+| 18 | [Push notifications & deep links](18-push-deep-links.md) |
+| 19 | [Performance profiling with Instruments](19-instruments.md) |

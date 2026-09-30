@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFDC2E"/><stop offset="1" stop-color="#FFC900"/></linearGradient>
+    <linearGradient id="vial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset="1" stop-color="#F4E27A"/></linearGradient>
+    <filter id="lift" x="-20%" y="-40%" width="140%" height="200%"><feDropShadow dx="0" dy="22" stdDeviation="26" flood-color="#7A5A00" flood-opacity="0.28"/></filter>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <!-- level body -->
+  <g filter="url(#lift)">
+    <rect x="92" y="372" width="840" height="280" rx="64" fill="#16181B"/>
+  </g>
+  <!-- ruler ticks along the bottom edge -->
+  <g stroke="#FFD400" stroke-width="11" stroke-linecap="round"><line x1="150" y1="582" x2="150" y2="628"/><line x1="186" y1="600" x2="186" y2="628"/><line x1="222" y1="600" x2="222" y2="628"/><line x1="258" y1="582" x2="258" y2="628"/><line x1="294" y1="600" x2="294" y2="628"/><line x1="726" y1="600" x2="726" y2="628"/><line x1="762" y1="582" x2="762" y2="628"/><line x1="798" y1="600" x2="798" y2="628"/><line x1="834" y1="600" x2="834" y2="628"/><line x1="870" y1="582" x2="870" y2="628"/></g>
+  <!-- end screws -->
+  <circle cx="176" cy="444" r="18" fill="#FFD400"/><circle cx="848" cy="444" r="18" fill="#FFD400"/>
+  <!-- vial with the bubble centred between the two marks -->
+  <rect x="322" y="436" width="380" height="148" rx="74" fill="url(#vial)"/>
+  <rect x="322" y="436" width="380" height="148" rx="74" fill="none" stroke="#0B0C0E" stroke-width="6"/>
+  <ellipse cx="512" cy="504" rx="76" ry="46" fill="#FFFFFF"/>
+  <ellipse cx="490" cy="489" rx="27" ry="11" fill="#FFFFFF" opacity="0.9"/>
+  <g stroke="#16181B" stroke-width="13" stroke-linecap="round"><line x1="418" y1="462" x2="418" y2="558"/><line x1="606" y1="462" x2="606" y2="558"/></g>
+</svg>

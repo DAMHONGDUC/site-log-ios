@@ -1,36 +1,33 @@
 # Format-on-save for SwiftUI in Xcode
 
-Auto-formats the current file with `swift-format` right before Xcode saves it, using a global
-⌘S hotkey that only activates while Xcode is frontmost.
+A Hammerspoon ⌘S hotkey, active only while Xcode is frontmost, runs `swift-format` on the current file and then saves.
 
-## 1. Create the format rule
-
-From the project root:
-
-```bash
-swift-format dump-configuration > .swift-format
+```mermaid
+flowchart LR
+    K["⌘S in Xcode"] --> F["Editor → Structure →<br/>Format File with ‘swift-format’"]
+    F -->|"0.25 s later"| S["File → Save"]
 ```
 
-Use `swift-format dump-configuration` (hyphenated binary, installed via `brew install
-swift-format`) unless the project's toolchain is Swift 6 / Xcode 16+, where `swift format
-dump-configuration` (no hyphen) works as a built-in subcommand of `swift`. Check with
-`swift format --help` before relying on the no-hyphen form.
+## 1. Format rule
 
-Key values to set in the dumped `.swift-format` JSON:
+The rule lives in [`.swift-format`](../../.swift-format) at the repo root and is committed to git.
 
-```json
-{
-  "lineLength": 120,
-  "indentation": { "spaces": 4 },
-  "respectsExistingLineBreaks": true,
-  "lineBreakBeforeEachArgument": true
-}
-```
+| Task | Command |
+|---|---|
+| Regenerate defaults (Xcode 16+ toolchain) | `swift format dump-configuration > .swift-format` |
+| Regenerate defaults (Homebrew binary) | `swift-format dump-configuration > .swift-format` |
+| Check which form works | `swift format --help` |
 
-Keep `respectsExistingLineBreaks: true` so multi-line SwiftUI modifier chains don't get collapsed
-onto a single line.
+Key values currently set:
 
-Commit `.swift-format` to git so the rule is shared across the team.
+| Key | Value | Why |
+|---|---|---|
+| `lineLength` | `100` | Shared line limit; SwiftLint's `line_length` is disabled so they don't conflict |
+| `indentation.spaces` | `4` | Xcode default |
+| `respectsExistingLineBreaks` | `true` | Keeps multi-line SwiftUI modifier chains from collapsing |
+| `lineBreakBeforeEachArgument` | `false` | Arguments stay on one line when they fit |
+| `multiElementCollectionTrailingCommas` | `true` | Cleaner diffs |
+| `orderedImports` / `OrderedImports` | on | Imports sorted alphabetically |
 
 ## 2. Install Hammerspoon
 
@@ -38,45 +35,48 @@ Commit `.swift-format` to git so the rule is shared across the team.
 brew install --cask hammerspoon
 ```
 
-Grant Accessibility permission when macOS prompts for it (required for Hammerspoon to send
-keystrokes and menu commands to other apps).
+| Permission | Why |
+|---|---|
+| Accessibility (prompted on first launch) | Lets Hammerspoon trigger Xcode menu items |
 
 ## 3. Find the exact Xcode menu item
 
-Before writing the script, open **Editor → Structure** in Xcode with a Swift file focused and
-copy the exact wording of the format command shown there (e.g. `Format File with 'swift-format'`
-on Xcode 16+ with a `.swift-format` file at the project root). The wording varies by Xcode version
-and by whether formatting comes from Xcode's built-in integration or a third-party extension —
-verify it on your machine rather than assuming the string below.
+`selectMenuItem` matches strings exactly, and Xcode renders the title with curly quotes (`‘swift-format’`, U+2018/U+2019).
+
+| Step | Action |
+|---|---|
+| 1 | Focus a `.swift` file in Xcode |
+| 2 | Press **⌘⌥D** (the `xcodeDebug` hotkey from step 4) |
+| 3 | Open Hammerspoon menu-bar icon → **Console** |
+| 4 | Copy the string from a line like `xcodeDebug: Structure > Format File with ‘swift-format’ \| enabled = true` |
+| 5 | If it differs from the one in [`hammerspoon-init.lua`](hammerspoon-init.lua), paste it into the `selectMenuItem` call |
+
+Verified on Xcode 27 / Swift 6.4.
 
 ## 4. Hammerspoon config
 
-Add to `~/.hammerspoon/init.lua`:
-
-```lua
-xcodeSave = hs.hotkey.new({"cmd"}, "s", function()
-  local app = hs.application.frontmostApplication()
-  app:selectMenuItem({"Editor", "Structure", "Format File with 'swift-format'"})
-  hs.timer.doAfter(0.25, function() app:selectMenuItem({"File", "Save"}) end)
-end)
-
-xcodeWatcher = hs.application.watcher.new(function(name, event)
-  if name ~= "Xcode" then return end
-  if event == hs.application.watcher.activated then xcodeSave:enable()
-  elseif event == hs.application.watcher.deactivated then xcodeSave:disable() end
-end):start()
+```bash
+cp docs/dev-docs/hammerspoon-init.lua ~/.hammerspoon/init.lua
 ```
 
-Notes:
+| Global in [`hammerspoon-init.lua`](hammerspoon-init.lua) | Role |
+|---|---|
+| `xcodeSave` | ⌘S hotkey: format menu item, then **File → Save** after 0.25 s |
+| `xcodeDebug` | ⌘⌥D hotkey: prints every **Editor → Structure** item to the Console |
+| `xcodeWatcher` | Enables `xcodeSave` when Xcode activates, disables it when Xcode deactivates |
 
-- `selectMenuItem` takes a table describing the full menu path, not a bare string — replace the
-  three-element table above with whatever path you copied in step 3.
-- If Xcode is already the frontmost app when Hammerspoon (re)loads this config, the watcher only
-  fires on the next activate/deactivate transition, so the hotkey won't be enabled until you
-  switch away from and back to Xcode once.
+Gotchas:
+
+| Symptom | Cause / fix |
+|---|---|
+| ⌘S does nothing right after reloading config | Xcode was already frontmost; switch away and back once |
+| `selectMenuItem` fails when typed in the Console | The Console is frontmost, not Xcode; test only via a hotkey |
+| Console noise from `print(...)` | Safe to remove; `format menu selected = true` / `save menu selected = true` confirm it works |
+| Format item not found after an Xcode update | Re-run ⌘⌥D and update the string |
 
 ## 5. Load the config
 
-Click the Hammerspoon menu-bar icon → **Reload Config**, then enable **Launch at Login**.
-
-From then on, ⌘S in Xcode runs the format command first, then saves.
+| Step | Action |
+|---|---|
+| 1 | Hammerspoon menu-bar icon → **Reload Config** |
+| 2 | Enable **Launch at Login** |

@@ -1,0 +1,17 @@
+excluded:
+  - .build
+  - Packages/Core/.build
+  - DerivedData
+
+# Formatting is owned by swift-format (.swift-format); keep SwiftLint scoped to
+# correctness/style rules that don't fight the formatter.
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - trailing_comma
+
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - redundant_type_annotation
+  - unneeded_parentheses_in_closure_argument

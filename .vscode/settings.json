@@ -1,0 +1,27 @@
+{
+  "files.associations": {
+    "*.swift": "swift"
+  },
+  "files.exclude": {
+    "**/DerivedData/**": true,
+    "**/.build/**": true
+  },
+  "search.exclude": {
+    "**/DerivedData/**": true,
+    "**/.build/**": true
+  },
+  "editor.rulers": [100],
+  "[swift]": {
+    "editor.defaultFormatter": "swiftlang.swift-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "sweetpad.xcodegen.autogenerate": true,
+  "sweetpad.build.xcodeWorkspacePath": "SiteLog.xcodeproj",
+  "sweetpad.build.scheme": "SiteLog",
+  "sweetpad.build.destination": {
+    "id": "A1435826-B732-4BE8-A6BC-E360A720E0D5",
+    "type": "iOSSimulator"
+  }
+}

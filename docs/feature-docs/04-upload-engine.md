@@ -55,9 +55,9 @@ Backend never touches bytes on the upload path. Full contract: [14-backend.md](1
 | 4 | `POST /uploads/:id/parts/refresh` `{numbers:[…]}` | fresh URLs — **required** |
 | 5 | `DELETE /uploads/:id` | abort, clean orphaned parts |
 
-- Step 4, the refresh call, is mandatory ([14](14-backend.md) §3 numbers the endpoints
-  independently — this table is a sequence, not an endpoint index): the core scenario is an app killed and reopened hours later, when signed
-  URLs have expired and resume returns 403 across the board — indistinguishable from a retry bug.
+- Step 4 (refresh) is mandatory. An app killed and reopened hours later finds every signed URL
+  expired, and resume returns 403 across the board, which looks like a retry bug.
+- This table is a call sequence; endpoint numbers in [14](14-backend.md) §3 are a separate index.
 - The backend picks the mode from `byteSize`; the client does not choose. Both sides must agree on
   `singlePutThresholdBytes` and `partSizeBytes`.
 - Every request carries a Firebase ID token, verified before signing, and the key prefix must match
@@ -213,7 +213,7 @@ public enum UploadConstants {
     public static let retryCapDelay: TimeInterval = 300
     public static let retryJitterRange: ClosedRange<Double> = 0.8...1.2
     public static let maxRetryAttempts: Int = 5
-    public static let sessionIdentifier: String = "com.sitelog.upload.background"
+    public static let sessionIdentifier: String = "app.dd.site.log.upload.background"
 }
 ```
 

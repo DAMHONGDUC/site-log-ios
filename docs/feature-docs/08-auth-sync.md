@@ -1,6 +1,6 @@
 # 08 — Auth & sync
 
-Modules: `App/Features/Auth`, `App/Features/Sync`
+Modules: `App/Features/Auth`, `App/Features/Sync` (Presentation), `Data` (sync engine), `Networking` (HTTP client)
 
 Firebase provides **identity and crash reporting only**. All application data lives in Postgres
 behind the backend ([14](14-backend.md)); there is no Firestore.
@@ -24,8 +24,7 @@ behind the backend ([14](14-backend.md)); there is no Firestore.
 | Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to R2 |
 | Account deletion | |
 
-Dropping Firestore removes an SDK that handled three things for free. All three are now ours
-([00](00-project-info.md) §7):
+Dropping Firestore removes an SDK that handled three things for free. All three are now ours:
 
 | Lost | Replaced by |
 |---|---|
@@ -45,6 +44,7 @@ Dropping Firestore removes an SDK that handled three things for free. All three 
 ## 4. Auth
 
 ```swift
+// Networking
 func authorizedRequest(_ base: URLRequest) async throws -> URLRequest {
     let token = try await Auth.auth().currentUser?.getIDToken(forcingRefresh: false)
     var request = base
@@ -127,6 +127,7 @@ hand-written sync engine.
 ## 6. Client engine
 
 ```swift
+// Data: triggered by use cases, never called from a view model directly
 actor MetadataSyncEngine {
     func sync() async throws          // pull, then push, then pull again if push advanced serverRev
     func enqueue(_ mutation: Mutation) async

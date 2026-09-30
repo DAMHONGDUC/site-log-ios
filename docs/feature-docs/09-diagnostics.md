@@ -99,7 +99,7 @@ report is a leak.
 
 ## 8. App-wide logging rules
 
-- `Logger` (os.log), subsystem `com.sitelog`, category per module: `capture`, `upload`, `report`,
+- `Logger` (os.log), subsystem `app.dd.site.log`, category per module: `capture`, `upload`, `report`,
   `plans`, `devicelink`, `sync`, `security`.
 - Every action logs with data; successes included.
 - Every `catch` logs `String(reflecting:)`, never a hand-written message. Catch broad, not narrow.

@@ -1,6 +1,6 @@
 # 01 — Projects, sessions, locations
 
-Modules: `App/Features/Projects`, `Core`, `Persistence`
+Modules: `App/Features/Projects`, `Core`, `Data`, `Persistence`
 
 ## 1. Goal
 
@@ -50,10 +50,10 @@ Floors 1...20   Units/floor 4   Template "{floor}-{unit:02}"
 ## 5. Technical design
 
 ```swift
-@MainActor
-final class SurveySessionViewModel: ObservableObject {
-    @Published private(set) var locations: [LocationRow]
-    @Published private(set) var state: SessionState
+@MainActor @Observable
+final class SurveySessionViewModel {
+    private(set) var locations: [LocationRow]
+    private(set) var state: SessionState
 
     func startSession(surveyor: String, note: String) async throws
     func closeSession() async throws
@@ -78,8 +78,8 @@ enum LocationTemplateLimits {
 ```
 
 - Views never hold `PersistentModel`.
-- Badges use `fetchCount` batched once per screen; per-row queries across 80 locations stutter on
-  scroll.
+- Badge counts come from one batched repository call per screen (`fetchCount` inside `Data`);
+  per-row queries across 80 locations stutter on scroll.
 
 ## 6. Known risks
 
