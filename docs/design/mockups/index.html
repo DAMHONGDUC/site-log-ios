@@ -297,6 +297,9 @@ const sheet = (title, body, dk, o = {}) => `<div class="dim"></div><div class="s
 const thumb = (v, s = 48, r = 8, o = {}) => `<span class="thumb" style="width:${s}px;height:${s}px;border-radius:${r}px">${scene(v, o)}</span>`;
 const progress = (f) => `<div class="progress"><i style="width:${f * 100}%"></i></div>`;
 const keyboard = () => `<div class="kb">${['qwertyuiop', 'asdfghjkl'].map(r => `<div class="kr">${[...r].map(k => `<span class="k">${k}</span>`).join('')}</div>`).join('')}<div class="kr"><span class="k fn" style="width:44px">${I('arrow-big-up', 20)}</span><span style="width:6px"></span>${[...'zxcvbnm'].map(k => `<span class="k">${k}</span>`).join('')}<span style="width:6px"></span><span class="k fn" style="width:44px">${I('delete', 20)}</span></div><div class="kr"><span class="k fn" style="width:90px">123</span><span class="k" style="width:190px;font-size:15px">space</span><span class="k fn" style="width:90px">next</span></div></div>`;
+/* App mark: the app icon (docs/design/app-icon/app-icon.svg) under the iOS corner radius */
+const APP_MARK = `<defs><linearGradient id="mk-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFDC2E"/><stop offset="1" stop-color="#FFC900"/></linearGradient><linearGradient id="mk-vial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset="1" stop-color="#F4E27A"/></linearGradient><filter id="mk-lift" x="-20%" y="-40%" width="140%" height="200%"><feDropShadow dx="0" dy="22" stdDeviation="26" flood-color="#7A5A00" flood-opacity="0.28"/></filter></defs><rect width="1024" height="1024" fill="url(#mk-bg)"/><g filter="url(#mk-lift)"><rect x="92" y="372" width="840" height="280" rx="64" fill="#16181B"/></g><g stroke="#FFD400" stroke-width="11" stroke-linecap="round"><line x1="150" y1="582" x2="150" y2="628"/><line x1="186" y1="600" x2="186" y2="628"/><line x1="222" y1="600" x2="222" y2="628"/><line x1="258" y1="582" x2="258" y2="628"/><line x1="294" y1="600" x2="294" y2="628"/><line x1="726" y1="600" x2="726" y2="628"/><line x1="762" y1="582" x2="762" y2="628"/><line x1="798" y1="600" x2="798" y2="628"/><line x1="834" y1="600" x2="834" y2="628"/><line x1="870" y1="582" x2="870" y2="628"/></g><circle cx="176" cy="444" r="18" fill="#FFD400"/><circle cx="848" cy="444" r="18" fill="#FFD400"/><rect x="322" y="436" width="380" height="148" rx="74" fill="url(#mk-vial)"/><rect x="322" y="436" width="380" height="148" rx="74" fill="none" stroke="#0B0C0E" stroke-width="6"/><ellipse cx="512" cy="504" rx="76" ry="46" fill="#FFFFFF"/><ellipse cx="490" cy="489" rx="27" ry="11" fill="#FFFFFF" opacity="0.9"/><g stroke="#16181B" stroke-width="13" stroke-linecap="round"><line x1="418" y1="462" x2="418" y2="558"/><line x1="606" y1="462" x2="606" y2="558"/></g>`;
+const appMark = (size) => `<svg viewBox="0 0 1024 1024" width="${size}" height="${size}" style="border-radius:${Math.round(size * 0.225)}px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.06)">${APP_MARK}</svg>`;
 const toolbar = (left, right) => `<div class="toolbar"><div class="side">${left}</div><div class="capture">${I('camera', 30, 2)}</div><div class="side">${right}</div></div>`;
 
 /* Site photo stand-ins: flat architectural scenes rather than grey boxes */
@@ -328,14 +331,14 @@ const G = [];
 G.push(['Access', 'specs 07, 08', [
 screen('A1', 'Face ID lock', `
   ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center">
-    <div style="width:72px;height:72px;border-radius:18px;background:var(--hi);display:grid;place-items:center;border:1px solid rgba(0,0,0,.08)">${I('hard-hat', 36, 2)}</div>
+    ${appMark(72)}
     <div class="stack" style="gap:4px"><div style="font-size:22px;font-weight:700">SiteLog is locked</div><div class="fn">Unlock to view site photos and reports.</div></div>
     <div style="margin-top:32px;color:var(--ink2)">${I('scan-face', 64, 1.5)}</div>
   </div>`)}
   ${dock(`${btn('Unlock with Face ID', 'primary', 'scan-face')}${btn('Use passcode', 'ghost', null, { style: 'font-weight:600' })}`, 'clear')}`),
 screen('A2', 'Sign in (optional)', `
   ${content(`<div style="padding-top:48px" class="stack">
-    <div style="width:56px;height:56px;border-radius:14px;background:var(--hi);display:grid;place-items:center;border:1px solid rgba(0,0,0,.08)">${I('hard-hat', 28, 2)}</div>
+    ${appMark(56)}
     <div style="font-size:32px;line-height:38px;font-weight:700;letter-spacing:-.02em;margin-top:24px">Your site log,<br>on every device.</div>
     <div class="t-subhead" style="color:var(--ink2);margin-top:8px">Sign in to back up projects and hand off between iPhone and iPad. Everything still works offline without an account.</div>
   </div>
