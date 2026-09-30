@@ -6,7 +6,7 @@ struct ContentView: View {
     @ObserveInjection var inject
 
     @State private var todos = [
-        TodoItemModel(title: "Hoc Toan 2"),
+        TodoItemModel(title: "Hoc Toan 3"),
         TodoItemModel(title: "Hoc Tieng Anh"),
     ]
 
@@ -15,8 +15,7 @@ struct ContentView: View {
             List(todos) { todo in
                 Text(todo.title)
                 Text(todo.title)
-                Text(todo.title)
-                Text(todo.title)
+
             }
             .navigationTitle("Todo")
         }
