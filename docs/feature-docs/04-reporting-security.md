@@ -1,0 +1,180 @@
+# Reporting and security
+
+The paid deliverable and the protection of the evidence behind it.
+
+**Specs** — [05 PDF and spreadsheet export](#05-pdf-and-spreadsheet-export) · [07 Security and audit log](#07-security-and-audit-log)
+
+---
+
+## 05. PDF and spreadsheet export
+
+Module: `Packages/Reporting`
+
+**Goal:** turn a `Session` into a branded, signed PDF plus CSV/XLSX, shareable on the spot with no
+network. Never truncated, never missing images, never crashing on page 38 of 40.
+
+| In | Out |
+|---|---|
+| Branded cover, summary by severity / floor / assignee | Fully custom per-company layouts (v2) |
+| Plan pin maps, checklist tables, issue blocks with annotated photos | PKI digital signatures — these are handwritten signatures with internal acceptance value, and the app says so |
+| Before/after pairs, stale-issue section, two-party signature page | |
+| Grouping by location or by assignee (a parameter, not a second code path) | |
+| PDF + CSV/XLSX via Files / `UIActivityViewController` | |
+
+### 05.1 Sections
+
+| Section | Source |
+|---|---|
+| Cover — project, client, dates, surveyor, logo | Project + `ReportBranding` |
+| Summary — counts by severity, floor, assignee | Issues |
+| Plan pin maps, one page per sheet | [11](01-field-work.md#11-floor-plans-and-issue-pins) |
+| Checklist results per location | [13](01-field-work.md#13-checklist-templates) |
+| Issue detail, before/after pairs, stale issues | [03](01-field-work.md#03-issues-and-before-after-pairing), [12](01-field-work.md#12-annotation-and-verifiable-stamps) |
+| Signatures | `PencilKit` PNG + `signedAt`, `signerName`, `signerRole` per party |
+
+```swift
+struct ReportBranding: Codable, Sendable {
+    let companyName: String
+    let logoFileURL: URL?
+    let accentColorHex: String
+    let clientBlock: String
+    let footerNote: String
+}
+```
+
+Branding is one `report_branding` row per user; the logo uploads like any file. Signing sets
+`Session.state = .exported` (read-only); re-signing creates a `-R2` revision and keeps the original.
+
+### 05.2 Rendering
+
+`UIGraphicsPDFRenderer` — no third-party library, no WebView printing (HTML→PDF with 200 images gives
+blank pages).
+
+```
+Session → SessionSnapshot (one fetch) → ReportLayoutEngine (pure, no UIKit) → [ReportPage]
+        → PDFPageRenderer (UIKit, one autoreleasepool per page) → temp file → atomic move → share
+```
+
+| Rule | Reason |
+|---|---|
+| Layout counts images, renderer draws them | Guarantees no dropped evidence |
+| `CGImageSourceCreateThumbnailAtIndex` to `maxImagePixelSize` | 160 full-size `UIImage`s = jetsam |
+| Background queue; `@MainActor` gets progress only | |
+| Temp file + `moveItem` | A kill mid-render never leaves a partial file |
+| Renders the stamped, annotated derivative | The archive keeps the clean original |
+
+Integrity on every page: under each image the first 8 hash characters, the code and its state
+(`registered`/`verified`), and time confidence when below `.serverVerified`; unsynced captures print
+"not yet verified". The final page carries a SHA-256 over the `captureID`-sorted hash list. All
+spacing, color and type come from `DesignSystem` tokens, including inside the PDF.
+
+**Spreadsheet:** CSV always, XLSX above `csvOnlyRowThreshold`; one row per issue (`report_id,
+project, session_date, location_code, plan_sheet, pin_x, pin_y, issue_id, title, detail, severity,
+status, assignee, trade, due_date, capture_count, first_capture_sha256, verification_code,
+created_at`), streamed with `FileHandle`.
+
+```swift
+enum ReportConstants {
+    static let pageSize: CGSize = CGSize(width: 595, height: 842)   // A4 @72dpi
+    static let margin: CGFloat = 40
+    static let imagesPerRow: Int = 2
+    static let maxImagePixelSize: CGFloat = 1400
+    static let jpegCompressionQuality: CGFloat = 0.8
+    static let hashPrefixLength: Int = 8
+    static let staleIssueSessionThreshold: Int = 3
+    static let csvOnlyRowThreshold: Int = 5000
+    static let maxLogoPixelSize: CGFloat = 600
+}
+```
+
+| Risk | Handling |
+|---|---|
+| Image missing from disk | Placeholder "Image no longer on device — {hash}"; never crash or skip |
+| Non-ASCII file names | Percent-encode on share; test with "Ánh Dương – Block B" |
+| Too large for chat apps | Show estimated size first, offer a compression level |
+
+**Done:** 200 images / 40 issues on a low-end iPhone under 200 MB peak; image count equals
+non-excluded capture count (asserted); pairs matched and labeled with `Location.code`; works in
+airplane mode.
+**Tests:** image count; empty / 1 / 500 issues; 20-image issue paginates; missing file placeholder;
+hash-of-hashes order-stable; both groupings give the same total; CSV escaping; "not yet verified";
+pin numbering matches detail; 200-image memory; opens in Preview and Acrobat.
+
+---
+
+## 07. Security and audit log
+
+Modules: `SiteLog/Presentation/Security`, `Domain`
+
+**Goal:** media and reports are unreadable if the device is lost, unmodifiable without a trace, and
+never leaked into logs or analytics.
+
+### 07.1 At rest
+
+| Data | Protection |
+|---|---|
+| Media, plans, upload temp parts | `FileProtectionType.completeUnlessOpen` |
+| SwiftData store | `.complete` |
+| Export bundles leaving the app | AES-GCM (CryptoKit), per-bundle key |
+| Audit chain | HMAC-SHA256 (CryptoKit), key in Keychain |
+| Firebase tokens | Keychain, `.whenUnlockedThisDeviceOnly` |
+
+**Why not AES-GCM for media:** background `URLSession` uploads only raw files on disk, so encrypted
+media would need a plaintext temp copy for the whole upload window — worse than nothing, and double
+the disk. `.completeUnlessOpen` encrypts on lock while keeping open files readable, which background
+upload needs; `.complete` would stop uploads when the phone goes into a pocket.
+
+### 07.2 Face ID
+
+`LAContext.evaluatePolicy(.deviceOwnerAuthentication)` with passcode fallback (Face ID fails under
+helmets and masks). Gates cold launch and foreground return after `lockTimeout`; app-switcher
+overlay on resign-active. It is a UI gate on `RootView` (on a sheet it is bypassable by killing the
+app), not encryption. Sensitive Keychain items use `.biometryCurrentSet`.
+
+### 07.3 Audit log
+
+Records every view, delete, export, report exclusion, metadata change, pin move and annotation edit.
+
+```swift
+struct AuditEntry: Codable, Sendable {
+    let id: UUID
+    let action: AuditAction
+    let subjectID: String
+    let actorID: String            // Firebase uid
+    let occurredAt: Date
+    let previousEntryHMAC: String
+    let hmac: String               // HMAC-SHA256(key, canonical(fields) + previousEntryHMAC)
+}
+```
+
+The chain makes edits and deletions detectable. The key is generated once and never leaves the
+device; the chain is verified at launch (a break raises a Diagnostics flag and a Crashlytics
+non-fatal); entries survive project deletion. Losing the key on device migration is accepted — the
+log is per device, and Diagnostics says so.
+
+### 07.4 Leaks and secrets
+
+| Rule | Detail |
+|---|---|
+| Never log presigned URLs, tokens, Keychain values | They carry credentials |
+| Never log user text | Log `issueID`, not `issue.detail` (names, unit and phone numbers) |
+| Crashlytics and analytics | IDs and enums only; no free text, no GPS |
+| Logger | `os.Logger`, `privacy: .private` by default; no `print` |
+| Secrets | `GoogleService-Info.plist` and endpoints written by CI; `.xcconfig` per env, `.example` committed; R2 keys only on the backend |
+| Privacy | GPS disclosed in onboarding and disableable; `PrivacyInfo.xcprivacy` declares location, device ID, crash data; account deletion is immediate locally, within 30 days on the server |
+
+```swift
+enum SecurityConstants {
+    static let lockTimeout: TimeInterval = 300
+    static let keychainService: String = "app.dd.site.log.keys"
+    static let auditHMACKeyTag: String = "app.dd.site.log.audit.hmac"
+    static let exportKeyLengthBytes: Int = 32
+}
+```
+
+**Done:** a locked device's media is unreadable via file sharing or unencrypted backup; background
+upload continues while locked; a hand-edited entry fails at the right index; no `print(`; a 20-photo
+session's logs hold no URL, token or free text.
+**Tests:** 100-entry chain verifies; edit at 50 and mid-chain deletion detected at the right index;
+AES-GCM bundle round-trip; wrong key throws; new files carry the expected protection;
+`.biometryCurrentSet` unreadable before auth; redaction snapshot.

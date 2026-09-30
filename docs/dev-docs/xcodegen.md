@@ -1,5 +1,7 @@
 # XcodeGen
 
+Decision record: [ADR 0008](../adr/0008-xcodegen.md).
+
 `SiteLog.xcodeproj` is generated from [`project.yml`](../../project.yml). Edit the YAML, never the
 `.pbxproj` by hand.
 
@@ -30,7 +32,8 @@ Close the project in Xcode before regenerating, or Xcode may keep the old one in
 | Area | Where |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| `Core` (local) and `Inject` (remote) packages | `packages` |
+| Local packages (`Domain`, `DataLayer`, `Networking`, `DesignSystem`) and remote ones (`Factory`, `Kingfisher`, `Firebase`, `Inject`, `swift-snapshot-testing`) | `packages` |
+| Which package products each target links | `targets.<name>.dependencies` |
 | App target, bundle id, iOS 18.6 | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
 | Hot reload flags, Debug only | `targets.SiteLog.settings.configs.Debug` — see [hot-reload.md](hot-reload.md) |

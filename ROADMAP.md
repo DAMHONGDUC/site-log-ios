@@ -27,14 +27,14 @@ flowchart TD
 |---|---|
 | Total | 49 open parts ≈ 351 hours (`P01` done) |
 | Key milestone | `M2`: everything before it is setup, everything after it is addition |
-| Stop rule | If `M5` is not reachable, stop after `M4` and ship single-device; sync can be added later |
+| Goal | App Store release with the full scope in `M0`–`M6`; no milestone is dropped |
 
 ## M0 — Scaffold · 15h
 
 Demo: every package builds on its own, CI is green, zero warnings.
 
 - [x] **P01** - [-] - [Tooling] - [done] - Xcode project, XcodeGen, SwiftLint, hot reload, tooling
-- [ ] **P02** - [00] - [Core] - [6h] - Clean Architecture skeleton: `Core` (Domain), `Data`, `Networking` packages, `AppDependencies`, injected `Clock`
+- [ ] **P02** - [00] - [Domain] - [6h] - Clean Architecture skeleton: `Domain`, `DataLayer`, `Networking`, `DesignSystem` packages; Factory DI in `AppDependencies`; injected `Clock`; test libraries (swift-snapshot-testing, `FactoryTesting`)
 - [ ] **P03** - [17] - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **P04** - [17] - [CI] - [4h] - CI guards: packages build standalone with warnings as errors, no `print(`, secret scan
 
@@ -89,7 +89,7 @@ Demo: pins on a real floor plan, checklists, BLE mock, diagnostics.
 - [ ] **P34** - [06] - [DeviceLink] - [14h] - DeviceLink protocol and BLE mock
 - [ ] **P35** - [09] - [Diagnostics] - [6h] - Diagnostics: upload status screen
 - [ ] **P36** - [09] - [Diagnostics] - [6h] - Diagnostics: storage breakdown, cleanup, diagnostic bundle
-- [ ] **P37** - [09,19] - [Diagnostics] - [6h] - Crash reporting, first Instruments pass, TestFlight build
+- [ ] **P37** - [09,19] - [Diagnostics] - [6h] - Firebase Crashlytics, first Instruments pass, TestFlight build
 
 ## M5 — Multi-device · 50h
 

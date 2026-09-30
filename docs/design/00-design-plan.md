@@ -4,10 +4,10 @@ Screen inventory and Figma file structure for the whole app, derived from `docs/
 
 ## 1. Design principles
 
-- One-handed, thumb-reach: primary actions (camera, save) in the lower half — [01](../feature-docs/01-project-session.md) §3.
+- One-handed, thumb-reach: primary actions (camera, save) in the lower half — [01](../feature-docs/01-field-work.md#01-projects-sessions-locations).
 - Readable outdoors and with gloves: min 44pt targets, 17pt body, high-contrast dark and light.
-- Offline is normal: no blocking spinners; "waiting" is never red — [09](../feature-docs/09-diagnostics.md) §3.
-- Camera is the home: sheets return to the camera, not to lists — [03](../feature-docs/03-issue-tracking.md) §3.1.
+- Offline is normal: no blocking spinners; "waiting" is never red — [09](../feature-docs/05-platform.md#091-upload-status-screen).
+- Camera is the home: sheets return to the camera, not to lists — [03](../feature-docs/01-field-work.md#031-flows).
 - Severity colour is the only strong colour: Critical red, Major orange, Minor yellow.
 
 ## 1a. Market scan and visual direction
@@ -27,7 +27,9 @@ chips, big soft cards. SiteLog uses a **field-ledger** look instead:
   of borders and shadows.
 - Hi-vis yellow `#FFD400` only on the capture button and the live-session dot — like a safety vest,
   never as a large fill.
-- IBM Plex Sans for UI. IBM Plex Mono only for real codes: hashes, file names, report IDs.
+- Type: SF Pro in the app (Dynamic Type text styles, see `TYPE_TOKENS`); IBM Plex Sans stands in
+  for it in Figma and the mockups. Monospace (SF Mono in the app, IBM Plex Mono in Figma) only for
+  real codes: hashes, file names, report IDs.
 - No tinted pill tags. Severity is a marker shape + ink text: Critical ■ red square, Major ▲ amber
   triangle, Minor ○ blue ring; Resolved ● green dot, Waiting ◌ dashed ring. Shapes keep severity
   readable in grayscale and for colour-blind users.
@@ -70,8 +72,8 @@ Starter plan limits: 3 pages, 1 variable mode (light only), low MCP call quota.
 | 02 Screens | One Section per group in §3, iPhone 16 frame (393×852) |
 | 03 Flows | Flow diagrams for each flow in §3 (not started) |
 
-Figma uses Inter + Material Symbols because SF Pro does not render in the Figma renderer; the app
-ships with SF Pro + SF Symbols.
+Figma and the mockups use IBM Plex Sans / Mono and Lucide icons because SF Pro and SF Symbols do
+not render in the Figma renderer; the app ships with SF Pro, SF Mono and SF Symbols.
 
 ## 3. Screen inventory
 

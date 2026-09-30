@@ -29,7 +29,7 @@ brew install swiftlint
 
 | Setting | Values |
 |---|---|
-| `excluded` | `.build`, `Packages/Core/.build`, `DerivedData` |
+| `excluded` | `.build`, `Packages/*/.build`, `DerivedData` |
 | `disabled_rules` | `trailing_whitespace`, `line_length`, `trailing_comma` (owned by `swift-format`) |
 | `opt_in_rules` | `empty_count`, `explicit_init`, `redundant_type_annotation`, `unneeded_parentheses_in_closure_argument` |
 
