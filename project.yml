@@ -41,6 +41,8 @@ packages:
 fileGroups:
   - docs
   - README.md
+  - ROADMAP.md
+  - .vscode
   - .gitignore
   - .gitattributes
   - .swift-format
