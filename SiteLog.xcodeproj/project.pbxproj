@@ -9,16 +9,15 @@
 /* Begin PBXBuildFile section */
 		31BDEF8B268FCBD10484C0DE /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDE4DFDACE84DFECF5CC164 /* RootView.swift */; };
 		3626D995EBA331531ED55DA4 /* SiteLogUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0326526FC6A8F250F3137F21 /* SiteLogUITests.swift */; };
-		40158483A8CEC1D5AC772780 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 83D5A5CDF3756978814D0880 /* Inject */; };
 		44DD22AAA01DEEBD4F4D4897 /* SiteLogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1A0E9DE81F9D3A81E2C1D7 /* SiteLogTests.swift */; };
-		586DDA4915F031E8394973F5 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 925462D85DDB19476E667759 /* DesignSystem */; };
+		586DDA4915F031E8394973F5 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 83D5A5CDF3756978814D0880 /* Inject */; };
 		79995408A89646F0E472562C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0E5F98A944C60084EF91FAD /* Assets.xcassets */; };
 		85100C0BC8E6B140C21FC8A2 /* SiteLogUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E3F6798988D3013C7D6D3D /* SiteLogUITestsLaunchTests.swift */; };
 		A2D43370E146203EC023A1DB /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = B9A29360DCD021EB03DC6392 /* Domain */; };
 		C65A97A600258CF890BDFC96 /* DataLayer in Frameworks */ = {isa = PBXBuildFile; productRef = E6BA7B07192ED4BB66427DF5 /* DataLayer */; };
 		D45FFA078C11D5653E4BB621 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA01CF207E3C769E2FF55798 /* AppDependencies.swift */; };
 		EB04F9CD32D71699F0FE7417 /* SiteLogApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1FB376C172B638529E9AA /* SiteLogApp.swift */; };
-		EE545A5F2F2ECEF0E780FC10 /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 982CF2436A0F3F3CE1BEAD74 /* Networking */; };
+		EE545A5F2F2ECEF0E780FC10 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 925462D85DDB19476E667759 /* DesignSystem */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +74,6 @@
 		96E947E3E7E3788126FE3A80 /* 04-reporting-security.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-reporting-security.md"; sourceTree = "<group>"; };
 		9ABA5F700E63DEDD5E72D9DA /* app-icon-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-dark.png"; sourceTree = "<group>"; };
 		A081C3342F9D0D6B39064CDC /* 0001-factory-di.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0001-factory-di.md"; sourceTree = "<group>"; };
-		A98ABCBFBFC60EC048905484 /* Networking */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Networking; path = Packages/Networking; sourceTree = SOURCE_ROOT; };
 		AB841D0C22E49593F1D62522 /* preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = preview.png; sourceTree = "<group>"; };
 		AD386344CF81DAFEEBB07CFB /* app-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon.png"; sourceTree = "<group>"; };
 		B16EC63A2BA655E4224D459A /* ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ROADMAP.md; sourceTree = "<group>"; };
@@ -101,9 +99,8 @@
 			files = (
 				A2D43370E146203EC023A1DB /* Domain in Frameworks */,
 				C65A97A600258CF890BDFC96 /* DataLayer in Frameworks */,
-				EE545A5F2F2ECEF0E780FC10 /* Networking in Frameworks */,
-				586DDA4915F031E8394973F5 /* DesignSystem in Frameworks */,
-				40158483A8CEC1D5AC772780 /* Inject in Frameworks */,
+				EE545A5F2F2ECEF0E780FC10 /* DesignSystem in Frameworks */,
+				586DDA4915F031E8394973F5 /* Inject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,7 +297,6 @@
 				5FB96206F20F929D04596D79 /* DataLayer */,
 				F0D19FCFBA693CEAFA6D9024 /* DesignSystem */,
 				8960A7122D9FCED07704B7BD /* Domain */,
-				A98ABCBFBFC60EC048905484 /* Networking */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -343,7 +339,6 @@
 			packageProductDependencies = (
 				B9A29360DCD021EB03DC6392 /* Domain */,
 				E6BA7B07192ED4BB66427DF5 /* DataLayer */,
-				982CF2436A0F3F3CE1BEAD74 /* Networking */,
 				925462D85DDB19476E667759 /* DesignSystem */,
 				83D5A5CDF3756978814D0880 /* Inject */,
 			);
@@ -407,7 +402,6 @@
 				CEE7F7CBD41A7CB244539A02 /* XCLocalSwiftPackageReference "Packages/DataLayer" */,
 				B0EBCF6B6784D6BEC451AA06 /* XCLocalSwiftPackageReference "Packages/DesignSystem" */,
 				9FE6E83BBC3063838D90CAAA /* XCLocalSwiftPackageReference "Packages/Domain" */,
-				D93DB2E1050199EEC8780B38 /* XCLocalSwiftPackageReference "Packages/Networking" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 225EEE7FD5C901AD44124FCA /* Products */;
@@ -833,10 +827,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/DataLayer;
 		};
-		D93DB2E1050199EEC8780B38 /* XCLocalSwiftPackageReference "Packages/Networking" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/Networking;
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -859,10 +849,6 @@
 		925462D85DDB19476E667759 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignSystem;
-		};
-		982CF2436A0F3F3CE1BEAD74 /* Networking */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Networking;
 		};
 		B9A29360DCD021EB03DC6392 /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
