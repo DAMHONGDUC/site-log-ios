@@ -7,7 +7,6 @@
 flowchart LR
     Y["project.yml"] -->|"xcodegen"| P["SiteLog.xcodeproj"]
     P --> X["Xcode"]
-    P --> S["SweetPad / VS Code"]
 ```
 
 ## Install
@@ -22,7 +21,6 @@ brew install xcodegen
 |---|---|
 | After changing `project.yml` | `xcodegen` |
 | After pulling, if `project.yml` changed | `xcodegen` |
-| Adding or removing files in VS Code | Automatic: `sweetpad.xcodegen.autogenerate` is on |
 | Adding files in Xcode | Nothing: `SiteLog/` is a synced folder |
 
 Close the project in Xcode before regenerating, or Xcode may keep the old one in memory.

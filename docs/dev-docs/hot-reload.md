@@ -1,11 +1,11 @@
 # Hot reload
 
 Save a `.swift` file and the running simulator app updates in place, with no rebuild and no return
-to the root screen. It replaces SwiftUI Previews when editing in VS Code.
+to the root screen.
 
 ```mermaid
 flowchart LR
-    E["Save in VS Code"] --> N["InjectionNext<br/>recompiles the file"]
+    E["Save in Xcode"] --> N["InjectionNext<br/>recompiles the file"]
     N --> A["Running app<br/>(Inject redraws the view)"]
 ```
 
@@ -44,13 +44,11 @@ struct TodoListView: View {
 }
 ```
 
-The `swiftview` snippet in VS Code generates this shape.
-
 ## 4. Daily use
 
 | Step | Action |
 |---|---|
-| 1 | Build and run on the simulator (SweetPad, or F5 to attach the debugger) |
+| 1 | Build and run on the simulator (⌘R) |
 | 2 | Edit a view and save |
 | 3 | The simulator updates; InjectionNext's menu bar icon flashes on each injection |
 
