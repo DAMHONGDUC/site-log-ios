@@ -17,7 +17,6 @@ struct ContentView: View {
                 Text(todo.title)
                 Text(todo.title)
                 Text(todo.title)
-                Text(todo.title)
             }
             .navigationTitle("Todo")
         }
