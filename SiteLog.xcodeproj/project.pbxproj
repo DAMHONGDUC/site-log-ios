@@ -38,6 +38,7 @@
 /* Begin PBXFileReference section */
 		0326526FC6A8F250F3137F21 /* SiteLogUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogUITests.swift; sourceTree = "<group>"; };
 		048CDEF293E27680CD502420 /* 11-floorplan-pins.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "11-floorplan-pins.md"; sourceTree = "<group>"; };
+		0597E6B1D7BA44D2664F3D77 /* 19-instruments.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "19-instruments.md"; sourceTree = "<group>"; };
 		07E3F6798988D3013C7D6D3D /* SiteLogUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		0E6FE694745098CD92DAFED2 /* 08-auth-sync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "08-auth-sync.md"; sourceTree = "<group>"; };
 		0E809651B3B2CB21EDCAC130 /* 02-capture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "02-capture.md"; sourceTree = "<group>"; };
@@ -53,6 +54,7 @@
 		4AB1FB376C172B638529E9AA /* SiteLogApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogApp.swift; sourceTree = "<group>"; };
 		53D48D27079768E507894297 /* 13-checklists.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "13-checklists.md"; sourceTree = "<group>"; };
 		552FF2D05F70CB7F347ED905 /* 14-backend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "14-backend.md"; sourceTree = "<group>"; };
+		5FD70410B1D8B72DFF99358D /* 17-ci-cd-testflight.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "17-ci-cd-testflight.md"; sourceTree = "<group>"; };
 		61996AB7DB87AFD0F031E82D /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
 		62975CF936F38CC58B19DD38 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6313C1633857BE095B371272 /* 04-upload-engine.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-upload-engine.md"; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 		BBF465187B16BFDE64CED2B4 /* 06-device-link.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "06-device-link.md"; sourceTree = "<group>"; };
 		BC8C76F1926C4F23F139DA7A /* xcodegen.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = xcodegen.md; sourceTree = "<group>"; };
 		C22C0D51E39B1B83B87EF083 /* TodoItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemModel.swift; sourceTree = "<group>"; };
+		CEC59C30BF716E885836661F /* 18-push-deep-links.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "18-push-deep-links.md"; sourceTree = "<group>"; };
 		DA92991C592629075B5289FE /* hammerspoon-init.lua */ = {isa = PBXFileReference; path = "hammerspoon-init.lua"; sourceTree = "<group>"; };
 		E2F50CADFDB1E7710D6E5218 /* 10-realtime-progress.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "10-realtime-progress.md"; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
@@ -195,6 +198,9 @@
 				552FF2D05F70CB7F347ED905 /* 14-backend.md */,
 				3A490FFC3883C37DD79398BD /* 15-roadmap.md */,
 				12A62CAD04177F7290A6941B /* 16-learning-swiftui.md */,
+				5FD70410B1D8B72DFF99358D /* 17-ci-cd-testflight.md */,
+				CEC59C30BF716E885836661F /* 18-push-deep-links.md */,
+				0597E6B1D7BA44D2664F3D77 /* 19-instruments.md */,
 			);
 			path = "feature-docs";
 			sourceTree = "<group>";
