@@ -23,22 +23,34 @@ Screen inventory and Figma file structure for the whole app, derived from `docs/
 Most competitors (and most AI-generated UI) share the same look: saturated blue, Inter, pastel pill
 chips, big soft cards. SiteLog uses a **field-ledger** look instead:
 
-- White screen background, graphite ink `#16181B` for primary buttons, warm hairline borders
-  `#E6E3DD` instead of shadows.
-- Hi-vis yellow `#FFD400` only for capture, focus rings and the active session — like a safety vest,
+- White screen background, graphite ink `#16181B` for primary buttons, hairline separators instead
+  of borders and shadows.
+- Hi-vis yellow `#FFD400` only on the capture button and the live-session dot — like a safety vest,
   never as a large fill.
-- IBM Plex Sans for UI, IBM Plex Mono for location codes, counts, hashes and timestamps.
+- IBM Plex Sans for UI. IBM Plex Mono only for real codes: hashes, file names, report IDs.
 - No tinted pill tags. Severity is a marker shape + ink text: Critical ■ red square, Major ▲ amber
   triangle, Minor ○ blue ring; Resolved ● green dot, Waiting ◌ dashed ring. Shapes keep severity
-  readable in grayscale and for colour-blind users. Rows add a 3 pt left bar; file types use an
-  outlined mono label (`PDF`); only labels over photos get a solid white chip.
+  readable in grayscale and for colour-blind users.
 - Site photos are drawn as flat architectural scenes, not grey placeholder boxes.
 
-iOS metrics: status bar 54 pt (Dynamic Island), nav bar 44 pt, large title 40 pt line, tab bar
-49 + 34 pt, home-indicator safe area 34 pt. Every primary action lives in a bottom dock above the
-safe area; sheets carry their own bottom dock.
+What keeps it from looking generated:
 
-Tokens: `COLOR_TOKENS` (19 colours, Light + Dark) and `TYPE_TOKENS` (10 text styles with SwiftUI
+- Native iOS structure: plain full-bleed lists with inset hairlines, sentence-case section headers
+  with a grey count on the right, `.body` 17 pt row titles. No card around every block, no
+  uppercase mono eyebrow labels.
+- One focal element per screen. Summaries are written as sentences ("14 open issues, 2 of them
+  overdue") instead of three equal stat boxes.
+- Realistic, uneven data in the supervisor's voice: 37 of 82 rooms, "Tuan's masonry crew",
+  "due Fri", "2 days late".
+- Real iOS details: keyboard up on the new-project sheet, badge on the Issues tab, radio list for
+  the re-check outcome, native alert for account deletion, capture button in a bottom toolbar.
+- Icons only where they help scanning (tab bar, toolbars, camera), not on every row.
+
+iOS metrics: status bar 54 pt (Dynamic Island), nav bar 44 pt, large title 34/41 pt, tab bar
+49 + 34 pt, home-indicator safe area 34 pt. Every primary action lives in a bottom dock or toolbar
+above the safe area; sheets carry their own bottom dock.
+
+Tokens: `COLOR_TOKENS` (17 colours, Light + Dark) and `TYPE_TOKENS` (10 text styles with SwiftUI
 mapping) at the top of [mockups/index.html](mockups/index.html) are the single source; the page
 generates its CSS variables from them and shows them on the Foundations board, with three screens
 rendered in Dark to check the values.
