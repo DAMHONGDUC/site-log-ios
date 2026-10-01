@@ -57,7 +57,7 @@ mapping) at the top of [mockups/index.html](mockups/index.html) are the single s
 generates its CSS variables from them and shows them on the Foundations board, with three screens
 rendered in Dark to check the values.
 
-Mockups: [mockups/index.html](mockups/index.html) — 35 screens, import into Figma with the
+Mockups: [mockups/index.html](mockups/index.html) — 38 screens, import into Figma with the
 html.to.design plugin (Chrome extension on the opened file).
 
 ## 2. Figma file structure
@@ -79,7 +79,7 @@ not render in the Figma renderer; the app ships with SF Pro, SF Mono and SF Symb
 
 | # | Group | Screens | Spec | Milestone |
 |---|---|---|---|---|
-| S1 | Launch & security | Face ID lock, app-switcher overlay, sign-in | 07, 08 | M4–M5 |
+| S1 | Launch & security | Face ID lock (A1), passcode unlock (A3), app-switcher overlay, sign-in (A2) | 07, 08 | M3–M5 |
 | S2 | Projects | Project list, new project sheet, project detail (Sessions · Locations · Plans tabs) | 01 | M1 |
 | S3 | Sessions & locations | Start session sheet, survey screen (location tree + badges), bulk-generate locations, clone tree, end session | 01 | M1 |
 | S4 | Capture | Camera, capture review, measurement overlay + device status dot | 02, 06 | M1, M4 |
@@ -89,7 +89,7 @@ not render in the Figma renderer; the app ships with SF Pro, SF Mono and SF Symb
 | S8 | Checklists | Template picker, checklist run (Pass/Fail/N/A, progress 14/22) | 13 | M4 |
 | S9 | Reports | Report builder (grouping, sections), branding settings, signature pad (two parties), PDF preview + share | 05 | M3 |
 | S10 | Uploads & diagnostics | Upload status screen, diagnostic bundle export | 04, 09, 10 | M2 |
-| S11 | Settings | Account, devices (BLE pairing), security, storage cleanup, delete account | 06, 07, 08, 09 | M4–M6 |
+| S11 | Settings | Account, devices (BLE pairing), app lock (S4: Lock app + Lock after), set passcode (S5), storage cleanup, delete account | 06, 07, 08, 09 | M4–M6 |
 
 ## 4. Status (2026-09-30)
 
@@ -99,6 +99,9 @@ not render in the Figma renderer; the app ships with SF Pro, SF Mono and SF Symb
 | Projects, sessions, locations (7 screens) | Checklists (S8) |
 | Capture, issues, before/after (6 screens) | Reports (S9) |
 | Annotation, stamps, floor plans (5 screens) | Uploads & diagnostics (S10), security & settings (S1, S11) |
+
+Mockup-only, not yet in Figma (2026-10-01): A3 passcode unlock, S4 app lock, S5 set passcode; S1
+Privacy row now opens S4.
 
 Known fixes: camera screens 2.1/2.3 cut the shutter row at the bottom (viewfinder too tall);
 2.4 last button is clipped.

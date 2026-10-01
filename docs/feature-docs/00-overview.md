@@ -162,7 +162,7 @@ site-log-ios/
 ├── SiteLog/                          # app target
 │   ├── SiteLogApp.swift              # @main
 │   ├── AppDependencies.swift         # Factory registrations (composition root)
-│   ├── RootView.swift                # Face ID gate
+│   ├── RootView.swift                # app lock gate
 │   ├── Startup/                      # guarded startup steps
 │   ├── Presentation/<Feature>/       # 2+ screens → one subfolder per screen
 │   ├── Resources/                    # Assets.xcassets, localization, seeded templates
@@ -256,7 +256,7 @@ Each step guarded and logged separately — never one `try` around init.
 | 5 | Recreate background session, reconcile tasks ↔ store | Continue, mark jobs `pending` |
 | 6 | Audit chain verify (async) | Flag in Diagnostics |
 | 7 | Sweep orphan files, temp parts, stale derived images | Log only |
-| 8 | Face ID gate at `RootView` | Retry / passcode fallback |
+| 8 | App lock gate at `RootView` (when Lock app is on) | Face ID → app passcode → forgot-passcode flow |
 
 ## 5. Data flows
 

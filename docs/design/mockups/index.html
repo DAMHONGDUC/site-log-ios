@@ -300,6 +300,9 @@ const keyboard = () => `<div class="kb">${['qwertyuiop', 'asdfghjkl'].map(r => `
 /* App mark: the app icon (docs/design/app-icon/app-icon.svg) under the iOS corner radius */
 const APP_MARK = `<defs><linearGradient id="mk-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFDC2E"/><stop offset="1" stop-color="#FFC900"/></linearGradient><linearGradient id="mk-vial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset="1" stop-color="#F4E27A"/></linearGradient><filter id="mk-lift" x="-20%" y="-40%" width="140%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#7A5A00" flood-opacity="0.28"/></filter></defs><rect width="1024" height="1024" fill="url(#mk-bg)"/><g fill="none" stroke="#16181B" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"><path d="M136 322 V252 Q136 222 166 222 H236"/><path d="M788 222 H858 Q888 222 888 252 V322"/><path d="M888 702 V772 Q888 802 858 802 H788"/><path d="M236 802 H166 Q136 802 136 772 V702"/></g><circle cx="226" cy="312" r="26" fill="#E5352B"/><g transform="translate(512 512) scale(0.78) translate(-512 -512)"><g filter="url(#mk-lift)"><rect x="92" y="372" width="840" height="280" rx="64" fill="#16181B"/></g><g stroke="#FFD400" stroke-width="12" stroke-linecap="round"><line x1="150" y1="582" x2="150" y2="628"/><line x1="186" y1="600" x2="186" y2="628"/><line x1="222" y1="600" x2="222" y2="628"/><line x1="258" y1="582" x2="258" y2="628"/><line x1="294" y1="600" x2="294" y2="628"/><line x1="726" y1="600" x2="726" y2="628"/><line x1="762" y1="582" x2="762" y2="628"/><line x1="798" y1="600" x2="798" y2="628"/><line x1="834" y1="600" x2="834" y2="628"/><line x1="870" y1="582" x2="870" y2="628"/></g><circle cx="176" cy="444" r="19" fill="#FFD400"/><circle cx="848" cy="444" r="19" fill="#FFD400"/><rect x="322" y="436" width="380" height="148" rx="74" fill="url(#mk-vial)"/><rect x="322" y="436" width="380" height="148" rx="74" fill="none" stroke="#0B0C0E" stroke-width="6"/><ellipse cx="512" cy="504" rx="76" ry="46" fill="#FFFFFF"/><ellipse cx="490" cy="489" rx="27" ry="11" fill="#FFFFFF" opacity="0.9"/><g stroke="#16181B" stroke-width="14" stroke-linecap="round"><line x1="418" y1="462" x2="418" y2="558"/><line x1="606" y1="462" x2="606" y2="558"/></g></g>`;
 const appMark = (size) => `<svg viewBox="0 0 1024 1024" width="${size}" height="${size}" style="border-radius:${Math.round(size * 0.225)}px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.06)">${APP_MARK}</svg>`;
+/* App passcode: 6 dots + iOS-style number pad */
+const dots = (filled, n = 6) => `<div class="hstack" style="gap:16px;justify-content:center">${Array.from({ length: n }, (_, i) => `<span style="width:13px;height:13px;border-radius:7px;border:1.5px solid var(--ink);${i < filled ? 'background:var(--ink)' : ''}"></span>`).join('')}</div>`;
+const numpad = () => `<div style="flex:none;padding:0 40px 56px;display:grid;grid-template-columns:repeat(3,78px);justify-content:space-between;row-gap:16px">${['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(k => k === '' ? '<span></span>' : k === '⌫' ? `<span style="height:78px;display:grid;place-items:center;color:var(--ink)">${I('delete', 26, 1.8)}</span>` : `<span style="width:78px;height:78px;border-radius:39px;background:var(--sunken);display:grid;place-items:center;font-size:34px;font-weight:400">${k}</span>`).join('')}</div>`;
 const toolbar = (left, right) => `<div class="toolbar"><div class="side">${left}</div><div class="capture">${I('camera', 30, 2)}</div><div class="side">${right}</div></div>`;
 
 /* Site photo stand-ins: flat architectural scenes rather than grey boxes */
@@ -335,7 +338,16 @@ screen('A1', 'Face ID lock', `
     <div class="stack" style="gap:4px"><div style="font-size:22px;font-weight:700">SiteLog is locked</div><div class="fn">Unlock to view site photos and reports.</div></div>
     <div style="margin-top:32px;color:var(--ink2)">${I('scan-face', 64, 1.5)}</div>
   </div>`)}
-  ${dock(`${btn('Unlock with Face ID', 'primary', 'scan-face')}${btn('Use passcode', 'ghost', null, { style: 'font-weight:600' })}`, 'clear')}`),
+  ${dock(`${btn('Unlock with Face ID', 'primary', 'scan-face')}${btn('Enter passcode', 'ghost', null, { style: 'font-weight:600' })}`, 'clear')}`),
+screen('A3', 'Enter passcode', `
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+    ${appMark(48)}
+    <div style="font-size:22px;font-weight:700">Enter passcode</div>
+    ${dots(2)}
+    <div class="fn">2 tries left before a 1-minute wait</div>
+  </div>`)}
+  ${numpad()}
+  <div class="fn" style="position:absolute;bottom:28px;left:0;right:0;text-align:center;font-weight:600;color:var(--ink)">Forgot passcode?</div>`),
 screen('A2', 'Sign in (optional)', `
   ${content(`<div style="padding-top:48px" class="stack">
     ${appMark(56)}
@@ -664,7 +676,7 @@ screen('S1', 'Settings', `
   ${content(`
     ${list([row({ lead: `<span style="width:48px;height:48px;border-radius:24px;background:#C9B79C;color:#fff;display:grid;place-items:center;font-weight:600;font-size:18px">HN</span>`, title: 'Hanh Nguyen', sub: 'Synced 2 minutes ago · iPhone and iPad' })], 76)}
     ${sec('On site', list([row({ title: 'Laser meter', trail: `<span class="val">DISTO D2</span>` }), row({ title: 'Quick phrases', trail: `<span class="val">18</span>` }), row({ title: 'Report letterhead' })]))}
-    ${sec('Privacy', list([row({ title: 'Lock with Face ID', trail: `<span class="toggle on"></span>`, chev: false }), row({ title: 'Lock after', trail: `<span class="val">5 minutes</span>` })]))}
+    ${sec('Privacy', list([row({ title: 'App lock', trail: `<span class="val">Face ID · 5 min</span>` })]))}
     ${list([row({ title: 'Diagnostics' }), row({ title: '<span style="color:var(--crit)">Delete account</span>', chev: false })])}`, 'tight')}
   ${tabbar('Settings')}`),
 screen('S2', 'Laser meter', `
@@ -677,6 +689,25 @@ screen('S3', 'Delete account', `
   ${nav({})}${lt('Settings')}
   <div class="dim"></div>
   <div class="alert"><div class="ab"><b>Delete your account?</b><span>We’ll remove the cloud copies of 3 projects and 1,284 photos within 30 days. What’s on this iPhone stays until you delete the app.</span></div><div class="aa" style="color:#D8342A">Delete Account</div><div class="aa" style="font-weight:600">Cancel</div></div>`),
+screen('S4', 'App lock', `
+  ${nav({ back: 'Settings', title: 'App lock' })}
+  ${content(`
+    <div class="stack" style="gap:6px">
+      ${sec('Lock app', list([row({ title: 'Lock app', trail: `<span class="toggle on"></span>`, chev: false }), row({ title: 'Unlock with Face ID', trail: `<span class="toggle on"></span>`, chev: false }), row({ title: 'Change passcode' })]))}
+      <div class="fn">Face ID can fail under a helmet or mask. Your passcode always works.</div>
+    </div>
+    <div class="stack" style="gap:6px">
+      ${sec('Lock after', list([['Immediately', false], ['1 minute', false], ['5 minutes', true], ['15 minutes', false], ['1 hour', false]].map(([t, on]) => row({ lead: on ? `<span class="radio on">${I('check', 14, 3)}</span>` : `<span class="radio"></span>`, title: t, chev: false })), 50))}
+      <div class="fn">Counted from when you leave SiteLog. Uploads keep running while it’s locked.</div>
+    </div>`, 'tight')}`),
+screen('S5', 'Set passcode', `
+  ${nav({ left: '<div class="txt-btn">Cancel</div>', title: 'Set passcode' })}
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+    <div style="font-size:22px;font-weight:700">Enter a 6-digit passcode</div>
+    ${dots(3)}
+    <div class="fn" style="max-width:280px">You’ll use it when Face ID can’t see you. It stays on this iPhone and is never uploaded.</div>
+  </div>`)}
+  ${numpad()}`),
 ]]);
 
 /* ---------- Foundations: generated from COLOR_TOKENS / TYPE_TOKENS ---------- */

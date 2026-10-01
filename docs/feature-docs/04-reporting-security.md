@@ -104,7 +104,7 @@ pin numbering matches detail; 200-image memory; opens in Preview and Acrobat.
 
 ## 07. Security and audit log
 
-Modules: `SiteLog/Presentation/Security`, `Domain`
+Modules: `SiteLog/Presentation/Launch`, `SiteLog/Presentation/Settings/AppLock`, `Domain`
 
 **Goal:** media and reports are unreadable if the device is lost, unmodifiable without a trace, and
 never leaked into logs or analytics.
@@ -124,12 +124,32 @@ media would need a plaintext temp copy for the whole upload window — worse tha
 the disk. `.completeUnlessOpen` encrypts on lock while keeping open files readable, which background
 upload needs; `.complete` would stop uploads when the phone goes into a pocket.
 
-### 07.2 Face ID
+### 07.2 App lock
 
-`LAContext.evaluatePolicy(.deviceOwnerAuthentication)` with passcode fallback (Face ID fails under
-helmets and masks). Gates cold launch and foreground return after `lockTimeout`; app-switcher
-overlay on resign-active. It is a UI gate on `RootView` (on a sheet it is bypassable by killing the
-app), not encryption. Sensitive Keychain items use `.biometryCurrentSet`.
+One settings screen, **Settings → Privacy → App lock** (S4), with two groups: *Lock app* and
+*Lock after*. Unlock screens: Face ID (A1), app passcode (A3); setting a passcode: S5.
+
+| Setting | Values | Default |
+|---|---|---|
+| Lock app | On / Off | Off |
+| Passcode | 6 digits, app-only; required before Lock app turns on | — |
+| Unlock with Face ID | On / Off; hidden when the device has no biometrics | On once a passcode is set |
+| Lock after | Immediately · 1 minute · 5 minutes · 15 minutes · 1 hour | 5 minutes |
+
+| Rule | Detail |
+|---|---|
+| Turning on | Set passcode (enter + confirm) first, then offer Face ID |
+| Turning off, changing passcode | Requires the current passcode or Face ID |
+| Face ID | `LAContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics)`; fallback button is the **app** passcode (Face ID fails under helmets and masks) |
+| Biometry changed | `evaluatedPolicyDomainState` differs from the stored one → Face ID off, passcode required |
+| Passcode storage | Never stored: PBKDF2-SHA256 + 16-byte random salt, Keychain `.whenUnlockedThisDeviceOnly` (not in backups) |
+| Wrong attempts | 5 free, then waits of 1 · 5 · 15 · 60 min; counter and wait-until in Keychain, so killing the app does not reset them |
+| Forgot passcode | Device-owner check (`.deviceOwnerAuthentication`, device passcode) → set a new app passcode; no data erased |
+| When it locks | Cold launch, and foreground return after *Lock after*, measured with `ContinuousClock` (not `Date()`) |
+| App switcher | Privacy overlay on resign-active while Lock app is on |
+
+It is a UI gate on `RootView` (on a sheet it is bypassable by killing the app), not encryption.
+Sensitive Keychain items use `.biometryCurrentSet`.
 
 ### 07.3 Audit log
 
@@ -165,7 +185,13 @@ log is per device, and Diagnostics says so.
 
 ```swift
 enum SecurityConstants {
-    static let lockTimeout: TimeInterval = 300
+    static let lockAfterOptions: [Duration] = [.zero, .seconds(60), .seconds(300), .seconds(900), .seconds(3600)]
+    static let defaultLockAfter: Duration = .seconds(300)
+    static let passcodeLength: Int = 6
+    static let passcodeSaltBytes: Int = 16
+    static let passcodePBKDF2Rounds: UInt32 = 210_000
+    static let freePasscodeAttempts: Int = 5
+    static let passcodeLockoutSteps: [Duration] = [.seconds(60), .seconds(300), .seconds(900), .seconds(3600)]
     static let keychainService: String = "app.dd.site.log.keys"
     static let auditHMACKeyTag: String = "app.dd.site.log.audit.hmac"
     static let exportKeyLengthBytes: Int = 32
@@ -177,4 +203,6 @@ upload continues while locked; a hand-edited entry fails at the right index; no 
 session's logs hold no URL, token or free text.
 **Tests:** 100-entry chain verifies; edit at 50 and mid-chain deletion detected at the right index;
 AES-GCM bundle round-trip; wrong key throws; new files carry the expected protection;
-`.biometryCurrentSet` unreadable before auth; redaction snapshot.
+`.biometryCurrentSet` unreadable before auth; redaction snapshot; passcode hash round-trip and wrong
+passcode rejected; lockout steps survive relaunch; Lock after boundary (just under / at the value);
+biometry change turns Face ID off.

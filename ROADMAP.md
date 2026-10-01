@@ -25,7 +25,7 @@ flowchart TD
 
 | | |
 |---|---|
-| Total | 49 open parts ≈ 351 hours (`P01` done) |
+| Total | 49 open parts ≈ 353 hours (`P01` done) |
 | Key milestone | `M2`: everything before it is setup, everything after it is addition |
 | Goal | App Store release with the full scope in `M0`–`M6`; no milestone is dropped |
 
@@ -66,11 +66,11 @@ Demo: 200 files reach storage and survive app kill and airplane mode.
 - [ ] **P21** - [04] - [UploadKit] - [6h] - Network policy (Wi-Fi only) and upload-URL refresh
 - [ ] **P22** - [17] - [Release] - [10h] - Signing, App Store Connect API key, first TestFlight build
 
-## M3 — Deliverable · 52h
+## M3 — Deliverable · 54h
 
 Demo: a signed, branded PDF and a CSV exported from a real session.
 
-- [ ] **P23** - [07] - [Security] - [6h] - Face ID lock and Keychain storage
+- [ ] **P23** - [07] - [Security] - [8h] - App lock: Face ID, app passcode, Lock after, Keychain storage
 - [ ] **P24** - [07] - [Security] - [5h] - Audit chain
 - [ ] **P25** - [12] - [Annotation] - [10h] - Annotation model and drawing layer
 - [ ] **P26** - [12] - [Annotation] - [8h] - Trusted time and the stamped derivative
