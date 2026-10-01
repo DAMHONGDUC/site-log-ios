@@ -14,9 +14,9 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             Tab("Projects", systemImage: "folder") {
-                Text("Projects")
+                Text("Projects 10000 1")
             }
-            Tab("Issues", systemImage: "exclamationmark.triangle") {
+            Tab("Issue", systemImage: "exclamationmark.triangle") {
                 Text("Issues")
             }
             Tab("Sync", systemImage: "arrow.triangle.2.circlepath") {
