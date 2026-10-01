@@ -27,6 +27,25 @@ flowchart LR
 Nothing in the committed `.vscode/` is tied to one Mac. `buildServer.json` and
 `.vscode/sitelog.local.json` are machine-specific and git-ignored.
 
+### F5 opens the Debug Console at once (optional, per machine)
+
+VS Code switches to the Debug Console only after the attach finishes, which here includes the
+build and the launch. To see the build in the Debug Console as soon as you press F5, add this to
+your **user** keybindings (Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)**).
+VS Code has no per-workspace keybindings, so it cannot live in the repo.
+
+```jsonc
+{
+  "key": "f5",
+  "command": "runCommands",
+  "args": { "commands": ["workbench.debug.action.focusRepl", "workbench.action.debug.start"] },
+  "when": "!inDebugMode"
+}
+```
+
+While debugging, F5 keeps meaning Continue (`!inDebugMode`). Run → Start Debugging and the ▶
+button still work, without the early switch.
+
 ### Choosing the simulator
 
 F5 picks, in order:
