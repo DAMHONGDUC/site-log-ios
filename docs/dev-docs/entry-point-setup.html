@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entry Point Setup</title>
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F6F5F2; --ink: #16181B; --ink2: #63676E; --line: #E4E2DE;
+  --hi: #FFD400; --code-bg: #16181B; --code-ink: #E9E7E2; --kw: #FFD400; --cm: #8A8F98; --str: #9FD6A8;
+  --ok: #2E8B57; --warn: #C77700;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1011; --surface: #191A1C; --ink: #F1F0EC; --ink2: #A4A7AD; --line: #2A2C30;
+    --code-bg: #08090A; --code-ink: #E9E7E2;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1011; --surface: #191A1C; --ink: #F1F0EC; --ink2: #A4A7AD; --line: #2A2C30;
+  --code-bg: #08090A; --code-ink: #E9E7E2;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 -apple-system, "SF Pro Text", "IBM Plex Sans", system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 40px 16px 96px; }
+h1 { font-size: 32px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -.02em; }
+h2 { font-size: 22px; margin: 56px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+h2 .n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 15px; background: var(--ink); color: var(--bg); font-size: 15px; margin-right: 10px; vertical-align: 3px; }
+h3 { font-size: 17px; margin: 24px 0 8px; }
+p, li { color: var(--ink); }
+.lead { color: var(--ink2); font-size: 17px; margin: 0 0 24px; }
+.path { font: 600 14px ui-monospace, "SF Mono", "IBM Plex Mono", monospace; color: var(--ink2); margin: 0 0 6px; }
+code { font: 14px ui-monospace, "SF Mono", "IBM Plex Mono", monospace; background: var(--surface); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code-bg); color: var(--code-ink); padding: 16px; border-radius: 10px; overflow-x: auto; font: 13.5px/1.55 ui-monospace, "SF Mono", "IBM Plex Mono", monospace; margin: 0 0 16px; }
+pre code { background: none; padding: 0; font: inherit; color: inherit; }
+.kw { color: var(--kw); } .cm { color: var(--cm); } .str { color: var(--str); }
+.why { background: var(--surface); border-radius: 10px; padding: 12px 16px; margin: 0 0 16px; }
+.why dt { font: 600 14px ui-monospace, "SF Mono", monospace; margin-top: 10px; }
+.why dt:first-child { margin-top: 0; }
+.why dd { margin: 2px 0 0; color: var(--ink); }
+.note { border-left: 3px solid var(--hi); padding: 4px 0 4px 14px; margin: 16px 0; }
+.status { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; background: var(--surface); padding: 14px 16px; border-radius: 10px; }
+.bad { color: var(--warn); font-weight: 600; }
+.flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+.flow div { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.flow b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 13px; background: var(--surface); font-size: 13px; }
+.flow span small { color: var(--ink2); display: block; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--ink2); font-weight: 600; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; background: var(--surface); padding: 4px 10px; border-radius: 14px; }
+@media (max-width: 600px) { h1 { font-size: 26px; } pre { font-size: 12.5px; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Set up entry point — SiteLog</h1>
+<p class="lead">Every file that starts the app: the code, what each important line does, the order things run in, and how to check it. Follows <code>00-overview.md §4.5 Startup sequence</code>.</p>
+
+<nav class="toc">
+  <a href="#now">Current state</a><a href="#tree">Structure</a><a href="#flow">Run order</a>
+  <a href="#s0">0 · project.yml</a><a href="#s1">1 · SiteLogApp</a><a href="#s2">2 · AppDelegate</a><a href="#s3">3 · AppLog</a>
+  <a href="#s4">4 · Startup steps</a><a href="#s5">5 · StartupViewModel</a><a href="#s6">6 · StartupView</a>
+  <a href="#s7">7 · RootView</a><a href="#check">Verify</a><a href="#later">Later</a>
+</nav>
+
+<h2 id="now">Current state of the repo</h2>
+<div class="status">
+  <code>StartupSequence.swift</code><span class="bad">no <code>return nil</code> after the loop: build fails</span>
+  <code>SiteLogApp.swift</code>, <code>AppDelegate.swift</code>, <code>AppDependencies.swift</code>, <code>Startup/</code><span class="bad">still at the <code>SiteLog/</code> root; move into <code>App/</code></span>
+  <code>Access/Splash/</code>, <code>StartupFailureView.swift</code><span class="bad">replaced by one <code>StartupView.swift</code> in <code>Access/Startup/</code></span>
+  <code>Support/AppLog.swift</code><span>move into <code>Support/Logging/</code>; subsystem should be <code>app.dd.site.log</code></span>
+  <code>RootView.swift</code><span>in <code>Presentation/Root/</code> (correct); still shows “Hello”</span>
+  <code>StartupViewModel.swift</code><span>in <code>Access/Startup/</code> (correct)</span>
+</div>
+
+<h2 id="tree">Target structure</h2>
+<pre><code>SiteLog/
+├── App/                                  <span class="cm"># composition root: may import everything</span>
+│   ├── SiteLogApp.swift                  <span class="cm">① @main: attaches AppDelegate + RootView</span>
+│   ├── AppDelegate.swift                 <span class="cm">② process-level events from iOS</span>
+│   ├── AppDependencies.swift             <span class="cm">(Factory, later)</span>
+│   └── Startup/
+│       ├── StartupStep.swift             <span class="cm">④ protocol + StartupFailure</span>
+│       ├── StartupSequence.swift         <span class="cm">④ runs each step</span>
+│       └── Steps/                        <span class="cm">KeychainStep, DatabaseStep… (M1+)</span>
+├── Presentation/                         <span class="cm"># imports Domain + DesignSystem only</span>
+│   ├── Root/RootView.swift               <span class="cm">⑦ routes on startup state</span>
+│   ├── Access/
+│   │   ├── Startup/                      <span class="cm"># feature: the startup process, one screen</span>
+│   │   │   ├── StartupView.swift         <span class="cm">⑥ snippet view: spinner or error + Try again</span>
+│   │   │   └── StartupViewModel.swift    <span class="cm">⑤ snippet viewvm</span>
+│   │   ├── Lock/   SignIn/               <span class="cm">(M3 / M5)</span>
+│   └── MainTab/MainTabView.swift         <span class="cm">⑥ snippet view</span>
+├── Support/                              <span class="cm"># shared helpers, import nothing from the project</span>
+│   └── Logging/AppLog.swift              <span class="cm">③ os.Logger per category</span>
+├── Resources/
+└── Config/</code></pre>
+
+<h3>Why this layout</h3>
+<table>
+  <tr><th>Folder</th><th>Role</th><th>May import</th></tr>
+  <tr><td><code>App/</code></td><td>Composition root: app entry, iOS events, dependency wiring, startup steps</td><td>Everything (data sources, Firebase, Factory)</td></tr>
+  <tr><td><code>Presentation/</code></td><td>Views and view models</td><td><code>Domain</code>, <code>DesignSystem</code>, <code>Support</code></td></tr>
+  <tr><td><code>Support/</code></td><td>Small helpers both of the above use (logging)</td><td>Apple frameworks only</td></tr>
+</table>
+<dl class="why">
+  <dt>Startup/ lives in App/</dt><dd>Real steps call data sources (Keychain, <code>ModelContainer</code>, <code>UploadKit</code>). Only the composition root may import those (rule §4.2).</dd>
+  <dt>StartupViewModel lives in Presentation/</dt><dd>It is the view model of <code>StartupView</code>, so it sits next to it (rule §4.3).</dd><dt>One name: Startup</dt><dd><code>Startup</code> names the process (steps, sequence, state), its feature folder and its only screen, <code>StartupView</code>. A feature with one screen needs no screen subfolders.</dd>
+  <dt>RootView lives in Presentation/Root/</dt><dd>It is a view: it only chooses which screen to show, it wires no dependencies.</dd>
+  <dt>Support/ is top level</dt><dd>Both <code>App/</code> and <code>Presentation/</code> log; putting it inside one would make the other borrow from it.</dd>
+  <dt>Folder = rule</dt><dd>Each top-level folder matches one row of the dependency table, so a CI check can test imports per folder.</dd>
+</dl>
+
+<h3>Move the existing files</h3>
+<ol>
+  <li>In the Project Navigator, right-click <code>SiteLog</code> → <b>New Folder</b>: create <code>App</code>, <code>Support/Logging</code>, <code>Presentation/Root</code>, <code>Presentation/Access/Startup</code>, <code>Presentation/MainTab</code>.</li>
+  <li>Drag <code>SiteLogApp.swift</code>, <code>AppDelegate.swift</code>, <code>AppDependencies.swift</code> into <code>App/</code>; drag <code>RootView.swift</code> into <code>Presentation/Root/</code>.</li>
+  <li>Nothing to change in <code>project.yml</code>: the target’s source is the whole <code>SiteLog</code> folder, subfolders included.</li>
+  <li>⌘B to confirm the build still finds every file.</li>
+</ol>
+<p>To create a file: right-click the folder → <b>New File from Template… → Swift File</b>, delete the default content, then type <code>view</code> or <code>viewvm</code> for a snippet.</p>
+
+<h2 id="flow">Run order when the app opens</h2>
+<div class="flow">
+  <div><b>1</b><span>iOS starts the process; SwiftUI creates <code>SiteLogApp</code><small>the <code>@UIApplicationDelegateAdaptor</code> property wrapper creates the <code>AppDelegate</code> instance</small></span></div>
+  <div><b>2</b><span><code>AppDelegate.didFinishLaunching</code><small>logs “App launched”; Firebase goes here later</small></span></div>
+  <div><b>3</b><span><code>SiteLogApp.body</code> → <code>WindowGroup</code> → <code>RootView</code><small><code>state = .running</code> → shows <code>StartupView</code> (spinner)</small></span></div>
+  <div><b>4</b><span><code>StartupView</code>’s <code>.task</code> calls <code>StartupViewModel.onAppear()</code></span></div>
+  <div><b>5</b><span><code>StartupSequence.run()</code> runs each step<small>each step logs ok / failed</small></span></div>
+  <div><b>6</b><span><code>.ready</code> → RootView shows <code>MainTabView</code> · <code>.failed</code> → <code>StartupView</code> shows the error<small>“Try again” goes back to step 5</small></span></div>
+</div>
+
+<h2 id="s0"><span class="n">0</span>project.yml: a single scene</h2>
+<p class="path">project.yml → targets.SiteLog.settings.base</p>
+<pre><code><span class="kw">INFOPLIST_KEY_UIApplicationSupportsMultipleScenes</span>: NO</code></pre>
+<dl class="why">
+  <dt>Why</dt><dd>The app also runs on iPad (<code>TARGETED_DEVICE_FAMILY: "1,2"</code>). iPad can open several windows, and each window is a scene with its own <code>RootView</code> and <code>@State</code>. Startup would then run twice, two windows would compete for the camera, and each window would lock separately.</dd>
+  <dt>Then</dt><dd>Close Xcode → <code>xcodegen generate</code> → reopen. Config goes through <code>project.yml</code>, never the Xcode UI.</dd>
+</dl>
+
+<h2 id="s1"><span class="n">1</span>SiteLogApp.swift: the starting point</h2>
+<p class="path">SiteLog/App/SiteLogApp.swift</p>
+<pre><code><span class="kw">import</span> SwiftUI
+
+<span class="cm">// @main marks where the app starts. Only one type in the app may have it.</span>
+<span class="kw">@main</span>
+<span class="kw">struct</span> SiteLogApp: App {
+
+    <span class="cm">// Asks SwiftUI to create our AppDelegate and hand it to iOS.</span>
+    <span class="cm">// We never read this variable; it only keeps the AppDelegate alive.</span>
+    <span class="kw">@UIApplicationDelegateAdaptor</span>(AppDelegate.<span class="kw">self</span>) <span class="kw">private</span> <span class="kw">var</span> appDelegate
+
+    <span class="cm">// `body` describes the app's windows (scenes).</span>
+    <span class="kw">var</span> body: <span class="kw">some</span> Scene {
+        <span class="cm">// Every window shows RootView as its first screen.</span>
+        WindowGroup {
+            RootView()
+        }
+    }
+
+    <span class="cm">// No init() on purpose: it runs before AppDelegate's didFinishLaunching.</span>
+}</code></pre>
+<dl class="why">
+  <dt>@main</dt><dd>Tells the compiler the app starts here, like <code>void main()</code> in Flutter. There is only one per app.</dd>
+  <dt>struct SiteLogApp: App</dt><dd>Conforms to the <code>App</code> protocol, which requires a <code>body</code>.</dd>
+  <dt>body: some Scene</dt><dd>A scene is one window of the app.</dd>
+  <dt>WindowGroup { RootView() }</dt><dd>A window template: every window that opens shows a new <code>RootView</code>. <code>RootView</code> is the root screen, like <code>runApp(App())</code>.</dd>
+  <dt>@UIApplicationDelegateAdaptor</dt><dd>Attaches <code>AppDelegate</code> to the SwiftUI app. Without this line, AppDelegate never runs. You never use the <code>appDelegate</code> variable; it only keeps the instance alive.</dd>
+  <dt>No init()</dt><dd><code>init()</code> runs <em>before</em> <code>didFinishLaunching</code>: Firebase is not configured yet, so a crash there is never recorded.</dd>
+</dl>
+
+<h2 id="s2"><span class="n">2</span>AppDelegate.swift: receives events from iOS</h2>
+<p class="path">SiteLog/App/AppDelegate.swift</p>
+<pre><code><span class="kw">import</span> UIKit
+
+<span class="cm">// Receives app-level events from iOS (launch, background uploads, push).</span>
+<span class="cm">// NSObject is required because UIApplicationDelegate is an Objective-C protocol.</span>
+<span class="kw">final</span> <span class="kw">class</span> AppDelegate: NSObject, UIApplicationDelegate {
+
+    <span class="cm">// iOS calls this once, after the process starts and before any screen shows.</span>
+    <span class="kw">func</span> application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -&gt; Bool {
+        <span class="cm">// M5: FirebaseApp.configure() goes here, as the very first line.</span>
+
+        AppLog.startup.info(<span class="str">"App launched"</span>)
+
+        <span class="cm">// true = launch succeeded.</span>
+        <span class="kw">return</span> <span class="kw">true</span>
+    }
+}</code></pre>
+<dl class="why">
+  <dt>NSObject</dt><dd>Inheritance (the superclass). Required because <code>UIApplicationDelegate</code> is an Objective-C protocol.</dd>
+  <dt>UIApplicationDelegate</dt><dd>Conformance. Every method is <code>optional</code>, so you write only the ones you need.</dd>
+  <dt>final</dt><dd>No other class can inherit from it.</dd>
+  <dt>didFinishLaunchingWithOptions</dt><dd>iOS calls it once the process has finished launching, before <code>RootView</code> appears. The place for work that must finish before any UI (Firebase in M5).</dd>
+  <dt>return true</dt><dd>Tells iOS the launch succeeded.</dd>
+  <dt>Keep out</dt><dd>Business logic, and foreground/background lifecycle (use <code>scenePhase</code> in SwiftUI).</dd>
+</dl>
+
+<h2 id="s3"><span class="n">3</span>AppLog.swift: one place for loggers</h2>
+<p class="path">SiteLog/Support/Logging/AppLog.swift</p>
+<pre><code><span class="kw">import</span> os
+
+<span class="cm">// A namespace for the app's loggers.</span>
+<span class="cm">// An enum with no cases cannot be created by mistake: AppLog() does not compile.</span>
+<span class="kw">enum</span> AppLog {
+
+    <span class="cm">// Same subsystem for every logger, so Console can show all SiteLog logs together.</span>
+    <span class="kw">static</span> <span class="kw">let</span> subsystem: String = <span class="str">"app.dd.site.log"</span>
+
+    <span class="cm">// One logger per area. Add more later (auth, navigation, ...).</span>
+    <span class="kw">static</span> <span class="kw">let</span> startup = Logger(subsystem: subsystem, category: <span class="str">"startup"</span>)
+}</code></pre>
+<dl class="why">
+  <dt>os.Logger</dt><dd>Apple’s standard logger: shows in the Debug console (⇧⌘Y) and the Console app, filters by subsystem/category, and has levels (info, error…).</dd>
+  <dt>Case-less enum</dt><dd>Cannot be instantiated, so it is only a namespace for constants (the “constants in enums” rule).</dd>
+  <dt>No print</dt><dd><code>print</code> has no levels, cannot be filtered, and prints sensitive data as-is.</dd>
+</dl>
+
+<h2 id="s4"><span class="n">4</span>StartupStep + StartupSequence: one step at a time</h2>
+<p class="path">SiteLog/App/Startup/StartupStep.swift</p>
+<pre><code><span class="cm">// Problems that stop the app from starting.</span>
+<span class="cm">// The UI shows a recovery screen for these.</span>
+<span class="kw">enum</span> StartupFailure: Error {
+    <span class="kw">case</span> keychain(String)               <span class="cm">// could not read secrets</span>
+    <span class="kw">case</span> database(String)               <span class="cm">// could not open local data</span>
+    <span class="kw">case</span> unexpected(step: String)       <span class="cm">// any other error, with the name of the step that threw it</span>
+}
+
+<span class="cm">// One thing to do at launch (open the database, read the Keychain, ...).</span>
+<span class="cm">// Every step is its own type that follows this protocol.</span>
+<span class="kw">protocol</span> StartupStep {
+
+    <span class="cm">// Name used in logs, e.g. "database".</span>
+    <span class="kw">var</span> name: String { <span class="kw">get</span> }
+
+    <span class="cm">// true  = if this step fails, the app cannot continue.</span>
+    <span class="cm">// false = if this step fails, log it and keep going.</span>
+    <span class="kw">var</span> blocksLaunch: Bool { <span class="kw">get</span> }
+
+    <span class="cm">// The work itself. `async` = may wait; `throws` = may fail.</span>
+    <span class="cm">// Runs on the main thread (app target default), so heavy work</span>
+    <span class="cm">// must be handed to an actor in a package, not done here.</span>
+    <span class="kw">func</span> run() <span class="kw">async</span> <span class="kw">throws</span>
+}</code></pre>
+<p class="path">SiteLog/App/Startup/StartupSequence.swift</p>
+<pre><code><span class="cm">// Runs every startup step in order.</span>
+<span class="kw">struct</span> StartupSequence {
+
+    <span class="kw">let</span> steps: [<span class="kw">any</span> StartupStep]
+
+    <span class="cm">// Returns nil when the app can continue,</span>
+    <span class="cm">// or the failure that stopped it.</span>
+    <span class="kw">func</span> run() <span class="kw">async</span> -&gt; StartupFailure? {
+        <span class="kw">for</span> step <span class="kw">in</span> steps {
+            <span class="kw">do</span> {
+                <span class="kw">try</span> <span class="kw">await</span> step.run()
+                AppLog.startup.info(<span class="str">"Step ok: \(step.name, privacy: .public)"</span>)
+            } <span class="kw">catch</span> {
+                <span class="cm">// `error` is created by Swift inside every catch block.</span>
+                <span class="cm">// Log the step name and the error's type, not its full text:</span>
+                <span class="cm">// the text can contain file paths or other private data.</span>
+                <span class="kw">let</span> errorType = String(describing: type(of: error))
+                AppLog.startup.error(<span class="str">"Step failed: \(step.name, privacy: .public), error: \(errorType, privacy: .public)"</span>)
+
+                <span class="cm">// A non-blocking step only gets logged; the loop moves on.</span>
+                <span class="kw">if</span> step.blocksLaunch == <span class="kw">false</span> {
+                    <span class="kw">continue</span>
+                }
+
+                <span class="cm">// A blocking step stops startup here.</span>
+                <span class="kw">let</span> failure: StartupFailure = makeFailure(from: error, stepName: step.name)
+                <span class="kw">return</span> failure
+            }
+        }
+
+        <span class="cm">// Every step finished (or only non-blocking steps failed).</span>
+        <span class="kw">return</span> <span class="kw">nil</span>
+    }
+
+    <span class="cm">// Turns any error into a StartupFailure the UI understands.</span>
+    <span class="kw">private</span> <span class="kw">func</span> makeFailure(from error: Error, stepName: String) -&gt; StartupFailure {
+        <span class="cm">// The step already threw a StartupFailure: use it as it is.</span>
+        <span class="kw">if</span> <span class="kw">let</span> startupFailure = error as? StartupFailure {
+            <span class="kw">return</span> startupFailure
+        }
+
+        <span class="cm">// Any other error (system, SwiftData, ...): wrap it.</span>
+        <span class="kw">return</span> .unexpected(step: stepName)
+    }
+}</code></pre>
+<dl class="why">
+  <dt>Why separate steps</dt><dd>The spec says each step is guarded and logged on its own. With one <code>try</code> around everything, a minor failure (a file sweep) blocks the whole app and the log does not say which step broke.</dd>
+  <dt>protocol StartupStep</dt><dd>Each step (Keychain, Database, Reconcile…) is a struct that conforms. Adding a step never changes <code>StartupSequence</code>.</dd>
+  <dt>blocksLaunch</dt><dd><code>true</code>: on failure, stop and show the error screen (Keychain, Database). <code>false</code>: log it and keep going.</dd>
+  <dt>No Sendable here</dt><dd>The app target sets <code>SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor</code>, so these types are main-actor isolated and already safe to share; <code>Sendable</code> adds nothing. The catch: <code>run()</code> executes on the main thread, so a step must hand heavy work (migration, file sweep) to an actor in a package, never do it inline.</dd>
+  <dt>StartupFailure</dt><dd>Only launch-blocking failures reach the user; each case can get its own recovery screen. <code>unexpected</code> catches errors that are not a <code>StartupFailure</code>, so a Keychain error is never mislabelled as a database one.</dd>
+  <dt>do/catch inside the loop</dt><dd>Each step has its own try/catch. <code>continue</code> skips to the next step for a non-blocking failure; <code>return</code> stops everything for a blocking one.</dd><dt>makeFailure(from:stepName:)</dt><dd><code>error as? StartupFailure</code> tries to read the error as our own type. If that works, use it; otherwise wrap it in <code>.unexpected</code>. A separate function keeps the loop short and readable.</dd>
+  <dt>type(of: error)</dt><dd>Replaced by <code>type(of: error)</code>: logs only the error’s type (e.g. <code>SwiftDataError</code>). The full text can hold file paths or tokens, which spec 07.4 forbids in logs.</dd>
+  <dt>privacy: .public</dt><dd>The logger hides interpolated values as <code>&lt;private&gt;</code> by default. Step names and error types are not sensitive, so they are made public.</dd>
+</dl>
+
+<h2 id="s5"><span class="n">5</span>StartupViewModel: startup state</h2>
+<p class="path">SiteLog/Presentation/Access/Startup/StartupViewModel.swift · type <code>viewvm</code>, Name = Startup, then edit</p>
+<pre><code><span class="kw">import</span> Observation
+
+<span class="cm">// Holds the startup state for RootView.</span>
+<span class="cm">// @MainActor: state changes happen on the main thread (UI requirement).</span>
+<span class="cm">// @Observable: when `state` changes, any view reading it redraws.</span>
+<span class="kw">@MainActor</span>
+<span class="kw">@Observable</span>
+<span class="kw">final</span> <span class="kw">class</span> StartupViewModel {
+
+    <span class="cm">// The only three situations startup can be in.</span>
+    <span class="kw">enum</span> State {
+        <span class="kw">case</span> running                    <span class="cm">// steps are running, show the spinner</span>
+        <span class="kw">case</span> ready                      <span class="cm">// all good, show the app</span>
+        <span class="kw">case</span> failed(StartupFailure)     <span class="cm">// a blocking step failed, show the error screen</span>
+    }
+
+    <span class="cm">// private(set): views can read it, only this class can change it.</span>
+    <span class="kw">private</span>(set) <span class="kw">var</span> state: State = .running
+
+    <span class="cm">// Not UI state, so SwiftUI does not need to watch it.</span>
+    <span class="kw">@ObservationIgnored</span> <span class="kw">private</span> <span class="kw">let</span> sequence: StartupSequence
+
+    <span class="cm">// The default value lets RootView write StartupViewModel().</span>
+    <span class="cm">// Tests pass their own sequence with fake steps.</span>
+    <span class="kw">init</span>(sequence: StartupSequence = StartupSequence(steps: [])) {
+        <span class="kw">self</span>.sequence = sequence
+    }
+
+    <span class="cm">// Called when StartupView appears, and again on "Try again".</span>
+    <span class="kw">func</span> onAppear() <span class="kw">async</span> {
+        state = .running
+
+        <span class="kw">let</span> failure: StartupFailure? = <span class="kw">await</span> sequence.run()
+
+        <span class="kw">if</span> <span class="kw">let</span> failure {
+            state = .failed(failure)
+        } <span class="kw">else</span> {
+            state = .ready
+        }
+    }
+}</code></pre>
+<dl class="why">
+  <dt>@MainActor</dt><dd>State always changes on the main thread; UI can only be updated from main.</dd>
+  <dt>@Observable</dt><dd>SwiftUI tracks <code>state</code> automatically; when it changes, <code>RootView</code> redraws. Like <code>emit()</code> in a Cubit.</dd>
+  <dt>enum State</dt><dd>Exactly 3 states, so there is no half-way state.</dd>
+  <dt>private(set)</dt><dd>The view can read it; only the view model can change it.</dd>
+  <dt>@ObservationIgnored</dt><dd><code>sequence</code> is not UI state, so it is not tracked.</dd>
+  <dt>init with a default</dt><dd>No Factory yet, so the dependency comes through init, and tests pass a fake sequence. Once Factory is in, switch to <code>@Injected</code>.</dd>
+  <dt>state = .running first</dt><dd>On “Try again”, the spinner shows again while the steps re-run.</dd>
+</dl>
+
+<h2 id="s6"><span class="n">6</span>StartupView + MainTabView: <code>view</code> snippet</h2>
+<p class="path">SiteLog/Presentation/Access/Startup/StartupView.swift</p>
+<pre><code><span class="kw">import</span> SwiftUI
+<span class="kw">import</span> Inject
+
+<span class="cm">// The one screen of the startup process.</span>
+<span class="cm">// Shows a spinner while steps run, or an error with "Try again" if one fails.</span>
+<span class="kw">struct</span> StartupView: View {
+    <span class="kw">@ObserveInjection</span> <span class="kw">var</span> inject
+
+    <span class="cm">// Owned by RootView and passed in, because RootView also reads its state.</span>
+    <span class="cm">// A plain `let` is enough: @Observable makes SwiftUI redraw on changes.</span>
+    <span class="kw">let</span> viewModel: StartupViewModel
+
+    <span class="kw">var</span> body: <span class="kw">some</span> View {
+        <span class="cm">// Group lets .task and .enableInjection() apply to every branch.</span>
+        Group {
+            <span class="kw">switch</span> viewModel.state {
+
+            <span class="kw">case</span> .running:
+                VStack(spacing: 16) {
+                    Image(systemName: <span class="str">"hammer"</span>)      <span class="cm">// replace with the app mark later</span>
+                        .font(.largeTitle)
+                    ProgressView()
+                }
+
+            <span class="kw">case</span> .failed:
+                VStack(spacing: 16) {
+                    Text(<span class="str">"Couldn't start SiteLog"</span>)
+                        .font(.headline)
+
+                    Button(<span class="str">"Try again"</span>) {
+                        <span class="cm">// A button action is not async, so start a Task to await.</span>
+                        Task {
+                            <span class="kw">await</span> viewModel.onAppear()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+
+            <span class="kw">case</span> .ready:
+                <span class="cm">// RootView shows MainTabView instead, so this never appears.</span>
+                EmptyView()
+            }
+        }
+        <span class="cm">// Runs once when the screen appears. "Try again" re-runs by itself.</span>
+        .task {
+            <span class="kw">await</span> viewModel.onAppear()
+        }
+        .enableInjection()
+    }
+}</code></pre>
+<dl class="why">
+  <dt>One screen, two states</dt><dd>The startup process only ever shows “starting” or “failed”, so one view switches between them. One screen means no screen subfolders: <code>StartupView</code> and <code>StartupViewModel</code> sit together in <code>Access/Startup/</code>.</dd>
+  <dt>let viewModel</dt><dd>RootView owns the view model (it needs <code>state</code> to pick the screen) and passes it down. The child does not use <code>@State</code>; that would create a second copy.</dd>
+  <dt>.task on the screen</dt><dd>Starts the steps when the screen first appears and cancels them if it disappears. It does not re-run when the state switches to <code>.failed</code>, because it is still the same screen.</dd>
+  <dt>Task { } in the button</dt><dd>A button action is synchronous, so it starts a <code>Task</code> to call the <code>async</code> function.</dd>
+  <dt>case .ready: EmptyView()</dt><dd><code>switch</code> must cover every case. RootView never shows this view when ready, so an empty view is enough.</dd>
+  <dt>User-facing strings</dt><dd>Hard-coded for now; move them to <code>Localizable.xcstrings</code> when the screens become real.</dd>
+</dl>
+<p class="path">SiteLog/Presentation/MainTab/MainTabView.swift</p>
+<pre><code><span class="kw">import</span> SwiftUI
+<span class="kw">import</span> Inject
+
+<span class="cm">// The four tabs from the Figma design. Each tab is a placeholder for now.</span>
+<span class="kw">struct</span> MainTabView: View {
+    <span class="kw">@ObserveInjection</span> <span class="kw">var</span> inject
+
+    <span class="kw">var</span> body: <span class="kw">some</span> View {
+        TabView {
+            Tab(<span class="str">"Projects"</span>, systemImage: <span class="str">"folder"</span>) {
+                Text(<span class="str">"Projects"</span>)
+            }
+            Tab(<span class="str">"Issues"</span>, systemImage: <span class="str">"exclamationmark.triangle"</span>) {
+                Text(<span class="str">"Issues"</span>)
+            }
+            Tab(<span class="str">"Sync"</span>, systemImage: <span class="str">"arrow.triangle.2.circlepath"</span>) {
+                Text(<span class="str">"Sync"</span>)
+            }
+            Tab(<span class="str">"Settings"</span>, systemImage: <span class="str">"gearshape"</span>) {
+                Text(<span class="str">"Settings"</span>)
+            }
+        }
+        .enableInjection()
+    }
+}</code></pre>
+<dl class="why">
+  <dt>Tab(…)</dt><dd>iOS 18 API that replaces the old <code>.tabItem</code>. The 4 tabs match Figma: Projects · Issues · Sync · Settings.</dd>
+</dl>
+
+<h2 id="s7"><span class="n">7</span>RootView: routes on state</h2>
+<p class="path">SiteLog/Presentation/Root/RootView.swift · replace the unfinished snippet</p>
+<pre><code><span class="kw">import</span> SwiftUI
+<span class="kw">import</span> Inject
+
+<span class="cm">// The first screen. Shows the startup screen until the app is ready.</span>
+<span class="kw">struct</span> RootView: View {
+    <span class="kw">@ObserveInjection</span> <span class="kw">var</span> inject
+
+    <span class="cm">// @State keeps the same view model alive while SwiftUI</span>
+    <span class="cm">// recreates this struct again and again.</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> startup = StartupViewModel()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> View {
+        Group {
+            <span class="kw">switch</span> startup.state {
+
+            <span class="kw">case</span> .ready:
+                <span class="cm">// M3: replace with AppGateView (lock / sign in / main tabs).</span>
+                MainTabView()
+
+            <span class="kw">case</span> .running, .failed:
+                <span class="cm">// Both "still starting" and "failed" are handled by StartupView.</span>
+                StartupView(viewModel: startup)
+            }
+        }
+        .enableInjection()
+    }
+}</code></pre>
+<dl class="why">
+  <dt>@State private var startup</dt><dd>RootView owns the view model; <code>@State</code> keeps it from being recreated every time SwiftUI rebuilds the struct.</dd>
+  <dt>Two branches only</dt><dd>Ready → the app. Anything else → <code>StartupView</code>, which handles “starting” and “failed” itself.</dd>
+  <dt>case .running, .failed</dt><dd>One <code>case</code> can list several values separated by commas.</dd>
+  <dt>@ObserveInjection / .enableInjection()</dt><dd>Hot reload through Inject (see <code>hot-reload.md</code>).</dd>
+</dl>
+
+<h2 id="check">Verify</h2>
+<ol>
+  <li><b>⌘B</b>: clean build, no <code>ContentView</code> or <code>&lt;#Name#&gt;</code> errors left.</li>
+  <li><b>⌘R</b>: the startup spinner flashes, then the tab bar. The Debug console (<b>⇧⌘Y</b>) shows <code>App launched</code>.</li>
+  <li>Failure path: add a temporary launch-blocking step, pass it to the view model in RootView, run, and expect the error state of StartupView. Delete it afterwards:
+<pre><code><span class="cm">// Temporary step to test the failure screen. Delete it after the check.</span>
+<span class="kw">struct</span> FailingStep: StartupStep {
+    <span class="kw">let</span> name: String = <span class="str">"failing"</span>
+    <span class="kw">let</span> blocksLaunch: Bool = <span class="kw">true</span>
+
+    <span class="kw">func</span> run() <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">throw</span> StartupFailure.keychain(<span class="str">"test"</span>)
+    }
+}
+
+<span class="cm">// In RootView, temporarily:</span>
+<span class="cm">// @State private var startup = StartupViewModel(</span>
+<span class="cm">//     sequence: StartupSequence(steps: [FailingStep()])</span>
+<span class="cm">// )</span></code></pre></li>
+  <li>Test <code>SiteLogTests/StartupSequenceTests.swift</code> (Swift Testing): a failing non-blocking step returns <code>nil</code>; a failing blocking step returns the failure.</li>
+</ol>
+
+<h2 id="later">Later, by milestone</h2>
+<table>
+  <tr><th>When</th><th>Add</th></tr>
+  <tr><td>Factory added</td><td><code>project.yml</code> + <code>xcodegen generate</code>; register <code>startupSequence</code> in <code>AppDependencies.swift</code>; the view model uses <code>@Injected</code></td></tr>
+  <tr><td>M1</td><td><code>DatabaseStep</code> (ModelContainer + migration, blocks launch)</td></tr>
+  <tr><td>M2</td><td><code>handleEventsForBackgroundURLSession</code> in AppDelegate; <code>ReconcileUploadsStep</code></td></tr>
+  <tr><td>M3</td><td><code>KeychainStep</code>; <code>AppGateView</code> (Lock, Lock after); audit-verify and sweep tasks after <code>.ready</code></td></tr>
+  <tr><td>M5</td><td>Firebase: <code>FirebaseApp.configure()</code> as the first line of <code>didFinishLaunching</code>; SignIn</td></tr>
+  <tr><td>M6</td><td>Push token + silent push in AppDelegate</td></tr>
+</table>
+
+</main>
+</body>
+</html>
