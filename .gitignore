@@ -48,3 +48,10 @@ yarn-error.log*
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
+
+# ---- Editor (SweetPad / sourcekit-lsp, machine-specific) ----
+buildServer.json
+# sourcekit-lsp index store written under a mis-parsed "-Xcc" path
+*.xcodeproj/-Xcc/
+# LLDB imports .vscode/sitelog_sim.py and caches its bytecode
+__pycache__/

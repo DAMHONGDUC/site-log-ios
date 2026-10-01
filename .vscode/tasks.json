@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Manual build (Terminal → Run Task). F5 builds inside the debug session instead.
+      // Builds into Xcode's DerivedData, so Xcode and buildServer.json share the build.
+      "label": "sitelog: build",
+      "type": "shell",
+      "command": "python3 ${workspaceFolder}/.vscode/sitelog_sim.py build",
+      "problemMatcher": [],
+      // Build output stays hidden unless it fails, and its terminal closes on success,
+      // so the Debug Console (app logs) is what you see after F5 / Restart.
+      "presentation": {
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "panel": "shared",
+        "showReuseMessage": false,
+        "close": true
+      }
+    }
+  ]
+}

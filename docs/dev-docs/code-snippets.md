@@ -1,7 +1,10 @@
 # Code snippets
 
-Xcode snippets for new screens. Xcode only reads user snippets from
-`~/Library/Developer/Xcode/UserData/CodeSnippets/`, so they are installed per machine, not in the repo.
+Snippets for new screens, with the same shortcuts in both editors:
+
+- **VS Code**: [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets), in the repo.
+- **Xcode**: only reads user snippets from `~/Library/Developer/Xcode/UserData/CodeSnippets/`, so
+  they are installed per machine, not in the repo.
 
 | Shortcut | Inserts |
 |---|---|

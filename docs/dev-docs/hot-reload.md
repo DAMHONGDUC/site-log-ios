@@ -5,7 +5,7 @@ to the root screen.
 
 ```mermaid
 flowchart LR
-    E["Save in Xcode"] --> N["InjectionNext<br/>recompiles the file"]
+    E["Save in Xcode or VS Code"] --> N["InjectionNext<br/>recompiles the file"]
     N --> A["Running app<br/>(Inject redraws the view)"]
 ```
 
@@ -55,6 +55,7 @@ struct TodoListView: View {
 | Symptom | Cause / fix |
 |---|---|
 | Console: `Could not connect: Connection refused` … `running standalone` | `InjectionNext.app` is not running; open it, then ⌘R again |
+| No hot reload when run from VS Code (F5) | F5 opens InjectionNext itself and sets `INJECTION_PROJECT_ROOT`; check the Debug Console for `🔥 Platform connected`. If missing, see `.vscode/sitelog_sim.py` (`ensure_injection_next`, `launch_app`) |
 | Nothing changes on save | The app was built before InjectionNext started watching; rebuild once |
 | Change applies but the view does not redraw | The view is missing `@ObserveInjection` or `.enableInjection()` |
 | Changed a stored property or added a type | Not injectable; rebuild |

@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // F5 = Debug Console opens at once; build, install, launch on the simulator, attach.
+      // Restart = rebuild and relaunch a fresh app. Build output and app logs: Debug Console.
+      // Stop (⇧F5) = kill the app.
+      // CodeLLDB never starts the binary itself: .vscode/sitelog_sim.py launches it with
+      // `simctl` and attaches by the pid simctl returns. See docs/dev-docs/vscode.md.
+      "type": "lldb",
+      "request": "attach",
+      "name": "dev-17-pro-max",
+      // App logs (AppLogger, every level) stream into the Debug Console.
+      "internalConsoleOptions": "openOnSessionStart",
+      "targetCreateCommands": [
+        "command script import ${workspaceFolder}/.vscode/sitelog_sim.py",
+        // Build inside the session (no preLaunchTask), so the Debug Console opens immediately.
+        "sitelog_build",
+        "sitelog_target"
+      ],
+      // Runs on F5 and again on every Restart (Restart rebuilds first).
+      "processCreateCommands": ["sitelog_launch"],
+      // The app waits for the debugger at launch; let it run.
+      "postRunCommands": ["process continue"],
+      // Stop ends the log stream and kills the app instead of only detaching.
+      "terminateCommands": ["sitelog_stop_logs", "process kill"]
+    }
+  ]
+}
