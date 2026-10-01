@@ -247,6 +247,11 @@ b, strong { font-weight: 600; }
 /* ---------- Foundations boards (always light) ---------- */
 .boards { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 24px; align-items: flex-start; }
 .board { width: 860px; background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 0 0 1px rgba(22,24,27,.08); }
+/* App icon: full 1024×1024 masters, square — iOS applies the corner mask */
+.icon-masters { display: flex; flex-wrap: wrap; gap: 48px; margin-top: 24px; }
+.icon-masters figure { display: flex; flex-direction: column; gap: 12px; }
+.icon-masters figcaption { font-size: 15px; font-weight: 600; }
+.icon-masters img { width: 1024px; height: 1024px; display: block; }
 .board h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px; }
 .tk-cols, .tk-row { display: grid; grid-template-columns: 200px 180px 180px 1fr; gap: 16px; align-items: center; }
 .ty-cols, .ty-row { display: grid; grid-template-columns: 200px 1fr 200px 200px; gap: 16px; align-items: center; }
@@ -719,6 +724,10 @@ const typeBoard = `<div class="board"><h3>Type styles</h3><div class="ty-cols"><
 const darkScreens = ['P1', 'C5', 'K2'].map(id => screens.find(s => s.id === id).html.replace('<figcaption><span>', '<figcaption><span>Dark · '));
 let html = `<section class="group"><h2>Foundations<small>tokens, light and dark</small></h2><div class="boards">${typeBoard}${colorBoard}</div>
   <h2 style="margin-top:48px;font-size:18px">Dark mode — the same screens with dark token values</h2><div class="row-screens theme-dark">${darkScreens.join('')}</div></section>`;
+
+// App icon masters from docs/design/app-icon/ at their real 1024×1024 size
+const ICONS = [['Default', 'app-icon.svg'], ['Dark', 'app-icon-dark.svg'], ['Tinted', 'app-icon-tinted.svg']];
+html += `<section class="group"><h2>App icon<small>1024×1024 · light, dark, tinted</small></h2><div class="icon-masters">${ICONS.map(([label, file]) => `<figure><figcaption>${label} · ${file}</figcaption><img src="../app-icon/${file}" alt="SiteLog app icon, ${label}"></figure>`).join('')}</div></section>`;
 
 // screens are pushed in declaration order; each group's array length says how many belong to it
 let cursor = 0;
