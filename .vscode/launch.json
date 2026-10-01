@@ -9,7 +9,7 @@
       // `simctl` and attaches by the pid simctl returns. See docs/dev-docs/vscode.md.
       "type": "lldb",
       "request": "attach",
-      "name": "dev-17-pro-max",
+      "name": "Run SiteLog (simulator)",
       // App logs (AppLogger, every level) stream into the Debug Console.
       "internalConsoleOptions": "openOnSessionStart",
       "targetCreateCommands": [

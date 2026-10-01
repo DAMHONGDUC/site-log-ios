@@ -13,24 +13,38 @@ flowchart LR
     D --> B["buildServer.json<br/>→ sourcekit-lsp"]
 ```
 
-## 1. One-time setup
+## 1. One-time setup (every developer)
 
 | Step | Action |
 |---|---|
-| 1 | Open the repo root in VS Code; accept the recommended extensions ([`.vscode/extensions.json`](../../.vscode/extensions.json)) |
-| 2 | Tools: `brew install xcodegen xcode-build-server swiftlint` |
-| 3 | Build once (Xcode ⌘B or SweetPad), then Command Palette → **SweetPad: Generate Build Server Config** |
-| 4 | Command Palette → **Swift: Restart LSP Server**; completion and jump-to-definition now work |
+| 1 | Xcode (with an iPhone simulator) and tools: `brew install xcodegen xcode-build-server swiftlint xcbeautify` |
+| 2 | Optional, for hot reload: [InjectionNext](https://github.com/johnno1962/InjectionNext/releases) in `/Applications` |
+| 3 | `xcodegen generate` |
+| 4 | Open the repo root in VS Code; install the recommended extensions ([`.vscode/extensions.json`](../../.vscode/extensions.json)) |
+| 5 | Build once (Xcode ⌘B, or F5), then Command Palette → **SweetPad: Generate Build Server Config** and **Swift: Restart LSP Server** for completion and jump-to-definition |
+| 6 | Run and Debug → **Run SiteLog (simulator)** → F5 |
 
-`buildServer.json` is machine-specific and git-ignored. Regenerate it when the scheme or project
-path changes.
+Nothing in the committed `.vscode/` is tied to one Mac. `buildServer.json` and
+`.vscode/sitelog.local.json` are machine-specific and git-ignored.
+
+### Choosing the simulator
+
+F5 picks, in order:
+
+1. The name in `SITELOG_SIMULATOR` (environment variable), or in `.vscode/sitelog.local.json`:
+   ```json
+   { "simulator": "iPhone 17 Pro Max" }
+   ```
+2. Otherwise a booted iPhone simulator, or else the iPhone on the newest iOS (booted on demand).
+
+The Debug Console prints the choice: `Building SiteLog for iPhone 17 Pro Max...`.
 
 ## 2. What lives where
 
 | File | Purpose |
 |---|---|
 | [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save (reads `.swift-format`), 100-column ruler, SweetPad scheme, `xcodegen` on file add/remove |
-| [`.vscode/launch.json`](../../.vscode/launch.json) | `dev-17-pro-max` (CodeLLDB): F5 opens the Debug Console at once, builds, runs; Restart rebuilds and relaunches; Stop kills the app |
+| [`.vscode/launch.json`](../../.vscode/launch.json) | **Run SiteLog (simulator)** (CodeLLDB): F5 opens the Debug Console at once, builds, runs; Restart rebuilds and relaunches; Stop kills the app |
 | [`.vscode/sitelog_sim.py`](../../.vscode/sitelog_sim.py) | Inside LLDB: build (warnings, errors and the duration go to the Debug Console), install, launch with `simctl --wait-for-debugger`, attach by the pid simctl prints, stream that app's logs into the Debug Console |
 | [`.vscode/tasks.json`](../../.vscode/tasks.json) | `sitelog: build`: manual build with full output (Terminal → Run Task). F5 does not use it; it builds inside the debug session |
 | [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets) | `view` / `viewvm`, same as the Xcode snippets ([code-snippets.md](code-snippets.md)) |
@@ -40,8 +54,8 @@ path changes.
 
 | Task | How |
 |---|---|
-| Simulator | F5 uses the booted **iPhone 17 Pro Max**, else the one on the newest iOS (booted on demand) — `SIMULATOR_NAME` in `sitelog_sim.py`. SweetPad Build & Run uses `sweetpad.build.destination` in `settings.json` (this Mac's UUID) |
-| Run with debugger | **F5** (config `dev-17-pro-max`). **Restart** rebuilds and relaunches a fresh app; **⇧F5** kills it |
+| Simulator | F5: see *Choosing the simulator* above. SweetPad Build & Run: SweetPad sidebar → Destinations (remembered per machine) |
+| Run with debugger | **F5** (config **Run SiteLog (simulator)**). **Restart** rebuilds and relaunches a fresh app; **⇧F5** kills it |
 | Run without debugger | SweetPad sidebar → **Build & Run** |
 | App logs | **Debug Console**, opened on F5 — like `flutter run`: `AppLogger` lines (every level, e.g. `I  SiteLog[pid:tid] [app.dd.site.log:Startup] App Launched`) and the app's stdout/stderr (InjectionNext, crash messages). Each Restart streams the new app |
 | Hot reload | Save a view (⌘S). F5 starts InjectionNext in the background if it is not running and passes `INJECTION_PROJECT_ROOT` to the app; the Debug Console shows `🔥 Recompiling` → `✅ Hot reload complete` ([hot-reload.md](hot-reload.md)) |
@@ -64,7 +78,7 @@ path changes.
 | "No such module" / no completion in VS Code | Build once, regenerate the build server config, restart the LSP |
 | New file not visible in Xcode | Run `xcodegen generate`, then let Xcode reload |
 | No app logs in the Debug Console | The stream starts in `sitelog_launch`; check the Debug Console for `sitelog_launch failed`. Logs come only from `AppLogger` (subsystem `app.dd.site.log`) |
-| `Build failed` / `sitelog_launch failed` in the Debug Console | The lines above it say why (compiler error, no simulator with that name, install error). Fix and press F5 or Restart; check `SIMULATOR_NAME` in `sitelog_sim.py` |
+| `Build failed` / `sitelog_launch failed` in the Debug Console | The lines above it say why (compiler error, no simulator with that name, install error). Fix and press F5 or Restart; check the simulator name in `SITELOG_SIMULATOR` or `.vscode/sitelog.local.json` |
 | `sitelog_launch failed: install timed out` | An older SiteLog is held stopped by another debugger (a second VS Code or Xcode session). Stop that session, then F5 |
 | History: why not SweetPad's attach | Its Restart made CodeLLDB start the binary outside the simulator → `EXC_BREAKPOINT` in `BKSDisplayServicesStart`; guessing the pid by name raced with the relaunch. Launching with `simctl` and attaching by its pid avoids both |
 | SweetPad picks the wrong scheme | `.vscode/settings.json` → `sweetpad.build.scheme` |

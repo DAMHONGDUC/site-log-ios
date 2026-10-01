@@ -55,3 +55,5 @@ buildServer.json
 *.xcodeproj/-Xcc/
 # LLDB imports .vscode/sitelog_sim.py and caches its bytecode
 __pycache__/
+# Per-machine F5 simulator choice, see docs/dev-docs/vscode.md
+.vscode/sitelog.local.json

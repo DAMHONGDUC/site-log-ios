@@ -19,9 +19,5 @@
   "debug.console.closeOnEnd": false,
   "sweetpad.xcodegen.autogenerate": true,
   "sweetpad.build.xcodeWorkspacePath": "SiteLog.xcodeproj",
-  "sweetpad.build.scheme": "SiteLog",
-  "sweetpad.build.destination": {
-    "id": "A1435826-B732-4BE8-A6BC-E360A720E0D5",
-    "type": "iOSSimulator"
-  }
+  "sweetpad.build.scheme": "SiteLog"
 }

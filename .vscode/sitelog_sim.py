@@ -26,43 +26,107 @@ import sys
 import threading
 import time
 
-SIMULATOR_NAME = "iPhone 17 Pro Max"
 SCHEME = "SiteLog"
 CONFIGURATION = "Debug"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT = os.path.join(REPO_ROOT, "SiteLog.xcodeproj")
 LOG_SUBSYSTEM = "app.dd.site.log"
 INJECTION_NEXT_APP = "/Applications/InjectionNext.app"
+LOCAL_SETTINGS = os.path.join(REPO_ROOT, ".vscode", "sitelog.local.json")
 LOG_PREDICATE = f'subsystem == "{LOG_SUBSYSTEM}"'
 # Matches our `log stream` command lines (xcrun, simctl and log) for cleanup.
 LOG_STREAM_SIGNATURE = f"log stream --level debug --style compact --predicate {LOG_PREDICATE}"
 
 # The `log stream` process feeding the Debug Console; one per debug session, replaced on Restart.
 _log_stream = None
+# The simulator picked for this debug session, so build and launch use the same one.
+_selected_simulator = None
 
 
-def simulator_udid():
-    """The booted simulator with SIMULATOR_NAME, else the one on the newest runtime (booted on demand)."""
+def preferred_simulator():
+    """Simulator name chosen on this machine, or None for automatic.
+
+    1. Environment variable SITELOG_SIMULATOR, e.g. "iPhone 16".
+    2. .vscode/sitelog.local.json (git-ignored): {"simulator": "iPhone 16"}.
+    """
+    name = os.environ.get("SITELOG_SIMULATOR")
+    if name:
+        return name
+    try:
+        with open(LOCAL_SETTINGS) as file:
+            return json.load(file).get("simulator") or None
+    except (OSError, ValueError):
+        return None
+
+
+def runtime_version(runtime):
+    """'com.apple.CoreSimulatorRuntime.iOS-26-4' -> (26, 4), for sorting."""
+    numbers = runtime.rsplit("iOS-", 1)[-1].split("-")
+    return tuple(int(n) for n in numbers if n.isdigit())
+
+
+def simulator():
+    """(udid, name) of the simulator to run on; boots it if needed.
+
+    With a preferred name: that simulator (booted one first, else newest iOS).
+    Without: a booted iPhone, else the iPhone on the newest iOS.
+    """
+    global _selected_simulator
+    if _selected_simulator is not None:
+        return _selected_simulator
+
     listing = subprocess.run(
         ["xcrun", "simctl", "list", "devices", "available", "-j"],
         capture_output=True, text=True, check=True,
     )
-    matches = []
+    wanted = preferred_simulator()
+    candidates = []
     for runtime, devices in json.loads(listing.stdout)["devices"].items():
+        if "iOS" not in runtime:
+            continue  # watchOS, tvOS, visionOS
         for device in devices:
-            if device["name"] == SIMULATOR_NAME:
-                matches.append((device["state"] == "Booted", runtime, device["udid"]))
-    if not matches:
-        raise RuntimeError(f"No simulator named '{SIMULATOR_NAME}'")
-    is_booted, _, udid = max(matches)
+            matches = device["name"] == wanted if wanted else device["name"].startswith("iPhone")
+            if matches:
+                is_booted = device["state"] == "Booted"
+                candidates.append((is_booted, runtime_version(runtime), device["name"], device["udid"]))
+    if not candidates:
+        if wanted:
+            raise RuntimeError(f"No simulator named '{wanted}' (set in SITELOG_SIMULATOR or "
+                               f"{os.path.relpath(LOCAL_SETTINGS, REPO_ROOT)}); see `xcrun simctl list devices`")
+        raise RuntimeError("No iPhone simulator installed; add one in Xcode → Window → Devices and Simulators")
+
+    is_booted, _, name, udid = max(candidates)
     if not is_booted:
         subprocess.run(["xcrun", "simctl", "boot", udid], check=True)
-        subprocess.run(["open", "-a", "Simulator"], check=False)
-    return udid
+        open_simulator_window()
+    _selected_simulator = (udid, name)
+    return _selected_simulator
+
+
+def open_simulator_window():
+    """Show the simulator window. Xcode 27 ships it as DeviceHub.app, older Xcode as Simulator.app."""
+    developer = subprocess.run(["xcode-select", "-p"], capture_output=True, text=True).stdout.strip()
+    candidates = [
+        os.path.join(os.path.dirname(developer), "Applications", "DeviceHub.app"),  # Xcode 27+
+        os.path.join(developer, "Applications", "Simulator.app"),                   # Xcode 26 and older
+    ]
+    for path in candidates:
+        if os.path.isdir(path):
+            subprocess.run(["open", "-g", path], check=False)
+            return
+
+
+def simulator_udid():
+    return simulator()[0]
 
 
 def app_path():
-    """SiteLog.app from this repo's DerivedData folder (other SiteLog-* folders belong to other checkouts)."""
+    """SiteLog.app built from this checkout.
+
+    Looks in Xcode's default DerivedData first (fast); other SiteLog-* folders there belong to
+    other checkouts, so it matches on WorkspacePath. Falls back to asking xcodebuild, which
+    also covers a custom DerivedData location.
+    """
     for folder in glob.glob(os.path.expanduser("~/Library/Developer/Xcode/DerivedData/SiteLog-*")):
         try:
             with open(os.path.join(folder, "info.plist"), "rb") as file:
@@ -73,7 +137,20 @@ def app_path():
             path = os.path.join(folder, "Build", "Products", f"{CONFIGURATION}-iphonesimulator", f"{SCHEME}.app")
             if os.path.isdir(path):
                 return path
-    raise RuntimeError("SiteLog.app not built yet; run the build task first")
+
+    settings = subprocess.run(
+        ["xcodebuild", "-project", PROJECT, "-scheme", SCHEME, "-configuration", CONFIGURATION,
+         "-destination", f"platform=iOS Simulator,id={simulator_udid()}", "-showBuildSettings", "-json"],
+        capture_output=True, text=True,
+    )
+    try:
+        build_settings = json.loads(settings.stdout)[0]["buildSettings"]
+        path = os.path.join(build_settings["BUILT_PRODUCTS_DIR"], build_settings["FULL_PRODUCT_NAME"])
+    except (ValueError, IndexError, KeyError):
+        raise RuntimeError("could not read the build settings from xcodebuild")
+    if not os.path.isdir(path):
+        raise RuntimeError(f"{SCHEME}.app not built yet ({path}); press F5 again or run the build task")
+    return path
 
 
 def bundle_id(path):
@@ -89,13 +166,13 @@ def build(write=None):
                 then the result and duration.
     Returns xcodebuild's exit code.
     """
-    udid = simulator_udid()
+    udid, name = simulator()
     command = [
         "xcodebuild", "-project", PROJECT, "-scheme", SCHEME, "-configuration", CONFIGURATION,
         "-destination", f"platform=iOS Simulator,id={udid}", "build",
     ]
     out = write or (lambda line: print(line, flush=True))
-    out(f"Building {SCHEME} for {SIMULATOR_NAME}...")
+    out(f"Building {SCHEME} for {name}...")
     started = time.monotonic()
 
     xcodebuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -299,7 +376,7 @@ def launch_and_attach(debugger, command, result, internal_dict):
             return
         _fresh_build = False
 
-        udid = simulator_udid()
+        udid, name = simulator()
         path = app_path()
         bundle = bundle_id(path)
 
@@ -311,7 +388,7 @@ def launch_and_attach(debugger, command, result, internal_dict):
                 "(another VS Code or Xcode session). Stop that session, then F5 again"
             )
         pid = launch_app(debugger, udid, bundle)
-        print(f"SiteLog launched on {SIMULATOR_NAME}, pid {pid}")
+        print(f"SiteLog launched on {name}, pid {pid}")
         start_logs(debugger, udid, pid)
         debugger.HandleCommand(f"process attach --pid {pid}")
     except Exception as error:  # surface the reason in the Debug Console
