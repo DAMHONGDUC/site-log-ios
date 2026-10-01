@@ -44,7 +44,7 @@ Why each choice: [docs/adr](docs/adr/README.md).
 | | |
 |---|---|
 | Architecture | Clean Architecture (Presentation · Domain · Data), MVVM in Presentation, SPM packages per layer |
-| Dependency injection | Factory registrations in `SiteLog/AppDependencies.swift` only |
+| Dependency injection | Factory registrations in `SiteLog/App/AppDependencies.swift` only |
 | Encryption | Data Protection `.completeUnlessOpen` for media, AES-GCM for export bundles, HMAC-SHA256 audit chain, Keychain for keys and tokens |
 
 ```

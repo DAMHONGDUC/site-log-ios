@@ -160,11 +160,17 @@ flowchart LR
 ```
 site-log-ios/
 ├── SiteLog/                          # app target
-│   ├── SiteLogApp.swift              # @main
-│   ├── AppDependencies.swift         # Factory registrations (composition root)
-│   ├── RootView.swift                # app lock gate
-│   ├── Startup/                      # guarded startup steps
-│   ├── Presentation/<Feature>/       # 2+ screens → one subfolder per screen
+│   ├── App/                          # composition root: may import everything
+│   │   ├── SiteLogApp.swift          # @main
+│   │   ├── AppDelegate.swift         # process-level iOS events
+│   │   ├── AppDependencies.swift     # Factory registrations
+│   │   └── Startup/                  # guarded startup steps (Steps/ per step)
+│   ├── Presentation/                 # Domain + DesignSystem only
+│   │   ├── Root/RootView.swift       # startup → app lock gate → main tabs
+│   │   ├── Access/Startup/           # StartupView + StartupViewModel
+│   │   ├── MainTab/
+│   │   └── <Feature>/                # 2+ screens → one subfolder per screen
+│   ├── Helper/Logger/AppLogger.swift # shared helpers; import nothing from the project
 │   ├── Resources/                    # Assets.xcassets, localization, seeded templates
 │   └── Config/                       # *.xcconfig, entitlements
 ├── Packages/
@@ -192,7 +198,7 @@ called `Data` shadows `Foundation.Data`.
 | Domain | `Packages/Domain` | `Foundation` only |
 | Data | `Packages/DataLayer` | `Domain` and data sources |
 | Data sources | `Packages/<Name>` | Frameworks; `Domain` for shared value types; never `DataLayer` or each other |
-| Composition root | `SiteLog/AppDependencies.swift` | Everything, plus `FactoryKit` |
+| Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`) | Everything, plus `FactoryKit` |
 
 | Rule | Enforcement |
 |---|---|
@@ -216,7 +222,7 @@ called `Data` shadows `Foundation.Data`.
 
 ### 4.4 Composition root (Factory)
 
-All registrations live in `SiteLog/AppDependencies.swift`. `Domain` and `DataLayer` never import
+All registrations live in `SiteLog/App/AppDependencies.swift`. `Domain` and `DataLayer` never import
 `FactoryKit`.
 
 ```swift

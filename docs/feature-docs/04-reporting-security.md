@@ -104,7 +104,7 @@ pin numbering matches detail; 200-image memory; opens in Preview and Acrobat.
 
 ## 07. Security and audit log
 
-Modules: `SiteLog/Presentation/Launch`, `SiteLog/Presentation/Settings/AppLock`, `Domain`
+Modules: `SiteLog/Presentation/Access/Lock`, `SiteLog/Presentation/Settings/AppLock`, `Domain`
 
 **Goal:** media and reports are unreadable if the device is lost, unmodifiable without a trace, and
 never leaked into logs or analytics.

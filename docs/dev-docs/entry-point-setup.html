@@ -61,19 +61,17 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
 
 <nav class="toc">
   <a href="#now">Current state</a><a href="#tree">Structure</a><a href="#flow">Run order</a>
-  <a href="#s0">0 · project.yml</a><a href="#s1">1 · SiteLogApp</a><a href="#s2">2 · AppDelegate</a><a href="#s3">3 · AppLog</a>
+  <a href="#s0">0 · project.yml</a><a href="#s1">1 · SiteLogApp</a><a href="#s2">2 · AppDelegate</a><a href="#s3">3 · AppLogger</a>
   <a href="#s4">4 · Startup steps</a><a href="#s5">5 · StartupViewModel</a><a href="#s6">6 · StartupView</a>
   <a href="#s7">7 · RootView</a><a href="#check">Verify</a><a href="#later">Later</a>
 </nav>
 
 <h2 id="now">Current state of the repo</h2>
 <div class="status">
-  <code>StartupSequence.swift</code><span class="bad">no <code>return nil</code> after the loop: build fails</span>
-  <code>SiteLogApp.swift</code>, <code>AppDelegate.swift</code>, <code>AppDependencies.swift</code>, <code>Startup/</code><span class="bad">still at the <code>SiteLog/</code> root; move into <code>App/</code></span>
-  <code>Access/Splash/</code>, <code>StartupFailureView.swift</code><span class="bad">replaced by one <code>StartupView.swift</code> in <code>Access/Startup/</code></span>
-  <code>Support/AppLog.swift</code><span>move into <code>Support/Logging/</code>; subsystem should be <code>app.dd.site.log</code></span>
-  <code>RootView.swift</code><span>in <code>Presentation/Root/</code> (correct); still shows “Hello”</span>
-  <code>StartupViewModel.swift</code><span>in <code>Access/Startup/</code> (correct)</span>
+  <code>App/</code><span>SiteLogApp, AppDelegate, AppDependencies, Startup/ — done</span>
+  <code>Presentation/</code><span>Root/RootView, Access/Startup/StartupView + StartupViewModel, MainTab/MainTabView — done</span>
+  <code>Helper/Logger/AppLogger.swift</code><span>done; category should be lowercase <code>startup</code></span>
+  <code>App/AppDependencies.swift</code><span>empty; 2 SwiftLint whitespace warnings at the end of the file</span>
 </div>
 
 <h2 id="tree">Target structure</h2>
@@ -94,8 +92,8 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
 │   │   │   └── StartupViewModel.swift    <span class="cm">⑤ snippet viewvm</span>
 │   │   ├── Lock/   SignIn/               <span class="cm">(M3 / M5)</span>
 │   └── MainTab/MainTabView.swift         <span class="cm">⑥ snippet view</span>
-├── Support/                              <span class="cm"># shared helpers, import nothing from the project</span>
-│   └── Logging/AppLog.swift              <span class="cm">③ os.Logger per category</span>
+├── Helper/                               <span class="cm"># shared helpers, import nothing from the project</span>
+│   └── Logger/AppLogger.swift            <span class="cm">③ os.Logger per category</span>
 ├── Resources/
 └── Config/</code></pre>
 
@@ -103,20 +101,20 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
 <table>
   <tr><th>Folder</th><th>Role</th><th>May import</th></tr>
   <tr><td><code>App/</code></td><td>Composition root: app entry, iOS events, dependency wiring, startup steps</td><td>Everything (data sources, Firebase, Factory)</td></tr>
-  <tr><td><code>Presentation/</code></td><td>Views and view models</td><td><code>Domain</code>, <code>DesignSystem</code>, <code>Support</code></td></tr>
-  <tr><td><code>Support/</code></td><td>Small helpers both of the above use (logging)</td><td>Apple frameworks only</td></tr>
+  <tr><td><code>Presentation/</code></td><td>Views and view models</td><td><code>Domain</code>, <code>DesignSystem</code>, <code>Helper</code></td></tr>
+  <tr><td><code>Helper/</code></td><td>Small helpers both of the above use (logging)</td><td>Apple frameworks only</td></tr>
 </table>
 <dl class="why">
   <dt>Startup/ lives in App/</dt><dd>Real steps call data sources (Keychain, <code>ModelContainer</code>, <code>UploadKit</code>). Only the composition root may import those (rule §4.2).</dd>
   <dt>StartupViewModel lives in Presentation/</dt><dd>It is the view model of <code>StartupView</code>, so it sits next to it (rule §4.3).</dd><dt>One name: Startup</dt><dd><code>Startup</code> names the process (steps, sequence, state), its feature folder and its only screen, <code>StartupView</code>. A feature with one screen needs no screen subfolders.</dd>
   <dt>RootView lives in Presentation/Root/</dt><dd>It is a view: it only chooses which screen to show, it wires no dependencies.</dd>
-  <dt>Support/ is top level</dt><dd>Both <code>App/</code> and <code>Presentation/</code> log; putting it inside one would make the other borrow from it.</dd>
+  <dt>Helper/ is top level</dt><dd>Both <code>App/</code> and <code>Presentation/</code> log; putting it inside one would make the other borrow from it.</dd>
   <dt>Folder = rule</dt><dd>Each top-level folder matches one row of the dependency table, so a CI check can test imports per folder.</dd>
 </dl>
 
 <h3>Move the existing files</h3>
 <ol>
-  <li>In the Project Navigator, right-click <code>SiteLog</code> → <b>New Folder</b>: create <code>App</code>, <code>Support/Logging</code>, <code>Presentation/Root</code>, <code>Presentation/Access/Startup</code>, <code>Presentation/MainTab</code>.</li>
+  <li>In the Project Navigator, right-click <code>SiteLog</code> → <b>New Folder</b>: create <code>App</code>, <code>Helper/Logger</code>, <code>Presentation/Root</code>, <code>Presentation/Access/Startup</code>, <code>Presentation/MainTab</code>.</li>
   <li>Drag <code>SiteLogApp.swift</code>, <code>AppDelegate.swift</code>, <code>AppDependencies.swift</code> into <code>App/</code>; drag <code>RootView.swift</code> into <code>Presentation/Root/</code>.</li>
   <li>Nothing to change in <code>project.yml</code>: the target’s source is the whole <code>SiteLog</code> folder, subfolders included.</li>
   <li>⌘B to confirm the build still finds every file.</li>
@@ -175,6 +173,7 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
 <h2 id="s2"><span class="n">2</span>AppDelegate.swift: receives events from iOS</h2>
 <p class="path">SiteLog/App/AppDelegate.swift</p>
 <pre><code><span class="kw">import</span> UIKit
+<span class="kw">import</span> os      <span class="cm">// needed to call AppLogger.startup.info (MemberImportVisibility)</span>
 
 <span class="cm">// Receives app-level events from iOS (launch, background uploads, push).</span>
 <span class="cm">// NSObject is required because UIApplicationDelegate is an Objective-C protocol.</span>
@@ -187,7 +186,7 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
     ) -&gt; Bool {
         <span class="cm">// M5: FirebaseApp.configure() goes here, as the very first line.</span>
 
-        AppLog.startup.info(<span class="str">"App launched"</span>)
+        AppLogger.startup.info(<span class="str">"App launched"</span>)
 
         <span class="cm">// true = launch succeeded.</span>
         <span class="kw">return</span> <span class="kw">true</span>
@@ -199,16 +198,16 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
   <dt>final</dt><dd>No other class can inherit from it.</dd>
   <dt>didFinishLaunchingWithOptions</dt><dd>iOS calls it once the process has finished launching, before <code>RootView</code> appears. The place for work that must finish before any UI (Firebase in M5).</dd>
   <dt>return true</dt><dd>Tells iOS the launch succeeded.</dd>
-  <dt>Keep out</dt><dd>Business logic, and foreground/background lifecycle (use <code>scenePhase</code> in SwiftUI).</dd>
+  <dt>import os</dt><dd><code>project.yml</code> turns on <code>MemberImportVisibility</code>: a file that calls a <code>Logger</code> method must import <code>os</code> itself, even though <code>AppLogger</code> already does.</dd><dt>Keep out</dt><dd>Business logic, and foreground/background lifecycle (use <code>scenePhase</code> in SwiftUI).</dd>
 </dl>
 
-<h2 id="s3"><span class="n">3</span>AppLog.swift: one place for loggers</h2>
-<p class="path">SiteLog/Support/Logging/AppLog.swift</p>
+<h2 id="s3"><span class="n">3</span>AppLogger.swift: one place for loggers</h2>
+<p class="path">SiteLog/Helper/Logger/AppLogger.swift</p>
 <pre><code><span class="kw">import</span> os
 
 <span class="cm">// A namespace for the app's loggers.</span>
-<span class="cm">// An enum with no cases cannot be created by mistake: AppLog() does not compile.</span>
-<span class="kw">enum</span> AppLog {
+<span class="cm">// An enum with no cases cannot be created by mistake: AppLogger() does not compile.</span>
+<span class="kw">enum</span> AppLogger {
 
     <span class="cm">// Same subsystem for every logger, so Console can show all SiteLog logs together.</span>
     <span class="kw">static</span> <span class="kw">let</span> subsystem: String = <span class="str">"app.dd.site.log"</span>
@@ -249,7 +248,9 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
     <span class="kw">func</span> run() <span class="kw">async</span> <span class="kw">throws</span>
 }</code></pre>
 <p class="path">SiteLog/App/Startup/StartupSequence.swift</p>
-<pre><code><span class="cm">// Runs every startup step in order.</span>
+<pre><code><span class="kw">import</span> os      <span class="cm">// needed to call AppLogger methods (MemberImportVisibility)</span>
+
+<span class="cm">// Runs every startup step in order.</span>
 <span class="kw">struct</span> StartupSequence {
 
     <span class="kw">let</span> steps: [<span class="kw">any</span> StartupStep]
@@ -260,13 +261,13 @@ nav.toc a { font-size: 14px; color: var(--ink); text-decoration: none; backgroun
         <span class="kw">for</span> step <span class="kw">in</span> steps {
             <span class="kw">do</span> {
                 <span class="kw">try</span> <span class="kw">await</span> step.run()
-                AppLog.startup.info(<span class="str">"Step ok: \(step.name, privacy: .public)"</span>)
+                AppLogger.startup.info(<span class="str">"Step ok: \(step.name, privacy: .public)"</span>)
             } <span class="kw">catch</span> {
                 <span class="cm">// `error` is created by Swift inside every catch block.</span>
                 <span class="cm">// Log the step name and the error's type, not its full text:</span>
                 <span class="cm">// the text can contain file paths or other private data.</span>
                 <span class="kw">let</span> errorType = String(describing: type(of: error))
-                AppLog.startup.error(<span class="str">"Step failed: \(step.name, privacy: .public), error: \(errorType, privacy: .public)"</span>)
+                AppLogger.startup.error(<span class="str">"Step failed: \(step.name, privacy: .public), error: \(errorType, privacy: .public)"</span>)
 
                 <span class="cm">// A non-blocking step only gets logged; the loop moves on.</span>
                 <span class="kw">if</span> step.blocksLaunch == <span class="kw">false</span> {

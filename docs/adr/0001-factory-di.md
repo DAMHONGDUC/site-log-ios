@@ -12,7 +12,7 @@ case grows with every feature and needs a manual override path for each seam.
 
 Use [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`).
 
-- All registrations are `extension Container` in `SiteLog/AppDependencies.swift`.
+- All registrations are `extension Container` in `SiteLog/App/AppDependencies.swift`.
 - Data sources and stateful services are `.singleton`; use cases are unscoped.
 - View models resolve **use cases only**, with `@ObservationIgnored @Injected(\.useCase)`.
 - `Domain` and `DataLayer` never import `FactoryKit`.
