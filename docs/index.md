@@ -26,3 +26,4 @@
 | [swiftlint.md](dev-docs/swiftlint.md) | SwiftLint build phase, rules, split with `swift-format` |
 | [xcodegen.md](dev-docs/xcodegen.md) | `project.yml` is the source of truth for `SiteLog.xcodeproj` |
 | [hot-reload.md](dev-docs/hot-reload.md) | Hot reload in the simulator with Inject + InjectionNext |
+| [code-snippets.md](dev-docs/code-snippets.md) | Xcode snippets `view` / `viewvm` for new screens |

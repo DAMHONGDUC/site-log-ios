@@ -54,6 +54,7 @@ struct TodoListView: View {
 
 | Symptom | Cause / fix |
 |---|---|
+| Console: `Could not connect: Connection refused` … `running standalone` | `InjectionNext.app` is not running; open it, then ⌘R again |
 | Nothing changes on save | The app was built before InjectionNext started watching; rebuild once |
 | Change applies but the view does not redraw | The view is missing `@ObserveInjection` or `.enableInjection()` |
 | Changed a stored property or added a type | Not injectable; rebuild |
