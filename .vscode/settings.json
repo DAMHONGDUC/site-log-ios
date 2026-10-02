@@ -17,6 +17,9 @@
   },
   "debug.internalConsoleOptions": "openOnSessionStart",
   "debug.console.closeOnEnd": false,
+  // CodeLLDB: Debug Console evaluates expressions directly (no '?' prefix, no mode banner).
+  // LLDB commands still work with a '/cmd ' prefix, e.g. `/cmd bt`.
+  "lldb.consoleMode": "evaluate",
   "sweetpad.xcodegen.autogenerate": true,
   "sweetpad.build.xcodeWorkspacePath": "SiteLog.xcodeproj",
   "sweetpad.build.scheme": "SiteLog"

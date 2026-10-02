@@ -62,7 +62,7 @@ The Debug Console prints the choice: `Building SiteLog for iPhone 17 Pro Max...`
 
 | File | Purpose |
 |---|---|
-| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save (reads `.swift-format`), 100-column ruler, SweetPad scheme, `xcodegen` on file add/remove |
+| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save (reads `.swift-format`), 100-column ruler, SweetPad scheme, `xcodegen` on file add/remove, Debug Console in expression mode (`lldb.consoleMode`) |
 | [`.vscode/launch.json`](../../.vscode/launch.json) | **Run SiteLog (simulator)** (CodeLLDB): F5 opens the Debug Console at once, builds, runs; Restart rebuilds and relaunches; Stop kills the app |
 | [`.vscode/sitelog_sim.py`](../../.vscode/sitelog_sim.py) | Inside LLDB: build (warnings, errors and the duration go to the Debug Console), install, launch with `simctl --wait-for-debugger`, attach by the pid simctl prints, stream that app's logs into the Debug Console |
 | [`.vscode/tasks.json`](../../.vscode/tasks.json) | `sitelog: build`: manual build with full output (Terminal → Run Task). F5 does not use it; it builds inside the debug session |
@@ -77,6 +77,7 @@ The Debug Console prints the choice: `Building SiteLog for iPhone 17 Pro Max...`
 | Run with debugger | **F5** (config **Run SiteLog (simulator)**). **Restart** rebuilds and relaunches a fresh app; **⇧F5** kills it |
 | Run without debugger | SweetPad sidebar → **Build & Run** |
 | App logs | **Debug Console**, opened on F5 — like `flutter run`: `AppLogger` lines (every level, e.g. `I  SiteLog[pid:tid] [app.dd.site.log:Startup] App Launched`) and the app's stdout/stderr (InjectionNext, crash messages). Each Restart streams the new app |
+| Debug Console input | Type a Swift expression directly (e.g. `self.title`). LLDB commands need the `/cmd ` prefix (e.g. `/cmd bt`) |
 | Hot reload | Save a view (⌘S). F5 starts InjectionNext in the background if it is not running and passes `INJECTION_PROJECT_ROOT` to the app; the Debug Console shows `🔥 Recompiling` → `✅ Hot reload complete` ([hot-reload.md](hot-reload.md)) |
 | New file | Create it in the explorer; SweetPad runs `xcodegen` so Xcode sees it |
 
