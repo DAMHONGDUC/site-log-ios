@@ -26,19 +26,19 @@
 - **Specs:** [08 Auth and sync](../feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](../feature-docs/03-backend.md#7-sync)
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| [P60](#p60--auth-and-sync-protocols) | `Contract` | 2h | Auth and sync protocols |
-| [P61](#p61--firebase-auth) | `Logic` | 7h | Firebase Auth |
-| [P62](#p62--backend-pull-and-push) | `Logic` | 6h | Backend pull and push |
-| [P63](#p63--sync-engine-pull) | `Logic` | 8h | Sync engine: pull |
-| [P64](#p64--sync-engine-push-and-conflicts) | `Logic` | 12h | Sync engine: push and conflicts |
-| [P65](#p65--deletes-propagate) | `Logic` | 6h | Deletes propagate |
-| [P66](#p66--two-device-convergence-test) | `Logic` | 8h | Two-device convergence test |
-| [P67](#p67--real-sign-in-screens) | `UI` | 4h | Real sign-in screens |
-| [P68](#p68--account-settings) | `UI` | 4h | Account settings |
-| [P69](#p69--sync-status) | `UI` | 3h | Sync status |
-| [P70](#p70--real-auth-and-sync-two-device-demo) | `Join` | 3h | Real auth and sync, two-device demo |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| [P60](#p60--auth-and-sync-protocols) | `Contract` | 2h | not start | Auth and sync protocols |
+| [P61](#p61--firebase-auth) | `Logic` | 7h | not start | Firebase Auth |
+| [P62](#p62--backend-pull-and-push) | `Logic` | 6h | not start | Backend pull and push |
+| [P63](#p63--sync-engine-pull) | `Logic` | 8h | not start | Sync engine: pull |
+| [P64](#p64--sync-engine-push-and-conflicts) | `Logic` | 12h | not start | Sync engine: push and conflicts |
+| [P65](#p65--deletes-propagate) | `Logic` | 6h | not start | Deletes propagate |
+| [P66](#p66--two-device-convergence-test) | `Logic` | 8h | not start | Two-device convergence test |
+| [P67](#p67--real-sign-in-screens) | `UI` | 4h | not start | Real sign-in screens |
+| [P68](#p68--account-settings) | `UI` | 4h | not start | Account settings |
+| [P69](#p69--sync-status) | `UI` | 3h | not start | Sync status |
+| [P70](#p70--real-auth-and-sync-two-device-demo) | `Join` | 3h | not start | Real auth and sync, two-device demo |
 
 ### Order
 

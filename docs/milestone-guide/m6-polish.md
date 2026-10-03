@@ -24,17 +24,17 @@
 - **Specs:** [10 Realtime](../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [14 §8–9](../feature-docs/03-backend.md#8-integrity), [18 Push and deep links](../feature-docs/05-platform.md#18-push-notifications-and-deep-links), [19 Instruments](../feature-docs/05-platform.md#19-performance-profiling-with-instruments)
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| [P71](#p71--realtime-client) | `Logic` | 6h | Realtime client |
-| [P72](#p72--events-into-the-upload-store) | `Logic` | 6h | Events into the upload store |
-| [P73](#p73--verification-worker) | `Logic` | 6h | Verification worker |
-| [P74](#p74--push-notifications) | `Logic` | 6h | Push notifications |
-| [P75](#p75--deep-links) | `Logic` | 3h | Deep links |
-| [P76](#p76--live-state-on-the-upload-screen) | `UI` | 3h | Live state on the upload screen |
-| [P77](#p77--notification-permission-and-settings) | `UI` | 2h | Notification permission and settings |
-| [P78](#p78--accessibility-pass) | `UI` | 8h | Accessibility pass |
-| [P79](#p79--budgets-feedback-submission-prep) | `Join` | 10h | Budgets, feedback, submission prep |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| [P71](#p71--realtime-client) | `Logic` | 6h | not start | Realtime client |
+| [P72](#p72--events-into-the-upload-store) | `Logic` | 6h | not start | Events into the upload store |
+| [P73](#p73--verification-worker) | `Logic` | 6h | not start | Verification worker |
+| [P74](#p74--push-notifications) | `Logic` | 6h | not start | Push notifications |
+| [P75](#p75--deep-links) | `Logic` | 3h | not start | Deep links |
+| [P76](#p76--live-state-on-the-upload-screen) | `UI` | 3h | not start | Live state on the upload screen |
+| [P77](#p77--notification-permission-and-settings) | `UI` | 2h | not start | Notification permission and settings |
+| [P78](#p78--accessibility-pass) | `UI` | 8h | not start | Accessibility pass |
+| [P79](#p79--budgets-feedback-submission-prep) | `Join` | 10h | not start | Budgets, feedback, submission prep |
 
 ### Order
 

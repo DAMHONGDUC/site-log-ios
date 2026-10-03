@@ -26,19 +26,19 @@
 - **Specs:** [00 §3 Data model](../feature-docs/00-overview.md#3-data-model), [01](../feature-docs/01-field-work.md#01-projects-sessions-locations), [02](../feature-docs/01-field-work.md#02-capture-pipeline)
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| [P08](#p08--entities-protocols-use-cases-fakes) | `Contract` | 5h | Entities, protocols, use cases, fakes |
-| [P09](#p09--swiftdata-schema-and-repositories) | `Logic` | 7h | SwiftData schema and repositories |
-| [P10](#p10--schema-versioning-and-migrations) | `Logic` | 8h | Schema versioning and migrations |
-| [P11](#p11--bulk-generate-and-import-locations) | `Logic` | 3h | Bulk-generate and import locations |
-| [P12](#p12--camera-session-and-permissions) | `Logic` | 6h | Camera session and permissions |
-| [P13](#p13--write-to-disk-and-sha-256) | `Logic` | 5h | Write to disk and SHA-256 |
-| [P14](#p14--p1-project-list-p2-new-project) | `UI` | 4h | P1 project list, P2 new project |
-| [P15](#p15--p3-project-overview-p4-start-session) | `UI` | 4h | P3 project overview, P4 start session |
-| [P16](#p16--p5-walkthrough-p6-generate-p7-room) | `UI` | 6h | P5 walkthrough, P6 generate, P7 room |
-| [P17](#p17--c1-camera-screen-on-a-fake-session) | `UI` | 4h | C1 camera screen on a fake session |
-| [P18](#p18--real-logic-behind-the-screens) | `Join` | 4h | Real logic behind the screens |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| [P08](#p08--entities-protocols-use-cases-fakes) | `Contract` | 5h | not start | Entities, protocols, use cases, fakes |
+| [P09](#p09--swiftdata-schema-and-repositories) | `Logic` | 7h | not start | SwiftData schema and repositories |
+| [P10](#p10--schema-versioning-and-migrations) | `Logic` | 8h | not start | Schema versioning and migrations |
+| [P11](#p11--bulk-generate-and-import-locations) | `Logic` | 3h | not start | Bulk-generate and import locations |
+| [P12](#p12--camera-session-and-permissions) | `Logic` | 6h | not start | Camera session and permissions |
+| [P13](#p13--write-to-disk-and-sha-256) | `Logic` | 5h | not start | Write to disk and SHA-256 |
+| [P14](#p14--p1-project-list-p2-new-project) | `UI` | 4h | not start | P1 project list, P2 new project |
+| [P15](#p15--p3-project-overview-p4-start-session) | `UI` | 4h | not start | P3 project overview, P4 start session |
+| [P16](#p16--p5-walkthrough-p6-generate-p7-room) | `UI` | 6h | not start | P5 walkthrough, P6 generate, P7 room |
+| [P17](#p17--c1-camera-screen-on-a-fake-session) | `UI` | 4h | not start | C1 camera screen on a fake session |
+| [P18](#p18--real-logic-behind-the-screens) | `Join` | 4h | not start | Real logic behind the screens |
 
 ### Order
 

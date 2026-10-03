@@ -30,23 +30,23 @@
 - **Specs:** [03](../feature-docs/01-field-work.md#03-issues-and-before-after-pairing), [12](../feature-docs/01-field-work.md#12-annotation-and-verifiable-stamps), [05](../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07](../feature-docs/04-reporting-security.md#07-security-and-audit-log)
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| [P33](#p33--issue-annotation-report-audit-contract) | `Contract` | 4h | Issue, annotation, report, audit contract |
-| [P34](#p34--issue-crud-carry-over-pairing) | `Logic` | 6h | Issue CRUD, carry-over, pairing |
-| [P35](#p35--phrase-library-dictation-voice-notes) | `Logic` | 6h | Phrase library, dictation, voice notes |
-| [P36](#p36--real-app-lock) | `Logic` | 8h | Real app lock |
-| [P37](#p37--audit-chain) | `Logic` | 5h | Audit chain |
-| [P38](#p38--annotation-model-and-rendering) | `Logic` | 6h | Annotation model and rendering |
-| [P39](#p39--trusted-time-and-stamped-derivative) | `Logic` | 8h | Trusted time and stamped derivative |
-| [P40](#p40--report-data-model-and-csv) | `Logic` | 5h | Report data model and CSV |
-| [P41](#p41--pdf-renderer) | `Logic` | 12h | PDF renderer |
-| [P42](#p42--c2-log-issue-c5-list-banner) | `UI` | 6h | C2 log issue, C5 list, banner |
-| [P43](#p43--c3-re-check-overlay-c4-outcome) | `UI` | 5h | C3 re-check overlay, C4 outcome |
-| [P44](#p44--s4-app-lock-s5-set-passcode) | `UI` | 5h | S4 app lock, S5 set passcode |
-| [P45](#p45--markup-editor) | `UI` | 5h | Markup editor |
-| [P46](#p46--report-builder-branding-signature-preview) | `UI` | 6h | Report builder, branding, signature, preview |
-| [P47](#p47--real-logic-behind-the-screens) | `Join` | 4h | Real logic behind the screens |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| [P33](#p33--issue-annotation-report-audit-contract) | `Contract` | 4h | not start | Issue, annotation, report, audit contract |
+| [P34](#p34--issue-crud-carry-over-pairing) | `Logic` | 6h | not start | Issue CRUD, carry-over, pairing |
+| [P35](#p35--phrase-library-dictation-voice-notes) | `Logic` | 6h | not start | Phrase library, dictation, voice notes |
+| [P36](#p36--real-app-lock) | `Logic` | 8h | not start | Real app lock |
+| [P37](#p37--audit-chain) | `Logic` | 5h | not start | Audit chain |
+| [P38](#p38--annotation-model-and-rendering) | `Logic` | 6h | not start | Annotation model and rendering |
+| [P39](#p39--trusted-time-and-stamped-derivative) | `Logic` | 8h | not start | Trusted time and stamped derivative |
+| [P40](#p40--report-data-model-and-csv) | `Logic` | 5h | not start | Report data model and CSV |
+| [P41](#p41--pdf-renderer) | `Logic` | 12h | not start | PDF renderer |
+| [P42](#p42--c2-log-issue-c5-list-banner) | `UI` | 6h | not start | C2 log issue, C5 list, banner |
+| [P43](#p43--c3-re-check-overlay-c4-outcome) | `UI` | 5h | not start | C3 re-check overlay, C4 outcome |
+| [P44](#p44--s4-app-lock-s5-set-passcode) | `UI` | 5h | not start | S4 app lock, S5 set passcode |
+| [P45](#p45--markup-editor) | `UI` | 5h | not start | Markup editor |
+| [P46](#p46--report-builder-branding-signature-preview) | `UI` | 6h | not start | Report builder, branding, signature, preview |
+| [P47](#p47--real-logic-behind-the-screens) | `Join` | 4h | not start | Real logic behind the screens |
 
 ### Order
 

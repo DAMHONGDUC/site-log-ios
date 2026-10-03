@@ -27,20 +27,20 @@
 - **Specs:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins), [13](../feature-docs/01-field-work.md#13-checklist-templates), [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools), [09](../feature-docs/05-platform.md#09-diagnostics-and-observability)
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| [P48](#p48--plans-checklists-devicelink-diagnostics-contract) | `Contract` | 3h | Plans, checklists, DeviceLink, diagnostics contract |
-| [P49](#p49--floor-plan-import-and-storage) | `Logic` | 6h | Floor plan import and storage |
-| [P50](#p50--pin-coordinates-and-persistence) | `Logic` | 4h | Pin coordinates and persistence |
-| [P51](#p51--checklist-templates-and-results) | `Logic` | 5h | Checklist templates and results |
-| [P52](#p52--devicelink-and-ble-mock) | `Logic` | 14h | DeviceLink and BLE mock |
-| [P53](#p53--storage-cleanup-diagnostic-bundle) | `Logic` | 6h | Storage, cleanup, diagnostic bundle |
-| [P54](#p54--firebase-crashlytics) | `Logic` | 3h | Firebase Crashlytics |
-| [P55](#p55--plans-ui) | `UI` | 8h | Plans UI |
-| [P56](#p56--template-picker-k2-checklist-run) | `UI` | 6h | Template picker, K2 checklist run |
-| [P57](#p57--measurement-overlay-device-pairing) | `UI` | 4h | Measurement overlay, device pairing |
-| [P58](#p58--storage-screen-bundle-export) | `UI` | 3h | Storage screen, bundle export |
-| [P59](#p59--real-logic-instruments-testflight-2) | `Join` | 6h | Real logic, Instruments, TestFlight #2 |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| [P48](#p48--plans-checklists-devicelink-diagnostics-contract) | `Contract` | 3h | not start | Plans, checklists, DeviceLink, diagnostics contract |
+| [P49](#p49--floor-plan-import-and-storage) | `Logic` | 6h | not start | Floor plan import and storage |
+| [P50](#p50--pin-coordinates-and-persistence) | `Logic` | 4h | not start | Pin coordinates and persistence |
+| [P51](#p51--checklist-templates-and-results) | `Logic` | 5h | not start | Checklist templates and results |
+| [P52](#p52--devicelink-and-ble-mock) | `Logic` | 14h | not start | DeviceLink and BLE mock |
+| [P53](#p53--storage-cleanup-diagnostic-bundle) | `Logic` | 6h | not start | Storage, cleanup, diagnostic bundle |
+| [P54](#p54--firebase-crashlytics) | `Logic` | 3h | not start | Firebase Crashlytics |
+| [P55](#p55--plans-ui) | `UI` | 8h | not start | Plans UI |
+| [P56](#p56--template-picker-k2-checklist-run) | `UI` | 6h | not start | Template picker, K2 checklist run |
+| [P57](#p57--measurement-overlay-device-pairing) | `UI` | 4h | not start | Measurement overlay, device pairing |
+| [P58](#p58--storage-screen-bundle-export) | `UI` | 3h | not start | Storage screen, bundle export |
+| [P59](#p59--real-logic-instruments-testflight-2) | `Join` | 6h | not start | Real logic, Instruments, TestFlight #2 |
 
 ### Order
 

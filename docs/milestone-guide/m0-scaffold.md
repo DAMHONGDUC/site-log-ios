@@ -22,15 +22,15 @@
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI), [04 §07.2](../feature-docs/04-reporting-security.md) (app lock).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| P01 | `Logic` | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
-| [P02](#p02--packages-factory-di-appclock) | `Logic` | 6h | Packages, Factory DI, `AppClock`, test libraries |
-| [P03](#p03--fastlane-test-lane-pr-checks) | `Logic` | 5h | Fastlane `test` lane, GitHub Actions PR checks |
-| [P04](#p04--ci-guards) | `Logic` | 4h | CI guards: no `print(`, layer imports, secret scan, strict package builds |
-| [P05](#p05--designsystem-tokens) | `UI` | 5h | DesignSystem tokens |
-| [P06](#p06--designsystem-components) | `UI` | 6h | DesignSystem components + snapshot test |
-| [P07](#p07--access-flow-on-fakes) | `UI` | 6h | Access flow on fakes: A2, A1, A3, privacy overlay |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| P01 | `Logic` | done | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
+| [P02](#p02--packages-factory-di-appclock) | `Logic` | 6h | not start | Packages, Factory DI, `AppClock`, test libraries |
+| [P03](#p03--fastlane-test-lane-pr-checks) | `Logic` | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
+| [P04](#p04--ci-guards) | `Logic` | 4h | not start | CI guards: no `print(`, layer imports, secret scan, strict package builds |
+| [P05](#p05--designsystem-tokens) | `UI` | 5h | not start | DesignSystem tokens |
+| [P06](#p06--designsystem-components) | `UI` | 6h | not start | DesignSystem components + snapshot test |
+| [P07](#p07--access-flow-on-fakes) | `UI` | 6h | in progress | Access flow on fakes: A2, A1, A3, privacy overlay |
 
 - Order: P02 first (everything needs it). Then UI (P05 → P06 → P07) and Logic (P03 → P04) alternate freely.
 

@@ -29,22 +29,22 @@
 - **Specs:** [04 Upload engine](../feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](../feature-docs/03-backend.md#1-role), [17 CI/CD](../feature-docs/05-platform.md#17-cicd-and-testflight)
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
-| Part | Track | Hours | What |
-|---|---|---|---|
-| [P19](#p19--uploadkit-public-api) | `Contract` | 3h | UploadKit public API |
-| [P20](#p20--backend-skeleton-and-first-migrations) | `Logic` | 6h | Backend skeleton and first migrations |
-| [P21](#p21--presigned-upload-endpoint) | `Logic` | 5h | Presigned upload endpoint |
-| [P22](#p22--refresh-complete-abort) | `Logic` | 4h | Refresh, complete, abort |
-| [P23](#p23--job-model-and-local-store) | `Logic` | 6h | Job model and local store |
-| [P24](#p24--single-put-via-background-urlsession) | `Logic` | 10h | Single PUT via background URLSession |
-| [P25](#p25--state-machine-retry-backoff) | `Logic` | 6h | State machine, retry, backoff |
-| [P26](#p26--multipart-and-resume) | `Logic` | 14h | Multipart and resume |
-| [P27](#p27--kill-and-relaunch-reconciliation) | `Logic` | 10h | Kill and relaunch reconciliation |
-| [P28](#p28--wi-fi-only-and-url-refresh) | `Logic` | 6h | Wi-Fi only and URL refresh |
-| [P29](#p29--s10-upload-status-screen) | `UI` | 5h | S10 upload status screen |
-| [P30](#p30--sync-tab) | `UI` | 4h | Sync tab |
-| [P31](#p31--uploadkit-behind-the-screens) | `Join` | 3h | UploadKit behind the screens |
-| [P32](#p32--signing-and-testflight-1) | `Join` | 10h | Signing and TestFlight #1 |
+| Part | Track | Hours | Status | What |
+|---|---|---|---|---|
+| [P19](#p19--uploadkit-public-api) | `Contract` | 3h | not start | UploadKit public API |
+| [P20](#p20--backend-skeleton-and-first-migrations) | `Logic` | 6h | not start | Backend skeleton and first migrations |
+| [P21](#p21--presigned-upload-endpoint) | `Logic` | 5h | not start | Presigned upload endpoint |
+| [P22](#p22--refresh-complete-abort) | `Logic` | 4h | not start | Refresh, complete, abort |
+| [P23](#p23--job-model-and-local-store) | `Logic` | 6h | not start | Job model and local store |
+| [P24](#p24--single-put-via-background-urlsession) | `Logic` | 10h | not start | Single PUT via background URLSession |
+| [P25](#p25--state-machine-retry-backoff) | `Logic` | 6h | not start | State machine, retry, backoff |
+| [P26](#p26--multipart-and-resume) | `Logic` | 14h | not start | Multipart and resume |
+| [P27](#p27--kill-and-relaunch-reconciliation) | `Logic` | 10h | not start | Kill and relaunch reconciliation |
+| [P28](#p28--wi-fi-only-and-url-refresh) | `Logic` | 6h | not start | Wi-Fi only and URL refresh |
+| [P29](#p29--s10-upload-status-screen) | `UI` | 5h | not start | S10 upload status screen |
+| [P30](#p30--sync-tab) | `UI` | 4h | not start | Sync tab |
+| [P31](#p31--uploadkit-behind-the-screens) | `Join` | 3h | not start | UploadKit behind the screens |
+| [P32](#p32--signing-and-testflight-1) | `Join` | 10h | not start | Signing and TestFlight #1 |
 
 ### Order
 
