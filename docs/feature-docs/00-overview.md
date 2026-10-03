@@ -342,6 +342,7 @@ final class ProjectListViewModel {
 | Rule | Detail |
 |---|---|
 | Layers | Dependencies point inward; `Domain` imports no frameworks |
+| Dependencies | Only well-known packages SwiftUI developers commonly use: mature, widely adopted, actively maintained, listed on [Swift Package Index](https://swiftpackageindex.com); prefer Apple frameworks; add via `project.yml`; record the choice in [§9 Decisions](#9-decisions) |
 | Constants | In dedicated `enum`s; spacing/color/type via `DesignSystem` |
 | Logging | Every action logs with data, successes included: `"Upload failed — {captureId, part: 3/12, status: 503}"` |
 | Errors | Log `String(reflecting:)`; catch broad; **no `print`** |
