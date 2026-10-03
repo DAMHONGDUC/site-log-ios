@@ -1,11 +1,23 @@
 # Backend (spec 14)
 
-Directory: `Backend/` · Node.js + TypeScript ([ADR 0003](../adr/0003-node-postgres-sync.md))
+- Directory: `Backend/` · Node.js + TypeScript ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync)).
+- Signs URLs, owns **all** application data, pushes state. Firebase: identity and crash reporting only.
+- Client side: [02-upload-sync.md](02-upload-sync.md).
 
-The backend signs URLs, owns **all** application data, and pushes state. Firebase provides identity
-and crash reporting only. Client side: [02-upload-sync.md](02-upload-sync.md).
+## Contents
 
-**Contents** — 1. [Role](#1-role) · 2. [Stack](#2-stack) · 3. [Endpoints](#3-endpoints) · 4. [Auth](#4-auth) · 5. [Database](#5-database) · 6. [Flows](#6-flows) · 7. [Sync](#7-sync) · 8. [Integrity](#8-integrity) · 9. [WebSocket](#9-websocket) · 10. [Error contract](#10-error-contract) · 11. [Operations](#11-operations) · 12. [Done and tests](#12-done-and-tests)
+1. [Role](#1-role)
+2. [Stack](#2-stack)
+3. [Endpoints](#3-endpoints)
+4. [Auth](#4-auth)
+5. [Database](#5-database) — `uploads`, `sync_state`, metadata tables
+6. [Flows](#6-flows)
+7. [Sync](#7-sync) — pull, push, idempotent complete
+8. [Integrity](#8-integrity)
+9. [WebSocket](#9-websocket)
+10. [Error contract](#10-error-contract)
+11. [Operations](#11-operations)
+12. [Done and tests](#12-done-and-tests)
 
 ## 1. Role
 
@@ -17,7 +29,7 @@ and crash reporting only. Client side: [02-upload-sync.md](02-upload-sync.md).
 | Record job state, countersign capture hashes | Authenticate users itself |
 | Serve the WebSocket channel, resolve verification codes, delete accounts | |
 
-Expect ~1800–2500 lines of TypeScript.
+- Expect ~1800–2500 lines of TypeScript.
 
 ## 2. Stack
 
@@ -32,7 +44,7 @@ Expect ~1800–2500 lines of TypeScript.
 | Tests | `vitest`, `aws-sdk-client-mock`, throwaway Postgres |
 | Deploy | Fly.io or Railway — a long-lived process is needed for WebSocket |
 
-Not Cloudflare Workers: `firebase-admin` needs Node APIs and WebSocket would need Durable Objects.
+- Not Cloudflare Workers: `firebase-admin` needs Node APIs; WebSocket would need Durable Objects.
 
 ## 3. Endpoints
 
@@ -78,8 +90,7 @@ async function requireUser(req: FastifyRequest): Promise<{ uid: string }> {
 
 ## 5. Database
 
-Migrations: `0001_uploads.sql`, `0002_sync_core.sql`, `0003_metadata.sql` — 16 tables plus
-`pgmigrations`.
+- Migrations: `0001_uploads.sql`, `0002_sync_core.sql`, `0003_metadata.sql` — 16 tables + `pgmigrations`.
 
 ### 5.1 `uploads`
 
@@ -105,9 +116,12 @@ create index uploads_snapshot  on uploads (uid, session_id, state);
 create index uploads_abandoned on uploads (created_at) where state = 'created';
 ```
 
-`timestamptz` everywhere (the client derives clock offset from this service), `bigint` sizes (video
-passes 2 GB), enums instead of free text, partial indexes, no `parts` table (refresh needs only
-`s3_upload_id`; `complete` carries the ETags).
+| Choice | Why |
+|---|---|
+| `timestamptz` everywhere | The client derives its clock offset from this service |
+| `bigint` sizes | Video passes 2 GB |
+| Enums, partial indexes | No free-text states; small hot indexes |
+| No `parts` table | Refresh needs only `s3_upload_id`; `complete` carries the ETags |
 
 ### 5.2 `sync_state`
 
@@ -118,15 +132,17 @@ create table sync_state (uid text primary key, last_rev bigint not null default 
 update sync_state set last_rev = last_rev + 1 where uid = $1 returning last_rev;
 ```
 
-**The load-bearing detail of sync.** A `nextval()` sequence can commit revs 7 and 8 in reverse order,
-so a client polling `rev > 7` never sees 7. The row lock serializes one user's writes, making revs
-gap-free and commit-ordered; one person writes at human speed, so it costs nothing.
+**The load-bearing detail of sync**
+
+- A `nextval()` sequence can commit revs 7 and 8 in reverse order → a client polling `rev > 7` never sees 7.
+- The row lock serializes one user's writes → revs are gap-free and commit-ordered.
+- One person writes at human speed, so the lock costs nothing.
 
 ### 5.3 Metadata tables
 
-Every synced table has `id uuid` (client-generated), `uid`, `rev`, `client_updated_at`,
-`deleted_at`, plus an index on `(uid, rev)`. Every FK is `deferrable initially deferred` so a push
-batch may insert a child before its parent.
+- Every synced table: `id uuid` (client-generated), `uid`, `rev`, `client_updated_at`, `deleted_at`,
+  index on `(uid, rev)`.
+- Every FK is `deferrable initially deferred`: a push batch may insert a child before its parent.
 
 | Table | Business columns | Constraints |
 |---|---|---|
@@ -143,8 +159,8 @@ batch may insert a child before its parent.
 | `phrases` | `text`, `usage_count` | unique `(uid, text)` where live |
 | `report_branding` | `uid` PK, company, logo key, accent, client block, footer | |
 
-Uniques use `where deleted_at is null` so tombstones do not block reuse. No `plan_pins` table — one
-pin per issue fits in three columns.
+- Uniques use `where deleted_at is null` so tombstones do not block reuse.
+- No `plan_pins` table: one pin per issue fits in three columns.
 
 ## 6. Flows
 
@@ -158,7 +174,7 @@ flowchart LR
     BE -->|"create / complete / abort · never bytes"| R2
 ```
 
-Control, bytes and state are separate paths; a slow backend never stalls an upload.
+- Control, bytes and state are separate paths; a slow backend never stalls an upload.
 
 ```mermaid
 sequenceDiagram
@@ -183,16 +199,16 @@ sequenceDiagram
     BE-->>App: {remoteKey, verificationCode}
 ```
 
-Small files: one `POST /uploads`, one PUT, one `complete` with `HeadObject`. A lost `complete`
-response is retried and must return the byte-identical body (§7.3).
+- Small files: one `POST /uploads`, one PUT, one `complete` with `HeadObject`.
+- A lost `complete` response is retried and must return the byte-identical body ([§7.3](#73-idempotent-complete)).
 
 ## 7. Sync
 
 ### 7.1 Pull
 
-`select … where uid = $1 and rev > $2 order by rev limit $3` per table, merged and capped at
-`pullPageSize`; includes tombstones; `nextRev` = highest rev returned, `hasMore` when capped. A
-`since` older than the 90-day purge window returns `{ resyncRequired: true }`.
+- Per table: `select … where uid = $1 and rev > $2 order by rev limit $3`; merged, capped at `pullPageSize`.
+- Includes tombstones; `nextRev` = highest rev returned; `hasMore` when capped.
+- `since` older than the 90-day purge window → `{ resyncRequired: true }`.
 
 ### 7.2 Push
 
@@ -206,9 +222,11 @@ on conflict (id) do update set …, rev = excluded.rev, client_updated_at = excl
 commit;
 ```
 
-A losing row returns `superseded` with the stored row. `captures` use `on conflict do nothing`.
-`sessions.state` advances by enum ordinal, never backwards. Every statement filters `uid = $1`.
-A nightly job purges tombstones older than 90 days.
+- A losing row returns `superseded` with the stored row.
+- `captures`: `on conflict do nothing`.
+- `sessions.state` advances by enum ordinal, never backwards.
+- Every statement filters `uid = $1`.
+- Nightly job purges tombstones older than 90 days.
 
 ### 7.3 Idempotent complete
 
@@ -222,16 +240,18 @@ update uploads
 returning object_key, verification_code, verify_state;
 ```
 
-A repeat returns the original code and time; zero rows → `404`, never `400` (the client aborts on
-`400`). S3 `CompleteMultipartUpload` runs first in the same transaction and is itself idempotent.
+- A repeat returns the original code and time; zero rows → `404`, never `400` (the client aborts on `400`).
+- S3 `CompleteMultipartUpload` runs first in the same transaction and is itself idempotent.
 
-Access rules: parameterized queries only; `and uid = $n` on every user query; `pg.Pool` sized under
-the platform cap; one transaction per request, released in `finally`.
+**Access rules**
+
+- Parameterized queries only; `and uid = $n` on every user query.
+- `pg.Pool` sized under the platform cap; one transaction per request, released in `finally`.
 
 ## 8. Integrity
 
-Recording a client-supplied hash does **not** verify it; R2 checksum-on-write for presigned multipart
-is unreliable.
+- Recording a client-supplied hash does **not** verify it.
+- R2 checksum-on-write for presigned multipart is unreliable.
 
 | Phase | Mechanism | Claim |
 |---|---|---|
@@ -239,22 +259,29 @@ is unreliable.
 | `verified` | Worker streams the object back from R2, recomputes SHA-256 | "The stored bytes hash to this value" |
 | `mismatch` | Worker hash differs | `jobFailed(integrity)` pushed to the app |
 
-Affordable because R2 charges no egress. Abandoned `created` uploads are aborted after 7 days. The
-report prints exactly the state reached ([12.5](01-field-work.md#125-verification-code)).
+- Affordable: R2 charges no egress.
+- Abandoned `created` uploads are aborted after 7 days.
+- The report prints exactly the state reached ([12.5](01-field-work.md#125-verification-code)).
 
 ## 9. WebSocket
 
-Protocol: [10](02-upload-sync.md#10-realtime-progress-channel). Server obligations: require `auth`
-within 5 s (never from the query string); answer `subscribe` with a `snapshot` from
-`uploads_snapshot`; scope every message to the socket's uid (another uid's session closes the
-socket); close `4001` on token expiry; answer `ping`; send `sha256` with `jobCompleted`; cap sockets
-per uid. The channel is advisory — no backend logic may assume a socket is attached.
+- Protocol: [10](02-upload-sync.md#10-realtime-progress-channel).
 
-**Fan-out across instances:** after `complete`, in the same transaction,
-`pg_notify('upload_events', {uid, sessionId, uploadId, type})` with ids only (8000-byte cap). Each
-instance keeps one dedicated `LISTEN` connection outside the pool, re-reads the row, and routes to
-its local sockets. Delivery is at-most-once; the client's `snapshot` on reconnect is the recovery
-path. Works unchanged with one instance.
+**Server obligations**
+
+- Require `auth` within 5 s; never from the query string.
+- Answer `subscribe` with a `snapshot` from `uploads_snapshot`.
+- Scope every message to the socket's uid; another uid's session closes the socket.
+- Close `4001` on token expiry; answer `ping`; send `sha256` with `jobCompleted`; cap sockets per uid.
+- Advisory channel: no backend logic may assume a socket is attached.
+
+**Fan-out across instances**
+
+- After `complete`, same transaction: `pg_notify('upload_events', {uid, sessionId, uploadId, type})`,
+  ids only (8000-byte cap).
+- Each instance: one dedicated `LISTEN` connection outside the pool → re-read the row → route to local sockets.
+- At-most-once delivery; the client's `snapshot` on reconnect is the recovery path.
+- Works unchanged with one instance.
 
 ## 10. Error contract
 
@@ -268,8 +295,8 @@ path. Works unchanged with one instance.
 | `413` | `.permanent` | Body over `MAX_REQUEST_BYTES` |
 | `429` / `5xx` | `.serverTransient` | Rate limit (`Retry-After`) / genuine faults |
 
-Returning `400` for a transient condition destroys an upload — the highest-risk backend mistake.
-Error body: `{ "error": { "code": "invalid_key", "message": "…" } }`, never a stack trace.
+- Returning `400` for a transient condition destroys an upload — the highest-risk backend mistake.
+- Error body: `{ "error": { "code": "invalid_key", "message": "…" } }`, never a stack trace.
 
 ## 11. Operations
 
@@ -283,14 +310,30 @@ Error body: `{ "error": { "code": "invalid_key", "message": "…" } }`, never a 
 
 ## 12. Done and tests
 
-**Done:** a key outside the caller's prefix is rejected (with a test); `complete` twice returns `200`
-with identical bodies; a revoked token stops on the next request; `/verify` leaks no uid, URL or
-coordinates; account deletion leaves nothing under `{uid}/`; a 60 s TTL still finishes a 200-file
-session via refresh; no secret in any log.
+**Done**
 
-**Tests:** key prefix (`other-uid/`, `../`, absolute); migrations on empty and seeded DBs; table
-constraints reject bad rows; concurrent duplicate `complete`; aborted job cannot complete; mode
-selection at 4.9/5/5.1 MB; expired/revoked token → `401`; refresh returns exactly the requested
-parts; abort with mocked S3; `/verify` redaction and rate limit; account deletion past 1000 objects;
-WS auth timeout and cross-uid subscribe close the socket; `pg_notify` reaches a second instance;
-worker flips `verified` or raises `integrity`.
+- A key outside the caller's prefix is rejected (with a test)
+- `complete` twice returns `200` with identical bodies
+- A revoked token stops on the next request
+- `/verify` leaks no uid, URL or coordinates
+- Account deletion leaves nothing under `{uid}/`
+- A 60 s TTL still finishes a 200-file session via refresh
+- No secret in any log
+
+**Tests**
+
+- Key prefix (`other-uid/`, `../`, absolute)
+- Migrations on empty and seeded DBs
+- Table constraints reject bad rows
+- Concurrent duplicate `complete`
+- Aborted job cannot complete
+- Mode selection at 4.9/5/5.1 MB
+- Expired/revoked token → `401`
+- Refresh returns exactly the requested parts
+- Abort with mocked S3
+- `/verify` redaction and rate limit
+- Account deletion past 1000 objects
+- WS auth timeout and cross-uid subscribe close the socket
+- `pg_notify` reaches a second instance
+- Worker flips `verified` or raises `integrity`
+

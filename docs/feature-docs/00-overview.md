@@ -1,15 +1,28 @@
 # 00 — Overview
 
-Product, market, data model, architecture, data flows, infrastructure, conventions. Feature specs
-live in five files, grouped by area ([§9](#9-feature-specs)); spec numbers (`01`–`19`) are stable
-and used by [ROADMAP.md](../../ROADMAP.md).
+- Product, market, data model, architecture, data flows, infrastructure, conventions.
+- Feature specs live in five files ([§8](#8-feature-specs)); spec numbers `01`–`19` are stable and
+  used by [ROADMAP.md](../../ROADMAP.md), which also owns the build order.
 
-**Contents** — 1. [Product](#1-product) · 2. [Market](#2-market) · 3. [Data model](#3-data-model) · 4. [Architecture](#4-architecture) · 5. [Data flows](#5-data-flows) · 6. [Infrastructure](#6-infrastructure) · 7. [Build order](#7-build-order) · 8. [Conventions](#8-conventions) · 9. [Feature specs](#9-feature-specs)
+## Contents
+
+1. [Product](#1-product) — positioning, core rule, stack, non-goals
+2. [Market](#2-market)
+3. [Data model](#3-data-model)
+4. [Architecture](#4-architecture) — layout, layers, MVVM, Factory, startup
+5. [Data flows](#5-data-flows)
+6. [Infrastructure](#6-infrastructure)
+7. [Conventions](#7-conventions)
+8. [Feature specs](#8-feature-specs)
+9. [Decisions](#9-decisions) — D01–D08, why each library or hand-written engine
 
 ## 1. Product
 
-Offline-first iOS app for recording construction site conditions; the deliverable is a signed PDF
-inspection report. Users: site supervisors, subcontractors, apartment handover teams.
+| | |
+|---|---|
+| What | Offline-first iOS app for recording construction site conditions |
+| Deliverable | Signed PDF inspection report |
+| Users | Site supervisors, subcontractors, apartment handover teams |
 
 ```
 Create project → start session → walk floors/rooms, capture + log issues
@@ -18,8 +31,9 @@ Create project → start session → walk floors/rooms, capture + log issues
 
 ### 1.1 Positioning and constraints
 
-Competitors lose evidence three ways: uploads stall or complete with photos missing, photos vanish on
-reload, and sync fails with no actionable reason. SiteLog assumes the network is bad.
+- Competitors lose evidence three ways: stalled or incomplete uploads, photos vanishing on reload,
+  sync failing with no reason.
+- SiteLog assumes the network is bad.
 
 | Constraint | Consequence |
 |---|---|
@@ -38,23 +52,24 @@ reload, and sync fails with no actionable reason. SiteLog assumes the network is
 
 | Area | Choice |
 |---|---|
-| UI | SwiftUI, iOS 18+ |
+| UI | SwiftUI, iOS 18.6 deployment target; Swift 6 strict concurrency, `MainActor` default isolation |
 | Architecture | Clean Architecture (Presentation · Domain · Data), MVVM, SPM packages per layer |
-| Dependency injection | [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`) ([ADR 0001](../adr/0001-factory-di.md)) |
+| Dependency injection | [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`) ([D01](#d01--factory-for-dependency-injection)) |
 | Concurrency | Swift Concurrency — `actor` for upload, `@MainActor` for view models |
 | Local store | SwiftData (`#Unique`, `#Index` need iOS 18) |
 | Media | AVFoundation (`AVCaptureSession`, `AVAssetWriter`) |
 | Plans | PDFKit + `CATiledLayer` |
 | Crypto | CryptoKit + iOS Data Protection, keys in Keychain |
 | External devices | CoreBluetooth |
-| Transport | Hand-written background `URLSession` engine ([ADR 0002](../adr/0002-handwritten-upload-engine.md)) |
+| Transport | Hand-written background `URLSession` engine ([D02](#d02--hand-written-upload-engine)) |
 | Object storage | Cloudflare R2, S3 multipart + presigned URLs |
-| Realtime | Hand-written `URLSessionWebSocketTask` channel ([ADR 0004](../adr/0004-websocket-realtime.md)) |
-| Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([ADR 0005](../adr/0005-kingfisher-images.md)) |
-| Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([ADR 0007](../adr/0007-firebase-crashlytics.md)) |
-| Tests | Swift Testing, swift-snapshot-testing, `FactoryTesting` ([testing.md](../testing.md)) |
+| Realtime | Hand-written `URLSessionWebSocketTask` channel ([D04](#d04--websocket-realtime-channel)) |
+| Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([D05](#d05--kingfisher-for-remote-images)) |
+| Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([D07](#d07--firebase-crashlytics)) |
+| Tests | Swift Testing, swift-snapshot-testing, `FactoryTesting` ([testing](05-platform.md#testing-strategy)) |
 | Tooling | XcodeGen, SwiftLint, swift-format, Fastlane, GitHub Actions |
-| Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [ADR 0003](../adr/0003-node-postgres-sync.md)) |
+| Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
+| Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
 
 ### 1.4 Non-goals
 
@@ -68,7 +83,7 @@ reload, and sync fails with no actionable reason. SiteLog assumes the network is
 
 ## 2. Market
 
-Research: September 2026.
+- Research: September 2026.
 
 | App | Position | Taken for SiteLog |
 |---|---|---|
@@ -86,15 +101,10 @@ Research: September 2026.
 | "Sync failed with no explanation" | Plain-language reasons + redacted diagnostic bundle ([09](05-platform.md#09-diagnostics-and-observability)) |
 | "Slows or crashes with many photos" | Downsampled rendering, streaming hashes ([05](04-reporting-security.md#05-pdf-and-spreadsheet-export)) |
 
-**Differentiator — verifiable capture.** `Date()` is spoofable from Settings, which undermines chain
-of custody. Each capture records wall clock, monotonic uptime and a server offset, prints its
-`timeConfidence`, and gets a server-side verification code
-([12](01-field-work.md#12-annotation-and-verifiable-stamps)).
-
-**Vietnamese handover market.** A signed record between both parties has legal standing, buyers are
-told not to sign until every defect is re-inspected, and inspections run room by room. So the
-signature page, the before/after loop ([03](01-field-work.md#03-issues-and-before-after-pairing)) and
-checklists are load-bearing.
+| Edge | Why it matters | Answer |
+|---|---|---|
+| Verifiable capture | `Date()` is spoofable from Settings, breaking chain of custody | Wall clock + monotonic uptime + server offset, printed `timeConfidence`, server verification code ([12](01-field-work.md#12-annotation-and-verifiable-stamps)) |
+| Vietnamese handover | Signed two-party record has legal standing; buyers sign only after every defect is re-inspected; room-by-room | Signature page, before/after loop ([03](01-field-work.md#03-issues-and-before-after-pairing)), checklists are load-bearing |
 
 ## 3. Data model
 
@@ -112,8 +122,7 @@ Project
           └ Issue → PlanPin                 → 03, 11
 ```
 
-`Location` belongs to `Project`, not `Session`, which makes cross-session before/after pairing
-possible.
+- `Location` belongs to `Project`, not `Session`: this makes cross-session before/after pairing possible.
 
 ### 3.2 Entities
 
@@ -125,14 +134,16 @@ possible.
 | `Capture` | `id`, `kind`, `fileURL` (**relative**), `sha256`, `byteSize`, `capturedAt`, `trustedTime`, `verificationCode?`, `latitude?`/`longitude?`/`horizontalAccuracy?`, `deviceModel`, `duration?`, `deviceReading?`, `uploadState`, `remoteKey?`, `isExcludedFromReport` | GPS nullable — basements have none |
 | `Issue` | `id`, `title`, `detail`, `severity` (`critical/major/minor`), `status` (`open → inProgress → resolved → verified`), `dueDate?`, `location`, `assigneeName?`, `trade?`, `planPin?`, `sourceChecklistResult?`, `captures`, `resolvedByIssue?` | Anchored to `Location`; `severity` drives upload priority |
 
-**Frozen after creation:** `id`, `fileURL`, `sha256`, `capturedAt`, `trustedTime`, GPS,
-`deviceModel`, `byteSize`, `kind`. No API deletes a `Capture` from an exported session; hiding sets
-`isExcludedFromReport` and writes an audit entry. Absolute paths break on reinstall — store relative.
+- **Frozen after creation:** `id`, `fileURL`, `sha256`, `capturedAt`, `trustedTime`, GPS,
+  `deviceModel`, `byteSize`, `kind`.
+- No API deletes a `Capture` from an exported session; hiding sets `isExcludedFromReport` + audit entry.
+- Store relative paths: absolute ones break on reinstall.
 
 ### 3.3 UploadState
 
-`pending → uploading → synced`, with `failed` reachable from `uploading`. `failed` is not terminal
-and never deletes local files. Full job state machine: [04](02-upload-sync.md#04-upload-engine).
+- `pending → uploading → synced`; `failed` reachable from `uploading`.
+- `failed` is not terminal and never deletes local files.
+- Full job state machine: [04](02-upload-sync.md#04-upload-engine).
 
 ### 3.4 Schema versioning
 
@@ -143,8 +154,9 @@ and never deletes local files. Full job state machine: [04](02-upload-sync.md#04
 
 ## 4. Architecture
 
-Clean Architecture: dependencies point inward to `Domain`; the app target is the only place that
-wires layers together. Presentation uses MVVM.
+- Clean Architecture: dependencies point inward to `Domain`.
+- The app target is the only place that wires layers together.
+- Presentation uses MVVM.
 
 ```mermaid
 flowchart LR
@@ -165,9 +177,9 @@ site-log-ios/
 │   │   ├── AppDelegate.swift         # process-level iOS events
 │   │   ├── AppDependencies.swift     # Factory registrations
 │   │   └── Startup/                  # guarded startup steps (Steps/ per step)
-│   ├── Presentation/                 # Domain + DesignSystem only
-│   │   ├── Root/RootView.swift       # startup → app lock gate → main tabs
-│   │   ├── Access/Startup/           # StartupView + StartupViewModel
+│   ├── Presentation/                 # Domain + DesignSystem (+ FactoryKit for @Injected)
+│   │   ├── Root/                     # RootView + RootViewModel: startup → access → main tabs
+│   │   ├── Access/                   # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
 │   │   ├── MainTab/
 │   │   └── <Feature>/                # 2+ screens → one subfolder per screen
 │   ├── Helper/Logger/AppLogger.swift # shared helpers; import nothing from the project
@@ -180,21 +192,25 @@ site-log-ios/
 │   ├── Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
 │   └── DesignSystem/                 # Tokens/ Components/ Resources/
 ├── SiteLogTests/ SiteLogUITests/
+├── Tools/CI/                         # CI guard scripts
+├── Tools/Hammerspoon/                # format-on-save config for Xcode
 ├── Tools/MockPeripheral/             # macOS BLE simulator
 ├── Backend/                          # Node + Postgres → 03-backend.md
-├── fastlane/  .github/workflows/
-├── docs/
+├── fastlane/  .github/workflows/  Gemfile
+├── docs/feature-docs/                # project specs
+├── docs/milestone-guide/             # step-by-step guide per milestone (M0–M6)
+├── docs/design/                      # design plan, mockups, app icon
 └── project.yml                       # XcodeGen
 ```
 
-Packages are created when their milestone starts. `DataLayer` is not named `Data` because a module
-called `Data` shadows `Foundation.Data`.
+- Packages are created when their milestone starts.
+- `DataLayer`, not `Data`: a module called `Data` shadows `Foundation.Data`.
 
 ### 4.2 Layers and dependency rules
 
 | Layer | Lives in | May import |
 |---|---|---|
-| Presentation | `SiteLog/Presentation/` | `Domain`, `DesignSystem` |
+| Presentation | `SiteLog/Presentation/` | `Domain`, `DesignSystem`, `FactoryKit` (`@Injected` only) |
 | Domain | `Packages/Domain` | `Foundation` only |
 | Data | `Packages/DataLayer` | `Domain` and data sources |
 | Data sources | `Packages/<Name>` | Frameworks; `Domain` for shared value types; never `DataLayer` or each other |
@@ -222,8 +238,8 @@ called `Data` shadows `Foundation.Data`.
 
 ### 4.4 Composition root (Factory)
 
-All registrations live in `SiteLog/App/AppDependencies.swift`. `Domain` and `DataLayer` never import
-`FactoryKit`.
+- All registrations live in `SiteLog/App/AppDependencies.swift`.
+- `Domain` and `DataLayer` never import `FactoryKit`.
 
 ```swift
 extension Container {
@@ -247,11 +263,11 @@ final class ProjectListViewModel {
 | Resolution | View models `@Injected` use cases only |
 | Previews | `Container.shared.projectRepository { InMemoryProjectRepository() }` |
 | Tests | `@Suite(.container)` from `FactoryTesting` |
-| Injected seams | Repositories, `Clock`, `UploadStore`, `UploadTransport`, `CaptureSessionControlling`, `RandomNumberGenerator` |
+| Injected seams | Repositories, `AppClock`, `UploadStore`, `UploadTransport`, `CaptureSessionControlling`, `RandomNumberGenerator` |
 
 ### 4.5 Startup sequence
 
-Each step guarded and logged separately — never one `try` around init.
+- Each step guarded and logged separately — never one `try` around init.
 
 | # | Step | On failure |
 |---|---|---|
@@ -277,10 +293,8 @@ Each step guarded and logged separately — never one `try` around init.
 | 5 | Enqueue upload with `priority` | `UploadCoordinator` | Stays `pending` |
 | 6 | Thumbnail to UI | `@MainActor` | — |
 
-**Invariant:** no DB row without a hash; no file without a row for longer than one launch.
-
-Upload, reconciliation and sync flows: [02-upload-sync.md](02-upload-sync.md). Report export:
-[05](04-reporting-security.md#05-pdf-and-spreadsheet-export).
+- **Invariant:** no DB row without a hash; no file without a row for longer than one launch.
+- Upload, reconciliation, sync: [02-upload-sync.md](02-upload-sync.md). Report export: [05](04-reporting-security.md#05-pdf-and-spreadsheet-export).
 
 ### 5.2 Concurrency map
 
@@ -293,8 +307,9 @@ Upload, reconciliation and sync flows: [02-upload-sync.md](02-upload-sync.md). R
 | BLE | `actor DeviceLinkManager` | `CBCentralManager` |
 | WebSocket | `actor RealtimeChannel` | Task + ping timer |
 
-Pass `PersistentIdentifier`, never `PersistentModel`, across actors. Never call `startRunning()` on
-main. No `@unchecked Sendable` to silence a warning.
+- Pass `PersistentIdentifier`, never `PersistentModel`, across actors.
+- Never call `startRunning()` on main.
+- No `@unchecked Sendable` to silence a warning.
 
 ## 6. Infrastructure
 
@@ -309,8 +324,8 @@ main. No `@unchecked Sendable` to silence a warning.
 | `<tmp>/upload-parts/` | `.completeUnlessOpen` | No |
 | SwiftData store | `.complete` | Metadata |
 
-Nothing is backed up to iCloud (`isExcludedFromBackup`); R2 is the source of truth. The DB stores
-relative paths.
+- Nothing backed up to iCloud (`isExcludedFromBackup`); R2 is the source of truth.
+- The DB stores relative paths.
 
 ### 6.2 Configuration
 
@@ -320,20 +335,9 @@ relative paths.
 | Backend URL, bucket, feature flags | `*.xcconfig` per environment → `AppConfig` | `.example` only |
 | R2 access keys | Backend only | Never in the app |
 
-Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`. CI: [17](05-platform.md#17-cicd-and-testflight).
+- Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`. CI: [17](05-platform.md#17-cicd-and-testflight).
 
-## 7. Build order
-
-[ROADMAP.md](../../ROADMAP.md) is the source of truth. The full scope ships; this orders the work.
-
-| Order | Items |
-|---|---|
-| First | Upload engine, hash + trusted time, PDF export, backend upload endpoints |
-| Next | Annotation, branding, assignee, CSV |
-| Then | Floor plan pins, checklist templates |
-| Last | Pre-record buffer, audio, BLE (mock, then hardware), WebSocket realtime |
-
-## 8. Conventions
+## 7. Conventions
 
 | Rule | Detail |
 |---|---|
@@ -358,15 +362,20 @@ Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`. CI: [17](05-plat
 | Factory registration | lowerCamel noun on `Container` | `projectRepository` |
 | Test file | `<Type>Tests.swift` | `UploadStateMachineTests.swift` |
 
-**Definition of done (every change):** clean build with zero warnings per package; scoped tests;
-diff reviewed for literals, hard-coded user strings, unlogged `catch`, cross-boundary imports; no
-secret in the diff or logs.
+**Definition of done (every change)**
 
-**Adding a feature:** Domain first (entity, use case, repository protocol) → DataLayer (impl, DTO,
-mapper; framework code in a data source) → Presentation (view model calls the use case) → Factory
-registration. Schema change → new `SchemaV{n}` + migration test.
+- Clean build, zero warnings per package; scoped tests pass.
+- Diff reviewed for literals, hard-coded user strings, unlogged `catch`, cross-boundary imports.
+- No secret in the diff or logs.
 
-## 9. Feature specs
+**Adding a feature**
+
+1. Domain: entity, use case, repository protocol, in-memory fake (the contract).
+2. UI on the fake and Logic (DataLayer impl, DTO, mapper; framework code in a data source) in parallel.
+3. Factory registration swaps the fake for the real implementation.
+4. Schema change → new `SchemaV{n}` + migration test.
+
+## 8. Feature specs
 
 | File | Specs |
 |---|---|
@@ -376,4 +385,187 @@ registration. Schema change → new `SchemaV{n}` + migration test.
 | [04-reporting-security.md](04-reporting-security.md) | 05 PDF and spreadsheet export · 07 Security and audit log |
 | [05-platform.md](05-platform.md) | 09 Diagnostics · 17 CI/CD and TestFlight · 18 Push and deep links · 19 Instruments |
 
-Every spec follows the same shape: goal and scope, design, rules and risks, done and tests.
+- Every spec has the same shape: goal and scope, design, rules and risks, done and tests.
+
+## 9. Decisions
+
+- Choices that are expensive to reverse: context, decision, rejected options, consequences.
+- A superseded decision stays, marked `Superseded by DNN`.
+
+
+| # | Decision | Status |
+|---|---|---|
+| [D01](#d01--factory-for-dependency-injection) | Factory for dependency injection | Accepted |
+| [D02](#d02--hand-written-upload-engine) | Hand-written upload engine on background `URLSession` | Accepted |
+| [D03](#d03--node--postgresql-backend-hand-written-sync) | Node + PostgreSQL backend, hand-written sync | Accepted |
+| [D04](#d04--websocket-realtime-channel) | WebSocket realtime channel | Accepted |
+| [D05](#d05--kingfisher-for-remote-images) | Kingfisher for remote images | Accepted |
+| [D06](#d06--test-libraries) | Swift Testing + swift-snapshot-testing + FactoryTesting | Accepted |
+| [D07](#d07--firebase-crashlytics) | Firebase Crashlytics for crash reporting | Accepted |
+| [D08](#d08--xcodegen-owns-the-xcode-project) | XcodeGen owns the Xcode project | Accepted |
+
+- All accepted 2026-09-30. New decision: copy a section, keep its four parts, add a row above.
+
+---
+
+### D01 — Factory for dependency injection
+
+- **Context:** one place must bind `DataLayer` implementations to `Domain` protocols and let previews
+  and tests swap them; a hand-written `make…()` per use case grows with every feature.
+- **Decision:** [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`).
+  - All registrations: `extension Container` in `SiteLog/App/AppDependencies.swift`.
+  - Data sources and stateful services `.singleton`; use cases unscoped.
+  - View models resolve **use cases only**: `@ObservationIgnored @Injected(\.useCase)`.
+  - `Domain` and `DataLayer` never import `FactoryKit`.
+
+| Rejected | Why not |
+|---|---|
+| Hand-written composition root | Boilerplate per use case; overrides hand-built each time |
+| swift-dependencies (Point-Free) | Larger ecosystem; idioms fit TCA better than MVVM |
+| Swinject | Runtime registration, failures at runtime |
+| SwiftUI `Environment` only | Reaches views, not view models or services |
+
+- **Consequences:**
+  - A missing registration does not compile.
+  - Previews override in one line: `Container.shared.projectRepository { InMemoryProjectRepository() }`.
+  - Tests: `@Suite(.container)` (`FactoryTesting`), one isolated container per test.
+  - Replacing the library touches one file plus the `@Injected` lines.
+
+### D02 — Hand-written upload engine
+
+- Spec: [04](02-upload-sync.md#04-upload-engine)
+
+- **Context:** a session produces 150–250 files and several GB that must reach R2 through network
+  loss, suspension, termination, reboot and URL expiry — the product's core claim.
+- **Decision:** `UploadKit`, in-house, on a background `URLSessionConfiguration`: own job store
+  protocol, state machine, S3 multipart with resume, jittered backoff, relaunch reconciliation.
+  Imports nothing from the project.
+
+| Rejected | Why not |
+|---|---|
+| Alamofire | Foreground sessions; no relaunch or task ↔ job reconciliation |
+| Firebase Storage `putFile()` | Cannot reattach after cold launch; no `isDiscretionary` or priority control |
+| AWS Amplify / S3 SDK | Heavy; hides the background session lifecycle |
+
+- **Consequences:**
+  - Full control of retry, priority, Wi-Fi policy, URL refresh.
+  - Largest block of work (M2 `UploadKit` parts) and the most test surface: state machine,
+    `MockTransport` scripting 503/403/timeouts, kill-and-relaunch tests.
+
+### D03 — Node + PostgreSQL backend, hand-written sync
+
+- Specs: [08](02-upload-sync.md#08-auth-and-sync), [14](03-backend.md)
+
+- **Context:** the backend signs R2 URLs, countersigns hashes, owns all metadata, serves delta sync
+  to several devices, pushes job state. Firebase already covers identity and crashes.
+- **Decision:** Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL. Sync: cursor-based delta pull,
+  batched push, tombstones with a purge window, LWW per field, monotonic session state, offline
+  mutation queue in SwiftData.
+
+| Rejected | Why not |
+|---|---|
+| Firestore | Vendor-tied model and queries; presigning and countersigning still need a server |
+| Supabase | Postgres, but row sync and conflict rules would still be ours |
+| CloudKit | Apple-only; no server-side evidence verification |
+
+- **Consequences:**
+  - Offline persistence, delete propagation, listener fan-out are ours (tombstones, `pg_notify`).
+  - ~1800–2500 lines of TypeScript; a two-device convergence test.
+  - Hosting, migrations, backups operated by us.
+
+### D04 — WebSocket realtime channel
+
+- Spec: [10](02-upload-sync.md#10-realtime-progress-channel)
+
+- **Context:** the server learns about assembly, checksum results and hash mismatches before the app,
+  especially after a kill mid-upload.
+- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `Packages/Realtime`: connect,
+  auth with the Firebase ID token, ping, reconnect with backoff, events reconciled into the upload
+  store. Never controls `UploadKit`.
+
+| Rejected | Why not |
+|---|---|
+| Polling | 243 jobs every 10 s drains battery and data on site networks |
+| Server-Sent Events | One-way; subscribe and heartbeat need a second path |
+| APNs silent push | Not guaranteed, rate-limited |
+| Starscream / Socket.IO | `URLSessionWebSocketTask` covers it; no extra dependency |
+
+- **Consequences:**
+  - App must build and pass tests with `Realtime` removed (nightly CI).
+  - Backend serves the channel from the same process, fanned out by `pg_notify`.
+
+### D05 — Kingfisher for remote images
+
+- **Context:** a second device shows photos from R2 via presigned GET; lists show hundreds of
+  thumbnails. Caching, downsampling, cancellation, prefetch are commodity problems.
+- **Decision:** [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x (`KFImage`) with
+  `DownsamplingImageProcessor` to cell size and a bounded disk cache. Local originals always read
+  from disk with `CGImageSourceCreateThumbnailAtIndex`, never through Kingfisher.
+
+| Rejected | Why not |
+|---|---|
+| `AsyncImage` | No disk cache, downsampling or prefetch |
+| Nuke | Equally capable; Kingfisher is more widely used |
+| Hand-written cache | Commodity, no product value |
+
+- **Consequences:**
+  - Cache key drops the presigned query string, or every URL refresh re-downloads.
+  - Cache cleared on sign-out and account deletion ([08](02-upload-sync.md#08-auth-and-sync)).
+
+### D06 — Test libraries
+
+- Strategy: [05 § Testing](05-platform.md#testing-strategy)
+
+- **Context:** domain logic, view models and screens need fast tests on CI without a device; screens
+  need a guard against visual regressions in light, dark and large Dynamic Type.
+
+| Need | Library |
+|---|---|
+| Unit tests | Swift Testing (`@Test`, `#expect`) |
+| View snapshots | [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) 1.x |
+| DI isolation | `FactoryTesting` — `@Suite(.container)` |
+| UI flows | XCUITest, smoke paths only |
+
+| Rejected | Why not |
+|---|---|
+| XCTest for new unit tests | Swift Testing is Apple's current default; XCTest kept for XCUITest |
+| ViewInspector | Tests view internals; breaks on SwiftUI changes |
+| Quick/Nimble | Extra DSL on top of Swift Testing |
+
+- **Consequences:** snapshot references committed; recorded on one pinned simulator model and OS.
+
+### D07 — Firebase Crashlytics
+
+- Spec: [09](05-platform.md#09-diagnostics-and-observability)
+
+- **Context:** field crashes must be symbolicated, grouped and alerted; Firebase is already in for Auth.
+- **Decision:** Crashlytics (firebase-ios-sdk 12.x), initialized first at launch; dSYMs uploaded by the
+  Fastlane release lane; non-fatals carry the same structured data as the log line.
+
+| Rejected | Why not |
+|---|---|
+| Sentry | Second vendor and SDK next to Firebase |
+| MetricKit / Organizer only | Delayed, store builds only, no custom keys or non-fatals |
+
+- **Consequences:**
+  - No user content or PII in custom keys; IDs only.
+  - Startup never blocks on Crashlytics ([§4.5](#45-startup-sequence)).
+
+### D08 — XcodeGen owns the Xcode project
+
+- How-to: [Dev setup § XcodeGen](05-platform.md#2-xcodegen)
+
+- **Context:** `project.pbxproj` is hard to review and conflicts on merge; packages, settings and
+  scheme environment should be readable in a diff.
+- **Decision:** `project.yml` is the source of truth; `xcodegen generate` writes `SiteLog.xcodeproj`.
+  Code and files are edited in Xcode; packages, links, settings, capabilities, targets and schemes
+  change only in `project.yml`.
+
+| Rejected | Why not |
+|---|---|
+| Hand-maintained `.xcodeproj` | Settings hidden in the pbxproj; merge conflicts |
+| Tuist | More than one app target needs; own manifests and CLI lifecycle |
+
+- **Consequences:**
+  - A setting changed in Xcode's UI is lost on the next generate.
+  - Run `xcodegen generate` after pulling a `project.yml` change.

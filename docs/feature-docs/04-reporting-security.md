@@ -1,17 +1,20 @@
 # Reporting and security
 
-The paid deliverable and the protection of the evidence behind it.
+- The paid deliverable and the protection of the evidence behind it.
 
-**Specs** — [05 PDF and spreadsheet export](#05-pdf-and-spreadsheet-export) · [07 Security and audit log](#07-security-and-audit-log)
+## Contents
+
+- [05 PDF and spreadsheet export](#05-pdf-and-spreadsheet-export) — sections, rendering, spreadsheet
+- [07 Security and audit log](#07-security-and-audit-log) — at rest, app lock, audit log, leaks and secrets
 
 ---
 
 ## 05. PDF and spreadsheet export
 
-Module: `Packages/Reporting`
+- Module: `Packages/Reporting`
 
 **Goal:** turn a `Session` into a branded, signed PDF plus CSV/XLSX, shareable on the spot with no
-network. Never truncated, never missing images, never crashing on page 38 of 40.
+network — never truncated, never missing images, never crashing on page 38 of 40.
 
 | In | Out |
 |---|---|
@@ -42,13 +45,13 @@ struct ReportBranding: Codable, Sendable {
 }
 ```
 
-Branding is one `report_branding` row per user; the logo uploads like any file. Signing sets
-`Session.state = .exported` (read-only); re-signing creates a `-R2` revision and keeps the original.
+- Branding: one `report_branding` row per user; the logo uploads like any file.
+- Signing sets `Session.state = .exported` (read-only); re-signing creates a `-R2` revision, keeps the original.
 
 ### 05.2 Rendering
 
-`UIGraphicsPDFRenderer` — no third-party library, no WebView printing (HTML→PDF with 200 images gives
-blank pages).
+- `UIGraphicsPDFRenderer`: no third-party library, no WebView printing (HTML→PDF with 200 images
+  gives blank pages).
 
 ```
 Session → SessionSnapshot (one fetch) → ReportLayoutEngine (pure, no UIKit) → [ReportPage]
@@ -63,15 +66,20 @@ Session → SessionSnapshot (one fetch) → ReportLayoutEngine (pure, no UIKit) 
 | Temp file + `moveItem` | A kill mid-render never leaves a partial file |
 | Renders the stamped, annotated derivative | The archive keeps the clean original |
 
-Integrity on every page: under each image the first 8 hash characters, the code and its state
-(`registered`/`verified`), and time confidence when below `.serverVerified`; unsynced captures print
-"not yet verified". The final page carries a SHA-256 over the `captureID`-sorted hash list. All
-spacing, color and type come from `DesignSystem` tokens, including inside the PDF.
+**Integrity on every page**
 
-**Spreadsheet:** CSV always, XLSX above `csvOnlyRowThreshold`; one row per issue (`report_id,
-project, session_date, location_code, plan_sheet, pin_x, pin_y, issue_id, title, detail, severity,
-status, assignee, trade, due_date, capture_count, first_capture_sha256, verification_code,
-created_at`), streamed with `FileHandle`.
+- Under each image: first 8 hash characters, the code and its state (`registered`/`verified`), time
+  confidence when below `.serverVerified`.
+- Unsynced captures print "not yet verified".
+- Final page: SHA-256 over the `captureID`-sorted hash list.
+- Spacing, color and type come from `DesignSystem` tokens, inside the PDF too.
+
+**Spreadsheet**
+
+- CSV always; XLSX above `csvOnlyRowThreshold`; streamed with `FileHandle`.
+- One row per issue: `report_id, project, session_date, location_code, plan_sheet, pin_x, pin_y,
+  issue_id, title, detail, severity, status, assignee, trade, due_date, capture_count,
+  first_capture_sha256, verification_code, created_at`.
 
 ```swift
 enum ReportConstants {
@@ -93,18 +101,32 @@ enum ReportConstants {
 | Non-ASCII file names | Percent-encode on share; test with "Ánh Dương – Block B" |
 | Too large for chat apps | Show estimated size first, offer a compression level |
 
-**Done:** 200 images / 40 issues on a low-end iPhone under 200 MB peak; image count equals
-non-excluded capture count (asserted); pairs matched and labeled with `Location.code`; works in
-airplane mode.
-**Tests:** image count; empty / 1 / 500 issues; 20-image issue paginates; missing file placeholder;
-hash-of-hashes order-stable; both groupings give the same total; CSV escaping; "not yet verified";
-pin numbering matches detail; 200-image memory; opens in Preview and Acrobat.
+**Done**
+
+- 200 images / 40 issues on a low-end iPhone under 200 MB peak
+- Image count equals non-excluded capture count (asserted)
+- Pairs matched and labeled with `Location.code`
+- Works in airplane mode
+
+**Tests**
+
+- Image count
+- Empty / 1 / 500 issues
+- 20-image issue paginates
+- Missing file placeholder
+- Hash-of-hashes order-stable
+- Both groupings give the same total
+- CSV escaping
+- "not yet verified"
+- Pin numbering matches detail
+- 200-image memory
+- Opens in Preview and Acrobat
 
 ---
 
 ## 07. Security and audit log
 
-Modules: `SiteLog/Presentation/Access/Lock`, `SiteLog/Presentation/Settings/AppLock`, `Domain`
+- Modules: `SiteLog/Presentation/Access/` (`FaceIDLock`, `PasscodeUnlock`, `PrivacyOverlay`), `SiteLog/Presentation/Settings/AppLock`, `Domain`
 
 **Goal:** media and reports are unreadable if the device is lost, unmodifiable without a trace, and
 never leaked into logs or analytics.
@@ -119,15 +141,21 @@ never leaked into logs or analytics.
 | Audit chain | HMAC-SHA256 (CryptoKit), key in Keychain |
 | Firebase tokens | Keychain, `.whenUnlockedThisDeviceOnly` |
 
-**Why not AES-GCM for media:** background `URLSession` uploads only raw files on disk, so encrypted
-media would need a plaintext temp copy for the whole upload window — worse than nothing, and double
-the disk. `.completeUnlessOpen` encrypts on lock while keeping open files readable, which background
-upload needs; `.complete` would stop uploads when the phone goes into a pocket.
+**Why not AES-GCM for media**
+
+- Background `URLSession` uploads only raw files on disk → encrypted media needs a plaintext temp copy
+  for the whole upload window: worse than nothing, and double the disk.
+- `.completeUnlessOpen` encrypts on lock but keeps open files readable, which background upload needs.
+- `.complete` would stop uploads when the phone goes into a pocket.
 
 ### 07.2 App lock
 
-One settings screen, **Settings → Privacy → App lock** (S4), with two groups: *Lock app* and
-*Lock after*. Unlock screens: Face ID (A1), app passcode (A3); setting a passcode: S5.
+| Screen | Purpose |
+|---|---|
+| S4 **Settings → Privacy → App lock** | Two groups: *Lock app*, *Lock after* |
+| S5 | Set passcode |
+| A1 | Face ID unlock |
+| A3 | App passcode unlock |
 
 | Setting | Values | Default |
 |---|---|---|
@@ -148,12 +176,12 @@ One settings screen, **Settings → Privacy → App lock** (S4), with two groups
 | When it locks | Cold launch, and foreground return after *Lock after*, measured with `ContinuousClock` (not `Date()`) |
 | App switcher | Privacy overlay on resign-active while Lock app is on |
 
-It is a UI gate on `RootView` (on a sheet it is bypassable by killing the app), not encryption.
-Sensitive Keychain items use `.biometryCurrentSet`.
+- A UI gate on `RootView`, not encryption (on a sheet it would be bypassable by killing the app).
+- Sensitive Keychain items use `.biometryCurrentSet`.
 
 ### 07.3 Audit log
 
-Records every view, delete, export, report exclusion, metadata change, pin move and annotation edit.
+- Records every view, delete, export, report exclusion, metadata change, pin move, annotation edit.
 
 ```swift
 struct AuditEntry: Codable, Sendable {
@@ -167,10 +195,11 @@ struct AuditEntry: Codable, Sendable {
 }
 ```
 
-The chain makes edits and deletions detectable. The key is generated once and never leaves the
-device; the chain is verified at launch (a break raises a Diagnostics flag and a Crashlytics
-non-fatal); entries survive project deletion. Losing the key on device migration is accepted — the
-log is per device, and Diagnostics says so.
+- The chain makes edits and deletions detectable.
+- Key generated once, never leaves the device.
+- Verified at launch; a break raises a Diagnostics flag and a Crashlytics non-fatal.
+- Entries survive project deletion.
+- Losing the key on device migration is accepted: the log is per device, and Diagnostics says so.
 
 ### 07.4 Leaks and secrets
 
@@ -198,11 +227,25 @@ enum SecurityConstants {
 }
 ```
 
-**Done:** a locked device's media is unreadable via file sharing or unencrypted backup; background
-upload continues while locked; a hand-edited entry fails at the right index; no `print(`; a 20-photo
-session's logs hold no URL, token or free text.
-**Tests:** 100-entry chain verifies; edit at 50 and mid-chain deletion detected at the right index;
-AES-GCM bundle round-trip; wrong key throws; new files carry the expected protection;
-`.biometryCurrentSet` unreadable before auth; redaction snapshot; passcode hash round-trip and wrong
-passcode rejected; lockout steps survive relaunch; Lock after boundary (just under / at the value);
-biometry change turns Face ID off.
+**Done**
+
+- A locked device's media is unreadable via file sharing or unencrypted backup
+- Background upload continues while locked
+- A hand-edited entry fails at the right index
+- No `print(`
+- A 20-photo session's logs hold no URL, token or free text
+
+**Tests**
+
+- 100-entry chain verifies
+- Edit at 50 and mid-chain deletion detected at the right index
+- AES-GCM bundle round-trip
+- Wrong key throws
+- New files carry the expected protection
+- `.biometryCurrentSet` unreadable before auth
+- Redaction snapshot
+- Passcode hash round-trip and wrong passcode rejected
+- Lockout steps survive relaunch
+- Lock after boundary (just under / at the value)
+- Biometry change turns Face ID off
+

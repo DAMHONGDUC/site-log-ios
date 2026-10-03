@@ -1,26 +1,32 @@
 # Upload and sync
 
-How bytes and metadata leave the device and reach other devices. Three separate paths: **HTTPS
-presigned PUTs for bytes (04), delta sync for metadata (08), WebSocket for state (10)**; BLE is only
-for measuring tools ([06](01-field-work.md#06-devicelink-ble-measuring-tools)). Server side:
-[03-backend.md](03-backend.md).
+- How bytes and metadata leave the device and reach other devices. Server side: [03-backend.md](03-backend.md).
 
-**Specs** — [04 Upload engine](#04-upload-engine) · [08 Auth and sync](#08-auth-and-sync) · [10 Realtime channel](#10-realtime-progress-channel)
+| Path | Carries | Spec |
+|---|---|---|
+| HTTPS presigned PUT | Bytes | [04](#04-upload-engine) |
+| Delta sync | Metadata | [08](#08-auth-and-sync) |
+| WebSocket | Server-side job state | [10](#10-realtime-progress-channel) |
+| BLE | Measuring tools only | [06](01-field-work.md#06-devicelink-ble-measuring-tools) |
+
+## Contents
+
+- [04 Upload engine](#04-upload-engine) — boundary, protocol, background constraints, state machine, policy
+- [08 Auth and sync](#08-auth-and-sync) — offline-first and auth, protocol, client engine
+- [10 Realtime progress channel](#10-realtime-progress-channel)
 
 ---
 
 ## 04. Upload engine
 
-Module: `Packages/UploadKit` — standalone, knows nothing about SiteLog
-([ADR 0002](../adr/0002-handwritten-upload-engine.md))
+- Module: `Packages/UploadKit` — standalone, knows nothing about SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
 
 **Goal:** move 150–250 files and several GB to R2, surviving network loss, suspension, termination,
 reboot and presigned-URL expiry.
 
 ### 04.1 Boundary
 
-`UploadKit` receives a file URL, metadata, an endpoint and an injected store. It does not import
-`Domain`.
+- In: a file URL, metadata, an endpoint, an injected store. Does not import `Domain`.
 
 ```swift
 public protocol UploadStore: Sendable {
@@ -33,14 +39,14 @@ public protocol UploadStore: Sendable {
 }
 ```
 
-The app implements it over SwiftData in `Persistence`; `UploadKit` ships `InMemoryUploadStore`, so
-the whole state machine is testable with no app, DB or network. Files: `UploadCoordinator` (actor,
-entry point), `UploadStateMachine` (pure), `ChunkPlanner`, `PresignedURLProvider`,
-`BackgroundSessionDelegate`.
+- The app implements it over SwiftData in `Persistence`.
+- `UploadKit` ships `InMemoryUploadStore`: the state machine is testable with no app, DB or network.
+- Files: `UploadCoordinator` (actor, entry point), `UploadStateMachine` (pure), `ChunkPlanner`,
+  `PresignedURLProvider`, `BackgroundSessionDelegate`.
 
 ### 04.2 Protocol
 
-The backend never touches bytes. Endpoints: [03-backend.md §3](03-backend.md#3-endpoints).
+- The backend never touches bytes. Endpoints: [03-backend.md §3](03-backend.md#3-endpoints).
 
 | Step | Call | Returns |
 |---|---|---|
@@ -50,9 +56,9 @@ The backend never touches bytes. Endpoints: [03-backend.md §3](03-backend.md#3-
 | 4 | `POST /uploads/:id/parts/refresh {numbers}` | Fresh URLs — **mandatory** after a long kill |
 | 5 | `DELETE /uploads/:id` | Abort |
 
-The backend picks the mode from `byteSize`: under 5 MB single PUT, otherwise multipart with uniform
-8 MB parts (R2 requires equal non-final parts, so `ChunkPlanner` splits by fixed size). Every call
-carries a Firebase ID token; the key prefix must match its uid.
+- Mode from `byteSize`: under 5 MB single PUT, else multipart with uniform 8 MB parts (R2 requires
+  equal non-final parts, so `ChunkPlanner` splits by fixed size).
+- Every call carries a Firebase ID token; the key prefix must match its uid.
 
 ### 04.3 iOS background constraints
 
@@ -63,12 +69,18 @@ carries a Firebase ID token; the key prefix must match its uid.
 | `taskIdentifier` is reused | Key on `taskDescription = "jobID#part"` |
 | Nothing survives termination in RAM | Recreate the session with the same identifier and reconcile |
 
-Session: `isDiscretionary = false`, `sessionSendsLaunchEvents = true`, resource timeout 7 days,
-`handleEventsForBackgroundURLSession` wired in the app delegate.
+- Session: `isDiscretionary = false`, `sessionSendsLaunchEvents = true`, resource timeout 7 days,
+  `handleEventsForBackgroundURLSession` wired in the app delegate.
 
-**Cold-launch reconciliation** (the usual cause of "stuck at 60%"): task alive + record → reattach;
-task alive, no record → cancel and log; record `uploading`, no task → reset to `pending`. A
-[realtime](#10-realtime-progress-channel) `snapshot` adds server state; jobs only move forward.
+**Cold-launch reconciliation** (the usual cause of "stuck at 60%"):
+
+| Task | Record | Action |
+|---|---|---|
+| Alive | Exists | Reattach |
+| Alive | Missing | Cancel and log |
+| Missing | `uploading` | Reset to `pending` |
+
+- A [realtime](#10-realtime-progress-channel) `snapshot` adds server state; jobs only move forward.
 
 ### 04.4 State machine
 
@@ -88,7 +100,7 @@ public struct UploadStateMachine {
 }
 ```
 
-`reduce` is deterministic with no I/O; `UploadCoordinator` is the only executor of effects.
+- `reduce` is deterministic, no I/O; `UploadCoordinator` is the only executor of effects.
 
 | Cause | Reason | Handling |
 |---|---|---|
@@ -98,8 +110,8 @@ public struct UploadStateMachine {
 | 400, 404, 411, 413 | `.permanent` | Abort — the backend never returns these for retryable cases |
 | ETag or checksum mismatch | `.integrity` | Abort, flag for the user |
 
-Retry: `delay = min(2s × 2^attempt, 300s) × jitter(0.8…1.2)`, max 5 attempts. Jitter is mandatory —
-200 files failing at one signal loss must not retry together.
+- Retry: `delay = min(2s × 2^attempt, 300s) × jitter(0.8…1.2)`, max 5 attempts.
+- Jitter is mandatory: 200 files failing at one signal loss must not retry together.
 
 ### 04.5 Policy
 
@@ -135,23 +147,39 @@ public enum UploadConstants {
 | Account switch with pending jobs | Cancel old uid's jobs, delete temp files, never write into the new prefix |
 | Clock skew vs `expiresAt` | 403 is the truth; `expiresAt` only drives proactive refresh |
 
-**Done:** 200 files / 2 GB complete with matching server hashes; kill mid-transfer resumes without
-re-uploading parts; airplane mode → `waitingForNetwork` with budget intact; 60 s URL TTL refreshes
-automatically; WiFi-only on cellular sends zero bytes.
-**Tests:** full (state × event) matrix; final part failure never calls `complete`; budget rules;
-exhausted budget keeps the original; backoff with stubbed RNG; `ChunkPlanner` sizes; single-PUT
-threshold; dedupe; all three reconciliation cases; priority order; `MockTransport` flow with 503 at
-part 3; real kill on device.
+**Done**
+
+- 200 files / 2 GB complete with matching server hashes
+- Kill mid-transfer resumes without re-uploading parts
+- Airplane mode → `waitingForNetwork` with budget intact
+- 60 s URL TTL refreshes automatically
+- WiFi-only on cellular sends zero bytes
+
+**Tests**
+
+- Full (state × event) matrix
+- Final part failure never calls `complete`
+- Budget rules
+- Exhausted budget keeps the original
+- Backoff with stubbed RNG
+- `ChunkPlanner` sizes
+- Single-PUT threshold
+- Dedupe
+- All three reconciliation cases
+- Priority order
+- `MockTransport` flow with 503 at part 3
+- Real kill on device
 
 ---
 
 ## 08. Auth and sync
 
-Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Networking`
-([ADR 0003](../adr/0003-node-postgres-sync.md))
+- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
 
 **Goal:** sign in once, work fully offline, sync all metadata across devices over a hand-written
-delta protocol. Firebase is identity and crash reporting only; all data is in Postgres.
+delta protocol.
+
+- Firebase is identity and crash reporting only; all data is in Postgres.
 
 | In | Out |
 |---|---|
@@ -160,13 +188,11 @@ delta protocol. Firebase is identity and crash reporting only; all data is in Po
 | Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to R2 |
 | Account deletion | |
 
-Without Firestore three things are ours: offline persistence (SwiftData mutation queue), delete
-propagation (tombstones) and listener fan-out (`pg_notify`).
-
-**Remote media:** a pulled `Capture` carries its object key; the app asks for a presigned GET and
-shows it with [Kingfisher](https://github.com/onevcat/Kingfisher) (downsampled, disk-cached, cache
-key without the query string). Local originals are always read from disk
-([ADR 0005](../adr/0005-kingfisher-images.md)).
+- Without Firestore, three things are ours: offline persistence (SwiftData mutation queue), delete
+  propagation (tombstones), listener fan-out (`pg_notify`).
+- **Remote media:** a pulled `Capture` carries its object key → presigned GET → shown with
+  [Kingfisher](https://github.com/onevcat/Kingfisher) (downsampled, disk-cached, cache key without
+  the query string). Local originals always read from disk ([D05](00-overview.md#d05--kingfisher-for-remote-images)).
 
 ### 08.1 Offline-first and auth
 
@@ -217,12 +243,12 @@ enum SyncConstants {
 }
 ```
 
-Triggers: foreground, network restored, every `syncInterval`, queue reaching `pushBatchSize` — never
-per write. `superseded` is not a failure: adopt `serverRow`. Every cycle logs `{pulled, pushed,
-superseded, elapsedMs, cursor}`.
-
-**Account deletion:** in-app, reauthenticate, `DELETE /account` (server removes R2 objects and rows),
-then local store, Keychain and media; numbers shown first; final audit entry.
+- Triggers: foreground, network restored, every `syncInterval`, queue reaching `pushBatchSize` —
+  never per write.
+- `superseded` is not a failure: adopt `serverRow`.
+- Every cycle logs `{pulled, pushed, superseded, elapsedMs, cursor}`.
+- **Account deletion:** in-app → reauthenticate → `DELETE /account` (server removes R2 objects and
+  rows) → local store, Keychain, media; numbers shown first; final audit entry.
 
 | Risk | Handling |
 |---|---|
@@ -231,26 +257,43 @@ then local store, Keychain and media; numbers shown first; final audit entry.
 | Clock skew picks the wrong LWW winner | Accepted for metadata; captures are immutable |
 | Sign in with Apple hides the email | Nothing depends on a real email |
 
-**Done:** offline relaunch after sign-in; a project created offline on A appears on B within one
-interval; a delete on A stays deleted on B; B cannot un-export A's session; 80 generated locations
-sync as one batch; resync from 0 reproduces the store; token expiry mid-sync loses nothing.
-**Tests:** monotonic state across 16 pairs; LWW tie-break; tombstones never resurrect; stale cursor →
-resync; queue survives termination in order; `superseded` adoption; 200 mutations = one request;
-account switch; 10 concurrent 401s → one refresh.
+**Done**
+
+- Offline relaunch after sign-in
+- A project created offline on A appears on B within one interval
+- A delete on A stays deleted on B
+- B cannot un-export A's session
+- 80 generated locations sync as one batch
+- Resync from 0 reproduces the store
+- Token expiry mid-sync loses nothing
+
+**Tests**
+
+- Monotonic state across 16 pairs
+- LWW tie-break
+- Tombstones never resurrect
+- Stale cursor → resync
+- Queue survives termination in order
+- `superseded` adoption
+- 200 mutations = one request
+- Account switch
+- 10 concurrent 401s → one refresh
 
 ---
 
 ## 10. Realtime progress channel
 
-Module: `Packages/Realtime` ([ADR 0004](../adr/0004-websocket-realtime.md))
+- Module: `Packages/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
 
 **Goal:** learn what the server knows first — assembly done, hash checked, mismatch — without
-polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; it never controls
-`UploadKit`.
+polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; never controls `UploadKit`.
 
-**Boundary:** uploads work at 100% with the channel dead. Neither package imports the other; the app
-layer turns events into `UploadStore` operations, and events may only **advance** a job. Server
-silence never means "not done". CI builds the app with `Realtime` removed.
+**Boundary**
+
+- Uploads work at 100% with the channel dead.
+- Neither package imports the other; the app layer turns events into `UploadStore` operations.
+- Events may only **advance** a job; server silence never means "not done".
+- CI builds the app with `Realtime` removed.
 
 | Direction | Messages (line-delimited JSON) |
 |---|---|
@@ -279,9 +322,23 @@ public enum RealtimeConstants {
 }
 ```
 
-**Done:** 50 jobs reach `synced` via events; the same 50 with the flag off, only slower; a two-minute
-drop reconnects and the snapshot restores state; a wrong `sha256` raises a flag instead of `synced`;
-backgrounding closes within 1 s.
-**Tests:** decode all types + malformed; oversized message; missing `pong` → backoff; backoff cap and
-jitter; hash mismatch; applying one event 10× equals once; snapshot applies forward only; unknown
-`jobID`; flow against a mock WebSocket server.
+**Done**
+
+- 50 jobs reach `synced` via events
+- The same 50 with the flag off, only slower
+- A two-minute drop reconnects and the snapshot restores state
+- A wrong `sha256` raises a flag instead of `synced`
+- Backgrounding closes within 1 s
+
+**Tests**
+
+- Decode all types + malformed
+- Oversized message
+- Missing `pong` → backoff
+- Backoff cap and jitter
+- Hash mismatch
+- Applying one event 10× equals once
+- Snapshot applies forward only
+- Unknown `jobID`
+- Flow against a mock WebSocket server
+

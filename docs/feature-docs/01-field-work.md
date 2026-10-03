@@ -1,16 +1,26 @@
 # Field work
 
-What the supervisor does on site: organize the walk, capture evidence, log and verify issues, pin
-them on plans, mark up photos, run checklists, read measuring tools. Architecture and data model:
-[00-overview.md](00-overview.md).
+- What the supervisor does on site: organize the walk, capture, log and verify issues, pin them on
+  plans, mark up photos, run checklists, read measuring tools.
+- Architecture and data model: [00-overview.md](00-overview.md).
 
-**Specs** — [01 Projects, sessions, locations](#01-projects-sessions-locations) · [02 Capture pipeline](#02-capture-pipeline) · [03 Issues and before-after pairing](#03-issues-and-before-after-pairing) · [06 DeviceLink](#06-devicelink-ble-measuring-tools) · [11 Floor plans](#11-floor-plans-and-issue-pins) · [12 Annotation](#12-annotation-and-verifiable-stamps) · [13 Checklists](#13-checklist-templates)
+## Contents
+
+| Spec | Topic |
+|---|---|
+| [01](#01-projects-sessions-locations) | Projects, sessions, locations |
+| [02](#02-capture-pipeline) | Capture pipeline — session, metadata and hashing, pre-record buffer |
+| [03](#03-issues-and-before-after-pairing) | Issues and before-after pairing |
+| [06](#06-devicelink-ble-measuring-tools) | DeviceLink BLE measuring tools |
+| [11](#11-floor-plans-and-issue-pins) | Floor plans and issue pins |
+| [12](#12-annotation-and-verifiable-stamps) | Annotation, stamps, dictation, trusted time, verification code |
+| [13](#13-checklist-templates) | Checklist templates |
 
 ---
 
 ## 01. Projects, sessions, locations
 
-Modules: `SiteLog/Presentation/Projects`, `Domain`, `DataLayer`, `Persistence`
+- Modules: `SiteLog/Presentation/Projects`, `Domain`, `DataLayer`, `Persistence`
 
 **Goal:** build the `Project → Session → Location` tree faster than paper, fully offline,
 one-handed.
@@ -57,21 +67,29 @@ enum LocationTemplateLimits {
 | Project delete removes GB of media | Confirmation states numbers: "3 sessions, 412 photos, 2.1 GB, 87 not uploaded" |
 | Delete while files are `pending` | Blocked outright |
 
-**Done:** project → session → 80 locations → capture in airplane mode; 500-row list at 60 fps; kill
-mid-generation leaves no partial records.
-**Tests:** template edge cases (1 floor, 1 unit, collisions), batch cap, depth-4 rejected, `closed`
-rejects `addCapture`, cascade delete leaves no orphans, migration from a 100-location `SchemaV1`
-fixture.
+**Done**
+
+- Project → session → 80 locations → capture in airplane mode
+- 500-row list at 60 fps
+- Kill mid-generation leaves no partial records
+
+**Tests**
+
+- Template edge cases (1 floor, 1 unit, collisions)
+- Batch cap
+- Depth-4 rejected
+- `closed` rejects `addCapture`
+- Cascade delete leaves no orphans
+- Migration from a 100-location `SchemaV1` fixture
 
 ---
 
 ## 02. Capture pipeline
 
-Module: `Packages/Capture`
+- Module: `Packages/Capture`
 
 **Goal:** one `AVCaptureSession` for photo, video and audio without teardown; every file hashed
-before it reaches the DB. Photo library import and in-place editing are out (captures are
-immutable).
+before it reaches the DB.
 
 | In | Out |
 |---|---|
@@ -121,14 +139,15 @@ func sha256(ofFileAt url: URL) throws -> String {
 }
 ```
 
-Stream in chunks — `Data(contentsOf:)` on a 1.5 GB video triggers jetsam. Files live at
-`media/<project>/<session>/<capture>.<ext>` with `.completeUnlessOpen`, excluded from backup.
+- Stream in chunks: `Data(contentsOf:)` on a 1.5 GB video triggers jetsam.
+- Files: `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup.
 
 ### 02.3 Pre-record buffer
 
-Keeps the last 30 s when record is pressed. Never hold raw buffers in RAM: `AVAssetWriter` writes
-3-second segments to `<Caches>/prebuffer/` in a ring of `segmentCount`; on record, join with
-`AVMutableComposition`. Off by default; disables below `minBatteryLevel`.
+- Keeps the last 30 s when record is pressed.
+- Never raw buffers in RAM: `AVAssetWriter` writes 3-second segments to `<Caches>/prebuffer/` in a
+  ring of `segmentCount`; on record, join with `AVMutableComposition`.
+- Off by default; disables below `minBatteryLevel`.
 
 ```swift
 enum CaptureConstants {
@@ -152,19 +171,28 @@ enum HashConstants { static let streamingChunkBytes: Int = 1_048_576 }
 | Permissions | Camera, mic, location handled separately, never one combined alert |
 | Rotation | Preview and writer transforms must match, or video is rotated in the PDF |
 
-**Done:** 50 photos with flat memory; 3-minute 1080p plays back and hash reproduces; call
-mid-recording finalizes to `.pending`; airplane mode + denied location still captures.
-**Tests:** hash against known vectors and `shasum` on 200 MB; state machine rejects recording during
-photo; interruption finalizes once; stale GPS → `nil`; ring buffer eviction. All run without a camera
-via `CaptureSessionControlling`.
+**Done**
+
+- 50 photos with flat memory
+- 3-minute 1080p plays back and hash reproduces
+- Call mid-recording finalizes to `.pending`
+- Airplane mode + denied location still captures
+
+**Tests**
+
+- Hash against known vectors and `shasum` on 200 MB
+- State machine rejects recording during photo
+- Interruption finalizes once
+- Stale GPS → `nil`
+- Ring buffer eviction. All run without a camera via `CaptureSessionControlling`
 
 ---
 
 ## 03. Issues and before-after pairing
 
-Modules: `SiteLog/Presentation/Issues`, `Domain`, `DataLayer`
+- Modules: `SiteLog/Presentation/Issues`, `Domain`, `DataLayer`
 
-The core business feature: proving "broken last week, fixed now" with two photos of the same spot.
+- Core business feature: prove "broken last week, fixed now" with two photos of the same spot.
 
 **Goal:** log an issue in under 20 s, one-handed; in a later session reopen it at the same location,
 shoot verification, render the pair in the PDF.
@@ -194,8 +222,8 @@ Close:   new Issue (status .verified, verification photo); old.resolvedByIssue =
 | `assigneeName` is free text | A name that groups the PDF is what gets used on site |
 | 30% overlay | Without it the angles differ and the pair is worthless |
 
-Phrase library: ~30 seeded phrases, new typed phrases added, sorted by usage; synced via the
-backend's `phrases` table.
+- Phrase library: ~30 seeded phrases; new typed phrases added; sorted by usage; synced via the
+  backend's `phrases` table.
 
 ### 03.2 Design
 
@@ -215,10 +243,9 @@ enum IssueDefaults {
 }
 ```
 
-`PairIssuesUseCase` lives in `Domain`, imports no frameworks — the most error-prone logic in the app.
-
-Upload priority: critical 100 · major 50 · minor 10 · no issue 5 · video −20 (video blocks dozens of
-photos behind it).
+- `PairIssuesUseCase` lives in `Domain`, imports no frameworks — the most error-prone logic in the app.
+- Upload priority: critical 100 · major 50 · minor 10 · no issue 5 · video −20 (video blocks dozens
+  of photos behind it).
 
 | Risk | Handling |
 |---|---|
@@ -226,19 +253,31 @@ photos behind it).
 | Verification at the wrong spot | Overlay; the PDF prints `Location.code` under every image |
 | Issues piling up | Past `staleIssueSessionThreshold` the banner changes color and the PDF gets a section |
 
-**Done:** one issue with photo in under 20 s, measured; session 2 surfaces exactly the 3 open issues
-offline; closing leaves the original byte-identical.
-**Tests:** pairing with 0/1/n open issues, skips `.verified`, closing never mutates prior captures,
-priority across severity × kind, delete-with-open-issues rejected, phrase ordering tie-break.
+**Done**
+
+- One issue with photo in under 20 s, measured
+- Session 2 surfaces exactly the 3 open issues offline
+- Closing leaves the original byte-identical
+
+**Tests**
+
+- Pairing with 0/1/n open issues
+- Skips `.verified`
+- Closing never mutates prior captures
+- Priority across severity × kind
+- Delete-with-open-issues rejected
+- Phrase ordering tie-break
 
 ---
 
 ## 06. DeviceLink BLE measuring tools
 
-Module: `Packages/DeviceLink` · mock: `Tools/MockPeripheral/`
+- Module: `Packages/DeviceLink` · mock: `Tools/MockPeripheral/`
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
-the reading to a `Capture`. BLE for control and small values; files never go over BLE.
+the reading to a `Capture`.
+
+- BLE for control and small values; files never go over BLE.
 
 ```swift
 public protocol DeviceProfile: Sendable {
@@ -277,21 +316,36 @@ enum DeviceLinkConstants {
 }
 ```
 
-**Risks:** no hardware for byte formats → start on the mock and ship a raw-bytes "generic" profile;
-permission denied → feature hides itself; battery → no background scanning.
-**Done:** reads from the mock into a capture; killing the mock greys the dot, capture still works;
-relaunch reconnects within 10 s.
-**Tests:** vendor `parse` on real bytes; truncated/bad-checksum payloads throw; unit conversion;
-stale reading not attached; reconnect backoff capped; full flow against the mock.
+**Risks**
+
+- No hardware for byte formats → start on the mock and ship a raw-bytes "generic" profile
+- Permission denied → feature hides itself
+- Battery → no background scanning
+
+**Done**
+
+- Reads from the mock into a capture
+- Killing the mock greys the dot, capture still works
+- Relaunch reconnects within 10 s
+
+**Tests**
+
+- Vendor `parse` on real bytes
+- Truncated/bad-checksum payloads throw
+- Unit conversion
+- Stale reading not attached
+- Reconnect backoff capped
+- Full flow against the mock
 
 ---
 
 ## 11. Floor plans and issue pins
 
-Modules: `Packages/Plans`, `SiteLog/Presentation/Plans`
+- Modules: `Packages/Plans`, `SiteLog/Presentation/Plans`
 
-**Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet in the
-report. DWG/CAD, measuring and plan editing are out.
+**Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet.
+
+- Out: DWG/CAD, measuring, plan editing.
 
 ```swift
 @Model final class PlanSheet {
@@ -337,19 +391,30 @@ enum PlanConstants {
 | Encrypted or corrupt PDF | Rejected at import with the reason |
 | Pin on the wrong sheet | Sheet name at the viewer top and under every pin map |
 
-**Done:** 20-page A1 PDF, 50 pins, 60 fps pan/zoom; A0 peak memory under 150 MB; pins land on the
-same spot after relaunch at a different zoom; fully offline.
-**Tests:** `planPoint` round-trip through zoom/pan; same point at two scales; clustering; oversized
-and encrypted imports rejected; pin migration; sheet delete blocked while pins exist; A0 memory.
+**Done**
+
+- 20-page A1 PDF, 50 pins, 60 fps pan/zoom
+- A0 peak memory under 150 MB
+- Pins land on the same spot after relaunch at a different zoom
+- Fully offline
+
+**Tests**
+
+- `planPoint` round-trip through zoom/pan
+- Same point at two scales
+- Clustering
+- Oversized and encrypted imports rejected
+- Pin migration
+- Sheet delete blocked while pins exist
+- A0 memory
 
 ---
 
 ## 12. Annotation and verifiable stamps
 
-Modules: `Packages/Capture` (rendering), `Domain` (models)
+- Modules: `Packages/Capture` (rendering), `Domain` (models)
 
-**Rule:** the original file is never touched; markup is a separate layer and stamps are a derived
-copy.
+**Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 
 ### 12.1 Annotation layer
 
@@ -375,15 +440,15 @@ enum AnnotationShape: Codable, Sendable, Equatable {
 
 ### 12.2 Stamped derivatives
 
-`derived/<…>/<captureID>-stamped.jpg` carries date/time, coordinates and accuracy, project, location
-code, logo. Generated on demand, cached, never hashed, never evidence, excluded from integrity
-checks.
+- File: `derived/<…>/<captureID>-stamped.jpg`.
+- Carries date/time, coordinates and accuracy, project, location code, logo.
+- Generated on demand, cached; never hashed, never evidence, excluded from integrity checks.
 
 ### 12.3 Dictation and voice notes
 
-`SFSpeechRecognizer` with `requiresOnDeviceRecognition = true` (site audio never leaves the device),
-Vietnamese and English, falls back to the phrase library. A voice note is an ordinary audio
-`Capture`; dictated text lands in `Issue.detail`.
+- `SFSpeechRecognizer`, `requiresOnDeviceRecognition = true`: site audio never leaves the device.
+- Vietnamese and English; falls back to the phrase library.
+- A voice note is an ordinary audio `Capture`; dictated text lands in `Issue.detail`.
 
 ### 12.4 Trusted time
 
@@ -403,13 +468,13 @@ struct TrustedTimestamp: Codable, Sendable {
 | `.sessionConsistent` | No server contact, uptime matches wall-clock progression |
 | `.deviceOnly` | Clock jumped, or relaunched with no server contact |
 
-The offset comes from the `Date` header of any backend response. Confidence is **printed in the
-report**; a capture is never rejected for low confidence.
+- Offset comes from the `Date` header of any backend response.
+- Confidence is **printed in the report**; a capture is never rejected for low confidence.
 
 ### 12.5 Verification code
 
-On upload completion the backend records the hash and returns a short code, printed under each
-image and resolvable at `GET /verify/:code` ([03-backend.md](03-backend.md#3-endpoints)).
+- On upload completion the backend records the hash and returns a short code.
+- Printed under each image; resolvable at `GET /verify/:code` ([03-backend.md](03-backend.md#3-endpoints)).
 
 | State | Meaning | Report wording |
 |---|---|---|
@@ -417,7 +482,7 @@ image and resolvable at `GET /verify/:code` ([03-backend.md](03-backend.md#3-end
 | `verified` | Server re-read the object and recomputed the hash | "verified {code}" |
 | unsynced | Nothing left the device | "not yet verified" |
 
-Never print a code the server does not hold, or "verified" for a registered capture.
+- Never print a code the server does not hold, or "verified" for a registered capture.
 
 ```swift
 enum AnnotationConstants {
@@ -431,21 +496,35 @@ enum TrustedTimeConstants {
 }
 ```
 
-**Done:** 5 shapes survive relaunch over an original whose hash still verifies; phone markup is
-proportional on A4; deleting the derived cache loses nothing; moving the clock a day ahead drops
-confidence to `.deviceOnly` and the report says so; dictation works in airplane mode.
-**Tests:** `AnnotationShape` Codable round-trip; same render at two sizes; original never mutated;
-undo bounds; confidence for fresh/stale offset, clock jump, relaunch; oversized offset rejected;
-"not yet verified" wording; stamp snapshot in three orientations.
+**Done**
+
+- 5 shapes survive relaunch over an original whose hash still verifies
+- Phone markup is proportional on A4
+- Deleting the derived cache loses nothing
+- Moving the clock a day ahead drops confidence to `.deviceOnly` and the report says so
+- Dictation works in airplane mode
+
+**Tests**
+
+- `AnnotationShape` Codable round-trip
+- Same render at two sizes
+- Original never mutated
+- Undo bounds
+- Confidence for fresh/stale offset, clock jump, relaunch
+- Oversized offset rejected
+- "not yet verified" wording
+- Stamp snapshot in three orientations
 
 ---
 
 ## 13. Checklist templates
 
-Modules: `SiteLog/Presentation/Checklists`, `Domain`, `DataLayer`
+- Modules: `SiteLog/Presentation/Checklists`, `Domain`, `DataLayer`
 
 **Goal:** walk a location against a template, tick items, turn a failed item into an issue without
-retyping. Weighted scoring, branching and regulatory libraries are out.
+retyping.
+
+- Out: weighted scoring, branching, regulatory libraries.
 
 ```swift
 @Model final class ChecklistTemplate { var id: UUID; var name: String; var appliesTo: LocationKind?
@@ -477,9 +556,23 @@ enum ChecklistConstants {
 }
 ```
 
-**Risks:** tick-through without inspecting is visible from per-answer timestamps; imported JSON is
-validated (version, item cap) and treated as data.
-**Done:** 22-item run offline, two fails → two prefilled issues; kill mid-run resumes; template edit
-leaves the completed run and its PDF section unchanged.
-**Tests:** fail creates one issue with item text and severity; fail → pass resolves it; template edit
-does not alter runs; completion percentage; JSON import validation; built-ins fork on edit.
+**Risks**
+
+- Tick-through without inspecting is visible from per-answer timestamps
+- Imported JSON is validated (version, item cap) and treated as data
+
+**Done**
+
+- 22-item run offline, two fails → two prefilled issues
+- Kill mid-run resumes
+- Template edit leaves the completed run and its PDF section unchanged
+
+**Tests**
+
+- Fail creates one issue with item text and severity
+- Fail → pass resolves it
+- Template edit does not alter runs
+- Completion percentage
+- JSON import validation
+- Built-ins fork on edit
+

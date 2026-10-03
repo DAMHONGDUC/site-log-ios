@@ -1,5 +1,5 @@
 # Source of truth for SiteLog.xcodeproj. Edit this file, then run `xcodegen`.
-# See docs/dev-docs/xcodegen.md.
+# See docs/feature-docs/05-platform.md (Dev setup › XcodeGen).
 name: SiteLog
 options:
   bundleIdPrefix: app.dd

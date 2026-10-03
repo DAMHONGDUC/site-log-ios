@@ -1,5 +1,5 @@
 -- Format-on-save for Xcode: runs swift-format's "Format File" command, then Save.
--- See docs/dev-docs/xcode-format-on-save.md for the full setup.
+-- Setup: docs/feature-docs/05-platform.md, "Format on save in Xcode".
 
 xcodeSave = hs.hotkey.new({"cmd"}, "s", function()
   print("xcodeSave: fired")
