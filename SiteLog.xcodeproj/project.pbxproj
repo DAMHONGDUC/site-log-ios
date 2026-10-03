@@ -51,64 +51,52 @@
 		0409B79A4AE6E906873ECDB2 /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencies.swift; sourceTree = "<group>"; };
 		07E3F6798988D3013C7D6D3D /* SiteLogUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		12C0AF578305E1CBD421BB22 /* .gitattributes */ = {isa = PBXFileReference; path = .gitattributes; sourceTree = "<group>"; };
-		19F8A280C7B3E6606FAE561B /* index.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = index.md; sourceTree = "<group>"; };
 		1CDFEC27E00908FC5A1BB97A /* app-icon.svg */ = {isa = PBXFileReference; path = "app-icon.svg"; sourceTree = "<group>"; };
 		1D1AA3F75AB2314973F8F28D /* app-icon-tinted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-tinted.png"; sourceTree = "<group>"; };
+		1F57D0BA797165D0572EDBE6 /* m6-polish.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m6-polish.md"; sourceTree = "<group>"; };
+		2013B0113F7322F1D4CB42AA /* m4-field-ready.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m4-field-ready.md"; sourceTree = "<group>"; };
 		23F8B2AE9C0EA29929223AB8 /* 01-field-work.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-field-work.md"; sourceTree = "<group>"; };
-		2CA8F95AD2212AEAEA7E0A84 /* 0004-websocket-realtime.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0004-websocket-realtime.md"; sourceTree = "<group>"; };
-		304CAFBB593429A3655C61C8 /* 0005-kingfisher-images.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0005-kingfisher-images.md"; sourceTree = "<group>"; };
 		333190EB306B5C80539B7276 /* StartupSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupSequence.swift; sourceTree = "<group>"; };
 		33C1E91E8132908B17CC58F9 /* .swift-format */ = {isa = PBXFileReference; path = ".swift-format"; sourceTree = "<group>"; };
 		34FB39010F292720B1ADF77D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		35A309C3448FD2865A62FA54 /* testing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = testing.md; sourceTree = "<group>"; };
 		3D5CCE7F7443BBFE6BA1F22A /* SiteLogApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogApp.swift; sourceTree = "<group>"; };
 		3E6A8A5E14B8E52C29D69082 /* 03-backend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "03-backend.md"; sourceTree = "<group>"; };
 		44A6791775D16CBDC0337C7A /* StartupStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupStep.swift; sourceTree = "<group>"; };
 		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
 		5D18F4EE8C2B946317F43D62 /* 00-design-plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-design-plan.md"; sourceTree = "<group>"; };
 		5FB96206F20F929D04596D79 /* DataLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DataLayer; path = Packages/DataLayer; sourceTree = SOURCE_ROOT; };
-		616D94E942188422C4B81541 /* 0006-test-libraries.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0006-test-libraries.md"; sourceTree = "<group>"; };
 		61996AB7DB87AFD0F031E82D /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
 		623F3DD3B6F17C1F14168586 /* 02-upload-sync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "02-upload-sync.md"; sourceTree = "<group>"; };
-		63BE13CE0899D65B6C35A2CD /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		688AB1AB01E2CD6F81B5C17F /* m5-multi-device.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m5-multi-device.md"; sourceTree = "<group>"; };
 		6A30FA5A7033C3731379EABB /* 00-overview.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-overview.md"; sourceTree = "<group>"; };
 		6B244EF1F0B74757AB50F783 /* .gitignore */ = {isa = PBXFileReference; path = .gitignore; sourceTree = "<group>"; };
 		6C3E3968304C179E18B430C4 /* SiteLogUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SiteLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C8B9947B0F283BCE977D86B /* 0003-node-postgres-sync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0003-node-postgres-sync.md"; sourceTree = "<group>"; };
-		6CF8AEA50F7CB10D5AE9684E /* hot-reload.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "hot-reload.md"; sourceTree = "<group>"; };
-		6F05E8B5BD4AA3AA41419CAB /* vscode.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = vscode.md; sourceTree = "<group>"; };
 		734810665FFFF95B6F77867F /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		753BE6E547E3C5112E5B8384 /* m3-deliverable.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m3-deliverable.md"; sourceTree = "<group>"; };
 		76D514EFCE9EA5BE0D33F13B /* preview.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = preview.html; sourceTree = "<group>"; };
 		77A15FF4BD3B324B7CBD88D1 /* SiteLogTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SiteLogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		785FD4D16536D95D1C625CC8 /* 05-platform.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "05-platform.md"; sourceTree = "<group>"; };
 		79D599393E75D7F338195092 /* SiteLog.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SiteLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8219B27D8CA0F7B905189A1F /* m1-record-offline.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m1-record-offline.md"; sourceTree = "<group>"; };
+		884590AE6305B276CBFA037D /* m0-scaffold.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m0-scaffold.md"; sourceTree = "<group>"; };
 		8960A7122D9FCED07704B7BD /* Domain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Domain; path = Packages/Domain; sourceTree = SOURCE_ROOT; };
-		8E18026FB10BC48312A10BEB /* xcode-format-on-save.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "xcode-format-on-save.md"; sourceTree = "<group>"; };
-		946E933092B46D441E6B8954 /* entry-point-setup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "entry-point-setup.html"; sourceTree = "<group>"; };
 		96E947E3E7E3788126FE3A80 /* 04-reporting-security.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-reporting-security.md"; sourceTree = "<group>"; };
 		9ABA5F700E63DEDD5E72D9DA /* app-icon-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-dark.png"; sourceTree = "<group>"; };
-		A081C3342F9D0D6B39064CDC /* 0001-factory-di.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0001-factory-di.md"; sourceTree = "<group>"; };
 		AB841D0C22E49593F1D62522 /* preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = preview.png; sourceTree = "<group>"; };
 		AD386344CF81DAFEEBB07CFB /* app-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon.png"; sourceTree = "<group>"; };
 		B16EC63A2BA655E4224D459A /* ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ROADMAP.md; sourceTree = "<group>"; };
-		B257ED1E7459DF68FF9CD225 /* swiftlint.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = swiftlint.md; sourceTree = "<group>"; };
 		B3D66D94A41DDE4BE6679940 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		B484643F314F6403FF3538E0 /* app-icon-tinted.svg */ = {isa = PBXFileReference; path = "app-icon-tinted.svg"; sourceTree = "<group>"; };
-		B4F9B3609352A3BC0CBC1E54 /* 0007-firebase-crashlytics.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0007-firebase-crashlytics.md"; sourceTree = "<group>"; };
+		B630099F00A5C420C6126D63 /* m2-bytes-land.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "m2-bytes-land.md"; sourceTree = "<group>"; };
 		BA1A0E9DE81F9D3A81E2C1D7 /* SiteLogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteLogTests.swift; sourceTree = "<group>"; };
-		BC8C76F1926C4F23F139DA7A /* xcodegen.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = xcodegen.md; sourceTree = "<group>"; };
 		C0E5F98A944C60084EF91FAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C71286E36DC0DED45E304B27 /* TestFailStartupStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFailStartupStep.swift; sourceTree = "<group>"; };
 		CA3079F8ADB060B314F36A4C /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
-		CACF9351F40485107B8C725A /* 0002-handwritten-upload-engine.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0002-handwritten-upload-engine.md"; sourceTree = "<group>"; };
-		DA92991C592629075B5289FE /* hammerspoon-init.lua */ = {isa = PBXFileReference; path = "hammerspoon-init.lua"; sourceTree = "<group>"; };
 		EAD49F96508149E1447E9AA3 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		EFEFE46483D65A6AEA26DCC7 /* 0008-xcodegen.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "0008-xcodegen.md"; sourceTree = "<group>"; };
 		F0D19FCFBA693CEAFA6D9024 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignSystem; path = Packages/DesignSystem; sourceTree = SOURCE_ROOT; };
 		F47B032F1D333852C1DBE938 /* StartupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupView.swift; sourceTree = "<group>"; };
 		F634788E6B10DA4FC427301E /* StartupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupViewModel.swift; sourceTree = "<group>"; };
 		FAF69F5B98D8BF7D4E07E3C7 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
-		FB5D83E6BC3A4E3DACF598C1 /* code-snippets.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "code-snippets.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,21 +151,6 @@
 			path = Access;
 			sourceTree = "<group>";
 		};
-		3B22938CFA396FF9AECA5A37 /* dev-docs */ = {
-			isa = PBXGroup;
-			children = (
-				FB5D83E6BC3A4E3DACF598C1 /* code-snippets.md */,
-				946E933092B46D441E6B8954 /* entry-point-setup.html */,
-				DA92991C592629075B5289FE /* hammerspoon-init.lua */,
-				6CF8AEA50F7CB10D5AE9684E /* hot-reload.md */,
-				B257ED1E7459DF68FF9CD225 /* swiftlint.md */,
-				6F05E8B5BD4AA3AA41419CAB /* vscode.md */,
-				8E18026FB10BC48312A10BEB /* xcode-format-on-save.md */,
-				BC8C76F1926C4F23F139DA7A /* xcodegen.md */,
-			);
-			path = "dev-docs";
-			sourceTree = "<group>";
-		};
 		3E7FF047AA6416B7B981A26C /* app-icon */ = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +195,20 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		6136D22F3574427EA14CF29E /* milestone-guide */ = {
+			isa = PBXGroup;
+			children = (
+				884590AE6305B276CBFA037D /* m0-scaffold.md */,
+				8219B27D8CA0F7B905189A1F /* m1-record-offline.md */,
+				B630099F00A5C420C6126D63 /* m2-bytes-land.md */,
+				753BE6E547E3C5112E5B8384 /* m3-deliverable.md */,
+				2013B0113F7322F1D4CB42AA /* m4-field-ready.md */,
+				688AB1AB01E2CD6F81B5C17F /* m5-multi-device.md */,
+				1F57D0BA797165D0572EDBE6 /* m6-polish.md */,
+			);
+			path = "milestone-guide";
+			sourceTree = "<group>";
+		};
 		6764C5F41B67BBD71DADCED0 /* SiteLog */ = {
 			isa = PBXGroup;
 			children = (
@@ -236,12 +223,9 @@
 		7B6E7FD2343BCB4C989A76E8 /* docs */ = {
 			isa = PBXGroup;
 			children = (
-				E1907E1BB4CA2392518FE55B /* adr */,
 				7B9FB7CDADEE290426D291FB /* design */,
-				3B22938CFA396FF9AECA5A37 /* dev-docs */,
 				B0EE980A4E88922590291190 /* feature-docs */,
-				19F8A280C7B3E6606FAE561B /* index.md */,
-				35A309C3448FD2865A62FA54 /* testing.md */,
+				6136D22F3574427EA14CF29E /* milestone-guide */,
 			);
 			path = docs;
 			sourceTree = "<group>";
@@ -336,22 +320,6 @@
 				734810665FFFF95B6F77867F /* AppLogger.swift */,
 			);
 			path = Logger;
-			sourceTree = "<group>";
-		};
-		E1907E1BB4CA2392518FE55B /* adr */ = {
-			isa = PBXGroup;
-			children = (
-				A081C3342F9D0D6B39064CDC /* 0001-factory-di.md */,
-				CACF9351F40485107B8C725A /* 0002-handwritten-upload-engine.md */,
-				6C8B9947B0F283BCE977D86B /* 0003-node-postgres-sync.md */,
-				2CA8F95AD2212AEAEA7E0A84 /* 0004-websocket-realtime.md */,
-				304CAFBB593429A3655C61C8 /* 0005-kingfisher-images.md */,
-				616D94E942188422C4B81541 /* 0006-test-libraries.md */,
-				B4F9B3609352A3BC0CBC1E54 /* 0007-firebase-crashlytics.md */,
-				EFEFE46483D65A6AEA26DCC7 /* 0008-xcodegen.md */,
-				63BE13CE0899D65B6C35A2CD /* README.md */,
-			);
-			path = adr;
 			sourceTree = "<group>";
 		};
 		E2FCB1E0808C72A279CCCCD9 /* Lock */ = {
