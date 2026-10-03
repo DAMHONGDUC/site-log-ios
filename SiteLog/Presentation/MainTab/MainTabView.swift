@@ -14,7 +14,7 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             Tab("Projects", systemImage: "folder") {
-                Text("Projects 10000 1")
+                Text("Projects 10000 2221")
             }
             Tab("Issue", systemImage: "exclamationmark.triangle") {
                 Text("Issues")

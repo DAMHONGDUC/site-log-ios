@@ -38,6 +38,12 @@ packages:
   Inject:
     url: https://github.com/krzysztofzablocki/Inject
     from: 1.6.0
+  Factory:
+    url: https://github.com/hmlongco/Factory
+    from: 3.4.1
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.19.6
 fileGroups:
   - docs
   - README.md
@@ -59,6 +65,8 @@ targets:
       - package: DataLayer
       - package: DesignSystem
       - package: Inject
+      - package: Factory
+      - package: SnapshotTesting
     postBuildScripts:
       - name: Run SwiftLint
         basedOnDependencyAnalysis: false
@@ -109,7 +117,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogTests
-        SWIFT_VERSION: "5.0"
+        SWIFT_VERSION: "6.0"
         SWIFT_EMIT_LOC_STRINGS: NO
         STRING_CATALOG_GENERATE_SYMBOLS: NO
   SiteLogUITests:
@@ -122,7 +130,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogUITests
-        SWIFT_VERSION: "5.0"
+        SWIFT_VERSION: "6.0"
         SWIFT_EMIT_LOC_STRINGS: NO
         STRING_CATALOG_GENERATE_SYMBOLS: NO
 schemes:
