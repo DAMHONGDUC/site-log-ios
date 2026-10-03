@@ -1,6 +1,6 @@
 # M0 — Scaffold
 
-- M0 — Scaffold · 32h · step-by-step guide with full, tested code.
+- M0 — Scaffold · 40h · step-by-step guide with full, tested code.
 
 ## Contents
 
@@ -24,7 +24,7 @@
 
 | Part | Track | Hours | Status | What |
 |---|---|---|---|---|
-| P01 | `Logic` | done | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
+| P01 | `Logic` | 8h | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
 | [P02](#p02--packages-factory-di-appclock) | `Logic` | 6h | not start | Packages, Factory DI, `AppClock`, test libraries |
 | [P03](#p03--fastlane-test-lane-pr-checks) | `Logic` | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [P04](#p04--ci-guards) | `Logic` | 4h | not start | CI guards: no `print(`, layer imports, secret scan, strict package builds |

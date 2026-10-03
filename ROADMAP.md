@@ -8,7 +8,7 @@
 
 1. [How work is split](#how-work-is-split)
 2. [Summary](#summary)
-3. [M0 — Scaffold](#m0--scaffold--32h)
+3. [M0 — Scaffold](#m0--scaffold--40h)
 4. [M1 — Record offline](#m1--record-offline--56h)
 5. [M2 — Bytes land](#m2--bytes-land--testflight-1--92h)
 6. [M3 — Deliverable](#m3--deliverable--91h)
@@ -58,14 +58,14 @@ flowchart TD
 | Key milestone | `M2`: everything before it is setup, everything after it is addition |
 | Goal | App Store release with the full scope in `M0`–`M6`; no milestone is dropped |
 
-## M0 — Scaffold · 32h
+## M0 — Scaffold · 40h
 
 - Demo: every package builds on its own, CI is green, zero warnings; DesignSystem and the access flow run on fakes.
 - Guide: [docs/milestone-guide/m0-scaffold.md](docs/milestone-guide/m0-scaffold.md)
 
 **Logic**
 
-- [x] **P01** - [-] - [Logic] - [Tooling] - [done] - Xcode project, XcodeGen, SwiftLint, hot reload, tooling
+- [x] **P01** - [-] - [Logic] - [Tooling] - [8h] - Xcode project, XcodeGen, SwiftLint, hot reload, tooling
 - [ ] **P02** - [00] - [Logic] - [Domain] - [6h] - Clean Architecture skeleton: `Domain`, `DataLayer`, `DesignSystem` packages (`Networking` is created in M2); Factory DI in `AppDependencies`; injected `AppClock`; test libraries (swift-snapshot-testing, `FactoryTesting`)
 - [ ] **P03** - [17] - [Logic] - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **P04** - [17] - [Logic] - [CI] - [4h] - CI guards: packages build standalone with warnings as errors, no `print(`, secret scan
