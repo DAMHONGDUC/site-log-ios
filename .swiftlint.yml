@@ -1,6 +1,6 @@
 excluded:
   - .build
-  - Packages/Core/.build
+  - Packages/DesignSystem/.build
   - DerivedData
 
 # Formatting is owned by swift-format (.swift-format); keep SwiftLint scoped to

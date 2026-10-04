@@ -13,7 +13,6 @@ DerivedData/
 *.ipa
 *.dSYM.zip
 *.dSYM
-Packages/*/.build/
 .swiftpm/
 timeline.xctimeline
 playground.xcworkspace

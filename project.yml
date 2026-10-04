@@ -29,10 +29,6 @@ settings:
     Release:
       VALIDATE_PRODUCT: YES
 packages:
-  Domain:
-    path: Packages/Domain
-  DataLayer:
-    path: Packages/DataLayer
   DesignSystem:
     path: Packages/DesignSystem
   Inject:
@@ -59,10 +55,11 @@ targets:
     platform: iOS
     deploymentTarget: "18.6"
     sources:
-      - SiteLog
+      - path: SiteLog
+        # .gitkeep only keeps empty folders in git; never part of the build
+        excludes:
+          - "**/.gitkeep"
     dependencies:
-      - package: Domain
-      - package: DataLayer
       - package: DesignSystem
       - package: Inject
       - package: Factory
@@ -111,7 +108,10 @@ targets:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - SiteLogTests
+      - path: SiteLogTests
+        # .gitkeep only keeps empty folders in git; never part of the build
+        excludes:
+          - "**/.gitkeep"
     dependencies:
       - target: SiteLog
     settings:
