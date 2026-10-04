@@ -7,7 +7,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [P01 · Entry point (done)](#p01--entry-point-done)
-4. [P02 · Packages, Factory DI, AppClock](#p02--packages-factory-di-appclock)
+4. [P02 · Layer folders, Factory DI, AppClock](#p02--layer-folders-factory-di-appclock)
 5. [P03 · Fastlane test lane, PR checks](#p03--fastlane-test-lane-pr-checks)
 6. [P04 · CI guards](#p04--ci-guards)
 7. [P05 · DesignSystem tokens](#p05--designsystem-tokens)
@@ -17,17 +17,17 @@
 
 ## Overview
 
-- **Goal:** a clean skeleton every later milestone builds on — packages, DI, CI, DesignSystem, access flow on fakes.
-- **Demo:** every package builds on its own, CI is green, zero warnings; DesignSystem and the access flow run on fakes.
+- **Goal:** a clean skeleton every later milestone builds on — layer folders, DI, CI, DesignSystem, access flow on fakes.
+- **Demo:** the app builds with zero warnings, CI is green; DesignSystem and the access flow run on fakes.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI), [04 §07.2](../feature-docs/04-reporting-security.md) (app lock).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
 
 | Part | Track | Hours | Status | What |
 |---|---|---|---|---|
 | P01 | `Logic` | 8h | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
-| [P02](#p02--packages-factory-di-appclock) | `Logic` | 6h | not start | Packages, Factory DI, `AppClock`, test libraries |
+| [P02](#p02--layer-folders-factory-di-appclock) | `Logic` | 6h | not start | Layer folders, Factory DI, `AppClock`, test libraries |
 | [P03](#p03--fastlane-test-lane-pr-checks) | `Logic` | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
-| [P04](#p04--ci-guards) | `Logic` | 4h | not start | CI guards: no `print(`, layer imports, secret scan, strict package builds |
+| [P04](#p04--ci-guards) | `Logic` | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
 | [P05](#p05--designsystem-tokens) | `UI` | 5h | not start | DesignSystem tokens |
 | [P06](#p06--designsystem-components) | `UI` | 6h | not start | DesignSystem components + snapshot test |
 | [P07](#p07--access-flow-on-fakes) | `UI` | 6h | in progress | Access flow on fakes: A2, A1, A3, privacy overlay |
@@ -41,22 +41,25 @@ site-log-ios/
 ├── Gemfile                                   # P03
 ├── fastlane/Appfile, Fastfile                # P03
 ├── .github/workflows/pr-checks.yml           # P03 + P04
-├── Tools/CI/                                 # P04: check-no-print, check-imports, build-packages-strict
-├── project.yml                               # P02: Factory, SnapshotTesting
-├── Packages/
-│   ├── Domain/Sources/Domain/
-│   │   ├── Clock/AppClock.swift              # P02
-│   │   └── Access/                           # P07: AccessSettings, PasscodeCheck, AccessRepository, AccessUseCases
-│   ├── DataLayer/Sources/DataLayer/Clock/SystemClock.swift   # P02
-│   └── DesignSystem/Sources/DesignSystem/
-│       ├── Tokens/                           # P05: DSColor, DSFont, DSSpacing
-│       └── Components/                       # P06: DSButtonStyle, DSListRow, DSSectionHeader, DSChip,
-│                                             #      DSStatusMarker, DSCountBadge, DSEmptyState, DSGallery
+├── Tools/CI/                                 # P04: check-no-print, check-imports, build-strict
+├── project.yml                               # P02: DesignSystem, Factory, SnapshotTesting
+├── Packages/DesignSystem/                    # P02: Swift package (UI only)
+│   ├── Package.swift
+│   ├── Sources/DesignSystem/
+│   │   ├── Tokens/                           # P05: DSColor, DSFont, DSSpacing
+│   │   └── Components/                       # P06: DSButtonStyle, DSListRow, DSSectionHeader, DSChip,
+│   │                                         #      DSStatusMarker, DSCountBadge, DSEmptyState, DSGallery
+│   └── Tests/DesignSystemTests/              # P05
 ├── SiteLog/
 │   ├── App/
-│   │   ├── AppDependencies.swift             # P02 (clock) → P07 (access)
-│   │   └── Fakes/InMemoryAccessRepository.swift   # P07
-│   ├── Helper/Logger/AppLogger.swift         # P07: nonisolated + access category
+│   │   └── AppDependencies.swift             # P02 (clock) → P07 (access)
+│   ├── Domain/
+│   │   ├── Clock/AppClock.swift              # P02
+│   │   └── Access/                           # P07: AccessSettings, PasscodeCheck, AccessRepository, AccessUseCases
+│   ├── Data/Clock/SystemClock.swift          # P02
+│   ├── Core/
+│   │   ├── Fakes/InMemoryAccessRepository.swift   # P07
+│   │   └── Helper/Logger/AppLogger.swift     # P07: nonisolated + access category
 │   └── Presentation/
 │       ├── Root/RootView.swift, RootViewModel.swift   # P07
 │       └── Access/
@@ -67,6 +70,7 @@ site-log-ios/
 │           └── PrivacyOverlay/               # P07
 └── SiteLogTests/
     ├── SiteLogTests.swift                    # P02: FixedClock + Factory test
+    ├── Data/SystemClockTests.swift           # P02
     ├── Access/PasscodeUnlockViewModelTests.swift  # P07
     └── Snapshots/DesignSystemSnapshotTests.swift  # P06
 ```
@@ -75,9 +79,9 @@ site-log-ios/
 
 | Editor | New Swift file |
 |---|---|
-| Xcode | Right-click the folder → **New Empty File**. App files: nothing else (`SiteLog/` is a synced folder) |
+| Xcode | Right-click the folder → **New Empty File**; nothing else (`SiteLog/` is a synced folder) |
 | VS Code | Explorer → right-click → **New File…**; SweetPad regenerates the project |
-| Packages | Files under `Packages/<Name>/Sources` are picked up by SPM in both editors |
+| DesignSystem | Files under `Packages/DesignSystem/Sources` are picked up by SPM in both editors |
 
 ## P01 · Entry point (done)
 
@@ -91,16 +95,18 @@ site-log-ios/
 
 - Try the failure screen: pass `TestFailStartupStep()` in `RootView`’s `StartupSequence(steps:)`, run, then remove it.
 
-## P02 · Packages, Factory DI, AppClock
+## P02 · Layer folders, Factory DI, AppClock
 
-- **Goal:** three packages that build alone, one composition root (Factory), an injectable clock, test libraries ready.
+- **Goal:** layer folders in the app target, one composition root (Factory), an injectable clock, test libraries ready.
 - **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
 
-### 1. project.yml — add packages
+### 1. project.yml — add libraries
 
 `project.yml → packages: (add under Inject)`
 
 ```yaml
+  DesignSystem:
+    path: Packages/DesignSystem
   Factory:
     url: https://github.com/hmlongco/Factory
     from: 3.4.1
@@ -112,6 +118,7 @@ site-log-ios/
 `project.yml → targets.SiteLog.dependencies (add)`
 
 ```yaml
+      - package: DesignSystem
       - package: Factory
         product: FactoryKit
 ```
@@ -135,89 +142,18 @@ site-log-ios/
 | Xcode | Close the project → `xcodegen generate` in Terminal → reopen |
 | VS Code | Save `project.yml`; run `xcodegen generate` in the terminal |
 
-### 2. Package manifests
+### 2. Layer folders + DesignSystem package
 
-- Delete the template files `Domain.swift`, `DataLayer.swift` (they call `print`, which P04 bans).
-- `DesignSystem.swift`: replace its content with `public enum DesignSystem {}` so the package still builds; P05 deletes it.
+- Layers are folders, not packages ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the one exception is `DesignSystem`.
+- The folders `SiteLog/Domain/`, `SiteLog/Data/` already exist; delete a folder's `.gitkeep` when you add its first file.
+- `Packages/DesignSystem/Sources/DesignSystem/DesignSystem.swift` (Xcode template): replace its content with `public enum DesignSystem {}` so the package still builds without `print`; P05 deletes it.
 
-`Packages/Domain/Package.swift`
-
-```swift
-// swift-tools-version: 6.4
-
-import PackageDescription
-
-let package = Package(
-    name: "Domain",
-    // iOS only: the app's deployment target
-    platforms: [
-        .iOS(.v18),
-    ],
-    products: [
-        .library(
-            name: "Domain",
-            targets: ["Domain"]
-        ),
-    ],
-    targets: [
-        // Domain imports Foundation only: no other package, no Apple UI framework
-        .target(
-            name: "Domain",
-            swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
-        ),
-        .testTarget(
-            name: "DomainTests",
-            dependencies: ["Domain"],
-            swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
-        ),
-    ]
-)
-```
-
-`Packages/DataLayer/Package.swift`
-
-```swift
-// swift-tools-version: 6.4
-
-import PackageDescription
-
-let package = Package(
-    name: "DataLayer",
-    platforms: [
-        .iOS(.v18),
-    ],
-    products: [
-        .library(
-            name: "DataLayer",
-            targets: ["DataLayer"]
-        ),
-    ],
-    // DataLayer implements the protocols that Domain declares
-    dependencies: [
-        .package(path: "../Domain"),
-    ],
-    targets: [
-        .target(
-            name: "DataLayer",
-            dependencies: ["Domain"],
-            swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
-        ),
-        .testTarget(
-            name: "DataLayerTests",
-            dependencies: ["DataLayer"],
-            swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
-        ),
-    ]
-)
-```
+| Rule | Why |
+|---|---|
+| Types in `Domain/` and `Data/` are `nonisolated` | The app target defaults to `MainActor`; these types also run on background actors |
+| No `public`, no `import Domain` | One module: everything is visible already |
+| Layer rules are checked by `Tools/CI/check-imports.sh` (P04) | The compiler no longer stops a view from using a `Data/` type |
+| `DesignSystem` is a package: `public` API, `import DesignSystem` | UI only; the compiler keeps it free of `Domain` and app code |
 
 `Packages/DesignSystem/Package.swift`
 
@@ -258,14 +194,14 @@ let package = Package(
 
 ### 3. AppClock
 
-`Packages/Domain/Sources/Domain/Clock/AppClock.swift`
+`SiteLog/Domain/Clock/AppClock.swift`
 
 ```swift
 import Foundation
 
 // The app's clock, injected everywhere time matters, so tests can control time.
 // Named AppClock so it does not clash with Swift's built-in `Clock` protocol.
-public protocol AppClock: Sendable {
+nonisolated protocol AppClock: Sendable {
     // Wall-clock time: timestamps saved with records (createdAt, capturedAt)
     var now: Date { get }
     // Monotonic time: measuring durations; never jumps when the user changes the time
@@ -273,33 +209,29 @@ public protocol AppClock: Sendable {
 }
 ```
 
-`Packages/DataLayer/Sources/DataLayer/Clock/SystemClock.swift`
+`SiteLog/Data/Clock/SystemClock.swift`
 
 ```swift
-import Domain
 import Foundation
 
 // The real clock used by the running app.
-public struct SystemClock: AppClock {
-    public init() {}
-
-    public var now: Date {
+nonisolated struct SystemClock: AppClock {
+    var now: Date {
         return Date()
     }
 
-    public var uptime: ContinuousClock.Instant {
+    var uptime: ContinuousClock.Instant {
         return ContinuousClock.now
     }
 }
 ```
 
-`Packages/DataLayer/Tests/DataLayerTests/DataLayerTests.swift (replace)`
+`SiteLogTests/Data/SystemClockTests.swift`
 
 ```swift
-import Domain
 import Foundation
 import Testing
-@testable import DataLayer
+@testable import SiteLog
 
 struct SystemClockTests {
     @Test func uptimeMovesForward() async throws {
@@ -319,8 +251,6 @@ struct SystemClockTests {
 `SiteLog/App/AppDependencies.swift (P02 version; P07 adds Access)`
 
 ```swift
-import DataLayer
-import Domain
 import FactoryKit
 
 // Composition root: the only place that knows which implementation backs each protocol.
@@ -339,7 +269,6 @@ extension Container {
 `SiteLogTests/SiteLogTests.swift (replace)`
 
 ```swift
-import Domain
 import FactoryKit
 import FactoryTesting
 import Foundation
@@ -373,12 +302,11 @@ struct AppDependenciesTests {
 | Step | Expect |
 |---|---|
 | ⌘B (Xcode) or SweetPad Build | Zero warnings |
-| ⌘U | `clockCanBeReplacedInTests` passes |
-| Product → Scheme → `DataLayer` → ⌘U | `uptimeMovesForward` passes |
+| ⌘U | `clockCanBeReplacedInTests` and `uptimeMovesForward` pass |
 
 ## P03 · Fastlane test lane, PR checks
 
-- **Goal:** one command (`bundle exec fastlane test`) runs every package test and the app tests; GitHub runs it on every PR.
+- **Goal:** one command (`bundle exec fastlane test`) runs the `DesignSystem` package tests and the app tests; GitHub runs it on every PR.
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
 ### 1. Files
@@ -413,7 +341,7 @@ SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
 
 # Local packages, tested one by one so a package never leans on the app
-PACKAGES = ["Domain", "DataLayer", "DesignSystem"]
+PACKAGES = ["DesignSystem"]
 
 # Fastlane runs inside fastlane/, so the repo root is one level up
 ROOT = File.expand_path("..", __dir__)
@@ -514,7 +442,7 @@ jobs:
 
 ## P04 · CI guards
 
-- **Goal:** rules that reviews forget are checked by machine: no `print(`, layer imports, secrets, each package builds alone with warnings as errors.
+- **Goal:** rules that reviews forget are checked by machine: no `print(`, layer rules, secrets, the app builds with warnings as errors.
 - Make each script executable once: `chmod +x Tools/CI/*.sh`.
 
 `Tools/CI/check-no-print.sh`
@@ -526,7 +454,7 @@ jobs:
 set -euo pipefail
 
 # grep exits 1 when nothing matches, which is the good case here
-matches=$(grep -rnE '(^|[^A-Za-z_.])print\(' SiteLog Packages --include='*.swift' --exclude-dir='.build' || true)
+matches=$(grep -rnE '(^|[^A-Za-z_.])print\(' SiteLog SiteLogTests Packages --include='*.swift' --exclude-dir='.build' || true)
 
 if [ -n "$matches" ]; then
   echo "print( is not allowed, use AppLogger instead:"
@@ -542,24 +470,37 @@ echo "OK: no print( calls"
 ```bash
 #!/usr/bin/env bash
 # Enforces the layer rules in docs/feature-docs/00-overview.md §4.2.
+# Layers are folders in one target, so the compiler cannot stop a wrong reference: this script does.
 set -euo pipefail
 
 failed=0
 
 # Rule 1: Domain imports Foundation only
-domain_imports=$(grep -rhE '^[[:space:]]*import ' Packages/Domain/Sources --include='*.swift' | sed -E 's/^[[:space:]]*//' | sort -u | grep -vE '^import Foundation$' || true)
+domain_imports=$(grep -rhE '^[[:space:]]*import ' SiteLog/Domain --include='*.swift' | sed -E 's/^[[:space:]]*//' | sort -u | grep -vE '^import Foundation$' || true)
 if [ -n "$domain_imports" ]; then
   echo "Domain may import Foundation only. Found:"
   echo "$domain_imports"
   failed=1
 fi
 
-# Rule 2: Presentation never imports DataLayer or a data-source package
-forbidden='DataLayer|Persistence|Networking|Capture|UploadKit|Reporting|Plans|DeviceLink|Realtime'
-presentation_imports=$(grep -rnE "^[[:space:]]*import ($forbidden)$" SiteLog/Presentation --include='*.swift' || true)
-if [ -n "$presentation_imports" ]; then
-  echo "Presentation may not import DataLayer or data sources. Found:"
-  echo "$presentation_imports"
+# Rule 2: Presentation and Domain never use a type declared in Data/ or DataSources/
+# Step 1: collect the name of every type declared there
+data_types=$(grep -rhoE '(class|struct|enum|actor|protocol)[[:space:]]+[A-Z][A-Za-z0-9_]*' SiteLog/Data SiteLog/DataSources --include='*.swift' 2>/dev/null | awk '{print $2}' | sort -u || true)
+# Step 2: look for each name as a whole word in Presentation and Domain
+for type_name in $data_types; do
+  uses=$(grep -rnw "$type_name" SiteLog/Presentation SiteLog/Domain --include='*.swift' || true)
+  if [ -n "$uses" ]; then
+    echo "Presentation and Domain may not use $type_name (declared in Data). Found:"
+    echo "$uses"
+    failed=1
+  fi
+done
+
+# Rule 3: Presentation never touches storage or the network directly
+direct_access=$(grep -rnE '^[[:space:]]*import (SwiftData|CoreData)$|ModelContext|URLSession' SiteLog/Presentation --include='*.swift' || true)
+if [ -n "$direct_access" ]; then
+  echo "Presentation may not use SwiftData, ModelContext or URLSession. Found:"
+  echo "$direct_access"
   failed=1
 fi
 
@@ -567,34 +508,41 @@ if [ "$failed" -ne 0 ]; then
   exit 1
 fi
 
-echo "OK: layer imports"
+echo "OK: layer rules"
 ```
 
-`Tools/CI/build-packages-strict.sh`
+`Tools/CI/build-strict.sh`
 
 ```bash
 #!/usr/bin/env bash
-# Builds every local package on its own with warnings treated as errors.
-# A package that only builds inside the app leans on something it should not.
+# Builds the app from clean and fails on any warning in our own code.
+# Not SWIFT_TREAT_WARNINGS_AS_ERRORS: it clashes with the settings of remote packages.
 set -euo pipefail
 
 destination="platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4"
-derived_data="$(pwd)/build/DerivedData-packages"
+derived_data="$(pwd)/build/DerivedData-strict"
+log="$(pwd)/build/strict-build.log"
+mkdir -p build
 
-for package_dir in Packages/*/; do
-  package=$(basename "$package_dir")
-  echo "Building $package (warnings as errors)"
-  (
-    cd "$package_dir"
-    xcodebuild build -scheme "$package" -destination "$destination" \
-      -derivedDataPath "$derived_data" SWIFT_TREAT_WARNINGS_AS_ERRORS=YES -quiet
-  )
-done
+# The .xcodeproj must match project.yml
+xcodegen generate
 
-echo "OK: every package builds standalone with zero warnings"
+# clean: an incremental build would not repeat warnings from unchanged files
+xcodebuild clean build -project SiteLog.xcodeproj -scheme SiteLog -destination "$destination" \
+  -derivedDataPath "$derived_data" -quiet > "$log" 2>&1
+
+# Warnings (compiler + SwiftLint) in our files only (SiteLog/, Packages/), each listed once
+warnings=$(grep -E '/(SiteLog|Packages)/[^:]+:[0-9]+:[0-9]+: warning: ' "$log" | sort -u || true)
+if [ -n "$warnings" ]; then
+  echo "Warnings are not allowed:"
+  echo "$warnings"
+  exit 1
+fi
+
+echo "OK: the app builds with zero warnings"
 ```
 
-`.github/workflows/pr-checks.yml (final: adds guards + packages jobs)`
+`.github/workflows/pr-checks.yml (final: adds guards + build jobs)`
 
 ```yaml
 # Runs on every PR and every push to main. Spec: docs/feature-docs/05-platform.md §17.
@@ -636,17 +584,17 @@ jobs:
         run: swiftlint --strict
 
   # Builds and tests on the self-hosted development Mac
-  packages:
+  build:
     runs-on: [self-hosted, macOS]
     needs: [guards, lint]
     steps:
       - uses: actions/checkout@v4
-      - name: Packages build standalone, warnings as errors
-        run: Tools/CI/build-packages-strict.sh
+      - name: App builds, warnings as errors
+        run: Tools/CI/build-strict.sh
 
   test:
     runs-on: [self-hosted, macOS]
-    needs: [packages]
+    needs: [build]
     steps:
       - uses: actions/checkout@v4
       - name: Install gems
@@ -662,6 +610,7 @@ jobs:
 | Run each script from the repo root | `OK: …` |
 | Add `print("x")` to any Swift file, run `check-no-print.sh` | Exit 1 with the file and line; then remove it |
 | Add `import UIKit` to a Domain file, run `check-imports.sh` | Exit 1; then remove it |
+| Use `SystemClock()` in a view, run `check-imports.sh` | Exit 1; then remove it |
 
 ## P05 · DesignSystem tokens
 
@@ -1412,34 +1361,27 @@ struct DesignSystemSnapshotTests {
 
 ### 1. Domain contract
 
-`Packages/Domain/Sources/Domain/Access/AccessSettings.swift`
+`SiteLog/Domain/Access/AccessSettings.swift`
 
 ```swift
 // Everything the access flow needs to decide which screen comes first.
-public struct AccessSettings: Sendable {
+nonisolated struct AccessSettings: Sendable {
     // false until the user leaves the welcome screen (A2) once
-    public var hasSeenWelcome: Bool
+    var hasSeenWelcome: Bool
     // Settings → Privacy → App lock → Lock app
-    public var isLockEnabled: Bool
+    var isLockEnabled: Bool
     // Settings → Privacy → App lock → Unlock with Face ID
-    public var isFaceIDEnabled: Bool
+    var isFaceIDEnabled: Bool
     // Settings → Privacy → App lock → Lock after
-    public var lockAfter: Duration
-
-    public init(hasSeenWelcome: Bool, isLockEnabled: Bool, isFaceIDEnabled: Bool, lockAfter: Duration) {
-        self.hasSeenWelcome = hasSeenWelcome
-        self.isLockEnabled = isLockEnabled
-        self.isFaceIDEnabled = isFaceIDEnabled
-        self.lockAfter = lockAfter
-    }
+    var lockAfter: Duration
 }
 ```
 
-`Packages/Domain/Sources/Domain/Access/PasscodeCheck.swift`
+`SiteLog/Domain/Access/PasscodeCheck.swift`
 
 ```swift
 // The answer after the user types 6 digits on A3.
-public enum PasscodeCheck: Sendable {
+nonisolated enum PasscodeCheck: Sendable {
     // right passcode → open the app
     case correct
     // wrong passcode, still allowed to try
@@ -1449,11 +1391,11 @@ public enum PasscodeCheck: Sendable {
 }
 ```
 
-`Packages/Domain/Sources/Domain/Access/AccessRepository.swift`
+`SiteLog/Domain/Access/AccessRepository.swift`
 
 ```swift
 // Domain only says WHAT it needs. HOW (Keychain, Face ID) lives elsewhere.
-public protocol AccessRepository: Sendable {
+nonisolated protocol AccessRepository: Sendable {
     func loadSettings() async -> AccessSettings
     func markWelcomeSeen() async
     func checkPasscode(_ passcode: String) async -> PasscodeCheck
@@ -1462,55 +1404,55 @@ public protocol AccessRepository: Sendable {
 }
 ```
 
-`Packages/Domain/Sources/Domain/Access/AccessUseCases.swift`
+`SiteLog/Domain/Access/AccessUseCases.swift`
 
 ```swift
 // One use case per user action. Each one just forwards to the repository for now.
 
-public struct LoadAccessSettingsUseCase: Sendable {
+nonisolated struct LoadAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
+    init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    public func execute() async -> AccessSettings {
+    func execute() async -> AccessSettings {
         return await repository.loadSettings()
     }
 }
 
-public struct FinishWelcomeUseCase: Sendable {
+nonisolated struct FinishWelcomeUseCase: Sendable {
     private let repository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
+    init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    public func execute() async {
+    func execute() async {
         await repository.markWelcomeSeen()
     }
 }
 
-public struct CheckPasscodeUseCase: Sendable {
+nonisolated struct CheckPasscodeUseCase: Sendable {
     private let repository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
+    init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    public func execute(passcode: String) async -> PasscodeCheck {
+    func execute(passcode: String) async -> PasscodeCheck {
         return await repository.checkPasscode(passcode)
     }
 }
 
-public struct UnlockWithBiometricsUseCase: Sendable {
+nonisolated struct UnlockWithBiometricsUseCase: Sendable {
     private let repository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
+    init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    public func execute() async -> Bool {
+    func execute() async -> Bool {
         return await repository.unlockWithBiometrics()
     }
 }
@@ -1518,7 +1460,7 @@ public struct UnlockWithBiometricsUseCase: Sendable {
 
 ### 2. Logger, fake, registrations
 
-`SiteLog/Helper/Logger/AppLogger.swift (replace)`
+`SiteLog/Core/Helper/Logger/AppLogger.swift (replace)`
 
 ```swift
 import os
@@ -1532,14 +1474,13 @@ nonisolated enum AppLogger {
 }
 ```
 
-`SiteLog/App/Fakes/InMemoryAccessRepository.swift`
+`SiteLog/Core/Fakes/InMemoryAccessRepository.swift`
 
 ```swift
-import Domain
 import os
 
 // Fake repository so the whole flow runs today.
-// P23 replaces it with a Keychain + Face ID version in DataLayer.
+// P23 replaces it with a Keychain + Face ID version in Data/.
 // Everything resets on every cold launch, because it only lives in memory.
 actor InMemoryAccessRepository: AccessRepository {
     // Demo values: lock is on, Face ID is on, re-lock after 10 seconds in the background
@@ -1596,8 +1537,6 @@ actor InMemoryAccessRepository: AccessRepository {
 `SiteLog/App/AppDependencies.swift (final)`
 
 ```swift
-import DataLayer
-import Domain
 import FactoryKit
 
 // Composition root: the only place that knows which implementation backs each protocol.
@@ -1611,7 +1550,7 @@ extension Container {
 
     // MARK: - Access
 
-    // Fake for now; P36 swaps in the Keychain + Face ID repository from DataLayer
+    // Fake for now; P36 swaps in the Keychain + Face ID repository from Data/
     var accessRepository: Factory<any AccessRepository> {
         self { InMemoryAccessRepository() }.singleton
     }
@@ -1639,7 +1578,6 @@ extension Container {
 `SiteLog/Presentation/Root/RootViewModel.swift`
 
 ```swift
-import Domain
 import FactoryKit
 import Observation
 import os
@@ -1759,7 +1697,6 @@ final class RootViewModel {
 `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
 
 ```swift
-import Domain
 import FactoryKit
 import Observation
 import os
@@ -1868,7 +1805,6 @@ struct SignInView: View {
 `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockViewModel.swift`
 
 ```swift
-import Domain
 import FactoryKit
 import Observation
 import os
@@ -1987,7 +1923,6 @@ struct FaceIDLockView: View {
 `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockViewModel.swift`
 
 ```swift
-import Domain
 import FactoryKit
 import Observation
 import os
@@ -2369,8 +2304,8 @@ struct PasscodeUnlockViewModelTests {
 
 | Check | How |
 |---|---|
-| Zero warnings | ⌘B in Xcode; `Tools/CI/build-packages-strict.sh` |
+| Zero warnings | ⌘B in Xcode; `Tools/CI/build-strict.sh` |
 | All tests green | `bundle exec fastlane test` |
-| CI green | PR shows guards, lint, packages, test passing |
+| CI green | PR shows guards, lint, build, test passing |
 | Demo on a real device | Access flow and DesignSystem gallery run on your iPhone |
 | Roadmap | Tick P02–P07 in `ROADMAP.md` in the commit that finishes each part |

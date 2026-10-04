@@ -60,15 +60,15 @@ flowchart TD
 
 ## M0 — Scaffold · 40h
 
-- Demo: every package builds on its own, CI is green, zero warnings; DesignSystem and the access flow run on fakes.
+- Demo: the app builds with zero warnings, CI is green; DesignSystem and the access flow run on fakes.
 - Guide: [docs/milestone-guide/m0-scaffold.md](docs/milestone-guide/m0-scaffold.md)
 
 **Logic**
 
 - [x] **P01** - [-] - [Logic] - [Tooling] - [8h] - Xcode project, XcodeGen, SwiftLint, hot reload, tooling
-- [ ] **P02** - [00] - [Logic] - [Domain] - [6h] - Clean Architecture skeleton: `Domain`, `DataLayer`, `DesignSystem` packages (`Networking` is created in M2); Factory DI in `AppDependencies`; injected `AppClock`; test libraries (swift-snapshot-testing, `FactoryTesting`)
+- [ ] **P02** - [00] - [Logic] - [Domain] - [6h] - Clean Architecture skeleton: `Domain/`, `Data/` folders + `DesignSystem` package (`DataSources/Networking/` is created in M2); Factory DI in `AppDependencies`; injected `AppClock`; test libraries (swift-snapshot-testing, `FactoryTesting`)
 - [ ] **P03** - [17] - [Logic] - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
-- [ ] **P04** - [17] - [Logic] - [CI] - [4h] - CI guards: packages build standalone with warnings as errors, no `print(`, secret scan
+- [ ] **P04** - [17] - [Logic] - [CI] - [4h] - CI guards: layer rules, app builds with zero warnings, no `print(`, secret scan
 
 **UI**
 

@@ -51,10 +51,9 @@
 ```text
 Backend/migrations/0002_sync_core.sql, 0003_metadata.sql   # P62
 Backend/src/routes/sync.ts                                 # P62
-Packages/
-├── Domain/…/Auth/, Sync/                    # P60
-└── DataLayer/…/Sync/MetadataSyncEngine.swift (actor), MutationQueue   # P63–P65
 SiteLog/
+├── Domain/Auth/, Sync/                      # P60
+├── Data/Sync/MetadataSyncEngine.swift (actor), MutationQueue          # P63–P65
 ├── App/AppDelegate.swift                    # P61: FirebaseApp.configure() first
 └── Presentation/Access/SignIn/ (real), Settings/Account/, Uploads/SyncTab/   # P67–P69
 ```

@@ -57,11 +57,11 @@
 ## Target structure
 
 ```text
-Packages/
-├── Domain/Sources/Domain/Issues/, Annotation/, Reporting/, Security/   # P33
-├── DataLayer/…/Security/KeychainAccessRepository.swift                 # P36 (replaces the M0 fake)
-├── Capture/…/Annotation/, TrustedTime/                                 # P38–P39
-└── Reporting/                     # P40–P41: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
+SiteLog/
+├── Domain/Issues/, Annotation/, Reporting/, Security/       # P33
+├── Data/Security/KeychainAccessRepository.swift             # P36 (replaces the M0 fake)
+├── DataSources/Capture/Annotation/, TrustedTime/            # P38–P39
+├── DataSources/Reporting/         # P40–P41: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
 SiteLog/Presentation/
 ├── Issues/LogIssue/, IssueList/, Recheck/, Outcome/      # P42–P43
 ├── Settings/AppLock/, SetPasscode/                       # P44
@@ -122,8 +122,8 @@ SiteLog/Presentation/
 
 | File | Holds |
 |---|---|
-| `DataLayer/Security/KeychainAccessRepository.swift` | PBKDF2-SHA256, 16-byte salt, lockout counter in Keychain |
-| `DataLayer/Security/BiometricAuthenticator.swift` | `LAContext`, biometry-change detection |
+| `Data/Security/KeychainAccessRepository.swift` | PBKDF2-SHA256, 16-byte salt, lockout counter in Keychain |
+| `Data/Security/BiometricAuthenticator.swift` | `LAContext`, biometry-change detection |
 
 ### Steps
 

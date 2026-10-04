@@ -51,10 +51,10 @@
 ## Target structure
 
 ```text
-Packages/
-├── Plans/                    # P49–P50: PDFKit + CATiledLayer, tile cache
-├── DeviceLink/               # P52: DeviceProfile, DeviceLinkManager (actor)
-└── Domain/…/Plans/, Checklists/, DeviceLink/, Diagnostics/   # P48
+SiteLog/
+├── DataSources/Plans/        # P49–P50: PDFKit + CATiledLayer, tile cache
+├── DataSources/DeviceLink/   # P52: DeviceProfile, DeviceLinkManager (actor)
+└── Domain/Plans/, Checklists/, DeviceLink/, Diagnostics/     # P48
 Tools/MockPeripheral/         # P52: macOS BLE simulator
 SiteLog/Presentation/
 ├── Plans/PlanList/, PlanViewer/, PinPreview/, PlanImport/     # P55

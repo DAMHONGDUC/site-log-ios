@@ -11,7 +11,7 @@
 
 ## 05. PDF and spreadsheet export
 
-- Module: `Packages/Reporting`
+- Module: `SiteLog/DataSources/Reporting`
 
 **Goal:** turn a `Session` into a branded, signed PDF plus CSV/XLSX, shareable on the spot with no
 network — never truncated, never missing images, never crashing on page 38 of 40.

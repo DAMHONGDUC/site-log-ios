@@ -19,7 +19,7 @@
 
 ## 04. Upload engine
 
-- Module: `Packages/UploadKit` — standalone, knows nothing about SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
+- Module: `SiteLog/DataSources/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
 
 **Goal:** move 150–250 files and several GB to R2, surviving network loss, suspension, termination,
 reboot and presigned-URL expiry.
@@ -174,7 +174,7 @@ public enum UploadConstants {
 
 ## 08. Auth and sync
 
-- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
+- Modules: `SiteLog/Presentation/Sync`, `Data` (sync engine), `DataSources/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
 
 **Goal:** sign in once, work fully offline, sync all metadata across devices over a hand-written
 delta protocol.
@@ -227,7 +227,7 @@ POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
 ### 08.3 Client engine
 
 ```swift
-actor MetadataSyncEngine {          // DataLayer; triggered by use cases
+actor MetadataSyncEngine {          // Data/; triggered by use cases
     func sync() async throws        // pull, push, pull again if serverRev advanced
     func enqueue(_ mutation: Mutation) async
     func fullResync() async throws
@@ -283,7 +283,7 @@ enum SyncConstants {
 
 ## 10. Realtime progress channel
 
-- Module: `Packages/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
+- Module: `SiteLog/DataSources/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
 
 **Goal:** learn what the server knows first — assembly done, hash checked, mismatch — without
 polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; never controls `UploadKit`.
@@ -291,7 +291,7 @@ polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; never
 **Boundary**
 
 - Uploads work at 100% with the channel dead.
-- Neither package imports the other; the app layer turns events into `UploadStore` operations.
+- Neither folder uses the other; the app layer turns events into `UploadStore` operations.
 - Events may only **advance** a job; server silence never means "not done".
 - CI builds the app with `Realtime` removed.
 

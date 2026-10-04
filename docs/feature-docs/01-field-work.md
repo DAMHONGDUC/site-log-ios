@@ -20,7 +20,7 @@
 
 ## 01. Projects, sessions, locations
 
-- Modules: `SiteLog/Presentation/Projects`, `Domain`, `DataLayer`, `Persistence`
+- Modules: `SiteLog/Presentation/Projects`, `Domain`, `Data`, `DataSources/Persistence`
 
 **Goal:** build the `Project → Session → Location` tree faster than paper, fully offline,
 one-handed.
@@ -86,7 +86,7 @@ enum LocationTemplateLimits {
 
 ## 02. Capture pipeline
 
-- Module: `Packages/Capture`
+- Module: `SiteLog/DataSources/Capture`
 
 **Goal:** one `AVCaptureSession` for photo, video and audio without teardown; every file hashed
 before it reaches the DB.
@@ -190,7 +190,7 @@ enum HashConstants { static let streamingChunkBytes: Int = 1_048_576 }
 
 ## 03. Issues and before-after pairing
 
-- Modules: `SiteLog/Presentation/Issues`, `Domain`, `DataLayer`
+- Modules: `SiteLog/Presentation/Issues`, `Domain`, `Data`
 
 - Core business feature: prove "broken last week, fixed now" with two photos of the same spot.
 
@@ -272,7 +272,7 @@ enum IssueDefaults {
 
 ## 06. DeviceLink BLE measuring tools
 
-- Module: `Packages/DeviceLink` · mock: `Tools/MockPeripheral/`
+- Module: `SiteLog/DataSources/DeviceLink` · mock: `Tools/MockPeripheral/`
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
 the reading to a `Capture`.
@@ -341,7 +341,7 @@ enum DeviceLinkConstants {
 
 ## 11. Floor plans and issue pins
 
-- Modules: `Packages/Plans`, `SiteLog/Presentation/Plans`
+- Modules: `SiteLog/DataSources/Plans`, `SiteLog/Presentation/Plans`
 
 **Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet.
 
@@ -412,7 +412,7 @@ enum PlanConstants {
 
 ## 12. Annotation and verifiable stamps
 
-- Modules: `Packages/Capture` (rendering), `Domain` (models)
+- Modules: `SiteLog/DataSources/Capture` (rendering), `Domain` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 
@@ -519,7 +519,7 @@ enum TrustedTimeConstants {
 
 ## 13. Checklist templates
 
-- Modules: `SiteLog/Presentation/Checklists`, `Domain`, `DataLayer`
+- Modules: `SiteLog/Presentation/Checklists`, `Domain`, `Data`
 
 **Goal:** walk a location against a template, tick items, turn a failed item into an issue without
 retyping.

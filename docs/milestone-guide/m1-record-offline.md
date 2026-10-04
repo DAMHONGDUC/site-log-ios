@@ -49,14 +49,13 @@
 ## Target structure
 
 ```text
-Packages/
-├── Domain/Sources/Domain/
-│   ├── Projects/        # P08: Project, Session, Location, Capture, repository protocols, use cases
-├── Persistence/         # P09–P10: new package, SwiftData models, SchemaV1, migration plan
-├── DataLayer/Sources/DataLayer/Repositories/   # P09: SwiftData*Repository, mappers
-└── Capture/             # P12–P13: new package, CaptureSessionControlling, FileHasher
 SiteLog/
-├── App/Fakes/           # P08: InMemoryProjectRepository, FakeCaptureSession
+├── Domain/Projects/     # P08: Project, Session, Location, Capture, repository protocols, use cases
+├── Data/Repositories/   # P09: SwiftData*Repository, mappers
+├── DataSources/
+│   ├── Persistence/     # P09–P10: SwiftData models, SchemaV1, migration plan
+│   └── Capture/         # P12–P13: CaptureSessionControlling, FileHasher
+├── Core/Fakes/          # P08: InMemoryProjectRepository, FakeCaptureSession
 └── Presentation/
     ├── Projects/ProjectList/, NewProject/, ProjectOverview/, StartSession/   # P14–P15
     ├── Sessions/Walkthrough/, GenerateLocations/, Room/                      # P16
@@ -73,7 +72,7 @@ SiteLog/
 | `Domain/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
 | `Domain/Projects/ProjectRepository.swift` … | One protocol per aggregate: project, session, location, capture |
 | `Domain/Projects/UseCases/` | `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `RecordCaptureUseCase`, … |
-| `SiteLog/App/Fakes/` | `InMemory*Repository` + `PreviewData` (realistic: “Riverside Tower B”, 37 of 82 rooms) |
+| `SiteLog/Core/Fakes/` | `InMemory*Repository` + `PreviewData` (realistic: “Riverside Tower B”, 37 of 82 rooms) |
 
 ### Steps
 
@@ -94,17 +93,17 @@ SiteLog/
 
 ## P09 · SwiftData schema and repositories
 
-- **Goal:** SwiftData models in a new `Persistence` package and repository implementations in `DataLayer`.
+- **Goal:** SwiftData models in `DataSources/Persistence/` and repository implementations in `Data/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
 
 | File | Holds |
 |---|---|
-| `Packages/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
-| `DataLayer/Repositories/SwiftData*Repository.swift` | Implements the P08 protocols; mappers model ↔ entity |
+| `SiteLog/DataSources/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
+| `SiteLog/Data/Repositories/SwiftData*Repository.swift` | Implements the P08 protocols; mappers model ↔ entity |
 
 ### Steps
 
-1. Create the package (Xcode: File → New → Package; then add to `project.yml` `packages`).
+1. Create the folder `SiteLog/DataSources/Persistence/`; types inside are `nonisolated`.
 2. Write models mirroring the entities; store relative file paths.
 3. Write repositories with a `@ModelActor` for writes.
 4. Cascade delete project → sessions, locations, plans.
@@ -166,7 +165,7 @@ SiteLog/
 
 | File | Holds |
 |---|---|
-| `Packages/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
+| `SiteLog/DataSources/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
 | `Capture/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
 | `Capture/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
 
@@ -272,7 +271,7 @@ SiteLog/
 | File | Holds |
 |---|---|
 | `Presentation/Capture/Camera/` | Preview (`UIViewRepresentable`), shutter in a bottom toolbar, thumbnail strip |
-| `App/Fakes/FakeCaptureSession.swift` | Returns a bundled image |
+| `Core/Fakes/FakeCaptureSession.swift` | Returns a bundled image |
 
 ### Steps
 

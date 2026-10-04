@@ -45,9 +45,9 @@
 ## Target structure
 
 ```text
-Packages/
-├── Realtime/                 # P71–P72: RealtimeChannel (actor), messages, imports nothing from the project
-└── Domain/…/DeepLinks/       # P75: DeepLink type + pure parser
+SiteLog/
+├── DataSources/Realtime/     # P71–P72: RealtimeChannel (actor), messages, uses nothing from the rest of the app
+└── Domain/DeepLinks/         # P75: DeepLink type + pure parser
 Backend/src/
 ├── ws.ts                     # P71: /ws, auth, snapshot, pg_notify fan-out
 └── workers/verify.ts         # P73: re-hash objects from R2
@@ -66,8 +66,8 @@ SiteLog/
 
 | File | Holds |
 |---|---|
-| `Packages/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
-| `Packages/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
+| `SiteLog/DataSources/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
+| `SiteLog/DataSources/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
 | `Backend/src/ws.ts` | Server side per 14 §9 |
 
 ### Steps

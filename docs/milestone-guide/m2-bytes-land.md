@@ -56,15 +56,15 @@
 
 ```text
 Backend/                      # P20–P22: Node 22 + TypeScript + Fastify, Postgres, migrations/
-Packages/
-├── UploadKit/                # P19, P23–P28: imports nothing from the project
-│   ├── UploadStore.swift, InMemoryUploadStore.swift
-│   ├── UploadStateMachine.swift, ChunkPlanner.swift
-│   ├── UploadCoordinator.swift (actor), BackgroundSessionDelegate.swift
-│   └── PresignedURLProvider.swift
-├── Networking/               # P20+: backend HTTP client
-└── Persistence/              # P23: SwiftData UploadStore implementation
 SiteLog/
+├── DataSources/
+│   ├── UploadKit/            # P19, P23–P28: uses nothing from the rest of the app
+│   │   ├── UploadStore.swift, InMemoryUploadStore.swift
+│   │   ├── UploadStateMachine.swift, ChunkPlanner.swift
+│   │   ├── UploadCoordinator.swift (actor), BackgroundSessionDelegate.swift
+│   │   └── PresignedURLProvider.swift
+│   ├── Networking/           # P20+: backend HTTP client
+│   └── Persistence/          # P23: SwiftData UploadStore implementation
 ├── App/AppDelegate.swift     # P24: handleEventsForBackgroundURLSession
 └── Presentation/Uploads/UploadStatus/, SyncTab/     # P29–P30
 ```
@@ -82,8 +82,8 @@ SiteLog/
 
 ### Steps
 
-1. New package; add to `project.yml`.
-2. Check `UploadKit` builds alone (CI script from M0 covers it).
+1. New folder `SiteLog/DataSources/UploadKit/`; types inside are `nonisolated`.
+2. Check nothing in `UploadKit/` uses a type from another folder (review).
 
 ### Tests
 

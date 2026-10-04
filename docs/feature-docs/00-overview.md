@@ -53,7 +53,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Area | Choice |
 |---|---|
 | UI | SwiftUI, iOS 18.6 deployment target; Swift 6 strict concurrency, `MainActor` default isolation |
-| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM, SPM packages per layer |
+| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM, one app target with a folder per layer, `DesignSystem` package ([D09](#d09--layers-as-folders-in-one-app-target)) |
 | Dependency injection | [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`) ([D01](#d01--factory-for-dependency-injection)) |
 | Concurrency | Swift Concurrency — `actor` for upload, `@MainActor` for view models |
 | Local store | SwiftData (`#Unique`, `#Index` need iOS 18) |
@@ -155,13 +155,14 @@ Project
 ## 4. Architecture
 
 - Clean Architecture: dependencies point inward to `Domain`.
-- The app target is the only place that wires layers together.
+- One app target; each layer is a folder in `SiteLog/`.
+- `SiteLog/App/` is the only place that wires layers together.
 - Presentation uses MVVM.
 
 ```mermaid
 flowchart LR
     App["SiteLog: composition root<br/>Factory Container"] --> P["Presentation<br/>View + ViewModel"]
-    App --> Data["DataLayer<br/>repository impls, DTOs, mappers"]
+    App --> Data["Data<br/>repository impls, DTOs, mappers"]
     P --> D["Domain<br/>entities, use cases, repository protocols"]
     Data --> D
     Data --> DS["Data sources<br/>Persistence · Networking · Capture · UploadKit<br/>Reporting · Plans · DeviceLink · Realtime"]
@@ -171,27 +172,29 @@ flowchart LR
 
 ```
 site-log-ios/
-├── SiteLog/                          # app target
-│   ├── App/                          # composition root: may import everything
+├── SiteLog/                          # one app target; each layer is a folder
+│   ├── App/                          # composition root: may use everything
 │   │   ├── SiteLogApp.swift          # @main
 │   │   ├── AppDelegate.swift         # process-level iOS events
 │   │   ├── AppDependencies.swift     # Factory registrations
 │   │   └── Startup/                  # guarded startup steps (Steps/ per step)
-│   ├── Presentation/                 # Domain + DesignSystem (+ FactoryKit for @Injected)
+│   ├── Presentation/                 # View + ViewModel
 │   │   ├── Root/                     # RootView + RootViewModel: startup → access → main tabs
 │   │   ├── Access/                   # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
 │   │   ├── MainTab/
 │   │   └── <Feature>/                # 2+ screens → one subfolder per screen
-│   ├── Helper/Logger/AppLogger.swift # shared helpers; import nothing from the project
-│   ├── Resources/                    # Assets.xcassets, localization, seeded templates
-│   └── Config/                       # *.xcconfig, entitlements
-├── Packages/
 │   ├── Domain/                       # Entities/ UseCases/ Repositories/
-│   ├── DataLayer/                    # Repositories/ DTOs/ Mappers/
-│   ├── Persistence/ Networking/      # data sources: SwiftData, backend HTTP client
-│   ├── Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
-│   └── DesignSystem/                 # Tokens/ Components/ Resources/
-├── SiteLogTests/ SiteLogUITests/
+│   ├── Data/                         # Repositories/ DTOs/ Mappers/
+│   ├── DataSources/                  # Persistence/ (SwiftData) Networking/ (backend HTTP client)
+│   │                                 # Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
+│   └── Core/                         # app-wide support, no business logic
+│       ├── Config/                   # *.xcconfig, entitlements
+│       ├── Fakes/                    # in-memory repositories: previews, tests, UI before real Data
+│       ├── Helper/Logger/AppLogger.swift  # shared helpers; use nothing else from the app
+│       └── Resources/                # Assets.xcassets, localization, seeded templates
+├── Packages/DesignSystem/            # Swift package: Tokens/ Components/ (UI only)
+├── SiteLogTests/                     # mirrors SiteLog/: Domain/ Data/ DataSources/ Presentation/ Snapshots/
+├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
 ├── Tools/Hammerspoon/                # format-on-save config for Xcode
 ├── Tools/MockPeripheral/             # macOS BLE simulator
@@ -203,28 +206,31 @@ site-log-ios/
 └── project.yml                       # XcodeGen
 ```
 
-- Packages are created when their milestone starts.
-- `DataLayer`, not `Data`: a module called `Data` shadows `Foundation.Data`.
+- The folder skeleton exists from M0; empty folders hold a `.gitkeep` (excluded from the build in `project.yml`).
+- Why folders, not packages: [D09](#d09--layers-as-folders-in-one-app-target).
 
 ### 4.2 Layers and dependency rules
 
-| Layer | Lives in | May import |
+| Layer | Folder | May use |
 |---|---|---|
 | Presentation | `SiteLog/Presentation/` | `Domain`, `DesignSystem`, `FactoryKit` (`@Injected` only) |
-| Domain | `Packages/Domain` | `Foundation` only |
-| Data | `Packages/DataLayer` | `Domain` and data sources |
-| Data sources | `Packages/<Name>` | Frameworks; `Domain` for shared value types; never `DataLayer` or each other |
+| Domain | `SiteLog/Domain/` | `Foundation` only |
+| Data | `SiteLog/Data/` | `Domain` and data sources |
+| Data sources | `SiteLog/DataSources/<Name>/` | Frameworks; `Domain` for shared value types; never `Data` or each other |
+| DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI only; never `Domain` or app code |
 | Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`) | Everything, plus `FactoryKit` |
 
 | Rule | Enforcement |
 |---|---|
-| `Domain` imports nothing beyond `Foundation` | CI grep |
-| Presentation never imports `DataLayer` or a data source | CI dependency-graph check |
-| View models call use cases only — never a repository, `ModelContext` or `URLSession` | Review |
-| Repository protocols in `Domain`, implementations in `DataLayer` | CI grep |
-| DTOs and `@Model` types never cross into `Domain` or Presentation | Review |
-| `UploadKit` and `Realtime` import nothing from the project, and not each other | CI builds each standalone |
-| Cross-module access via `public` only | `internal` by default |
+| `Domain` imports nothing beyond `Foundation` | CI `check-imports.sh` |
+| Presentation and `Domain` never use a type declared in `Data/` or `DataSources/` | CI `check-imports.sh` |
+| Presentation never uses SwiftData, `ModelContext` or `URLSession` | CI `check-imports.sh` |
+| View models call use cases only — never a repository | Review |
+| Repository protocols in `Domain`, implementations in `Data` | Review |
+| DTOs and `@Model` types never cross into `Domain` or Presentation | CI `check-imports.sh` + review |
+| `UploadKit` and `Realtime` use nothing from the rest of the app, and not each other | Review |
+| `DesignSystem` uses nothing from the app | Compiler (separate package, no dependencies) |
+| Types in `Domain/`, `Data/`, `DataSources/` are `nonisolated` (the target defaults to `MainActor`) | Compiler + review |
 
 ### 4.3 MVVM, use cases, repositories
 
@@ -239,7 +245,7 @@ site-log-ios/
 ### 4.4 Composition root (Factory)
 
 - All registrations live in `SiteLog/App/AppDependencies.swift`.
-- `Domain` and `DataLayer` never import `FactoryKit`.
+- `Domain` and `Data` never import `FactoryKit`.
 
 ```swift
 extension Container {
@@ -331,7 +337,7 @@ final class ProjectListViewModel {
 
 | Item | Where | Committed |
 |---|---|---|
-| `GoogleService-Info.plist` | `SiteLog/Config/` | No — CI writes it from a secret |
+| `GoogleService-Info.plist` | `SiteLog/Core/Config/` | No — CI writes it from a secret |
 | Backend URL, bucket, feature flags | `*.xcconfig` per environment → `AppConfig` | `.example` only |
 | R2 access keys | Backend only | Never in the app |
 
@@ -365,14 +371,14 @@ final class ProjectListViewModel {
 
 **Definition of done (every change)**
 
-- Clean build, zero warnings per package; scoped tests pass.
+- Clean build, zero warnings; scoped tests pass.
 - Diff reviewed for literals, hard-coded user strings, unlogged `catch`, cross-boundary imports.
 - No secret in the diff or logs.
 
 **Adding a feature**
 
 1. Domain: entity, use case, repository protocol, in-memory fake (the contract).
-2. UI on the fake and Logic (DataLayer impl, DTO, mapper; framework code in a data source) in parallel.
+2. UI on the fake and Logic (Data impl, DTO, mapper; framework code in a data source) in parallel.
 3. Factory registration swaps the fake for the real implementation.
 4. Schema change → new `SchemaV{n}` + migration test.
 
@@ -404,20 +410,21 @@ final class ProjectListViewModel {
 | [D06](#d06--test-libraries) | Swift Testing + swift-snapshot-testing + FactoryTesting | Accepted |
 | [D07](#d07--firebase-crashlytics) | Firebase Crashlytics for crash reporting | Accepted |
 | [D08](#d08--xcodegen-owns-the-xcode-project) | XcodeGen owns the Xcode project | Accepted |
+| [D09](#d09--layers-as-folders-in-one-app-target) | Layers as folders in one app target | Accepted |
 
-- All accepted 2026-09-30. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
 ### D01 — Factory for dependency injection
 
-- **Context:** one place must bind `DataLayer` implementations to `Domain` protocols and let previews
+- **Context:** one place must bind `Data` implementations to `Domain` protocols and let previews
   and tests swap them; a hand-written `make…()` per use case grows with every feature.
 - **Decision:** [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`).
   - All registrations: `extension Container` in `SiteLog/App/AppDependencies.swift`.
   - Data sources and stateful services `.singleton`; use cases unscoped.
   - View models resolve **use cases only**: `@ObservationIgnored @Injected(\.useCase)`.
-  - `Domain` and `DataLayer` never import `FactoryKit`.
+  - `Domain` and `Data` never import `FactoryKit`.
 
 | Rejected | Why not |
 |---|---|
@@ -480,7 +487,7 @@ final class ProjectListViewModel {
 
 - **Context:** the server learns about assembly, checksum results and hash mismatches before the app,
   especially after a kill mid-upload.
-- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `Packages/Realtime`: connect,
+- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `SiteLog/DataSources/Realtime`: connect,
   auth with the Firebase ID token, ping, reconnect with backoff, events reconciled into the upload
   store. Never controls `UploadKit`.
 
@@ -570,3 +577,22 @@ final class ProjectListViewModel {
 - **Consequences:**
   - A setting changed in Xcode's UI is lost on the next generate.
   - Run `xcodegen generate` after pulling a `project.yml` change.
+
+### D09 — Layers as folders in one app target
+
+- **Context:** Clean Architecture needs layer boundaries. One SPM package per layer lets the compiler
+  enforce them, but adds a manifest per layer, `public` on every cross-layer type and a build per package.
+- **Decision:** one app target; `Domain/`, `Data/`, `DataSources/`, `Presentation/` are folders in `SiteLog/`.
+  - Exception: `DesignSystem` is a Swift package — pure UI with no app dependencies, so the compiler
+    keeps it reusable and its previews build alone.
+  - Layer rules: `Tools/CI/check-imports.sh` + review ([§4.2](#42-layers-and-dependency-rules)).
+  - Types in `Domain/`, `Data/`, `DataSources/` are `nonisolated`: the target defaults to `MainActor`.
+
+| Rejected | Why not |
+|---|---|
+| One SPM package per layer | Manifests, `public` everywhere, more setup than one developer needs |
+| One package per feature (microfeatures) | About 30 packages; built for many teams |
+
+- **Consequences:**
+  - The compiler no longer stops a view from using a `Data/` type; the CI script does.
+  - Moving a folder to a package later means adding a manifest and `public`.

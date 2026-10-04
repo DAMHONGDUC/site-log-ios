@@ -73,7 +73,7 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local packages and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
+| Local `DesignSystem` package and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
 | App target, bundle id, iOS 18.6 | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
@@ -98,7 +98,7 @@ flowchart LR
 
 | `.swiftlint.yml` | Values |
 |---|---|
-| `excluded` | `.build`, `Packages/*/.build`, `DerivedData`, `build` |
+| `excluded` | `.build`, `DerivedData`, `build` |
 | `disabled_rules` | `trailing_whitespace`, `line_length`, `trailing_comma` (owned by `swift-format`) |
 | `opt_in_rules` | `empty_count`, `explicit_init`, `redundant_type_annotation`, `unneeded_parentheses_in_closure_argument` |
 
@@ -337,17 +337,18 @@ enum DiagnosticsConstants {
 
 | Layer | Target | Tool | What |
 |---|---|---|---|
-| Domain | `Packages/Domain/Tests` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
-| DataLayer | `Packages/DataLayer/Tests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
-| Data sources | `Packages/<Name>/Tests` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
-| Presentation | `SiteLogTests` | Swift Testing + `FactoryTesting` | View models against fakes |
+| Domain | `SiteLogTests/Domain` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
+| Data | `SiteLogTests/Data` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
+| Data sources | `SiteLogTests/DataSources/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
+| DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding); components via snapshots |
+| Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Each screen: light, dark, `accessibility3` Dynamic Type |
 | Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
 | Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
 
 **Rules**
 
-1. Scoped: a change runs the tests of the package it touched plus `Domain`, not the full suite.
+1. Scoped: a change runs the tests of the folder it touched plus `Domain` (`-only-testing:`), not the full suite.
 2. No real network, clock, camera or Bluetooth in unit tests; inject `AppClock`, `UploadTransport`,
    `CaptureSessionControlling`, `RandomNumberGenerator`.
 3. Every Factory override happens inside `@Suite(.container)`, so tests never leak registrations.
@@ -359,11 +360,11 @@ enum DiagnosticsConstants {
 |---|---|
 | `Domain` | ≥ 90% |
 | `UploadKit`, sync engine | ≥ 85% |
-| `DataLayer` | ≥ 70% |
+| `Data` | ≥ 70% |
 | View models | ≥ 70% |
 | Views | Snapshot per screen, no line target |
 
-- CI reports coverage per package; a PR that lowers a target fails.
+- CI reports coverage per folder; a PR that lowers a target fails.
 - Examples: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`),
   `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift` (snapshots) — full code in [M0 guide](../milestone-guide/m0-scaffold.md).
 
@@ -381,7 +382,7 @@ enum DiagnosticsConstants {
 
 | Lane | Does |
 |---|---|
-| `test` | `xcodegen`, `xcodebuild test` per package on the simulator, app unit + snapshot tests, coverage per package |
+| `test` | `xcodegen`, `DesignSystem` package tests, app unit + snapshot tests on the simulator, coverage per folder |
 | `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
 | `release` | Same, waits for processing |
 
@@ -395,7 +396,7 @@ enum DiagnosticsConstants {
 | Runner | When | Jobs |
 |---|---|---|
 | Ubuntu (hosted) | Every push | `Domain` purity, Presentation imports, `UploadKit`/`Realtime` boundary, `print(` grep, `gitleaks`, SwiftLint; backend `vitest` + `tsc` + ESLint + migrations on a throwaway Postgres |
-| Self-hosted dev Mac | Every PR | Each package standalone with warnings as errors; lane `test` |
+| Self-hosted dev Mac | Every PR | App build, zero warnings (`build-strict.sh`); lane `test` |
 | Self-hosted dev Mac | Nightly | App without `Realtime`; full suite |
 | Hosted macOS | Disabled | Fallback only |
 
@@ -416,7 +417,7 @@ enum DiagnosticsConstants {
 
 **Done**
 
-- A SwiftLint warning or failing package test fails the PR
+- A SwiftLint warning, a compiler warning or a failing test fails the PR
 - Pushing `v0.0.1` produces a TestFlight build with no local step
 - The repo holds no `.p8`, certificate or profile
 
