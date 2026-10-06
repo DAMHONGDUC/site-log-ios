@@ -63,7 +63,7 @@ targets:
       - package: DesignSystem
       - package: Inject
       - package: Factory
-      - package: SnapshotTesting
+        product: FactoryKit
     postBuildScripts:
       - name: Run SwiftLint
         basedOnDependencyAnalysis: false
@@ -114,6 +114,9 @@ targets:
           - "**/.gitkeep"
     dependencies:
       - target: SiteLog
+      - package: Factory
+        product: FactoryTesting
+      - package: SnapshotTesting
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogTests
