@@ -1,10 +1,4 @@
-//
-//  AppLockView.swift
-//  SiteLog
-//
-//  S4 · App lock: Lock app, Face ID, Change passcode, Lock after.
-//  Values are local UI state; saving them is the view model's job (F01).
-//
+// S4 · App lock
 
 import DesignSystem
 import Inject

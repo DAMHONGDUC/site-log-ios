@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Shown when a list has nothing yet ("No projects yet").
 public struct DSEmptyState: View {
     let systemImage: String
     let title: String

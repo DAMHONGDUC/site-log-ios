@@ -1,15 +1,6 @@
-//
-//  CameraControls.swift
-//  SiteLog
-//
-//  Camera chrome shared by C1 (camera) and C3 (re-check camera):
-//  top bar and shutter row. The viewfinder is a SitePhoto until AVFoundation lands.
-//
-
 import DesignSystem
 import SwiftUI
 
-// Close · room · flash
 struct CameraTopBar: View {
     let title: String
     let onClose: () -> Void
@@ -36,7 +27,6 @@ struct CameraTopBar: View {
     }
 }
 
-// VIDEO · PHOTO · CHECK, then thumbnail · shutter · side button
 struct CameraBottomBar<Side: View>: View {
     @Binding var mode: String
     let onShutter: () -> Void
@@ -78,7 +68,6 @@ struct CameraBottomBar<Side: View>: View {
     }
 }
 
-// Icon button with a caption under it ("Issue", "Ghost")
 struct CameraSideButton: View {
     let systemImage: String
     let title: String

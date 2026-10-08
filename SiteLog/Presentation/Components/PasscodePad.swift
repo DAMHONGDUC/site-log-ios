@@ -1,11 +1,3 @@
-//
-//  PasscodePad.swift
-//  SiteLog
-//
-//  6 dots + number pad, shared by A3 (unlock) and S5 (set passcode).
-//  Only collects digits; checking the passcode is the view model's job.
-//
-
 import DesignSystem
 import SwiftUI
 

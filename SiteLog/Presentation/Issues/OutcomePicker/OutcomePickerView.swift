@@ -1,9 +1,4 @@
-//
-//  OutcomePickerView.swift
-//  SiteLog
-//
-//  C4 · Re-check outcome: before/after photos + "Has it been fixed?" radio list.
-//
+// C4 · Re-check outcome
 
 import DesignSystem
 import Inject

@@ -1,10 +1,3 @@
-//
-//  PrivacyOverlayView.swift
-//  SiteLog
-//
-//  Covers the app in the app switcher so site photos don't show.
-//
-
 import DesignSystem
 import Inject
 import SwiftUI

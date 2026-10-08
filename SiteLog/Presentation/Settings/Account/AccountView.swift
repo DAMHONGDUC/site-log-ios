@@ -1,10 +1,3 @@
-//
-//  AccountView.swift
-//  SiteLog
-//
-//  Account: who is signed in, synced devices, sign out. No mockup yet.
-//
-
 import DesignSystem
 import Inject
 import SwiftUI

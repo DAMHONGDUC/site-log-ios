@@ -1,10 +1,4 @@
-//
-//  AppMark.swift
-//  SiteLog
-//
-//  Placeholder app mark for the access screens: a yellow tile.
-//  Swap for the real icon from docs/design/app-icon/.
-//
+// Placeholder until the app icon asset is added
 
 import DesignSystem
 import SwiftUI

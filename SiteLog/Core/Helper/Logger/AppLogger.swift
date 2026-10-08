@@ -10,6 +10,5 @@ import os
 enum AppLogger {
     static let subsystem = "app.dd.site.log"
     static let startup = Logger(subsystem: subsystem, category: "Startup")
-    // Debug-only developer menu actions
     static let devMenu = Logger(subsystem: subsystem, category: "DevMenu")
 }

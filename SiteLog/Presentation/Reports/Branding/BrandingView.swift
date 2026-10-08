@@ -1,9 +1,4 @@
-//
-//  BrandingView.swift
-//  SiteLog
-//
-//  R3 · Your letterhead: logo, company, client, footer.
-//
+// R3 · Letterhead
 
 import DesignSystem
 import Inject

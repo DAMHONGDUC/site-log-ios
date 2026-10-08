@@ -1,9 +1,4 @@
-//
-//  DiagnosticExportView.swift
-//  SiteLog
-//
-//  U3 · Diagnostics: integrity check, storage bar, device state, export.
-//
+// U3 · Diagnostics
 
 import DesignSystem
 import Inject
@@ -72,7 +67,6 @@ struct DiagnosticExportView: View {
         .enableInjection()
     }
 
-    // Waiting · backed up · free, as one split bar
     private var storageBar: some View {
         DSProgressBar(value: 0.57)
     }

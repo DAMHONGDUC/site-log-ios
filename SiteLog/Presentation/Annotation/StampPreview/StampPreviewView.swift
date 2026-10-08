@@ -1,9 +1,4 @@
-//
-//  StampPreviewView.swift
-//  SiteLog
-//
-//  M2 · Share a stamped photo: the stamp strip + what it shows.
-//
+// M2 · Share stamped photo
 
 import DesignSystem
 import Inject

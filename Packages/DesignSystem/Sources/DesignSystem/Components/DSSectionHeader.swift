@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Sentence-case section header with an optional grey count on the right ("Level 7      3 open").
 public struct DSSectionHeader: View {
     let title: String
     let trailing: String?

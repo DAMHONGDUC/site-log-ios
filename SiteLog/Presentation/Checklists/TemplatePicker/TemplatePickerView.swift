@@ -1,9 +1,4 @@
-//
-//  TemplatePickerView.swift
-//  SiteLog
-//
-//  K1 · Pick a checklist: resume the one in progress, recent, all.
-//
+// K1 · Pick a checklist
 
 import DesignSystem
 import Inject

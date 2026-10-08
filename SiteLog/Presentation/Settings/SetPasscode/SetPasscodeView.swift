@@ -1,9 +1,4 @@
-//
-//  SetPasscodeView.swift
-//  SiteLog
-//
-//  S5 · Set a 6-digit passcode. Closes after 6 digits (no confirm step yet).
-//
+// S5 · Set passcode
 
 import DesignSystem
 import Inject

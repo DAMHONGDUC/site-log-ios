@@ -1,9 +1,4 @@
-//
-//  PinPreviewView.swift
-//  SiteLog
-//
-//  M5 · Bottom sheet after tapping a pin: issue summary, Move pin · Open.
-//
+// M5 · Pin preview
 
 import DesignSystem
 import Inject

@@ -1,11 +1,3 @@
-//
-//  CaptureReviewView.swift
-//  SiteLog
-//
-//  Photo just taken: hash + time, then Retake · Mark up · Use photo.
-//  No mockup yet — kept minimal.
-//
-
 import DesignSystem
 import Inject
 import SwiftUI

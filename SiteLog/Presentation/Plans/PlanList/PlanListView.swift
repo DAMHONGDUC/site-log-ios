@@ -1,10 +1,4 @@
-//
-//  PlanListView.swift
-//  SiteLog
-//
-//  M3 · Plan sheets of a project. Shown inside the Plans tab of ProjectDetailView,
-//  so it has no navigation bar of its own.
-//
+// M3 · Plans
 
 import DesignSystem
 import Inject
@@ -38,7 +32,6 @@ struct PlanListView: View {
         .enableInjection()
     }
 
-    // Tiny drawing of a sheet
     private var planThumb: some View {
         Image(systemName: "map")
             .foregroundStyle(DSColor.textSecondary)

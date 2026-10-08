@@ -1,9 +1,4 @@
-//
-//  SettingsView.swift
-//  SiteLog
-//
-//  S1 · Settings tab. "Delete account" shows the S3 alert.
-//
+// S1 · Settings
 
 import DesignSystem
 import Inject
@@ -54,7 +49,6 @@ struct SettingsView: View {
                     }
                 }
 
-                // Debug builds only; never shipped
                 #if DEBUG
                 DevMenuSection()
                 #endif

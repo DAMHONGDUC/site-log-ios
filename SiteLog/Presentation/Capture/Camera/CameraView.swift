@@ -1,10 +1,4 @@
-//
-//  CameraView.swift
-//  SiteLog
-//
-//  C1 · Camera (the home of a walkthrough). Fake viewfinder + laser reading;
-//  the real capture session (AVFoundation) arrives in F03.
-//
+// C1 · Camera
 
 import DesignSystem
 import Inject
@@ -58,7 +52,6 @@ struct CameraView: View {
             .clipped()
     }
 
-    // Live reading from the paired laser meter (fake value)
     private var laserReading: some View {
         Text("3.42 m · DISTO")
             .foregroundStyle(Color.white)

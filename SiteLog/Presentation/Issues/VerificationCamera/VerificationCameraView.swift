@@ -1,10 +1,4 @@
-//
-//  VerificationCameraView.swift
-//  SiteLog
-//
-//  C3 · Re-check camera with the old photo as a 30% ghost overlay.
-//  Shutter → C4 outcome picker.
-//
+// C3 · Re-check camera
 
 import DesignSystem
 import Inject
@@ -51,7 +45,7 @@ struct VerificationCameraView: View {
     private var viewfinder: some View {
         SitePhoto(variant: issue.photoVariant)
             .overlay {
-                // Old photo, faded, so the inspector can line up the same angle
+                // Old photo as a faded guide
                 SitePhoto(variant: issue.photoVariant, showsCrack: true)
                     .opacity(ghostOpacity)
             }

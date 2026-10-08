@@ -1,10 +1,4 @@
-//
-//  MarkupEditorView.swift
-//  SiteLog
-//
-//  M1 · Markup editor: draw on the photo with a finger.
-//  Only the pen works here; arrow / box / text / ruler are placeholders.
-//
+// M1 · Markup editor
 
 import DesignSystem
 import Inject
@@ -16,7 +10,6 @@ struct MarkupEditorView: View {
 
     @State private var tool = "pencil"
     @State private var color = Color.red
-    // Finished strokes + the one being drawn
     @State private var strokes: [[CGPoint]] = []
     @State private var currentStroke: [CGPoint] = []
 

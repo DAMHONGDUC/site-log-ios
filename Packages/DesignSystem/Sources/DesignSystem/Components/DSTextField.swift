@@ -1,11 +1,9 @@
 import SwiftUI
 
-// Grey filled text field with an optional label above ("Name", "Site address").
 public struct DSTextField: View {
     let label: String?
     let placeholder: String
     @Binding var text: String
-    // true = grows to several lines (notes, footer)
     let isMultiline: Bool
     let trailingSystemImage: String?
 

@@ -1,7 +1,5 @@
 import SwiftUI
 
-// One row of a plain iOS list: optional leading view, title, optional subtitle,
-// optional trailing view, optional chevron.
 public struct DSListRow<Leading: View, Trailing: View>: View {
     let title: String
     let subtitle: String?
@@ -51,12 +49,11 @@ public struct DSListRow<Leading: View, Trailing: View>: View {
         }
         .frame(minHeight: DSSize.rowMinHeight)
         .padding(.horizontal, DSSpacing.regular)
-        // Makes the empty space tappable too
+        // Whole row is tappable
         .contentShape(Rectangle())
     }
 }
 
-// Row with a plain grey value on the right instead of a custom view
 extension DSListRow where Leading == EmptyView, Trailing == DSRowValue {
     public init(title: String, subtitle: String? = nil, value: String? = nil, showsChevron: Bool = false) {
         self.init(
@@ -69,7 +66,6 @@ extension DSListRow where Leading == EmptyView, Trailing == DSRowValue {
     }
 }
 
-// Row with a leading view and an optional grey value
 extension DSListRow where Trailing == DSRowValue {
     public init(
         title: String,
@@ -88,7 +84,6 @@ extension DSListRow where Trailing == DSRowValue {
     }
 }
 
-// Grey value text on the right of a row ("5 minutes")
 public struct DSRowValue: View {
     let text: String?
 
@@ -105,7 +100,6 @@ public struct DSRowValue: View {
     }
 }
 
-// Hairline between rows, inset from the left like iOS lists
 public struct DSDivider: View {
     let inset: CGFloat
 

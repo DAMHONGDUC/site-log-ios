@@ -1,9 +1,4 @@
-//
-//  PlanViewerView.swift
-//  SiteLog
-//
-//  M4 · Plan viewer with pins; tap a pin → M5 pin preview sheet.
-//
+// M4 · Plan viewer
 
 import DesignSystem
 import Inject

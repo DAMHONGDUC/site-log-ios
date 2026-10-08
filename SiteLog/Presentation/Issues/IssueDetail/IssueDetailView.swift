@@ -1,9 +1,4 @@
-//
-//  IssueDetailView.swift
-//  SiteLog
-//
-//  C6 · Issue detail: photo pager, facts, Mark up · Re-check now.
-//
+// C6 · Issue detail
 
 import DesignSystem
 import Inject

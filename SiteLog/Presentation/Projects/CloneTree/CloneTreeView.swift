@@ -1,10 +1,3 @@
-//
-//  CloneTreeView.swift
-//  SiteLog
-//
-//  Copy the location tree from another project (no mockup yet — plain list).
-//
-
 import DesignSystem
 import Inject
 import SwiftUI

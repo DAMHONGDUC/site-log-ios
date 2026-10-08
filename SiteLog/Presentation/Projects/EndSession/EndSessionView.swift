@@ -1,9 +1,4 @@
-//
-//  EndSessionView.swift
-//  SiteLog
-//
-//  R1 · Walkthrough finished: a one-sentence summary, then "Make the report".
-//
+// R1 · Walkthrough finished
 
 import DesignSystem
 import Inject

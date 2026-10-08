@@ -1,9 +1,4 @@
-//
-//  DevicesView.swift
-//  SiteLog
-//
-//  S2 · Laser meter: paired devices + nearby ones (fake BLE scan).
-//
+// S2 · Laser meter
 
 import DesignSystem
 import Inject

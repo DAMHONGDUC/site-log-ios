@@ -1,11 +1,3 @@
-//
-//  PlanImportView.swift
-//  SiteLog
-//
-//  Import a plan from Files (PDF) or a photo of a printed sheet.
-//  No mockup yet; the file picker arrives with the logic (F08).
-//
-
 import DesignSystem
 import Inject
 import SwiftUI

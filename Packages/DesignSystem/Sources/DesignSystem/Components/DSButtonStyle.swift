@@ -1,24 +1,18 @@
 import SwiftUI
 
-// Button in the five looks used by the mockups.
-// Usage: Button("Save") { ... }.buttonStyle(.ds(.primary))
-//        Button("Retry") { ... }.buttonStyle(.ds(.secondary, small: true))
+// Usage: .buttonStyle(.ds(.primary)) or .ds(.secondary, small: true)
 public struct DSButtonStyle: ButtonStyle {
     public enum Kind: CaseIterable, Sendable {
-        // Graphite fill: the main action of a screen
         case primary
-        // Yellow fill: capture only
+        // Capture button only
         case hiVis
-        // Light grey fill: second action
         case secondary
-        // No fill: third action ("Continue offline")
         case ghost
-        // Red text: destructive action
         case danger
     }
 
     let kind: Kind
-    // Small = 34 pt capsule that hugs its text (row actions like "Pair", "Retry")
+    // 34 pt capsule for row actions ("Pair", "Retry")
     let small: Bool
 
     public init(kind: Kind, small: Bool = false) {
@@ -27,12 +21,11 @@ public struct DSButtonStyle: ButtonStyle {
     }
 
     public func makeBody(configuration: Configuration) -> some View {
-        // A separate view, because only a View can read @Environment(\.isEnabled)
+        // Separate view: only a View can read isEnabled
         DSButtonBody(kind: kind, small: small, label: configuration.label, isPressed: configuration.isPressed)
     }
 }
 
-// Lets you write .buttonStyle(.ds(.primary)) instead of .buttonStyle(DSButtonStyle(kind: .primary))
 extension ButtonStyle where Self == DSButtonStyle {
     public static func ds(_ kind: DSButtonStyle.Kind, small: Bool = false) -> DSButtonStyle {
         return DSButtonStyle(kind: kind, small: small)

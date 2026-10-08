@@ -1,11 +1,3 @@
-//
-//  StorageCleanupView.swift
-//  SiteLog
-//
-//  Free up space: remove local copies of files that are already backed up.
-//  No mockup yet — plain list.
-//
-
 import DesignSystem
 import Inject
 import SwiftUI

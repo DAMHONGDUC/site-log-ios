@@ -1,24 +1,18 @@
 import SwiftUI
 
-// Severity and status marker: a small shape + ink text.
-// Shapes keep it readable in grayscale and for colour-blind users.
+// Shapes keep severity readable without colour
 public struct DSStatusMarker: View {
     public enum Kind: CaseIterable, Sendable {
-        // ■ red square
         case critical
-        // ▲ amber triangle
         case major
-        // ○ blue ring
         case minor
-        // ● green dot
         case resolved
-        // ◌ dashed grey ring (never red)
+        // Never red
         case waiting
     }
 
     let kind: Kind
     let text: String
-    // Red text for "2 days late" / "Failed"
     let isLate: Bool
 
     public init(kind: Kind, text: String = "", isLate: Bool = false) {
@@ -73,7 +67,6 @@ public struct DSStatusMarker: View {
     }
 }
 
-// Triangle pointing up, for the Major marker
 public struct DSTriangle: Shape {
     public init() {}
 

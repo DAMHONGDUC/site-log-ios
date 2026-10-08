@@ -1,16 +1,7 @@
-//
-//  FakeData.swift
-//  SiteLog
-//
-//  UI-only sample data so every screen runs before Domain/Data exist.
-//  These are NOT the Domain entities: replace each Fake* type with the real
-//  entity + view model when the logic track lands (see ROADMAP "Join").
-//
+// UI skeleton sample data; each feature moves its part to Data/Fakes and deletes it here
 
 import DesignSystem
 import Foundation
-
-// MARK: - Types
 
 struct FakeProject: Identifiable {
     let id = UUID()
@@ -18,7 +9,6 @@ struct FakeProject: Identifiable {
     let client: String
     let area: String
     let summary: String
-    // Picks one of the flat site-photo scenes in SitePhoto
     let photoVariant: Int
 }
 
@@ -36,7 +26,6 @@ struct FakeRoom: Identifiable {
     let isChecked: Bool
     let photoCount: Int
     let criticalCount: Int
-    // "1 issue from 12 Aug to re-check"
     let note: String?
 }
 
@@ -75,7 +64,7 @@ struct FakePin: Identifiable {
     let id = UUID()
     let number: Int
     let severity: DSStatusMarker.Kind
-    // Position on the plan, 0...1 of its width and height
+    // 0...1 of the plan size
     let positionX: Double
     let positionY: Double
 }
@@ -107,8 +96,6 @@ struct FakeDevice: Identifiable {
     let detail: String?
     let isConnected: Bool
 }
-
-// MARK: - Sample values
 
 enum FakeData {
     static let inspector = "Hanh Nguyen"

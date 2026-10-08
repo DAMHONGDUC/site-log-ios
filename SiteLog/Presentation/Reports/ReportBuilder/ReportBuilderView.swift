@@ -1,9 +1,4 @@
-//
-//  ReportBuilderView.swift
-//  SiteLog
-//
-//  R2 · Report options: grouping + which sections to include.
-//
+// R2 · Report options
 
 import DesignSystem
 import Inject
@@ -13,7 +8,6 @@ struct ReportBuilderView: View {
     @ObserveInjection var inject
 
     @State private var grouping = "Room"
-    // Section title → included? (fake starting state matches the mockup)
     @State private var included: [String: Bool] = [:]
     @State private var isPreviewShown = false
 
@@ -102,7 +96,6 @@ struct ReportBuilderView: View {
     }
 
     private func sectionRow(_ section: (title: String, detail: String?)) -> some View {
-        // Everything is on by default except "Issues open over 14 days"
         let defaultValue = section.title != "Issues open over 14 days"
         let binding = Binding<Bool>(
             get: { included[section.title] ?? defaultValue },

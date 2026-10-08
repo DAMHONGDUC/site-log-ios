@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Filter chip ("All", "Not checked", "Has issues"). Selected = graphite fill.
 public struct DSChip: View {
     let title: String
     let systemImage: String?

@@ -1,10 +1,4 @@
-//
-//  ChecklistRunView.swift
-//  SiteLog
-//
-//  K2 · Checklist run: Pass / Fail / N/A per item. Fail opens K3 (issue sheet
-//  prefilled from the item). Answers are local UI state until the view model lands.
-//
+// K2 · Checklist run
 
 import DesignSystem
 import Inject
@@ -21,7 +15,6 @@ struct ChecklistRunView: View {
         case notApplicable = "N/A"
     }
 
-    // Item number → answer (fake starting state matches the mockup)
     @State private var answers: [Int: Answer] = [12: .fail, 13: .pass, 14: .notApplicable]
     @State private var failedItem: FakeChecklistItem?
     @State private var isDoneShown = false
@@ -46,7 +39,7 @@ struct ChecklistRunView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            // Fake rule for the demo: tap Finish any time
+            // Demo: Finish is always enabled
             Button("Finish") {
                 isDoneShown = true
             }

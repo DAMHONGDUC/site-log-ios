@@ -1,9 +1,4 @@
-//
-//  SignaturePadView.swift
-//  SiteLog
-//
-//  R4 · Signatures from two parties. Drawing is local UI state only.
-//
+// R4 · Signatures
 
 import DesignSystem
 import Inject
@@ -58,7 +53,6 @@ struct SignaturePadView: View {
             .frame(height: 240)
             .overlay {
                 Canvas { context, size in
-                    // Signature line
                     var line = Path()
                     line.move(to: CGPoint(x: 28, y: size.height - 48))
                     line.addLine(to: CGPoint(x: size.width - 28, y: size.height - 48))

@@ -1,9 +1,4 @@
-//
-//  IssueListView.swift
-//  SiteLog
-//
-//  C5 · Issues tab: Open / Closed / All, grouped by level.
-//
+// C5 · Issues
 
 import DesignSystem
 import Inject
@@ -62,7 +57,7 @@ struct IssueListView: View {
         .enableInjection()
     }
 
-    // UI-only filtering of the fake list; the real query lives in the view model
+    // Temporary: the view model will filter
     private var visibleIssues: [FakeIssue] {
         switch filter {
         case .open:
@@ -102,7 +97,6 @@ struct IssueListView: View {
     }
 }
 
-// Thumbnail · title + room · severity + due
 struct IssueRow: View {
     let issue: FakeIssue
 

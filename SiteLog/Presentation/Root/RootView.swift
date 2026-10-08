@@ -16,8 +16,7 @@ struct RootView: View {
         sequence: StartupSequence(steps: [])
     )
 
-    // F01: UI-only access flow so every screen can be clicked through.
-    // RootViewModel replaces this with AccessSettings (welcome seen, lock on, Face ID).
+    // Temporary; RootViewModel replaces this in F01
     enum FakeAccessStep {
         case signIn, faceIDLock, passcode, unlocked
     }
@@ -63,7 +62,7 @@ struct RootView: View {
         case .unlocked:
             #if DEBUG
             MainTabView()
-                // Dev menu → Reset the app: start again from onboarding
+                // Dev menu reset
                 .environment(\.resetApp, ResetAppAction {
                     accessStep = .signIn
                 })

@@ -1,10 +1,4 @@
-//
-//  PasscodeUnlockView.swift
-//  SiteLog
-//
-//  A3 · Enter passcode. The view only collects 6 digits and hands them over;
-//  checking them and the tries-left text belong to the view model.
-//
+// A3 · Enter passcode
 
 import DesignSystem
 import Inject

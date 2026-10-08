@@ -1,11 +1,3 @@
-//
-//  BottomDock.swift
-//  SiteLog
-//
-//  Primary actions live in a dock above the home indicator (thumb reach).
-//  Usage: .bottomDock { Button("Save") {}.buttonStyle(.ds(.primary)) }
-//
-
 import DesignSystem
 import SwiftUI
 

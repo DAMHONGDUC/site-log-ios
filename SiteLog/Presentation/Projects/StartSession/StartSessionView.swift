@@ -1,9 +1,4 @@
-//
-//  StartSessionView.swift
-//  SiteLog
-//
-//  P4 · New walkthrough sheet: inspector, weather, note.
-//
+// P4 · New walkthrough
 
 import DesignSystem
 import Inject

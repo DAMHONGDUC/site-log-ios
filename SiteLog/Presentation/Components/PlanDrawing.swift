@@ -1,10 +1,4 @@
-//
-//  PlanDrawing.swift
-//  SiteLog
-//
-//  Placeholder floor plan with tappable pins on top.
-//  The real viewer (PDFKit + CATiledLayer) replaces the background in M4.
-//
+// Placeholder plan; the PDFKit viewer replaces it in F08
 
 import DesignSystem
 import SwiftUI
@@ -34,7 +28,6 @@ struct PlanDrawing: View {
     }
 }
 
-// Numbered circle in the severity colour
 struct PlanPinView: View {
     let pin: FakePin
 

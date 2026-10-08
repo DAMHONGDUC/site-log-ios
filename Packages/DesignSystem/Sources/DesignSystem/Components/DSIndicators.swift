@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Red count badge, e.g. on the Issues tab or a toolbar button.
 public struct DSCountBadge: View {
     let count: Int
 
@@ -18,7 +17,6 @@ public struct DSCountBadge: View {
     }
 }
 
-// Thin graphite progress bar ("37 of 82 rooms").
 public struct DSProgressBar: View {
     // 0...1
     let value: Double
@@ -41,7 +39,6 @@ public struct DSProgressBar: View {
     }
 }
 
-// Hi-vis dot that marks a walkthrough in progress.
 public struct DSLiveDot: View {
     public init() {}
 
@@ -53,7 +50,6 @@ public struct DSLiveDot: View {
     }
 }
 
-// Outlined file-type tag ("PDF").
 public struct DSFileTag: View {
     let text: String
 
@@ -71,7 +67,6 @@ public struct DSFileTag: View {
     }
 }
 
-// Radio mark for single-choice lists (re-check outcome, Lock after).
 public struct DSRadioMark: View {
     let isOn: Bool
 

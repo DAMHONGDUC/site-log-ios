@@ -1,10 +1,4 @@
-//
-//  UploadStatusView.swift
-//  SiteLog
-//
-//  U1 · Sync tab: one big figure, what is waiting, what failed.
-//  "Waiting" is never red.
-//
+// U1 · Sync
 
 import DesignSystem
 import Inject

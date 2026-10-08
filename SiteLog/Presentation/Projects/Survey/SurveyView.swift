@@ -1,10 +1,4 @@
-//
-//  SurveyView.swift
-//  SiteLog
-//
-//  P5 · Walkthrough rooms: progress, filter chips, rooms per unit,
-//  capture toolbar (End · Capture · Plan).
-//
+// P5 · Walkthrough
 
 import DesignSystem
 import Inject

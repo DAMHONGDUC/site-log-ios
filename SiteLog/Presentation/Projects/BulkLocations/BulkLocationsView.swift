@@ -1,10 +1,4 @@
-//
-//  BulkLocationsView.swift
-//  SiteLog
-//
-//  P6 · Add rooms in bulk: levels × units × rooms, with a preview.
-//  The preview is static text; generating the tree is the view model's job.
-//
+// P6 · Add rooms in bulk
 
 import DesignSystem
 import Inject

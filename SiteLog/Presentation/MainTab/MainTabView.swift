@@ -24,7 +24,7 @@ struct MainTabView: View {
                     IssueListView()
                 }
             }
-            // Fake count; the real one comes from the issues view model
+            // Fake count until the issues view model
             .badge(2)
             Tab("Sync", systemImage: "arrow.triangle.2.circlepath") {
                 NavigationStack {

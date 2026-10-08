@@ -1,9 +1,4 @@
-//
-//  ProjectListView.swift
-//  SiteLog
-//
-//  P1 · Projects tab: the live walkthrough on top, then every project.
-//
+// P1 · Projects
 
 import DesignSystem
 import Inject
@@ -45,7 +40,6 @@ struct ProjectListView: View {
         .enableInjection()
     }
 
-    // Grey panel for the walkthrough in progress
     private var liveSessionPanel: some View {
         VStack(alignment: .leading, spacing: DSSpacing.medium) {
             HStack(spacing: DSSpacing.small) {

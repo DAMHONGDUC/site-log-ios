@@ -1,10 +1,4 @@
-//
-//  RoomView.swift
-//  SiteLog
-//
-//  P7 · One room: issues to re-check, today's photos, checklist,
-//  capture toolbar (Issue · Capture · Checklist).
-//
+// P7 · Room
 
 import DesignSystem
 import Inject

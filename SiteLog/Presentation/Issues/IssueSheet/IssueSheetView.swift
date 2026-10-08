@@ -1,10 +1,4 @@
-//
-//  IssueSheetView.swift
-//  SiteLog
-//
-//  C2 · New issue sheet (over the camera), also K3 when opened from a failed
-//  checklist item (pass `checklistItem` to prefill).
-//
+// C2 · New issue
 
 import DesignSystem
 import Inject
@@ -14,7 +8,7 @@ struct IssueSheetView: View {
     @ObserveInjection var inject
     @Environment(\.dismiss) private var dismiss
 
-    // Set when the sheet comes from a failed checklist item (K3)
+    // Set when opened from a failed checklist item
     var checklistItem: FakeChecklistItem?
 
     @State private var severity: DSStatusMarker.Kind = .major
@@ -113,7 +107,6 @@ struct IssueSheetView: View {
         }
     }
 
-    // Segmented control with the severity shapes
     private var severityPicker: some View {
         Picker("Severity", selection: $severity) {
             ForEach(severities, id: \.title) { item in

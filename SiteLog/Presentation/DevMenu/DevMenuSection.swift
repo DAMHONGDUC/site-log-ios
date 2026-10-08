@@ -1,11 +1,3 @@
-//
-//  DevMenuSection.swift
-//  SiteLog
-//
-//  Debug-only "Debug" section at the bottom of Settings:
-//  seed data, delete all data, reset the app.
-//
-
 #if DEBUG
 
 import DesignSystem
@@ -19,7 +11,6 @@ struct DevMenuSection: View {
 
     var actions: any DevDataActions = NoopDevDataActions()
 
-    // Which destructive action is waiting for confirmation
     enum PendingAction: String {
         case reset = "Reset the app"
         case deleteAll = "Delete all data"
@@ -110,7 +101,6 @@ struct DevMenuSection: View {
         .buttonStyle(.plain)
     }
 
-    // true while an action waits for confirmation
     private var isConfirmShown: Binding<Bool> {
         Binding(
             get: { pendingAction != nil },
@@ -132,13 +122,11 @@ struct DevMenuSection: View {
             run(name: "Reset the app") {
                 await actions.deleteAllData()
             } then: {
-                // Back to onboarding; Settings goes away with the tabs
                 resetApp()
             }
         }
     }
 
-    // Runs one action with a spinner and logs start / finish
     private func run(name: String, work: @escaping () async -> Void, then finish: @escaping () -> Void = {}) {
         AppLogger.devMenu.info("Start - \(name, privacy: .public)")
         isWorking = true

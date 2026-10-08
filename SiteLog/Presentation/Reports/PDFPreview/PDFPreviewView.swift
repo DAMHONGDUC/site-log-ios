@@ -1,10 +1,4 @@
-//
-//  PDFPreviewView.swift
-//  SiteLog
-//
-//  R5 · PDF preview: a fake first page drawn in SwiftUI.
-//  The real PDF (PDFKit) replaces the page in M3.
-//
+// R5 · PDF preview
 
 import DesignSystem
 import Inject

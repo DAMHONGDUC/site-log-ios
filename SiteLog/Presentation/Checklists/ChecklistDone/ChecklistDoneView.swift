@@ -1,9 +1,4 @@
-//
-//  ChecklistDoneView.swift
-//  SiteLog
-//
-//  K4 · Checklist done: one-sentence result + issues sent to the list.
-//
+// K4 · Checklist done
 
 import DesignSystem
 import Inject

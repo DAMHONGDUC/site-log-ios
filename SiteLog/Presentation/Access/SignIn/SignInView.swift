@@ -1,9 +1,4 @@
-//
-//  SignInView.swift
-//  SiteLog
-//
-//  A2 · Sign in (optional). Buttons only call closures; real auth arrives in F12.
-//
+// A2 · Sign in
 
 import DesignSystem
 import Inject

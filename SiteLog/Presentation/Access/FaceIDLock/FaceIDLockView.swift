@@ -1,9 +1,4 @@
-//
-//  FaceIDLockView.swift
-//  SiteLog
-//
-//  A1 · Face ID lock. Face ID itself (LAContext) arrives with the view model.
-//
+// A1 · Face ID lock
 
 import DesignSystem
 import Inject

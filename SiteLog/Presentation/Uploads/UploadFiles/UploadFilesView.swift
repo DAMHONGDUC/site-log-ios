@@ -1,9 +1,4 @@
-//
-//  UploadFilesView.swift
-//  SiteLog
-//
-//  U2 · Today's files with their upload state.
-//
+// U2 · Today's files
 
 import DesignSystem
 import Inject

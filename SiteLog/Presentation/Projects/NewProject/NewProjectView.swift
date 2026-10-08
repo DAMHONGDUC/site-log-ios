@@ -1,9 +1,4 @@
-//
-//  NewProjectView.swift
-//  SiteLog
-//
-//  P2 · New project sheet. "Create project" only closes the sheet for now.
-//
+// P2 · New project
 
 import DesignSystem
 import Inject

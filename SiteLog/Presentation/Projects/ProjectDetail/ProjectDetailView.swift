@@ -1,9 +1,4 @@
-//
-//  ProjectDetailView.swift
-//  SiteLog
-//
-//  P3 · Project overview with three tabs: Sessions · Locations · Plans (M3).
-//
+// P3 · Project overview
 
 import DesignSystem
 import Inject
