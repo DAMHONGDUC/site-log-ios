@@ -1,6 +1,6 @@
 # M0 — Scaffold
 
-- M0 — Scaffold · 40h · step-by-step guide with full, tested code.
+- M0 — Scaffold · 30h · step-by-step guide with full, tested code.
 
 ## Contents
 
@@ -20,6 +20,7 @@
 - **Goal:** a clean skeleton every later milestone builds on — layer folders, DI, CI, DesignSystem, access flow on fakes.
 - **Demo:** the app builds with zero warnings, CI is green; DesignSystem and the access flow run on fakes.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI), [04 §07.2](../feature-docs/04-reporting-security.md) (app lock).
+- **UI skeleton:** this milestone’s screens already exist at ~30% of Figma on `FakeData` (2026-10-08). UI parts add the view model, states and previews; the visual finish is [M7](m7-ui-finish.md).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
 
 | Part | Track | Hours | Status | What |
@@ -28,9 +29,9 @@
 | [P02](#p02--layer-folders-factory-di-appclock) | `Logic` | 6h | not start | Layer folders, Factory DI, `AppClock`, test libraries |
 | [P03](#p03--fastlane-test-lane-pr-checks) | `Logic` | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [P04](#p04--ci-guards) | `Logic` | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
-| [P05](#p05--designsystem-tokens) | `UI` | 5h | not start | DesignSystem tokens |
-| [P06](#p06--designsystem-components) | `UI` | 6h | not start | DesignSystem components + snapshot test |
-| [P07](#p07--access-flow-on-fakes) | `UI` | 6h | in progress | Access flow on fakes: A2, A1, A3, privacy overlay |
+| [P05](#p05--designsystem-tokens) | `UI` | 1h | not start | DesignSystem tokens (done with the skeleton) + hex test |
+| [P06](#p06--designsystem-components) | `UI` | 2h | not start | Components done with the skeleton; `DSGallery` + snapshot test |
+| [P07](#p07--access-flow-on-fakes) | `UI` | 4h | in progress | Access flow on fakes: repository fake, view models behind the A1–A3 skeleton |
 
 - Order: P02 first (everything needs it). Then UI (P05 → P06 → P07) and Logic (P03 → P04) alternate freely.
 

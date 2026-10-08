@@ -128,4 +128,5 @@
 4. S10 uploads → M2.
 5. S5 issues, S6 annotation, S9 reports, S11 app lock → M3.
 6. S7 plans, S8 checklists, S11 devices → M4.
-7. S11 account → M5; dark mode pass, empty/error/offline states for every screen → M6.
+7. S11 account → M5.
+8. UI skeleton (~30% of Figma, every screen on fake data) — done 2026-10-08; finish to Figma, dark mode pass, empty/error/offline states → M7, last.

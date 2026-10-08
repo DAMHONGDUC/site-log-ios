@@ -1,6 +1,6 @@
 # M2 — Bytes land · TestFlight #1
 
-- M2 — Bytes land · TestFlight #1 · 92h · skeleton guide.
+- M2 — Bytes land · TestFlight #1 · 89h · skeleton guide.
 
 ## Contents
 
@@ -27,6 +27,7 @@
 - **Goal:** move every captured file to R2 through kills, airplane mode and expired URLs; ship TestFlight #1.
 - **Demo:** 200 files reach storage and survive app kill and airplane mode.
 - **Specs:** [04 Upload engine](../feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](../feature-docs/03-backend.md#1-role), [17 CI/CD](../feature-docs/05-platform.md#17-cicd-and-testflight)
+- **UI skeleton:** this milestone’s screens already exist at ~30% of Figma on `FakeData` (2026-10-08). UI parts add the view model, states and previews; the visual finish is [M7](m7-ui-finish.md).
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
 | Part | Track | Hours | Status | What |
@@ -41,8 +42,8 @@
 | [P26](#p26--multipart-and-resume) | `Logic` | 14h | not start | Multipart and resume |
 | [P27](#p27--kill-and-relaunch-reconciliation) | `Logic` | 10h | not start | Kill and relaunch reconciliation |
 | [P28](#p28--wi-fi-only-and-url-refresh) | `Logic` | 6h | not start | Wi-Fi only and URL refresh |
-| [P29](#p29--s10-upload-status-screen) | `UI` | 5h | not start | S10 upload status screen |
-| [P30](#p30--sync-tab) | `UI` | 4h | not start | Sync tab |
+| [P29](#p29--s10-upload-status-screen) | `UI` | 3h | not start | S10 upload status screen — VM on skeleton |
+| [P30](#p30--sync-tab) | `UI` | 3h | not start | Sync tab — VM on skeleton |
 | [P31](#p31--uploadkit-behind-the-screens) | `Join` | 3h | not start | UploadKit behind the screens |
 | [P32](#p32--signing-and-testflight-1) | `Join` | 10h | not start | Signing and TestFlight #1 |
 

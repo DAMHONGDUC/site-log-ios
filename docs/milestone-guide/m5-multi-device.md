@@ -1,6 +1,6 @@
 # M5 — Multi-device
 
-- M5 — Multi-device · 63h · skeleton guide.
+- M5 — Multi-device · 60h · skeleton guide.
 
 ## Contents
 
@@ -24,6 +24,7 @@
 - **Goal:** sign in once, sync every metadata row across devices, deletes propagate.
 - **Demo:** a second device sees the same data and deletes propagate.
 - **Specs:** [08 Auth and sync](../feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](../feature-docs/03-backend.md#7-sync)
+- **UI skeleton:** this milestone’s screens already exist at ~30% of Figma on `FakeData` (2026-10-08). UI parts add the view model, states and previews; the visual finish is [M7](m7-ui-finish.md).
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
 | Part | Track | Hours | Status | What |
@@ -35,9 +36,9 @@
 | [P64](#p64--sync-engine-push-and-conflicts) | `Logic` | 12h | not start | Sync engine: push and conflicts |
 | [P65](#p65--deletes-propagate) | `Logic` | 6h | not start | Deletes propagate |
 | [P66](#p66--two-device-convergence-test) | `Logic` | 8h | not start | Two-device convergence test |
-| [P67](#p67--real-sign-in-screens) | `UI` | 4h | not start | Real sign-in screens |
-| [P68](#p68--account-settings) | `UI` | 4h | not start | Account settings |
-| [P69](#p69--sync-status) | `UI` | 3h | not start | Sync status |
+| [P67](#p67--real-sign-in-screens) | `UI` | 3h | not start | Real sign-in screens — VM on skeleton |
+| [P68](#p68--account-settings) | `UI` | 3h | not start | Account settings — VM on skeleton |
+| [P69](#p69--sync-status) | `UI` | 2h | not start | Sync status — VM on skeleton |
 | [P70](#p70--real-auth-and-sync-two-device-demo) | `Join` | 3h | not start | Real auth and sync, two-device demo |
 
 ### Order

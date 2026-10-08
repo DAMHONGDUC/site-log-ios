@@ -1,6 +1,6 @@
 # M4 — Field-ready · TestFlight #2
 
-- M4 — Field-ready · TestFlight #2 · 68h · skeleton guide.
+- M4 — Field-ready · TestFlight #2 · 61h · skeleton guide.
 
 ## Contents
 
@@ -25,6 +25,7 @@
 - **Goal:** floor-plan pins, checklists, BLE measuring (mock), diagnostics and crash reporting; ship TestFlight #2.
 - **Demo:** pins on a real floor plan, checklists, BLE mock, diagnostics.
 - **Specs:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins), [13](../feature-docs/01-field-work.md#13-checklist-templates), [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools), [09](../feature-docs/05-platform.md#09-diagnostics-and-observability)
+- **UI skeleton:** this milestone’s screens already exist at ~30% of Figma on `FakeData` (2026-10-08). UI parts add the view model, states and previews; the visual finish is [M7](m7-ui-finish.md).
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
 | Part | Track | Hours | Status | What |
@@ -36,10 +37,10 @@
 | [P52](#p52--devicelink-and-ble-mock) | `Logic` | 14h | not start | DeviceLink and BLE mock |
 | [P53](#p53--storage-cleanup-diagnostic-bundle) | `Logic` | 6h | not start | Storage, cleanup, diagnostic bundle |
 | [P54](#p54--firebase-crashlytics) | `Logic` | 3h | not start | Firebase Crashlytics |
-| [P55](#p55--plans-ui) | `UI` | 8h | not start | Plans UI |
-| [P56](#p56--template-picker-k2-checklist-run) | `UI` | 6h | not start | Template picker, K2 checklist run |
-| [P57](#p57--measurement-overlay-device-pairing) | `UI` | 4h | not start | Measurement overlay, device pairing |
-| [P58](#p58--storage-screen-bundle-export) | `UI` | 3h | not start | Storage screen, bundle export |
+| [P55](#p55--plans-ui) | `UI` | 5h | not start | Plans UI — VM on skeleton |
+| [P56](#p56--template-picker-k2-checklist-run) | `UI` | 4h | not start | Template picker, K2 checklist run — VM on skeleton |
+| [P57](#p57--measurement-overlay-device-pairing) | `UI` | 3h | not start | Measurement overlay, device pairing — VM on skeleton |
+| [P58](#p58--storage-screen-bundle-export) | `UI` | 2h | not start | Storage screen, bundle export — VM on skeleton |
 | [P59](#p59--real-logic-instruments-testflight-2) | `Join` | 6h | not start | Real logic, Instruments, TestFlight #2 |
 
 ### Order

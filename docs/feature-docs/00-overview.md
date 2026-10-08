@@ -201,7 +201,7 @@ site-log-ios/
 ├── Backend/                          # Node + Postgres → 03-backend.md
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/feature-docs/                # project specs
-├── docs/milestone-guide/             # step-by-step guide per milestone (M0–M6)
+├── docs/milestone-guide/             # step-by-step guide per milestone (M0–M7)
 ├── docs/design/                      # design plan, mockups, app icon
 └── project.yml                       # XcodeGen
 ```

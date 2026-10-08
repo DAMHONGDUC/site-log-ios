@@ -1,6 +1,6 @@
 # M1 — Record offline
 
-- M1 — Record offline · 56h · skeleton guide.
+- M1 — Record offline · 51h · skeleton guide.
 
 ## Contents
 
@@ -24,6 +24,7 @@
 - **Goal:** build the project → session → location tree and capture hashed photos, fully offline.
 - **Demo:** project → 80 locations → photo captured and hashed, **in airplane mode**.
 - **Specs:** [00 §3 Data model](../feature-docs/00-overview.md#3-data-model), [01](../feature-docs/01-field-work.md#01-projects-sessions-locations), [02](../feature-docs/01-field-work.md#02-capture-pipeline)
+- **UI skeleton:** this milestone’s screens already exist at ~30% of Figma on `FakeData` (2026-10-08). UI parts add the view model, states and previews; the visual finish is [M7](m7-ui-finish.md).
 - **Status:** skeleton — parts, files, order, tests. Full, tested code is added when this milestone starts, built on the real code from the milestone before.
 
 | Part | Track | Hours | Status | What |
@@ -34,10 +35,10 @@
 | [P11](#p11--bulk-generate-and-import-locations) | `Logic` | 3h | not start | Bulk-generate and import locations |
 | [P12](#p12--camera-session-and-permissions) | `Logic` | 6h | not start | Camera session and permissions |
 | [P13](#p13--write-to-disk-and-sha-256) | `Logic` | 5h | not start | Write to disk and SHA-256 |
-| [P14](#p14--p1-project-list-p2-new-project) | `UI` | 4h | not start | P1 project list, P2 new project |
-| [P15](#p15--p3-project-overview-p4-start-session) | `UI` | 4h | not start | P3 project overview, P4 start session |
-| [P16](#p16--p5-walkthrough-p6-generate-p7-room) | `UI` | 6h | not start | P5 walkthrough, P6 generate, P7 room |
-| [P17](#p17--c1-camera-screen-on-a-fake-session) | `UI` | 4h | not start | C1 camera screen on a fake session |
+| [P14](#p14--p1-project-list-p2-new-project) | `UI` | 3h | not start | P1 project list, P2 new project — VM on skeleton |
+| [P15](#p15--p3-project-overview-p4-start-session) | `UI` | 3h | not start | P3 project overview, P4 start session — VM on skeleton |
+| [P16](#p16--p5-walkthrough-p6-generate-p7-room) | `UI` | 4h | not start | P5 walkthrough, P6 generate, P7 room — VM on skeleton |
+| [P17](#p17--c1-camera-screen-on-a-fake-session) | `UI` | 3h | not start | C1 camera screen on a fake session — VM on skeleton |
 | [P18](#p18--real-logic-behind-the-screens) | `Join` | 4h | not start | Real logic behind the screens |
 
 ### Order

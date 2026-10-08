@@ -23,8 +23,8 @@
 
 | Doc | Contents |
 |---|---|
-| [ROADMAP.md](ROADMAP.md) | Milestones M0–M6, parts on UI / Logic tracks, hour estimates |
-| [milestone-guide/](docs/milestone-guide/) | One guide per milestone (M0–M6): every part, step by step |
+| [ROADMAP.md](ROADMAP.md) | Milestones M0–M7, parts on UI / Logic tracks, hour estimates |
+| [milestone-guide/](docs/milestone-guide/) | One guide per milestone (M0–M7): every part, step by step |
 | [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D08 |
 | [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
 | [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
@@ -103,7 +103,7 @@ site-log-ios/
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/
 │   ├── feature-docs/                     # project specs
-│   ├── milestone-guide/                  # .md guide per milestone (M0–M6)
+│   ├── milestone-guide/                  # .md guide per milestone (M0–M7)
 │   └── design/                           # design plan, mockups, app icon
 ├── ROADMAP.md
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
