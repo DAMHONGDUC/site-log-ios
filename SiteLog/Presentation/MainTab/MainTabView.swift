@@ -5,6 +5,7 @@
 //  Created by Duc Dam Dev on 1/10/26.
 //
 
+import DesignSystem
 import Inject
 import SwiftUI
 
@@ -14,18 +15,33 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             Tab("Projects", systemImage: "folder") {
-                Text("Projects 10000 2221")
+                NavigationStack {
+                    ProjectListView()
+                }
             }
-            Tab("Issue", systemImage: "exclamationmark.triangle") {
-                Text("Issues")
+            Tab("Issues", systemImage: "exclamationmark.triangle") {
+                NavigationStack {
+                    IssueListView()
+                }
             }
+            // Fake count; the real one comes from the issues view model
+            .badge(2)
             Tab("Sync", systemImage: "arrow.triangle.2.circlepath") {
-                Text("Sync")
+                NavigationStack {
+                    UploadStatusView()
+                }
             }
             Tab("Settings", systemImage: "gearshape") {
-                Text("Settings")
+                NavigationStack {
+                    SettingsView()
+                }
             }
         }
+        .tint(DSColor.textPrimary)
         .enableInjection()
     }
+}
+
+#Preview {
+    MainTabView()
 }
