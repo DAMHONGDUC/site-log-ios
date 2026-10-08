@@ -61,7 +61,15 @@ struct RootView: View {
                 accessStep = .unlocked
             }
         case .unlocked:
+            #if DEBUG
             MainTabView()
+                // Dev menu → Reset the app: start again from onboarding
+                .environment(\.resetApp, ResetAppAction {
+                    accessStep = .signIn
+                })
+            #else
+            MainTabView()
+            #endif
         }
     }
 }

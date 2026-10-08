@@ -53,6 +53,11 @@ struct SettingsView: View {
                             .padding(.horizontal, DSSpacing.regular)
                     }
                 }
+
+                // Debug builds only; never shipped
+                #if DEBUG
+                DevMenuSection()
+                #endif
             }
             .padding(.vertical, DSSpacing.small)
         }
