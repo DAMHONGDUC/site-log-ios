@@ -43,12 +43,11 @@ site-log-ios/
 ├── Packages/DesignSystem/                    # done: Tokens/, Components/; 4: DSGallery + tests
 ├── SiteLog/
 │   ├── App/AppDependencies.swift             # 1 (clock) → F01 (access)
-│   ├── Domain/Clock/AppClock.swift           # 1
-│   ├── Data/Clock/SystemClock.swift          # 1
+│   ├── Core/Helper/Clock/                    # 1: AppClock, SystemClock
 │   └── Data/Fakes/                           # every feature: in-memory repositories
 └── SiteLogTests/
     ├── SiteLogTests.swift                    # 1: FixedClock + Factory test
-    ├── Data/SystemClockTests.swift           # 1
+    ├── Core/SystemClockTests.swift           # 1
     └── Snapshots/DesignSystemSnapshotTests.swift  # 4
 ```
 
@@ -171,9 +170,10 @@ let package = Package(
 
 ### 3. AppClock
 
-`SiteLog/Domain/Clock/AppClock.swift`
+`SiteLog/Core/Helper/Clock/AppClock.swift`
 
 The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock.
+In Core, not Domain: only Data, DataSources and Presentation need time.
 
 ```swift
 import Foundation
@@ -188,7 +188,7 @@ nonisolated protocol AppClock: Sendable {
 }
 ```
 
-`SiteLog/Data/Clock/SystemClock.swift`
+`SiteLog/Core/Helper/Clock/SystemClock.swift`
 
 The real `AppClock` used by the running app.
 
@@ -207,7 +207,7 @@ nonisolated struct SystemClock: AppClock {
 }
 ```
 
-`SiteLogTests/Data/SystemClockTests.swift`
+`SiteLogTests/Core/SystemClockTests.swift`
 
 Checks that `SystemClock.uptime` moves forward.
 
@@ -493,7 +493,18 @@ for type_name in $data_types; do
   fi
 done
 
-# Rule 3: Presentation never touches storage or the network directly
+# Rule 3: Domain never uses a type declared in Core/ (Core is for the outer layers)
+core_types=$(grep -rhoE '(class|struct|enum|actor|protocol)[[:space:]]+[A-Z][A-Za-z0-9_]*' SiteLog/Core --include='*.swift' 2>/dev/null | awk '{print $2}' | sort -u || true)
+for type_name in $core_types; do
+  uses=$(grep -rnw "$type_name" SiteLog/Domain --include='*.swift' || true)
+  if [ -n "$uses" ]; then
+    echo "Domain may not use $type_name (declared in Core). Found:"
+    echo "$uses"
+    failed=1
+  fi
+done
+
+# Rule 4: Presentation never touches storage or the network directly
 direct_access=$(grep -rnE '^[[:space:]]*import (SwiftData|CoreData)$|ModelContext|URLSession' SiteLog/Presentation --include='*.swift' || true)
 if [ -n "$direct_access" ]; then
   echo "Presentation may not use SwiftData, ModelContext or URLSession. Found:"
@@ -609,7 +620,8 @@ jobs:
 | Run each script from the repo root | `OK: …` |
 | Add `print("x")` to any Swift file, run `check-no-print.sh` | Exit 1 with the file and line; then remove it |
 | Add `import UIKit` to a Domain file, run `check-imports.sh` | Exit 1; then remove it |
-| Use `SystemClock()` in a view, run `check-imports.sh` | Exit 1; then remove it |
+| Add `struct Probe {}` in `SiteLog/Data/`, use `Probe()` in a view, run `check-imports.sh` | Exit 1; then delete both |
+| Use `AppLogger` in a Domain file, run `check-imports.sh` | Exit 1; then remove it |
 
 ## 4. DesignSystem tests
 

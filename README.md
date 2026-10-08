@@ -86,7 +86,7 @@ site-log-ios/
 │   └── Core/                             # app-wide support, no business logic
 │       ├── Config/                       # *.xcconfig, entitlements, GoogleService-Info.plist (CI)
 │       ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
-│       ├── Helper/Logger/AppLogger.swift
+│       ├── Helper/                       # Logger/AppLogger, Clock/AppClock + SystemClock
 │       └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
 ├── Packages/
 │   └── DesignSystem/                     # Swift package, UI only: never imports Domain or app code

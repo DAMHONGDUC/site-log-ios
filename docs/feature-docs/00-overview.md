@@ -190,7 +190,7 @@ site-log-ios/
 │   └── Core/                         # app-wide support, no business logic
 │       ├── Config/                   # *.xcconfig, entitlements
 │       ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
-│       ├── Helper/Logger/AppLogger.swift  # shared helpers; use nothing else from the app
+│       ├── Helper/                   # Logger/AppLogger, Clock/AppClock + SystemClock; use nothing else from the app
 │       └── Resources/                # Assets.xcassets, localization, seeded templates
 ├── Packages/DesignSystem/            # Swift package: Tokens/ Components/ (UI only)
 ├── SiteLogTests/                     # mirrors SiteLog/: Domain/ Data/ DataSources/ Presentation/ Snapshots/
@@ -218,12 +218,14 @@ site-log-ios/
 | Data | `SiteLog/Data/` | `Domain` and data sources |
 | Data sources | `SiteLog/DataSources/<Name>/` | Frameworks; `Domain` for shared value types; never `Data` or each other |
 | DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI only; never `Domain` or app code |
+| Core | `SiteLog/Core/` (`Helper/Logger`, `Helper/Clock`, `Config`, `Resources`) | `Foundation`, `os` (`Fakes/` also `DesignSystem` until it is gone); used by every layer except `Domain` |
 | Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`) | Everything, plus `FactoryKit` |
 
 | Rule | Enforcement |
 |---|---|
 | `Domain` imports nothing beyond `Foundation` | CI `check-imports.sh` |
 | Presentation and `Domain` never use a type declared in `Data/` or `DataSources/` | CI `check-imports.sh` |
+| `Domain` never uses a type declared in `Core/` | CI `check-imports.sh` |
 | Presentation never uses SwiftData, `ModelContext` or `URLSession` | CI `check-imports.sh` |
 | View models call use cases only — never a repository | Review |
 | Repository protocols in `Domain`, implementations in `Data` | Review |
