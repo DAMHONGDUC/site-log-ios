@@ -61,6 +61,8 @@ SiteLog/
 
 `SiteLog/Domain/Access/AccessSettings.swift`
 
+The settings that decide which access screen comes first: welcome seen, lock on, Face ID, *Lock after*.
+
 ```swift
 // Everything the access flow needs to decide which screen comes first.
 nonisolated struct AccessSettings: Sendable {
@@ -77,6 +79,8 @@ nonisolated struct AccessSettings: Sendable {
 
 `SiteLog/Domain/Access/PasscodeCheck.swift`
 
+Result of checking a typed passcode: correct, wrong with tries left, or locked out.
+
 ```swift
 // The answer after the user types 6 digits on A3.
 nonisolated enum PasscodeCheck: Sendable {
@@ -90,6 +94,8 @@ nonisolated enum PasscodeCheck: Sendable {
 ```
 
 `SiteLog/Domain/Access/AccessRepository.swift`
+
+What the access flow needs from storage; the fake implements it now, Keychain in step 4.
 
 ```swift
 // Domain only says WHAT it needs. HOW (memory, Keychain, Face ID) lives in Data/.
@@ -105,6 +111,8 @@ nonisolated protocol AccessRepository: Sendable {
 ```
 
 `SiteLog/Domain/Access/AccessUseCases.swift`
+
+One use case per user action; view models call these, never the repository.
 
 ```swift
 // One use case per user action. Each one forwards to the repository for now.
@@ -207,6 +215,8 @@ nonisolated enum AppLogger {
 ```
 
 `SiteLog/Data/Fakes/InMemoryAccessRepository.swift`
+
+Fake `AccessRepository` kept in memory: demo passcode `123456`, Face ID always matches.
 
 ```swift
 import os
@@ -352,6 +362,8 @@ extension Container {
 
 `SiteLog/App/DevData/FakeDevDataActions.swift`
 
+Connects the dev menu’s Seed data / Delete all data to the fakes (Debug only).
+
 ```swift
 #if DEBUG
 
@@ -395,6 +407,8 @@ struct FakeDevDataActions: DevDataActions {
 ### 3.1 RootViewModel
 
 `SiteLog/Presentation/Root/RootViewModel.swift`
+
+Decides which screen shows after startup (welcome, Face ID, passcode, tabs) and re-locks after *Lock after*.
 
 ```swift
 import FactoryKit
@@ -516,6 +530,8 @@ final class RootViewModel {
 
 `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
 
+A2 actions: sign-in stubs until F12, and Continue offline.
+
 ```swift
 import FactoryKit
 import Observation
@@ -590,6 +606,8 @@ final class SignInViewModel {
 ### 3.3 A1 Face ID lock
 
 `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockViewModel.swift`
+
+A1: asks for Face ID when the screen appears; the user can switch to the passcode.
 
 ```swift
 import FactoryKit
@@ -671,6 +689,8 @@ final class FaceIDLockViewModel {
 ### 3.4 A3 Passcode
 
 `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockViewModel.swift`
+
+A3: checks the 6 digits, shows tries left, disables the keypad when locked out.
 
 ```swift
 import FactoryKit
@@ -850,6 +870,8 @@ struct RootView: View {
 
 `SiteLog/Presentation/Settings/AppLock/AppLockViewModel.swift`
 
+S4: loads and saves Lock app, Face ID and *Lock after*.
+
 ```swift
 import FactoryKit
 import Observation
@@ -915,6 +937,8 @@ final class AppLockViewModel {
 ### 3.7 S5 Set passcode
 
 `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeViewModel.swift`
+
+S5: enter a new passcode twice; saved only when both match.
 
 ```swift
 import FactoryKit
@@ -1011,6 +1035,8 @@ final class SetPasscodeViewModel {
 ## Tests (after the feature works)
 
 `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift`
+
+Correct passcode unlocks; a wrong one shows the tries left.
 
 ```swift
 import FactoryKit

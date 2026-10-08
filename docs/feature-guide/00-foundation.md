@@ -173,6 +173,8 @@ let package = Package(
 
 `SiteLog/Domain/Clock/AppClock.swift`
 
+The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock.
+
 ```swift
 import Foundation
 
@@ -187,6 +189,8 @@ nonisolated protocol AppClock: Sendable {
 ```
 
 `SiteLog/Data/Clock/SystemClock.swift`
+
+The real `AppClock` used by the running app.
 
 ```swift
 import Foundation
@@ -204,6 +208,8 @@ nonisolated struct SystemClock: AppClock {
 ```
 
 `SiteLogTests/Data/SystemClockTests.swift`
+
+Checks that `SystemClock.uptime` moves forward.
 
 ```swift
 import Foundation
@@ -226,6 +232,8 @@ struct SystemClockTests {
 ### 4. Composition root
 
 `SiteLog/App/AppDependencies.swift (F00 version; F01 adds Access)`
+
+Composition root: the one place that registers which implementation backs each protocol (Factory).
 
 ```swift
 import FactoryKit
@@ -290,6 +298,8 @@ struct AppDependenciesTests {
 
 `Gemfile`
 
+Pins the fastlane version so `bundle exec fastlane` runs the same everywhere.
+
 ```ruby
 source "https://rubygems.org"
 
@@ -299,12 +309,16 @@ gem "fastlane", "~> 2.228"
 
 `fastlane/Appfile`
 
+App bundle id for fastlane.
+
 ```ruby
 # Bundle id of the app; signing comes from the App Store Connect API key (F04)
 app_identifier("app.dd.site.log")
 ```
 
 `fastlane/Fastfile`
+
+fastlane lanes; `test` runs the unit and snapshot tests exactly like CI.
 
 ```ruby
 # Lanes for SiteLog. Run from the repo root: bundle exec fastlane <lane>
@@ -366,6 +380,8 @@ end
 
 `.github/workflows/pr-checks.yml (step 2 version)`
 
+GitHub Actions workflow run on every pull request: lint and tests.
+
 ```yaml
 # Runs on every PR and every push to main. Spec: docs/feature-docs/05-platform.md §17.
 name: PR checks
@@ -424,6 +440,8 @@ jobs:
 
 `Tools/CI/check-no-print.sh`
 
+Fails CI when app code uses `print(`; logging goes through `AppLogger`.
+
 ```bash
 #!/usr/bin/env bash
 # Fails when any Swift file in the app or packages calls print(.
@@ -443,6 +461,8 @@ echo "OK: no print( calls"
 ```
 
 `Tools/CI/check-imports.sh`
+
+Fails CI when a layer uses one it must not, e.g. a view using a `Data/` type.
 
 ```bash
 #!/usr/bin/env bash
@@ -489,6 +509,8 @@ echo "OK: layer rules"
 ```
 
 `Tools/CI/build-strict.sh`
+
+Builds the app with warnings treated as errors.
 
 ```bash
 #!/usr/bin/env bash
@@ -620,6 +642,8 @@ struct DesignSystemTests {
 
 `Packages/DesignSystem/Sources/DesignSystem/Components/DSGallery.swift`
 
+Every DesignSystem component on one screen, for previews and the snapshot test.
+
 ```swift
 import SwiftUI
 
@@ -685,6 +709,8 @@ public struct DSGallery: View {
 ```
 
 `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift`
+
+Snapshots `DSGallery` in light and dark; fails when a component’s look changes.
 
 ```swift
 import DesignSystem
