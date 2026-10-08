@@ -26,11 +26,14 @@
 | [2](#2-view-models--notification-permission-and-settings) | View models | 2h | not start | Notification permission and settings |
 | [3](#3-real-data--push-and-routing) | Real data | 8h | not start | Push and routing |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -59,7 +62,8 @@ SiteLog/
 
 ## 3. Real data — Push and routing
 
-### Push notifications
+<details open>
+<summary><b>3.1 Push notifications</b></summary>
 
 - **Goal:** push that carries a destination only; works fully when denied.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
@@ -74,7 +78,10 @@ SiteLog/
 1. Ask for permission at a moment that makes sense, not at first launch.
 2. Test: `xcrun simctl push booted app.dd.site.log payload.json`.
 
-### Deep links
+</details>
+
+<details open>
+<summary><b>3.2 Deep links</b></summary>
 
 - **Goal:** `sitelog://<route>/<id>` parsed once, routed after cold launch.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
@@ -89,6 +96,8 @@ SiteLog/
 1. Add the `sitelog` URL scheme in `project.yml`.
 2. Deleted target lands on a safe screen.
 3. Test: `xcrun simctl openurl booted sitelog://session/42`.
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -112,3 +121,4 @@ SiteLog/
 | Demo | Push opens the target; deep link from Safari |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F14 steps ticked |
+

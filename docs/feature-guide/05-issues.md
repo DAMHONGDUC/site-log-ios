@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-the-issues-screens) | View models | 7h | not start | Wire the Issues screens |
 | [4](#4-real-data--issue-logic-and-dictation) | Real data | 11h | not start | Issue logic and dictation |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -83,7 +86,8 @@ SiteLog/
 
 ## 4. Real data — Issue logic and dictation
 
-### Issue CRUD, carry-over, pairing
+<details open>
+<summary><b>4.1 Issue CRUD, carry-over, pairing</b></summary>
 
 - **Goal:** log issues, surface open ones next session, close by verification photo.
 - **Spec:** [03.1–03.2](../feature-docs/01-field-work.md#031-flows)
@@ -93,7 +97,10 @@ SiteLog/
 1. Closing creates a new `.verified` issue and links the old one; originals never mutated.
 2. Upload priority: critical 100 · major 50 · minor 10.
 
-### Phrase library, dictation, voice notes
+</details>
+
+<details open>
+<summary><b>4.2 Phrase library, dictation, voice notes</b></summary>
 
 - **Goal:** on-device dictation and a usage-sorted phrase library.
 - **Spec:** [12.3](../feature-docs/01-field-work.md#123-dictation-and-voice-notes)
@@ -102,6 +109,8 @@ SiteLog/
 
 1. `SFSpeechRecognizer` with `requiresOnDeviceRecognition = true`; vi + en.
 2. Voice note = audio `Capture`.
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -123,3 +132,4 @@ SiteLog/
 | Demo | Issue → re-check → before/after pair shown on the issue |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F05 steps ticked |
+

@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-pairing-and-overlay) | View models | 3h | not start | Wire pairing and overlay |
 | [4](#4-real-data--ble-and-mock-peripheral) | Real data | 13h | not start | BLE and mock peripheral |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -105,3 +108,4 @@ SiteLog/Presentation/
 | Demo | BLE mock reading on the camera |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F10 steps ticked |
+

@@ -26,11 +26,14 @@
 | [2](#2-view-models--live-state-on-the-sync-tab) | View models | 2h | not start | Live state on the Sync tab |
 | [3](#3-real-data--channel-bridge-verification-worker) | Real data | 17h | not start | Channel, bridge, verification worker |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -60,7 +63,8 @@ SiteLog/
 
 ## 3. Real data — Channel, bridge, verification worker
 
-### Realtime client
+<details open>
+<summary><b>3.1 Realtime client</b></summary>
 
 - **Goal:** observation-only WebSocket: connect, auth in the first message, ping, reconnect with backoff.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel)
@@ -77,7 +81,10 @@ SiteLog/
 2. Re-arm `receive` after every message.
 3. Connect only in foreground with unsynced jobs.
 
-### Events into the upload store
+</details>
+
+<details open>
+<summary><b>3.2 Events into the upload store</b></summary>
 
 - **Goal:** the app layer turns events into `UploadStore` operations that only move jobs forward.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel)
@@ -92,7 +99,10 @@ SiteLog/
 2. Unknown `jobID` ignored; handling idempotent.
 3. Nightly CI builds the app with `Realtime` removed.
 
-### Verification worker
+</details>
+
+<details open>
+<summary><b>3.3 Verification worker</b></summary>
 
 - **Goal:** backend re-reads each object from R2 and flips `registered` → `verified` or `mismatch`.
 - **Spec:** [14 §8](../feature-docs/03-backend.md#8-integrity)
@@ -106,6 +116,8 @@ SiteLog/
 
 1. Mismatch pushes `jobFailed(integrity)` to the app.
 2. The report prints exactly the state reached.
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -133,3 +145,4 @@ SiteLog/
 | Demo | Realtime state on the Sync tab |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F13 steps ticked |
+

@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-the-report-flow) | View models | 4h | not start | Wire the report flow |
 | [4](#4-real-data--csv-pdf-audit-chain) | Real data | 25h | not start | CSV, PDF, audit chain |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -83,7 +86,8 @@ SiteLog/
 
 ## 4. Real data — CSV, PDF, audit chain
 
-### Report data model and CSV
+<details open>
+<summary><b>4.1 Report data model and CSV</b></summary>
 
 - **Goal:** one-fetch `SessionSnapshot` and streamed CSV.
 - **Spec:** [05](../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export)
@@ -92,7 +96,10 @@ SiteLog/
 
 1. CSV columns from spec 05; stream with `FileHandle`.
 
-### PDF renderer
+</details>
+
+<details open>
+<summary><b>4.2 PDF renderer</b></summary>
 
 - **Goal:** paginated PDF that never drops an image.
 - **Spec:** [05.2](../feature-docs/04-reporting-security.md#052-rendering)
@@ -107,7 +114,10 @@ SiteLog/
 1. Split this part when you start (layout · render · integrity footer).
 2. Temp file + atomic move.
 
-### Audit chain
+</details>
+
+<details open>
+<summary><b>4.3 Audit chain</b></summary>
 
 - **Goal:** HMAC-chained audit log, verified at launch.
 - **Spec:** [07.3](../feature-docs/04-reporting-security.md#073-audit-log)
@@ -117,7 +127,10 @@ SiteLog/
 1. Key generated once, Keychain only.
 2. Verify step runs async after `.ready`.
 
-### Real logic behind the screens
+</details>
+
+<details open>
+<summary><b>4.4 Real logic behind the screens</b></summary>
 
 - **Goal:** real issues, lock and reports; export from a real session.
 
@@ -134,6 +147,8 @@ SiteLog/
 - Before/after pair in the PDF
 - Signed PDF + CSV shared in airplane mode
 - App lock uses Keychain + Face ID
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -154,3 +169,4 @@ SiteLog/
 | Demo | Signed PDF + CSV from a real session, before/after pairs included |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F07 steps ticked |
+

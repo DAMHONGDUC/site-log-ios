@@ -38,11 +38,14 @@
 | [8](#8-dark-mode-states-imagery) | UI | 5h | not start | Dark mode, empty/error/offline states, imagery |
 | [9](#9-accessibility-re-check-and-submission) | Release | 6h | not start | Accessibility re-check, listing, submission |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - F16 changes how screens look, never what they do.
 - Step 1 first: every screen step uses the finished components.
 - Steps 2–7 in any order; 8 after them; 9 closes the roadmap.
+
+</details>
 
 ## Target structure
 
@@ -75,66 +78,90 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** the shared components match the Foundations & Components page.
 - Severity segmented control with marker shapes, Pass/Fail/N/A answer row, toggle row, radio row.
 
-### Done when
+<details open>
+<summary><b>1.1 Done when</b></summary>
 
 - `DSGallery` matches the components page; snapshot references re-recorded (light + dark)
+
+</details>
 
 ## 2. Access to Figma
 
 - **Goal:** A1 Face ID lock, A2 sign in, A3 passcode, privacy overlay match S1.
 - App mark from `docs/design/app-icon/`; passcode dots and number pad as designed.
 
-### Done when
+<details open>
+<summary><b>2.1 Done when</b></summary>
 
 - 4 screens match Figma; snapshots added
+
+</details>
 
 ## 3. Projects to Figma
 
 - **Goal:** P1–P7, bulk locations, clone tree, end session (R1) match S2–S3.
 
-### Done when
+<details open>
+<summary><b>3.1 Done when</b></summary>
 
 - Every Projects screen matches Figma; snapshots added
+
+</details>
 
 ## 4. Capture and issues to Figma
 
 - **Goal:** C1 camera chrome (glass buttons, mode switcher, shutter), capture review, measurement overlay, C2–C6 match S4–S5.
 
-### Done when
+<details open>
+<summary><b>4.1 Done when</b></summary>
 
 - Camera screens checked on device (real viewfinder); snapshots for the non-camera screens
+
+</details>
 
 ## 5. Markup and plans to Figma
 
 - **Goal:** markup editor tools and colours, stamped preview, plan list thumbnails, pins and clusters match S6–S7.
 
-### Done when
+<details open>
+<summary><b>5.1 Done when</b></summary>
 
 - Every Annotation and Plans screen matches Figma; snapshots added
+
+</details>
 
 ## 6. Checklists and reports to Figma
 
 - **Goal:** K1–K4 and R2–R5 match S8–S9; real PDF preview page styling.
 
-### Done when
+<details open>
+<summary><b>6.1 Done when</b></summary>
 
 - Every Checklists and Reports screen matches Figma; snapshots added
+
+</details>
 
 ## 7. Sync and settings to Figma
 
 - **Goal:** U1–U3, S1–S5, storage cleanup and account match S10–S11.
 
-### Done when
+<details open>
+<summary><b>7.1 Done when</b></summary>
 
 - Every Uploads, Diagnostics and Settings screen matches Figma; snapshots added
+
+</details>
 
 ## 8. Dark mode, states, imagery
 
 - **Goal:** dark mode pass on every screen; empty, error and offline states; no placeholder imagery left.
 
-### Done when
+<details open>
+<summary><b>8.1 Done when</b></summary>
 
 - No screen shows a placeholder; every list has its empty and error state; dark snapshots pass
+
+</details>
 
 ## 9. Accessibility re-check and submission
 
@@ -144,15 +171,21 @@ fastlane/Fastfile                # 9: release lane waits for processing
 |---|---|
 | `fastlane/Fastfile` | `release` lane waits for processing |
 
-### Steps
+<details open>
+<summary><b>9.1 Steps</b></summary>
 
 1. Repeat the F15 checks (Dynamic Type, VoiceOver, contrast) on the finished screens.
 2. Store listing, screenshots from the finished UI, privacy answers; submission stays manual.
 
-### Done when
+</details>
+
+<details open>
+<summary><b>9.2 Done when</b></summary>
 
 - Accessibility checks pass on the finished UI
 - Build submitted for review
+
+</details>
 
 ## Feature done
 
@@ -161,3 +194,4 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | Demo | Every screen next to its Figma frame, light and dark |
 | Release | App Store submission sent |
 | Roadmap | F16 steps ticked |
+

@@ -22,5 +22,7 @@
   "lldb.consoleMode": "evaluate",
   "sweetpad.xcodegen.autogenerate": true,
   "sweetpad.build.xcodeWorkspacePath": "SiteLog.xcodeproj",
-  "sweetpad.build.scheme": "SiteLog"
+  "sweetpad.build.scheme": "SiteLog",
+  // Guide preview: same 16 px indent for sub-sections as GitHub.
+  "markdown.styles": [".vscode/markdown-preview.css"]
 }

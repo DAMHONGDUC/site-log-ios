@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-the-camera) | View models | 3h | not start | Wire the camera |
 | [4](#4-real-data--camera-disk-sha-256) | Real data | 14h | not start | Camera, disk, SHA-256 |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -75,7 +78,8 @@ SiteLog/
 
 ## 4. Real data — Camera, disk, SHA-256
 
-### Camera session and permissions
+<details open>
+<summary><b>4.1 Camera session and permissions</b></summary>
 
 - **Goal:** one `AVCaptureSession` behind `CaptureSessionControlling`, testable without a camera.
 - **Spec:** [02.1](../feature-docs/01-field-work.md#021-session-and-state)
@@ -92,7 +96,10 @@ SiteLog/
 2. Camera, mic, location permissions asked separately.
 3. Add `NSCameraUsageDescription` etc. via `project.yml` `INFOPLIST_KEY_*`.
 
-### Write to disk and SHA-256
+</details>
+
+<details open>
+<summary><b>4.2 Write to disk and SHA-256</b></summary>
 
 - **Goal:** each photo written to `media/…` and hashed before the DB row exists.
 - **Spec:** [02.2](../feature-docs/01-field-work.md#022-metadata-and-hashing)
@@ -107,7 +114,10 @@ SiteLog/
 1. Write → close → hash → insert row (no row without a hash).
 2. GPS older than `locationStaleAfter` is `nil`.
 
-### Real logic behind the screens
+</details>
+
+<details open>
+<summary><b>4.3 Real logic behind the screens</b></summary>
 
 - **Goal:** swap fakes for SwiftData repositories and the real camera; run the airplane-mode demo.
 
@@ -125,6 +135,8 @@ SiteLog/
 
 - 50 photos with flat memory
 - Relaunch shows every capture with its hash
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -146,3 +158,4 @@ SiteLog/
 | Demo | Airplane mode on device: project → location → hashed photo, 50 photos with flat memory |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F03 steps ticked |
+

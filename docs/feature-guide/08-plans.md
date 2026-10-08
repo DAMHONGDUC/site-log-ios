@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-the-plans-screens) | View models | 5h | not start | Wire the Plans screens |
 | [4](#4-real-data--import-and-pins) | Real data | 9h | not start | Import and pins |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -82,7 +85,8 @@ SiteLog/
 
 ## 4. Real data — Import and pins
 
-### Floor plan import and storage
+<details open>
+<summary><b>4.1 Floor plan import and storage</b></summary>
 
 - **Goal:** import PDF/image plans, hashed, tiled on demand.
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
@@ -92,10 +96,15 @@ SiteLog/
 1. Multi-page PDF → one `PlanSheet` per chosen page.
 2. Reject encrypted / oversized files with a reason.
 
-### Pin coordinates and persistence
+</details>
+
+<details open>
+<summary><b>4.2 Pin coordinates and persistence</b></summary>
 
 - **Goal:** one pin per issue in 0…1 coordinates; moves audited.
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -117,3 +126,4 @@ SiteLog/
 | Demo | Pins on a real floor plan |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F08 steps ticked |
+

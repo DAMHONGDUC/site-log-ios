@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-the-projects-screens) | View models | 10h | not start | Wire the Projects screens |
 | [4](#4-real-data--swiftdata) | Real data | 15h | not start | SwiftData |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -100,7 +103,8 @@ SiteLog/
 
 ## 4. Real data — SwiftData
 
-### SwiftData schema and repositories
+<details open>
+<summary><b>4.1 SwiftData schema and repositories</b></summary>
 
 - **Goal:** SwiftData models in `DataSources/Persistence/` and repository implementations in `Data/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
@@ -117,7 +121,10 @@ SiteLog/
 3. Write repositories with a `@ModelActor` for writes.
 4. Cascade delete project → sessions, locations, plans.
 
-### Schema versioning and migrations
+</details>
+
+<details open>
+<summary><b>4.2 Schema versioning and migrations</b></summary>
 
 - **Goal:** `VersionedSchema` + `SchemaMigrationPlan` from day one.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
@@ -133,6 +140,8 @@ SiteLog/
 1. Wrap models in `SchemaV1`.
 2. Add the startup step `DatabaseStep` (blocks launch) to `StartupSequence`.
 3. Commit a fixture store for migration tests.
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -162,3 +171,4 @@ SiteLog/
 | Demo | Airplane mode: project → 80 locations → walkthrough; relaunch keeps everything |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F02 steps ticked |
+

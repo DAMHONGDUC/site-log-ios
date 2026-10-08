@@ -28,11 +28,14 @@
 | [3](#3-real-data--storage-bundle-crashlytics) | Real data | 8h | not start | Storage, bundle, Crashlytics |
 | [4](#4-release--instruments-pass-and-testflight-2) | Release | 6h | not start | Instruments pass and TestFlight #2 |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -68,7 +71,8 @@ SiteLog/
 
 ## 3. Real data — Storage, bundle, Crashlytics
 
-### Storage, cleanup, diagnostic bundle
+<details open>
+<summary><b>3.1 Storage, cleanup, diagnostic bundle</b></summary>
 
 - **Goal:** integrity checks, synced-only cleanup, redacted bundle.
 - **Spec:** [09.2–09.3](../feature-docs/05-platform.md#092-integrity-checks-and-cleanup)
@@ -78,7 +82,10 @@ SiteLog/
 1. Cleanup touches `synced` files only.
 2. Redact on write.
 
-### Firebase Crashlytics
+</details>
+
+<details open>
+<summary><b>3.2 Firebase Crashlytics</b></summary>
 
 - **Goal:** crash and non-fatal reporting, first at launch.
 - **Spec:** [09.4](../feature-docs/05-platform.md#094-app-wide-logging)
@@ -91,6 +98,8 @@ SiteLog/
 #### Done when
 
 - A test non-fatal shows in the Crashlytics console
+
+</details>
 
 ## 4. Release — Instruments pass and TestFlight #2
 
@@ -125,3 +134,4 @@ SiteLog/
 | TestFlight #2 | Installed on a real device |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F11 steps ticked |
+

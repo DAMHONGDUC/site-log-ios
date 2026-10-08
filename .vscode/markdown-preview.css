@@ -1,0 +1,4 @@
+/* Guide labels written as <b>: File, Explain, Hint, Code. */
+p > b:first-child {
+    color: #2f81f7;
+}

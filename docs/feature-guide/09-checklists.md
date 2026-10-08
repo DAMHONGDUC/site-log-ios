@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-the-checklists-screens) | View models | 4h | not start | Wire the Checklists screens |
 | [4](#4-real-data--templates-and-results) | Real data | 4h | not start | Templates and results |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -102,3 +105,4 @@ SiteLog/
 | Demo | Checklist run; Fail creates one issue |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F09 steps ticked |
+

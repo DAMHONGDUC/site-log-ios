@@ -30,11 +30,14 @@
 | [4](#4-real-data--uploadkit) | Real data | 55h | not start | UploadKit |
 | [5](#5-release--signing-and-testflight-1) | Release | 10h | not start | Signing and TestFlight #1 |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -85,7 +88,8 @@ SiteLog/
 
 ## 3. Backend — Backend endpoints
 
-### Backend skeleton and first migrations
+<details open>
+<summary><b>3.1 Backend skeleton and first migrations</b></summary>
 
 - **Goal:** Fastify app, Postgres, `0001_uploads.sql`, Firebase token check.
 - **Spec:** [14 §2–5](../feature-docs/03-backend.md#2-stack)
@@ -101,7 +105,10 @@ SiteLog/
 1. Throwaway Postgres for tests (Docker).
 2. `vitest` + `tsc` + ESLint in CI (Ubuntu job).
 
-### Presigned upload endpoint
+</details>
+
+<details open>
+<summary><b>3.2 Presigned upload endpoint</b></summary>
 
 - **Goal:** `POST /uploads` returns a single-PUT or multipart plan; keys checked against the caller’s uid.
 - **Spec:** [14 §3–4](../feature-docs/03-backend.md#3-endpoints)
@@ -116,7 +123,10 @@ SiteLog/
 1. Presign locally with `s3-request-presigner`; TTL 1 h.
 2. One R2 bucket per environment.
 
-### Refresh, complete, abort
+</details>
+
+<details open>
+<summary><b>3.3 Refresh, complete, abort</b></summary>
 
 - **Goal:** idempotent `complete`, part URL refresh, abort.
 - **Spec:** [14 §7.3](../feature-docs/03-backend.md#73-idempotent-complete)
@@ -130,9 +140,12 @@ SiteLog/
 1. `complete` twice → identical 200 body.
 2. Never 400 for transient conditions (§10).
 
+</details>
+
 ## 4. Real data — UploadKit
 
-### Job model and local store
+<details open>
+<summary><b>4.1 Job model and local store</b></summary>
 
 - **Goal:** SwiftData-backed `UploadStore` in `Persistence`.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
@@ -145,7 +158,10 @@ SiteLog/
 
 1. Lookup by `taskDescription = "jobID#part"`.
 
-### Single PUT via background URLSession
+</details>
+
+<details open>
+<summary><b>4.2 Single PUT via background URLSession</b></summary>
 
 - **Goal:** files under 5 MB upload through a background session and survive suspension.
 - **Spec:** [04.3](../feature-docs/02-upload-sync.md#043-ios-background-constraints)
@@ -161,7 +177,10 @@ SiteLog/
 2. Wire `handleEventsForBackgroundURLSession` in AppDelegate.
 3. Enqueue the first batch in the foreground.
 
-### State machine, retry, backoff
+</details>
+
+<details open>
+<summary><b>4.3 State machine, retry, backoff</b></summary>
 
 - **Goal:** pure `UploadStateMachine.reduce` and jittered backoff.
 - **Spec:** [04.4](../feature-docs/02-upload-sync.md#044-state-machine)
@@ -175,7 +194,10 @@ SiteLog/
 1. 401/403 and offline consume no retry budget.
 2. Delay `min(2s × 2^n, 300s) × jitter`, max 5 attempts; inject the RNG.
 
-### Multipart and resume
+</details>
+
+<details open>
+<summary><b>4.4 Multipart and resume</b></summary>
 
 - **Goal:** files over 5 MB in uniform 8 MB parts, resumable part by part.
 - **Spec:** [04.2](../feature-docs/02-upload-sync.md#042-protocol)
@@ -190,7 +212,10 @@ SiteLog/
 1. Split this part when you start (planner · upload · complete).
 2. Final part failure never calls `complete`.
 
-### Kill and relaunch reconciliation
+</details>
+
+<details open>
+<summary><b>4.5 Kill and relaunch reconciliation</b></summary>
 
 - **Goal:** cold launch reattaches, cancels or resets jobs so nothing sticks at 60%.
 - **Spec:** [04.3](../feature-docs/02-upload-sync.md#043-ios-background-constraints)
@@ -204,7 +229,10 @@ SiteLog/
 
 1. Recreate the session with the same identifier at launch.
 
-### Wi-Fi only and URL refresh
+</details>
+
+<details open>
+<summary><b>4.6 Wi-Fi only and URL refresh</b></summary>
 
 - **Goal:** Wi-Fi-only policy (default on), dedupe by hash, proactive URL refresh.
 - **Spec:** [04.5](../feature-docs/02-upload-sync.md#045-policy)
@@ -214,7 +242,10 @@ SiteLog/
 1. `allowsCellularAccess = false` when Wi-Fi only.
 2. Same `sha256` in a project → reuse `remoteKey`.
 
-### UploadKit behind the screens
+</details>
+
+<details open>
+<summary><b>4.7 UploadKit behind the screens</b></summary>
 
 - **Goal:** real `UploadCoordinator` + SwiftData store behind the Sync tab; 200-file demo.
 
@@ -231,6 +262,8 @@ SiteLog/
 
 - 200 files / 2 GB complete with matching server hashes
 - Airplane mode → waiting, budget intact
+
+</details>
 
 ## 5. Release — Signing and TestFlight #1
 
@@ -295,3 +328,4 @@ SiteLog/
 | TestFlight #1 | Installed from TestFlight on a real device |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F04 steps ticked |
+

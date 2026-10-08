@@ -30,11 +30,14 @@
 | [4](#4-backend--pull-and-push-endpoints) | Backend | 6h | not start | Pull and push endpoints |
 | [5](#5-real-data--firebase-auth-and-sync-engine) | Real data | 44h | not start | Firebase Auth and sync engine |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -89,7 +92,8 @@ SiteLog/
 
 ## 5. Real data — Firebase Auth and sync engine
 
-### Firebase Auth
+<details open>
+<summary><b>5.1 Firebase Auth</b></summary>
 
 - **Goal:** Sign in with Apple and email; ID token on every request.
 - **Spec:** [08.1](../feature-docs/02-upload-sync.md#081-offline-first-and-auth)
@@ -100,7 +104,10 @@ SiteLog/
 2. Offline relaunch after sign-in goes straight in.
 3. Sign in with Apple capability via `project.yml`.
 
-### Sync engine: pull
+</details>
+
+<details open>
+<summary><b>5.2 Sync engine: pull</b></summary>
 
 - **Goal:** cursor-based pull into SwiftData.
 - **Spec:** [08.3](../feature-docs/02-upload-sync.md#083-client-engine)
@@ -109,7 +116,10 @@ SiteLog/
 
 1. Triggers: foreground, network back, every `syncInterval`.
 
-### Sync engine: push and conflicts
+</details>
+
+<details open>
+<summary><b>5.3 Sync engine: push and conflicts</b></summary>
 
 - **Goal:** offline mutation queue, batched push, `superseded` adoption.
 - **Spec:** [08.2](../feature-docs/02-upload-sync.md#082-protocol)
@@ -119,12 +129,18 @@ SiteLog/
 1. Split when you start (queue · push · conflicts).
 2. Queue in dependency order.
 
-### Deletes propagate
+</details>
+
+<details open>
+<summary><b>5.4 Deletes propagate</b></summary>
 
 - **Goal:** soft deletes, tombstones, 90-day purge.
 - **Spec:** [08.2](../feature-docs/02-upload-sync.md#082-protocol)
 
-### Two-device convergence test
+</details>
+
+<details open>
+<summary><b>5.5 Two-device convergence test</b></summary>
 
 - **Goal:** two clients against one backend converge.
 
@@ -132,7 +148,10 @@ SiteLog/
 
 1. Run in CI against a throwaway Postgres.
 
-### Real auth and sync, two-device demo
+</details>
+
+<details open>
+<summary><b>5.6 Real auth and sync, two-device demo</b></summary>
 
 - **Goal:** Real Firebase + sync behind the screens.
 
@@ -149,6 +168,8 @@ SiteLog/
 
 - Second device sees the same data
 - Deletes propagate
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -174,3 +195,4 @@ SiteLog/
 | Demo | Two devices converge; deletes propagate |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F12 steps ticked |
+

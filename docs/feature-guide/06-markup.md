@@ -28,11 +28,14 @@
 | [3](#3-view-models--wire-markup-and-stamp) | View models | 4h | not start | Wire markup and stamp |
 | [4](#4-real-data--rendering-and-trusted-time) | Real data | 13h | not start | Rendering and trusted time |
 
-### Order
+<details open>
+<summary><b>Order</b></summary>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
+
+</details>
 
 ## Target structure
 
@@ -80,7 +83,8 @@ SiteLog/
 
 ## 4. Real data — Rendering and trusted time
 
-### Annotation model and rendering
+<details open>
+<summary><b>4.1 Annotation model and rendering</b></summary>
 
 - **Goal:** vector markup layer that never touches the original.
 - **Spec:** [12.1](../feature-docs/01-field-work.md#121-annotation-layer)
@@ -90,7 +94,10 @@ SiteLog/
 1. Normalized coordinates (0…1).
 2. Stroke scales with image width.
 
-### Trusted time and stamped derivative
+</details>
+
+<details open>
+<summary><b>4.2 Trusted time and stamped derivative</b></summary>
 
 - **Goal:** `TrustedTimestamp` with confidence; stamped JPEG copies on demand.
 - **Spec:** [12.2, 12.4](../feature-docs/01-field-work.md#124-trusted-time)
@@ -99,6 +106,8 @@ SiteLog/
 
 1. Offset from the backend `Date` header.
 2. Derived images never hashed, never evidence.
+
+</details>
 
 ## Tests (after the feature works)
 
@@ -124,3 +133,4 @@ SiteLog/
 | Demo | Markup on a photo; original hash unchanged; stamped copy shared |
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F06 steps ticked |
+
