@@ -49,7 +49,7 @@
 | [9](#9-accessibility-re-check-and-submission) | Release | 6h | not start | Accessibility re-check, listing, submission |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - F16 changes how screens look, never what they do.
@@ -103,7 +103,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - Severity segmented control with marker shapes, Pass/Fail/N/A answer row, toggle row, radio row.
 
 <details open>
-<summary><b>1.1 Done when</b></summary>
+<summary><strong>1.1 Done when</strong></summary>
 <dl><dd>
 
 - `DSGallery` matches the components page; snapshot references re-recorded (light + dark)
@@ -121,7 +121,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - App mark from `docs/design/app-icon/`; passcode dots and number pad as designed.
 
 <details open>
-<summary><b>2.1 Done when</b></summary>
+<summary><strong>2.1 Done when</strong></summary>
 <dl><dd>
 
 - 4 screens match Figma; snapshots added
@@ -138,7 +138,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** P1–P7, bulk locations, clone tree, end session (R1) match S2–S3.
 
 <details open>
-<summary><b>3.1 Done when</b></summary>
+<summary><strong>3.1 Done when</strong></summary>
 <dl><dd>
 
 - Every Projects screen matches Figma; snapshots added
@@ -155,7 +155,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** C1 camera chrome (glass buttons, mode switcher, shutter), capture review, measurement overlay, C2–C6 match S4–S5.
 
 <details open>
-<summary><b>4.1 Done when</b></summary>
+<summary><strong>4.1 Done when</strong></summary>
 <dl><dd>
 
 - Camera screens checked on device (real viewfinder); snapshots for the non-camera screens
@@ -172,7 +172,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** markup editor tools and colours, stamped preview, plan list thumbnails, pins and clusters match S6–S7.
 
 <details open>
-<summary><b>5.1 Done when</b></summary>
+<summary><strong>5.1 Done when</strong></summary>
 <dl><dd>
 
 - Every Annotation and Plans screen matches Figma; snapshots added
@@ -189,7 +189,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** K1–K4 and R2–R5 match S8–S9; real PDF preview page styling.
 
 <details open>
-<summary><b>6.1 Done when</b></summary>
+<summary><strong>6.1 Done when</strong></summary>
 <dl><dd>
 
 - Every Checklists and Reports screen matches Figma; snapshots added
@@ -206,7 +206,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** U1–U3, S1–S5, storage cleanup and account match S10–S11.
 
 <details open>
-<summary><b>7.1 Done when</b></summary>
+<summary><strong>7.1 Done when</strong></summary>
 <dl><dd>
 
 - Every Uploads, Diagnostics and Settings screen matches Figma; snapshots added
@@ -223,7 +223,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 - **Goal:** dark mode pass on every screen; empty, error and offline states; no placeholder imagery left.
 
 <details open>
-<summary><b>8.1 Done when</b></summary>
+<summary><strong>8.1 Done when</strong></summary>
 <dl><dd>
 
 - No screen shows a placeholder; every list has its empty and error state; dark snapshots pass
@@ -244,7 +244,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | `fastlane/Fastfile` | `release` lane waits for processing |
 
 <details open>
-<summary><b>9.1 Steps</b></summary>
+<summary><strong>9.1 Steps</strong></summary>
 <dl><dd>
 
 1. Repeat the F15 checks (Dynamic Type, VoiceOver, contrast) on the finished screens.
@@ -254,7 +254,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 </details>
 
 <details open>
-<summary><b>9.2 Done when</b></summary>
+<summary><strong>9.2 Done when</strong></summary>
 <dl><dd>
 
 - Accessibility checks pass on the finished UI

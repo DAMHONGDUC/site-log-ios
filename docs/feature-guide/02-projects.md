@@ -39,7 +39,7 @@
 | [4](#4-real-data--swiftdata) | Real data | 15h | not start | SwiftData |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -148,7 +148,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 SwiftData schema and repositories</b></summary>
+<summary><strong>4.1 SwiftData schema and repositories</strong></summary>
 <dl><dd>
 
 - **Goal:** SwiftData models in `DataSources/Persistence/` and repository implementations in `Data/`.
@@ -172,7 +172,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 Schema versioning and migrations</b></summary>
+<summary><strong>4.2 Schema versioning and migrations</strong></summary>
 <dl><dd>
 
 - **Goal:** `VersionedSchema` + `SchemaMigrationPlan` from day one.

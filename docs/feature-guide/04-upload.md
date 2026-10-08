@@ -41,7 +41,7 @@
 | [5](#5-release--signing-and-testflight-1) | Release | 10h | not start | Signing and TestFlight #1 |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -125,7 +125,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>3.1 Backend skeleton and first migrations</b></summary>
+<summary><strong>3.1 Backend skeleton and first migrations</strong></summary>
 <dl><dd>
 
 - **Goal:** Fastify app, Postgres, `0001_uploads.sql`, Firebase token check.
@@ -148,7 +148,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>3.2 Presigned upload endpoint</b></summary>
+<summary><strong>3.2 Presigned upload endpoint</strong></summary>
 <dl><dd>
 
 - **Goal:** `POST /uploads` returns a single-PUT or multipart plan; keys checked against the caller’s uid.
@@ -172,7 +172,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>3.3 Refresh, complete, abort</b></summary>
+<summary><strong>3.3 Refresh, complete, abort</strong></summary>
 <dl><dd>
 
 - **Goal:** idempotent `complete`, part URL refresh, abort.
@@ -203,7 +203,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 Job model and local store</b></summary>
+<summary><strong>4.1 Job model and local store</strong></summary>
 <dl><dd>
 
 - **Goal:** SwiftData-backed `UploadStore` in `Persistence`.
@@ -223,7 +223,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 Single PUT via background URLSession</b></summary>
+<summary><strong>4.2 Single PUT via background URLSession</strong></summary>
 <dl><dd>
 
 - **Goal:** files under 5 MB upload through a background session and survive suspension.
@@ -248,7 +248,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.3 State machine, retry, backoff</b></summary>
+<summary><strong>4.3 State machine, retry, backoff</strong></summary>
 <dl><dd>
 
 - **Goal:** pure `UploadStateMachine.reduce` and jittered backoff.
@@ -271,7 +271,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.4 Multipart and resume</b></summary>
+<summary><strong>4.4 Multipart and resume</strong></summary>
 <dl><dd>
 
 - **Goal:** files over 5 MB in uniform 8 MB parts, resumable part by part.
@@ -295,7 +295,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.5 Kill and relaunch reconciliation</b></summary>
+<summary><strong>4.5 Kill and relaunch reconciliation</strong></summary>
 <dl><dd>
 
 - **Goal:** cold launch reattaches, cancels or resets jobs so nothing sticks at 60%.
@@ -318,7 +318,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.6 Wi-Fi only and URL refresh</b></summary>
+<summary><strong>4.6 Wi-Fi only and URL refresh</strong></summary>
 <dl><dd>
 
 - **Goal:** Wi-Fi-only policy (default on), dedupe by hash, proactive URL refresh.
@@ -337,7 +337,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.7 UploadKit behind the screens</b></summary>
+<summary><strong>4.7 UploadKit behind the screens</strong></summary>
 <dl><dd>
 
 - **Goal:** real `UploadCoordinator` + SwiftData store behind the Sync tab; 200-file demo.

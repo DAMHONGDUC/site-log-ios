@@ -30,7 +30,7 @@
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
 - **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
-- **How to use:** try each file from its hints first; open **Show code** only to check or when stuck.
+- **How to use:** try each file from its hints first; open **Code** only to check or when stuck.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -67,7 +67,7 @@ site-log-ios/
 ```
 
 <details open>
-<summary><b>Adding files</b></summary>
+<summary><strong>Adding files</strong></summary>
 <dl><dd>
 
 | Editor | New Swift file |
@@ -105,7 +105,7 @@ site-log-ios/
 - **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
 
 <details open>
-<summary><b>1.1 project.yml — add libraries</b></summary>
+<summary><strong>1.1 project.yml — add libraries</strong></summary>
 <dl><dd>
 
 <b>File</b> · `project.yml → packages:` *(add under Inject)*
@@ -117,10 +117,8 @@ site-log-ios/
 - Three entries under `packages:`: the local `DesignSystem` path, Factory, swift-snapshot-testing.
 - Use `from:` versions so SPM can take compatible updates.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```yaml
   DesignSystem:
@@ -145,10 +143,8 @@ site-log-ios/
 
 - The app target needs `DesignSystem` and the `FactoryKit` product of Factory.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```yaml
       - package: DesignSystem
@@ -169,10 +165,8 @@ site-log-ios/
 - Tests depend on the app target, `FactoryTesting` and `SnapshotTesting`.
 - Set `SWIFT_VERSION` to 6.0, like the app.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```yaml
     dependencies:
@@ -197,7 +191,7 @@ site-log-ios/
 </details>
 
 <details open>
-<summary><b>1.2 Layer folders + DesignSystem package</b></summary>
+<summary><strong>1.2 Layer folders + DesignSystem package</strong></summary>
 <dl><dd>
 
 - Layers are folders, not packages ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the one exception is `DesignSystem`.
@@ -221,10 +215,8 @@ site-log-ios/
 - Add a `.testTarget` `DesignSystemTests` that depends on it.
 - Enable the `ApproachableConcurrency` upcoming feature on both targets.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 // swift-tools-version: 6.4
@@ -267,7 +259,7 @@ let package = Package(
 </details>
 
 <details open>
-<summary><b>1.3 AppClock</b></summary>
+<summary><strong>1.3 AppClock</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Core/Helper/Clock/AppClock.swift`
@@ -279,10 +271,8 @@ let package = Package(
 - `nonisolated protocol … : Sendable`, so any actor can read it.
 - Two read-only requirements: `now: Date` and `uptime: ContinuousClock.Instant`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import Foundation
@@ -310,10 +300,8 @@ nonisolated protocol AppClock: Sendable {
 - A `nonisolated struct` that conforms to `AppClock`.
 - `now` returns `Date()`; `uptime` returns `ContinuousClock.now`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import Foundation
@@ -343,10 +331,8 @@ nonisolated struct SystemClock: AppClock {
 - Read `uptime`, wait ~10 ms with `Task.sleep`, read it again.
 - `#expect` the second value is greater.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import Foundation
@@ -372,7 +358,7 @@ struct SystemClockTests {
 </details>
 
 <details open>
-<summary><b>1.4 Composition root</b></summary>
+<summary><strong>1.4 Composition root</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/App/AppDependencies.swift` *(F00 version; F01 adds Access)*
@@ -384,10 +370,8 @@ struct SystemClockTests {
 - `import FactoryKit`, then `extension Container`.
 - One `Factory<any AppClock>` named `clock` that builds `SystemClock()`, scoped `.singleton`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -409,7 +393,7 @@ extension Container {
 </details>
 
 <details open>
-<summary><b>1.5 First Factory test</b></summary>
+<summary><strong>1.5 First Factory test</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLogTests/SiteLogTests.swift` *(replace)*
@@ -422,10 +406,8 @@ extension Container {
 - Mark the suite `@Suite(.container)` so each test gets a fresh container.
 - Register `FixedClock` on `Container.shared.clock`, resolve it, `#expect` the fixed date.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -462,7 +444,7 @@ struct AppDependenciesTests {
 </details>
 
 <details open>
-<summary><b>1.6 Check</b></summary>
+<summary><strong>1.6 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |
@@ -483,7 +465,7 @@ struct AppDependenciesTests {
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
 <details open>
-<summary><b>2.1 Files</b></summary>
+<summary><strong>2.1 Files</strong></summary>
 <dl><dd>
 
 <b>File</b> · `Gemfile`
@@ -494,10 +476,8 @@ struct AppDependenciesTests {
 
 - `source "https://rubygems.org"` plus one pinned `gem "fastlane"` line.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```ruby
 source "https://rubygems.org"
@@ -518,10 +498,8 @@ gem "fastlane", "~> 2.228"
 
 - One line: `app_identifier` with the app bundle id.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```ruby
 # Bundle id of the app; signing comes from the App Store Connect API key (F04)
@@ -542,10 +520,8 @@ app_identifier("app.dd.site.log")
 - Lane `test`: `xcodegen generate` → `xcodebuild test` for each package → `run_tests` for `SiteLogTests`.
 - Write DerivedData and results under `build/`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```ruby
 # Lanes for SiteLog. Run from the repo root: bundle exec fastlane <lane>
@@ -609,10 +585,8 @@ end
 
 - Add `build` to `excluded` so SwiftLint skips Fastlane output.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```yaml
   - build      # Fastlane writes DerivedData here
@@ -624,7 +598,7 @@ end
 </details>
 
 <details open>
-<summary><b>2.2 Workflow (lint + test)</b></summary>
+<summary><strong>2.2 Workflow (lint + test)</strong></summary>
 <dl><dd>
 
 <b>File</b> · `.github/workflows/pr-checks.yml` *(step 2 version)*
@@ -637,10 +611,8 @@ end
 - Job `lint`: SwiftLint `--strict` in the official container on Ubuntu.
 - Job `test` on the self-hosted Mac, after `lint`: `bundle install` → `bundle exec fastlane test`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```yaml
 # Runs on every PR and every push to main. Spec: docs/feature-docs/05-platform.md §17.
@@ -683,7 +655,7 @@ jobs:
 </details>
 
 <details open>
-<summary><b>2.3 Self-hosted runner (your Mac, once)</b></summary>
+<summary><strong>2.3 Self-hosted runner (your Mac, once)</strong></summary>
 <dl><dd>
 
 | Step | Action |
@@ -697,7 +669,7 @@ jobs:
 </details>
 
 <details open>
-<summary><b>2.4 Check</b></summary>
+<summary><strong>2.4 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |
@@ -726,10 +698,8 @@ jobs:
 - `grep` for `print(` in `SiteLog`, `SiteLogTests`, `Packages`; ignore `.build`.
 - Matches → print them and `exit 1`; none → `OK`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -763,10 +733,8 @@ echo "OK: no print( calls"
 - Rules 2–3: collect type names declared in `Data/`, `DataSources/` and `Core/`; grep them as whole words where they are banned.
 - Rule 4: `Presentation/` never imports SwiftData or uses `ModelContext` / `URLSession`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -836,10 +804,8 @@ echo "OK: layer rules"
 - `xcodegen generate`, then `xcodebuild clean build` into `build/`, output to a log file.
 - Fail when the log has `warning:` lines from `SiteLog/` or `Packages/` files.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -884,10 +850,8 @@ echo "OK: the app builds with zero warnings"
 - Add a `build` job on the Mac running `build-strict.sh`, after `guards` and `lint`.
 - `test` now runs after `build`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```yaml
 # Runs on every PR and every push to main. Spec: docs/feature-docs/05-platform.md §17.
@@ -951,7 +915,7 @@ jobs:
 </details>
 
 <details open>
-<summary><b>3.1 Check</b></summary>
+<summary><strong>3.1 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |
@@ -983,10 +947,8 @@ jobs:
 - `@testable import DesignSystem` to reach the internal `UIColor(hex:)`.
 - Decode `0xFFD400`, read the components with `getRed`, `#expect` 1, 0xD4/255, 0.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import Testing
@@ -1023,10 +985,8 @@ struct DesignSystemTests {
 - A `public struct DSGallery: View` stacking one of every component.
 - Fill the screen with `DSColor.canvas`; add Light and Dark previews.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import SwiftUI
@@ -1105,10 +1065,8 @@ public struct DSGallery: View {
 - `@MainActor` suite; `@Test(arguments:)` over light and dark.
 - Host `DSGallery` in a `UIHostingController`, `assertSnapshot(…, as: .image(on: .iPhone13Pro))`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import DesignSystem
@@ -1134,7 +1092,7 @@ struct DesignSystemSnapshotTests {
 </details>
 
 <details open>
-<summary><b>4.1 Check</b></summary>
+<summary><strong>4.1 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |

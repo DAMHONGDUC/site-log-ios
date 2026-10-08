@@ -39,7 +39,7 @@
 | [4](#4-release--instruments-pass-and-testflight-2) | Release | 6h | not start | Instruments pass and TestFlight #2 |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -104,7 +104,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>3.1 Storage, cleanup, diagnostic bundle</b></summary>
+<summary><strong>3.1 Storage, cleanup, diagnostic bundle</strong></summary>
 <dl><dd>
 
 - **Goal:** integrity checks, synced-only cleanup, redacted bundle.
@@ -121,7 +121,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>3.2 Firebase Crashlytics</b></summary>
+<summary><strong>3.2 Firebase Crashlytics</strong></summary>
 <dl><dd>
 
 - **Goal:** crash and non-fatal reporting, first at launch.

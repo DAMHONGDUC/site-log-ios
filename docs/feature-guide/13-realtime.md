@@ -37,7 +37,7 @@
 | [3](#3-real-data--channel-bridge-verification-worker) | Real data | 17h | not start | Channel, bridge, verification worker |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -96,7 +96,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>3.1 Realtime client</b></summary>
+<summary><strong>3.1 Realtime client</strong></summary>
 <dl><dd>
 
 - **Goal:** observation-only WebSocket: connect, auth in the first message, ping, reconnect with backoff.
@@ -120,7 +120,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>3.2 Events into the upload store</b></summary>
+<summary><strong>3.2 Events into the upload store</strong></summary>
 <dl><dd>
 
 - **Goal:** the app layer turns events into `UploadStore` operations that only move jobs forward.
@@ -144,7 +144,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>3.3 Verification worker</b></summary>
+<summary><strong>3.3 Verification worker</strong></summary>
 <dl><dd>
 
 - **Goal:** backend re-reads each object from R2 and flips `registered` → `verified` or `mismatch`.

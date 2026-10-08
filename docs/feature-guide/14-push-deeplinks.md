@@ -37,7 +37,7 @@
 | [3](#3-real-data--push-and-routing) | Real data | 8h | not start | Push and routing |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -95,7 +95,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>3.1 Push notifications</b></summary>
+<summary><strong>3.1 Push notifications</strong></summary>
 <dl><dd>
 
 - **Goal:** push that carries a destination only; works fully when denied.
@@ -117,7 +117,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>3.2 Deep links</b></summary>
+<summary><strong>3.2 Deep links</strong></summary>
 <dl><dd>
 
 - **Goal:** `sitelog://<route>/<id>` parsed once, routed after cold launch.

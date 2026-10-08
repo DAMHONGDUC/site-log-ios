@@ -13,7 +13,7 @@ import sys
 
 OPEN, CLOSE = '<dl><dd>', '</dd></dl>'
 HEADING = re.compile(r'^(#{1,6}) ')
-SECTION_SUMMARY = re.compile(r'^<summary><b>.*</b></summary>$')
+SECTION_SUMMARY = re.compile(r'^<summary><strong>.*</strong></summary>$')
 
 
 def strip_wrappers(lines):
@@ -21,7 +21,7 @@ def strip_wrappers(lines):
 
 
 def wrap_details_sections(lines):
-    # Collapsible sub-sections (<details open> + <summary><b>…</b></summary>): indent their body.
+    # Collapsible sub-sections (<details open> + <summary><strong>…</strong></summary>): indent their body.
     out, stack, in_fence = [], [], False
     for i, line in enumerate(lines):
         if line.startswith('```'):

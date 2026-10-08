@@ -39,7 +39,7 @@
 | [4](#4-real-data--ble-and-mock-peripheral) | Real data | 13h | not start | BLE and mock peripheral |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.

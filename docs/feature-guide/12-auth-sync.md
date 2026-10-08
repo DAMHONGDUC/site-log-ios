@@ -41,7 +41,7 @@
 | [5](#5-real-data--firebase-auth-and-sync-engine) | Real data | 44h | not start | Firebase Auth and sync engine |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -137,7 +137,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>5.1 Firebase Auth</b></summary>
+<summary><strong>5.1 Firebase Auth</strong></summary>
 <dl><dd>
 
 - **Goal:** Sign in with Apple and email; ID token on every request.
@@ -155,7 +155,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>5.2 Sync engine: pull</b></summary>
+<summary><strong>5.2 Sync engine: pull</strong></summary>
 <dl><dd>
 
 - **Goal:** cursor-based pull into SwiftData.
@@ -173,7 +173,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>5.3 Sync engine: push and conflicts</b></summary>
+<summary><strong>5.3 Sync engine: push and conflicts</strong></summary>
 <dl><dd>
 
 - **Goal:** offline mutation queue, batched push, `superseded` adoption.
@@ -192,7 +192,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>5.4 Deletes propagate</b></summary>
+<summary><strong>5.4 Deletes propagate</strong></summary>
 <dl><dd>
 
 - **Goal:** soft deletes, tombstones, 90-day purge.
@@ -202,7 +202,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>5.5 Two-device convergence test</b></summary>
+<summary><strong>5.5 Two-device convergence test</strong></summary>
 <dl><dd>
 
 - **Goal:** two clients against one backend converge.
@@ -219,7 +219,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>5.6 Real auth and sync, two-device demo</b></summary>
+<summary><strong>5.6 Real auth and sync, two-device demo</strong></summary>
 <dl><dd>
 
 - **Goal:** Real Firebase + sync behind the screens.

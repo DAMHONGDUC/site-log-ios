@@ -39,7 +39,7 @@
 | [4](#4-real-data--import-and-pins) | Real data | 9h | not start | Import and pins |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -126,7 +126,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 Floor plan import and storage</b></summary>
+<summary><strong>4.1 Floor plan import and storage</strong></summary>
 <dl><dd>
 
 - **Goal:** import PDF/image plans, hashed, tiled on demand.
@@ -143,7 +143,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 Pin coordinates and persistence</b></summary>
+<summary><strong>4.2 Pin coordinates and persistence</strong></summary>
 <dl><dd>
 
 - **Goal:** one pin per issue in 0…1 coordinates; moves audited.

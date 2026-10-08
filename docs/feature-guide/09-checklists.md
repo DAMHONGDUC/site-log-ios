@@ -39,7 +39,7 @@
 | [4](#4-real-data--templates-and-results) | Real data | 4h | not start | Templates and results |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.

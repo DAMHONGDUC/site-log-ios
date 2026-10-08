@@ -39,7 +39,7 @@
 | [4](#4-real-data--camera-disk-sha-256) | Real data | 14h | not start | Camera, disk, SHA-256 |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -115,7 +115,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 Camera session and permissions</b></summary>
+<summary><strong>4.1 Camera session and permissions</strong></summary>
 <dl><dd>
 
 - **Goal:** one `AVCaptureSession` behind `CaptureSessionControlling`, testable without a camera.
@@ -139,7 +139,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 Write to disk and SHA-256</b></summary>
+<summary><strong>4.2 Write to disk and SHA-256</strong></summary>
 <dl><dd>
 
 - **Goal:** each photo written to `media/…` and hashed before the DB row exists.
@@ -163,7 +163,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.3 Real logic behind the screens</b></summary>
+<summary><strong>4.3 Real logic behind the screens</strong></summary>
 <dl><dd>
 
 - **Goal:** swap fakes for SwiftData repositories and the real camera; run the airplane-mode demo.

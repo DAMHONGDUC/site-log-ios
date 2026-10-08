@@ -30,7 +30,7 @@
 - **Spec:** [07.2 App lock](../feature-docs/04-reporting-security.md#072-app-lock); mockups: Access board, S4, S5.
 - **Starts from:** F00 step 1 (Factory, `AppClock`) and the skeleton screens in `Presentation/Access/`, `Settings/AppLock/`, `Settings/SetPasscode/`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`. Domain and Presentation never name a fake; `AppDependencies` picks it.
-- **How to use:** try each file from its hints first; open **Show code** only to check or when stuck.
+- **How to use:** try each file from its hints first; open **Code** only to check or when stuck.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -40,7 +40,7 @@
 | [4](#4-real-data--keychain-and-face-id) | Real data | 8h | not start | `KeychainAccessRepository`, `BiometricAuthenticator` |
 
 <details open>
-<summary><b>Flow</b></summary>
+<summary><strong>Flow</strong></summary>
 <dl><dd>
 
 | When | Screen |
@@ -92,10 +92,8 @@ SiteLog/
 - `nonisolated struct … : Sendable` with four `var`s.
 - `lockAfter` is a `Duration`, not seconds as `Int`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 // Everything the access flow needs to decide which screen comes first.
@@ -123,10 +121,8 @@ nonisolated struct AccessSettings: Sendable {
 
 - `nonisolated enum` with three cases; `wrong` carries `triesLeft`, `lockedOut` carries `wait`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 // The answer after the user types 6 digits on A3.
@@ -153,10 +149,8 @@ nonisolated enum PasscodeCheck: Sendable {
 - `nonisolated protocol … : Sendable`; every method is `async`.
 - Load / save settings, mark welcome seen, check / set passcode, unlock with biometrics.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 // Domain only says WHAT it needs. HOW (memory, Keychain, Face ID) lives in Data/.
@@ -184,10 +178,8 @@ nonisolated protocol AccessRepository: Sendable {
 - One `nonisolated struct` per action, holding `any AccessRepository`.
 - Each has one `execute(…)` that forwards to the repository.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 // One use case per user action. Each one forwards to the repository for now.
@@ -268,7 +260,7 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 </details>
 
 <details open>
-<summary><b>1.1 Check</b></summary>
+<summary><strong>1.1 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |
@@ -293,10 +285,8 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 - Make the enum `nonisolated` so actors can log.
 - Add an `access` category next to `startup` and `devMenu`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import os
@@ -327,10 +317,8 @@ nonisolated enum AppLogger {
 - Fake Face ID: sleep 0.5 s, return `true`.
 - `reset()` back to first launch; `seed()` marks the welcome as seen.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import os
@@ -428,10 +416,8 @@ actor InMemoryAccessRepository: AccessRepository {
 - `accessRepository` returns it as `any AccessRepository`; one `Factory` per use case.
 - Under `#if DEBUG`, `devDataActions` returns `FakeDevDataActions()`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -504,10 +490,8 @@ extension Container {
 - `#if DEBUG` struct conforming to `DevDataActions`.
 - Seed / delete call `seed()` / `reset()` on `Container.shared.inMemoryAccessRepository()`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 #if DEBUG
@@ -541,10 +525,8 @@ struct FakeDevDataActions: DevDataActions {
 
 - The default of `actions` comes from the container instead of `NoopDevDataActions()`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
     // was: NoopDevDataActions()
@@ -556,7 +538,7 @@ struct FakeDevDataActions: DevDataActions {
 - `NoopDevDataActions` in `DevDataActions.swift` is no longer used: delete it.
 
 <details open>
-<summary><b>2.1 Check</b></summary>
+<summary><strong>2.1 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |
@@ -576,7 +558,7 @@ struct FakeDevDataActions: DevDataActions {
 - Keep each skeleton view's layout; only its data and actions move to the view model.
 
 <details open>
-<summary><b>3.1 RootViewModel</b></summary>
+<summary><strong>3.1 RootViewModel</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Root/RootViewModel.swift`
@@ -590,10 +572,8 @@ struct FakeDevDataActions: DevDataActions {
 - Background: remember `clock.uptime`; foreground: re-read settings, lock again if away ≥ *Lock after*.
 - `showsPrivacyOverlay` while inactive or in the background with the lock on.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -717,7 +697,7 @@ final class RootViewModel {
 </details>
 
 <details open>
-<summary><b>3.2 A2 Sign in</b></summary>
+<summary><strong>3.2 A2 Sign in</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
@@ -729,10 +709,8 @@ final class RootViewModel {
 - Inject `finishWelcome`; keep an `onFinished` closure from `RootView`.
 - Apple / email only log for now; Continue offline runs the use case, then `onFinished()`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -779,10 +757,8 @@ final class SignInViewModel {
 - Swap the two closure properties for `@State private var viewModel`.
 - Create it in `init(onFinished:)` with `State(initialValue:)`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
     // was: var onSignIn / var onContinueOffline
@@ -806,10 +782,8 @@ final class SignInViewModel {
 
 - Each dock button calls the view model; Continue offline inside a `Task`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
         .bottomDock(showsBackground: false) {
@@ -844,7 +818,7 @@ final class SignInViewModel {
 </details>
 
 <details open>
-<summary><b>3.3 A1 Face ID lock</b></summary>
+<summary><strong>3.3 A1 Face ID lock</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockViewModel.swift`
@@ -856,10 +830,8 @@ final class SignInViewModel {
 - `isChecking` disables the button while Face ID runs.
 - `onAppear()` asks right away; a match calls `onUnlocked`, else stay on the screen.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -916,10 +888,8 @@ final class FaceIDLockViewModel {
 
 - Replace the closures with a view model created in `init(onUnlocked:onUsePasscode:)`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
     // was: var onUnlock / var onEnterPasscode
@@ -944,10 +914,8 @@ final class FaceIDLockViewModel {
 - Unlock button → `unlockTapped()` in a `Task`, disabled while checking.
 - Add `.task { await viewModel.onAppear() }`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
         .bottomDock(showsBackground: false) {
@@ -977,7 +945,7 @@ final class FaceIDLockViewModel {
 </details>
 
 <details open>
-<summary><b>3.4 A3 Passcode</b></summary>
+<summary><strong>3.4 A3 Passcode</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockViewModel.swift`
@@ -989,10 +957,8 @@ final class FaceIDLockViewModel {
 - `passcodeEntered(_:)` runs `checkPasscode` and switches on the result.
 - Fill `message` for wrong / locked out; set `isLockedOut`; never log the digits.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -1053,10 +1019,8 @@ final class PasscodeUnlockViewModel {
 
 - Keep `@State code` for the keypad; add the view model in `init(onUnlocked:)`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
     // was: var onComplete: (String) -> Void
@@ -1087,10 +1051,8 @@ final class PasscodeUnlockViewModel {
 
 - At 6 digits, hand the code to the view model, then clear it.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
         .onChange(of: code) { _, newValue in
@@ -1109,7 +1071,7 @@ final class PasscodeUnlockViewModel {
 </details>
 
 <details open>
-<summary><b>3.5 RootView</b></summary>
+<summary><strong>3.5 RootView</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Root/RootView.swift` *(replace)*
@@ -1123,10 +1085,8 @@ final class PasscodeUnlockViewModel {
 - Switch on `rootVM.phase`; every screen gets closures that call `rootVM`.
 - Debug: pass `ResetAppAction` that calls `rootVM.load()`.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import Inject
@@ -1227,7 +1187,7 @@ struct RootView: View {
 </details>
 
 <details open>
-<summary><b>3.6 S4 App lock</b></summary>
+<summary><strong>3.6 S4 App lock</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Settings/AppLock/AppLockViewModel.swift`
@@ -1239,10 +1199,8 @@ struct RootView: View {
 - Bindable `var`s for the toggles and `lockAfter`; a list of `LockAfterOption`.
 - `load()` copies the settings in; `save()` writes them back.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -1312,7 +1270,7 @@ final class AppLockViewModel {
 </details>
 
 <details open>
-<summary><b>3.7 S5 Set passcode</b></summary>
+<summary><strong>3.7 S5 Set passcode</strong></summary>
 <dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeViewModel.swift`
@@ -1324,10 +1282,8 @@ final class AppLockViewModel {
 - Two stages: enter, confirm; remember the first entry.
 - Match → `setPasscode` + `onDone()`; mismatch → message, back to enter.
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit
@@ -1394,7 +1350,7 @@ final class SetPasscodeViewModel {
 </details>
 
 <details open>
-<summary><b>3.8 Check</b></summary>
+<summary><strong>3.8 Check</strong></summary>
 <dl><dd>
 
 | Step | Expect |
@@ -1458,10 +1414,8 @@ final class SetPasscodeViewModel {
 - `@MainActor @Suite(.container)`; register a fresh `InMemoryAccessRepository` per test.
 - `123456` unlocks; `000000` leaves “Wrong passcode. 4 tries left.”
 
-<b>Code</b>
-
 <details>
-<summary>Show code</summary>
+<summary><b>Code</b></summary>
 
 ```swift
 import FactoryKit

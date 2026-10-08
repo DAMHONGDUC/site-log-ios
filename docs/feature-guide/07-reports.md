@@ -39,7 +39,7 @@
 | [4](#4-real-data--csv-pdf-audit-chain) | Real data | 25h | not start | CSV, PDF, audit chain |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -127,7 +127,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 Report data model and CSV</b></summary>
+<summary><strong>4.1 Report data model and CSV</strong></summary>
 <dl><dd>
 
 - **Goal:** one-fetch `SessionSnapshot` and streamed CSV.
@@ -143,7 +143,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 PDF renderer</b></summary>
+<summary><strong>4.2 PDF renderer</strong></summary>
 <dl><dd>
 
 - **Goal:** paginated PDF that never drops an image.
@@ -167,7 +167,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.3 Audit chain</b></summary>
+<summary><strong>4.3 Audit chain</strong></summary>
 <dl><dd>
 
 - **Goal:** HMAC-chained audit log, verified at launch.
@@ -186,7 +186,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.4 Real logic behind the screens</b></summary>
+<summary><strong>4.4 Real logic behind the screens</strong></summary>
 <dl><dd>
 
 - **Goal:** real issues, lock and reports; export from a real session.

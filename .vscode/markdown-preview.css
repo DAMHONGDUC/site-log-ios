@@ -4,7 +4,8 @@ dl dd {
     padding-left: 16px;
 }
 
-/* Guide labels written as <b>: File, Explain, Hint, Code. */
-p > b:first-child {
-    color: #2f81f7;
+/* Guide labels written as <b>: File, Explain, Hint, and Code on its collapse row. */
+p > b:first-child,
+details > summary > b {
+    color: #2f81f7 !important;
 }

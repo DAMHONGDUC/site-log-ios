@@ -39,7 +39,7 @@
 | [4](#4-real-data--rendering-and-trusted-time) | Real data | 13h | not start | Rendering and trusted time |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -124,7 +124,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 Annotation model and rendering</b></summary>
+<summary><strong>4.1 Annotation model and rendering</strong></summary>
 <dl><dd>
 
 - **Goal:** vector markup layer that never touches the original.
@@ -141,7 +141,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 Trusted time and stamped derivative</b></summary>
+<summary><strong>4.2 Trusted time and stamped derivative</strong></summary>
 <dl><dd>
 
 - **Goal:** `TrustedTimestamp` with confidence; stamped JPEG copies on demand.

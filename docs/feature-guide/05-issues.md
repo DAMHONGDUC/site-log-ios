@@ -39,7 +39,7 @@
 | [4](#4-real-data--issue-logic-and-dictation) | Real data | 11h | not start | Issue logic and dictation |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
@@ -127,7 +127,7 @@ SiteLog/
 <dl><dd>
 
 <details open>
-<summary><b>4.1 Issue CRUD, carry-over, pairing</b></summary>
+<summary><strong>4.1 Issue CRUD, carry-over, pairing</strong></summary>
 <dl><dd>
 
 - **Goal:** log issues, surface open ones next session, close by verification photo.
@@ -144,7 +144,7 @@ SiteLog/
 </details>
 
 <details open>
-<summary><b>4.2 Phrase library, dictation, voice notes</b></summary>
+<summary><strong>4.2 Phrase library, dictation, voice notes</strong></summary>
 <dl><dd>
 
 - **Goal:** on-device dictation and a usage-sorted phrase library.

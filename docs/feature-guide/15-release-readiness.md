@@ -35,7 +35,7 @@
 | [2](#2-release--budgets-and-feedback) | Release | 6h | not start | Budgets and feedback |
 
 <details open>
-<summary><b>Order</b></summary>
+<summary><strong>Order</strong></summary>
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
