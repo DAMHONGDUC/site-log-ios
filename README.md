@@ -23,8 +23,8 @@
 
 | Doc | Contents |
 |---|---|
-| [ROADMAP.md](ROADMAP.md) | Milestones M0–M7, parts on UI / Logic tracks, hour estimates |
-| [milestone-guide/](docs/milestone-guide/) | One guide per milestone (M0–M7): every part, step by step |
+| [ROADMAP.md](ROADMAP.md) | Features F00–F16 in order, steps per layer, hour estimates |
+| [feature-guide/](docs/feature-guide/) | One guide per feature (F00–F16): Domain → fake data → view models → real data → tests |
 | [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D08 |
 | [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
 | [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
@@ -36,7 +36,7 @@
 ## 3. Repo layout
 
 - Architecture: Clean Architecture + MVVM, one app target, one folder per layer; `DesignSystem` is a Swift package.
-- Every folder below already exists (empty ones hold a `.gitkeep`); files arrive milestone by milestone.
+- Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
 
 ```
 site-log-ios/
@@ -85,7 +85,7 @@ site-log-ios/
 │   │   └── DeviceLink/                   # CoreBluetooth
 │   └── Core/                             # app-wide support, no business logic
 │       ├── Config/                       # *.xcconfig, entitlements, GoogleService-Info.plist (CI)
-│       ├── Fakes/                        # in-memory repositories: previews, tests, UI before real Data
+│       ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
 │       ├── Helper/Logger/AppLogger.swift
 │       └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
 ├── Packages/
@@ -103,7 +103,7 @@ site-log-ios/
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/
 │   ├── feature-docs/                     # project specs
-│   ├── milestone-guide/                  # .md guide per milestone (M0–M7)
+│   ├── feature-guide/                    # .md guide per feature (F00–F16)
 │   └── design/                           # design plan, mockups, app icon
 ├── ROADMAP.md
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj

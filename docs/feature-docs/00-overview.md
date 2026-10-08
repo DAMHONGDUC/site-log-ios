@@ -189,7 +189,7 @@ site-log-ios/
 │   │                                 # Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
 │   └── Core/                         # app-wide support, no business logic
 │       ├── Config/                   # *.xcconfig, entitlements
-│       ├── Fakes/                    # in-memory repositories: previews, tests, UI before real Data
+│       ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
 │       ├── Helper/Logger/AppLogger.swift  # shared helpers; use nothing else from the app
 │       └── Resources/                # Assets.xcassets, localization, seeded templates
 ├── Packages/DesignSystem/            # Swift package: Tokens/ Components/ (UI only)
@@ -201,12 +201,12 @@ site-log-ios/
 ├── Backend/                          # Node + Postgres → 03-backend.md
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/feature-docs/                # project specs
-├── docs/milestone-guide/             # step-by-step guide per milestone (M0–M7)
+├── docs/feature-guide/               # step-by-step guide per feature (F00–F16)
 ├── docs/design/                      # design plan, mockups, app icon
 └── project.yml                       # XcodeGen
 ```
 
-- The folder skeleton exists from M0; empty folders hold a `.gitkeep` (excluded from the build in `project.yml`).
+- The folder skeleton exists from the start; empty folders hold a `.gitkeep` (excluded from the build in `project.yml`).
 - Why folders, not packages: [D09](#d09--layers-as-folders-in-one-app-target).
 
 ### 4.2 Layers and dependency rules
@@ -377,10 +377,11 @@ final class ProjectListViewModel {
 
 **Adding a feature**
 
-1. Domain: entity, use case, repository protocol, in-memory fake (the contract).
-2. UI on the fake and Logic (Data impl, DTO, mapper; framework code in a data source) in parallel.
-3. Factory registration swaps the fake for the real implementation.
-4. Schema change → new `SchemaV{n}` + migration test.
+1. Domain: entity, repository protocol, use cases.
+2. Fake data: in-memory repository in `Data/Fakes/` (the only place fakes live), registered in `AppDependencies`.
+3. View models wired into the screens, running on the fake.
+4. Real data (Data impl, DTO, mapper; framework code in a data source); the Factory registration swaps the fake for it.
+5. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
 
 ## 8. Feature specs
 
@@ -457,7 +458,7 @@ final class ProjectListViewModel {
 
 - **Consequences:**
   - Full control of retry, priority, Wi-Fi policy, URL refresh.
-  - Largest block of work (M2 `UploadKit` parts) and the most test surface: state machine,
+  - Largest block of work (F04 `UploadKit` steps) and the most test surface: state machine,
     `MockTransport` scripting 503/403/timeouts, kill-and-relaunch tests.
 
 ### D03 — Node + PostgreSQL backend, hand-written sync

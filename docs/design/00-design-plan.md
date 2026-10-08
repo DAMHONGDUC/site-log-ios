@@ -90,19 +90,19 @@
 
 ## 3. Screen inventory
 
-| # | Group | Screens | Spec | Milestone |
+| # | Group | Screens | Spec | Feature |
 |---|---|---|---|---|
-| S1 | Launch & security | Face ID lock (A1), passcode unlock (A3), app-switcher overlay, sign-in (A2) | 07, 08 | M0 UI · M3, M5 logic |
-| S2 | Projects | Project list, new project sheet, project detail (Sessions · Locations · Plans tabs) | 01 | M1 |
-| S3 | Sessions & locations | Start session sheet, survey screen (location tree + badges), bulk-generate locations, clone tree, end session | 01 | M1 |
-| S4 | Capture | Camera, capture review, measurement overlay + device status dot | 02, 06 | M1, M4 |
-| S5 | Issues | Issue sheet (severity, assignee, due, dictation), open-issues banner, verification camera with 30% overlay, outcome picker, issue list | 03, 12 | M3 |
-| S6 | Annotation | Markup editor (arrow, box, circle, text), stamped image preview | 12 | M3 |
-| S7 | Plans | Plan sheet list, plan viewer with pins/clusters, pin preview, plan import | 11 | M4 |
-| S8 | Checklists | Template picker, checklist run (Pass/Fail/N/A, progress 14/22) | 13 | M4 |
-| S9 | Reports | Report builder (grouping, sections), branding settings, signature pad (two parties), PDF preview + share | 05 | M3 |
-| S10 | Uploads & diagnostics | Upload status screen, diagnostic bundle export | 04, 09, 10 | M2 |
-| S11 | Settings | Account, devices (BLE pairing), app lock (S4: Lock app + Lock after), set passcode (S5), storage cleanup, delete account | 06, 07, 08, 09 | M3–M5 |
+| S1 | Launch & security | Face ID lock (A1), passcode unlock (A3), app-switcher overlay, sign-in (A2) | 07, 08 | F01 (F12 sign-in) |
+| S2 | Projects | Project list, new project sheet, project detail (Sessions · Locations · Plans tabs) | 01 | F02 |
+| S3 | Sessions & locations | Start session sheet, survey screen (location tree + badges), bulk-generate locations, clone tree, end session | 01 | F02 |
+| S4 | Capture | Camera, capture review, measurement overlay + device status dot | 02, 06 | F03, F10 |
+| S5 | Issues | Issue sheet (severity, assignee, due, dictation), open-issues banner, verification camera with 30% overlay, outcome picker, issue list | 03, 12 | F05 |
+| S6 | Annotation | Markup editor (arrow, box, circle, text), stamped image preview | 12 | F06 |
+| S7 | Plans | Plan sheet list, plan viewer with pins/clusters, pin preview, plan import | 11 | F08 |
+| S8 | Checklists | Template picker, checklist run (Pass/Fail/N/A, progress 14/22) | 13 | F09 |
+| S9 | Reports | Report builder (grouping, sections), branding settings, signature pad (two parties), PDF preview + share | 05 | F07 |
+| S10 | Uploads & diagnostics | Upload status screen, diagnostic bundle export | 04, 09, 10 | F04, F11, F13 |
+| S11 | Settings | Account, devices (BLE pairing), app lock (S4: Lock app + Lock after), set passcode (S5), storage cleanup, delete account | 06, 07, 08, 09 | F01, F10, F11, F12 |
 
 ## 4. Status (2026-09-30)
 
@@ -119,14 +119,7 @@
 
 ## 5. Order of work
 
-- Design runs ahead of the UI track in [ROADMAP](../../ROADMAP.md), which may itself run one
-  milestone ahead of logic.
-
-1. Foundations + components (page 01–02) → `DesignSystem` in M0.
-2. S1 access screens → M0.
-3. Core flow S2 → S3 → S4 → M1.
-4. S10 uploads → M2.
-5. S5 issues, S6 annotation, S9 reports, S11 app lock → M3.
-6. S7 plans, S8 checklists, S11 devices → M4.
-7. S11 account → M5.
-8. UI skeleton (~30% of Figma, every screen on fake data) — done 2026-10-08; finish to Figma, dark mode pass, empty/error/offline states → M7, last.
+- Design runs ahead of the features in [ROADMAP](../../ROADMAP.md).
+- UI skeleton (~30% of Figma, every screen on fake data) — done 2026-10-08.
+- Each feature (F01–F15) wires its skeleton screens to view models; the finish to Figma, dark mode pass and
+  empty/error/offline states are F16, last.

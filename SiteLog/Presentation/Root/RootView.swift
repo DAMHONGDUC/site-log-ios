@@ -16,7 +16,7 @@ struct RootView: View {
         sequence: StartupSequence(steps: [])
     )
 
-    // P07: UI-only access flow so every screen can be clicked through.
+    // F01: UI-only access flow so every screen can be clicked through.
     // RootViewModel replaces this with AccessSettings (welcome seen, lock on, Face ID).
     enum FakeAccessStep {
         case signIn, faceIDLock, passcode, unlocked

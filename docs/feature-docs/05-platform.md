@@ -366,7 +366,7 @@ enum DiagnosticsConstants {
 
 - CI reports coverage per folder; a PR that lowers a target fails.
 - Examples: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`),
-  `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift` (snapshots) — full code in [M0 guide](../milestone-guide/m0-scaffold.md).
+  `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift` (snapshots) — full code in [F00 guide](../feature-guide/00-foundation.md).
 
 ---
 
@@ -496,4 +496,4 @@ performance claim has a measurement behind it. Always a real device, Release bui
 
 - Profile before optimizing; justify a change with a before/after trace.
 - Save traces for failed budgets; record device and OS with every result.
-- Scenarios run on device before each TestFlight milestone.
+- Scenarios run on device before each TestFlight build.

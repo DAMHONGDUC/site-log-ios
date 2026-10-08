@@ -3,7 +3,7 @@
 //  SiteLog
 //
 //  C1 · Camera (the home of a walkthrough). Fake viewfinder + laser reading;
-//  the real capture session (AVFoundation) arrives in M1.
+//  the real capture session (AVFoundation) arrives in F03.
 //
 
 import DesignSystem
