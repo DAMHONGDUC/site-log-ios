@@ -1,8 +1,14 @@
 # F14 — Push and deep links
 
+<dl><dd>
+
 - F14 · 11h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -12,7 +18,11 @@
 6. [Tests (after the feature works)](#tests-after-the-feature-works)
 7. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Push and deep links end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** a push opens its target; `sitelog://` links work after cold launch.
@@ -28,14 +38,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -44,7 +60,11 @@ SiteLog/
 └── Presentation/Notifications/, DeepLinks/   # 2–3
 ```
 
+</dd></dl>
+
 ## 1. Domain — Deep link parser
+
+<dl><dd>
 
 - No fake needed: the parser is pure and push uses `xcrun simctl push` in the Simulator.
 
@@ -52,18 +72,31 @@ SiteLog/
 |---|---|
 | `Domain/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
 
+</dd></dl>
+
 ## 2. View models — Notification permission and settings
+
+<dl><dd>
 
 - **Goal:** permission prompt at the right moment; notification row in Settings.
 
 #### Steps
 
+<dl><dd>
+
 1. Explain the benefit before the system prompt.
+
+</dd></dl>
+
+</dd></dl>
 
 ## 3. Real data — Push and routing
 
+<dl><dd>
+
 <details open>
 <summary><b>3.1 Push notifications</b></summary>
+<dl><dd>
 
 - **Goal:** push that carries a destination only; works fully when denied.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
@@ -75,13 +108,17 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Ask for permission at a moment that makes sense, not at first launch.
 2. Test: `xcrun simctl push booted app.dd.site.log payload.json`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.2 Deep links</b></summary>
+<dl><dd>
 
 - **Goal:** `sitelog://<route>/<id>` parsed once, routed after cold launch.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
@@ -91,15 +128,26 @@ SiteLog/
 | `Domain/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
 | `Presentation/DeepLinks/DeepLinkRouter.swift` | Holds the destination until a view consumes it |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Add the `sitelog` URL scheme in `project.yml`.
 2. Deleted target lands on a safe screen.
 3. Test: `xcrun simctl openurl booted sitelog://session/42`.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **2. View models — Notification permission and settings**
 
@@ -114,7 +162,11 @@ SiteLog/
 - Router holds until consumed
 - Cold-launch link survives (UI test)
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -122,3 +174,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F14 steps ticked |
 
+</dd></dl>

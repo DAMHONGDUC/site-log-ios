@@ -1,8 +1,14 @@
 # F12 — Auth and multi-device sync
 
+<dl><dd>
+
 - F12 · 60h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -14,7 +20,11 @@
 8. [Tests (after the feature works)](#tests-after-the-feature-works)
 9. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Auth and multi-device sync end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** a second device sees the same data; deletes propagate.
@@ -32,14 +42,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 Backend/migrations/0002_sync_core.sql, 0003_metadata.sql   # 4
@@ -52,21 +68,33 @@ SiteLog/
 └── Presentation/Access/SignIn/, Settings/Account/, Uploads/UploadStatus/   # 3
 ```
 
+</dd></dl>
+
 ## 1. Domain — Auth and sync protocols
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `Domain/Auth/` | `AuthService` (Apple, email, sign out, delete account) |
 | `Domain/Sync/` | `SyncEngine` (status, last synced, errors) |
 
+</dd></dl>
+
 ## 2. Fake data — Fake auth and sync
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `SiteLog/Data/Fakes/FakeAuthService.swift` | Signs in “Hanh Nguyen” instantly |
 | `SiteLog/Data/Fakes/FakeSyncEngine.swift` | “Synced 2 minutes ago” |
 
+</dd></dl>
+
 ## 3. View models — Wire sign-in, account, sync status
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -76,82 +104,123 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Backend — Pull and push endpoints
+
+<dl><dd>
 
 - **Goal:** `/sync/pull` and `/sync/push` on `sync_state.last_rev`.
 - **Spec:** [14 §5.2, §7](../feature-docs/03-backend.md#7-sync)
 
 #### Steps
 
+<dl><dd>
+
 1. Row lock makes revs gap-free; LWW in SQL; `sessions.state` monotonic.
+
+</dd></dl>
+
+</dd></dl>
 
 ## 5. Real data — Firebase Auth and sync engine
 
+<dl><dd>
+
 <details open>
 <summary><b>5.1 Firebase Auth</b></summary>
+<dl><dd>
 
 - **Goal:** Sign in with Apple and email; ID token on every request.
 - **Spec:** [08.1](../feature-docs/02-upload-sync.md#081-offline-first-and-auth)
 
 #### Steps
 
+<dl><dd>
+
 1. `getIDToken(forcingRefresh: false)` per request; one 401 interceptor refreshes.
 2. Offline relaunch after sign-in goes straight in.
 3. Sign in with Apple capability via `project.yml`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>5.2 Sync engine: pull</b></summary>
+<dl><dd>
 
 - **Goal:** cursor-based pull into SwiftData.
 - **Spec:** [08.3](../feature-docs/02-upload-sync.md#083-client-engine)
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Triggers: foreground, network back, every `syncInterval`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>5.3 Sync engine: push and conflicts</b></summary>
+<dl><dd>
 
 - **Goal:** offline mutation queue, batched push, `superseded` adoption.
 - **Spec:** [08.2](../feature-docs/02-upload-sync.md#082-protocol)
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Split when you start (queue · push · conflicts).
 2. Queue in dependency order.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>5.4 Deletes propagate</b></summary>
+<dl><dd>
 
 - **Goal:** soft deletes, tombstones, 90-day purge.
 - **Spec:** [08.2](../feature-docs/02-upload-sync.md#082-protocol)
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>5.5 Two-device convergence test</b></summary>
+<dl><dd>
 
 - **Goal:** two clients against one backend converge.
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Run in CI against a throwaway Postgres.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>5.6 Real auth and sync, two-device demo</b></summary>
+<dl><dd>
 
 - **Goal:** Real Firebase + sync behind the screens.
 
@@ -159,19 +228,34 @@ SiteLog/
 |---|---|
 | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Register real auth and sync.
 2. Run the demo on two devices.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - Second device sees the same data
 - Deletes propagate
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **4. Backend — Pull and push endpoints**
 
@@ -188,7 +272,11 @@ SiteLog/
 - Tombstones never resurrect
 - Create on A appears on B; delete on A stays deleted on B; B cannot un-export A’s session
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -196,3 +284,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F12 steps ticked |
 
+</dd></dl>

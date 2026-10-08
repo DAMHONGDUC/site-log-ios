@@ -1,8 +1,14 @@
 # F11 — Diagnostics · TestFlight #2
 
+<dl><dd>
+
 - F11 · 17h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Diagnostics end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** integrity check, storage cleanup, diagnostic bundle, Crashlytics; second TestFlight build.
@@ -30,14 +40,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -48,14 +64,22 @@ SiteLog/
     └── Settings/StorageCleanup/        # 2
 ```
 
+</dd></dl>
+
 ## 1. Domain + fake — Diagnostics snapshot and fake
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `Domain/Diagnostics/` | Integrity result, storage breakdown, device flags |
 | `SiteLog/Data/Fakes/FakeDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB |
 
+</dd></dl>
+
 ## 2. View models — Wire diagnostics and cleanup
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -64,44 +88,72 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 3. Real data — Storage, bundle, Crashlytics
+
+<dl><dd>
 
 <details open>
 <summary><b>3.1 Storage, cleanup, diagnostic bundle</b></summary>
+<dl><dd>
 
 - **Goal:** integrity checks, synced-only cleanup, redacted bundle.
 - **Spec:** [09.2–09.3](../feature-docs/05-platform.md#092-integrity-checks-and-cleanup)
 
 #### Steps
 
+<dl><dd>
+
 1. Cleanup touches `synced` files only.
 2. Redact on write.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.2 Firebase Crashlytics</b></summary>
+<dl><dd>
 
 - **Goal:** crash and non-fatal reporting, first at launch.
 - **Spec:** [09.4](../feature-docs/05-platform.md#094-app-wide-logging)
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Add Firebase via `project.yml`; `GoogleService-Info.plist` written by CI, not committed.
 2. First line of `didFinishLaunching`.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - A test non-fatal shows in the Crashlytics console
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Release — Instruments pass and TestFlight #2
+
+<dl><dd>
 
 - **Goal:** real plans, checklists, DeviceLink, diagnostics; first Instruments pass; TestFlight build.
 
@@ -111,23 +163,39 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Register real implementations.
 2. Run the Instruments scenarios on device (Release).
 3. Push a `v*` tag.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - Instruments scenarios 1–5 in 05 §19 within budget
 - TestFlight #2 installed
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **3. Real data — Storage, bundle, Crashlytics**
 
 - Cleanup never touches pending / failed
 - Redaction snapshot
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -135,3 +203,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F11 steps ticked |
 
+</dd></dl>

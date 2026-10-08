@@ -1,9 +1,15 @@
 # Platform
 
+<dl><dd>
+
 - Everything around the features: dev tooling, diagnostics, testing, release pipeline,
   notifications and deep links, profiling.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 | Section | Topic |
 |---|---|
@@ -16,10 +22,13 @@
 
 ---
 
+</dd></dl>
+
 ## Dev setup
 
-- Tooling for working on SiteLog in Xcode and VS Code side by side.
+<dl><dd>
 
+- Tooling for working on SiteLog in Xcode and VS Code side by side.
 
 1. [First-time setup](#1-first-time-setup)
 2. [XcodeGen](#2-xcodegen)
@@ -43,6 +52,8 @@ flowchart LR
 
 ### 1. First-time setup
 
+<dl><dd>
+
 | Step | Action |
 |---|---|
 | 1 | Xcode with an iPhone simulator; `brew install xcodegen xcode-build-server swiftlint xcbeautify` |
@@ -55,7 +66,11 @@ flowchart LR
 - Nothing in the committed `.vscode/` is tied to one Mac.
 - `buildServer.json` and `.vscode/sitelog.local.json` are per machine and git-ignored.
 
+</dd></dl>
+
 ### 2. XcodeGen
+
+<dl><dd>
 
 - Why: [D08](00-overview.md#d08--xcodegen-owns-the-xcode-project).
 - `SiteLog.xcodeproj` is generated from [`project.yml`](../../project.yml); never edit the `.pbxproj` by hand.
@@ -80,7 +95,11 @@ flowchart LR
 | Hot reload flags, Debug only | `targets.SiteLog.settings.configs.Debug` |
 | Shared `SiteLog` scheme, `INJECTION_PROJECT_ROOT` | `schemes.SiteLog` |
 
+</dd></dl>
+
 ### 3. SwiftLint and swift-format
+
+<dl><dd>
 
 | Tool | Owns | Config |
 |---|---|---|
@@ -114,7 +133,11 @@ flowchart LR
 - Run manually: `swiftlint`.
 - Regenerate format defaults: `swift format dump-configuration > .swift-format`.
 
+</dd></dl>
+
 ### 4. Format on save in Xcode
+
+<dl><dd>
 
 - A Hammerspoon ⌘S hotkey, active only while Xcode is frontmost: **Editor → Structure → Format File
   with ‘swift-format’**, then **File → Save** 0.25 s later.
@@ -138,7 +161,11 @@ flowchart LR
 | `selectMenuItem` fails in the Console | Console is frontmost, not Xcode; test via the hotkey |
 | Format item not found after an Xcode update | ⌘⌥D again; update the string (curly quotes U+2018/U+2019) |
 
+</dd></dl>
+
 ### 5. Hot reload
+
+<dl><dd>
 
 - Save a `.swift` file → InjectionNext recompiles it → the running simulator app redraws, no rebuild.
 
@@ -165,7 +192,11 @@ flowchart LR
 | Change applies, view does not redraw | Missing `@ObserveInjection` or `.enableInjection()` |
 | Stored property or new type changed | Not injectable; rebuild |
 
+</dd></dl>
+
 ### 6. Code snippets
+
+<dl><dd>
 
 | Shortcut | Inserts | File |
 |---|---|---|
@@ -178,7 +209,11 @@ flowchart LR
   completion `view` / `viewvm`, availability Top Level.
 - Use: new empty file → type the shortcut → Return → Tab between placeholders; ⌃⌘E renames all uses.
 
+</dd></dl>
+
 ### 7. VS Code
+
+<dl><dd>
 
 | File | Purpose |
 |---|---|
@@ -214,7 +249,11 @@ keybindings): Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)*
 }
 ```
 
+</dd></dl>
+
 ### 8. Rules for working in both editors
+
+<dl><dd>
 
 | Rule | Why |
 |---|---|
@@ -224,7 +263,11 @@ keybindings): Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)*
 | Previews, Instruments, signing: Xcode | No VS Code equivalent |
 | Both editors format with `.swift-format` | Xcode via Hammerspoon ([§4](#4-format-on-save-in-xcode)) |
 
+</dd></dl>
+
 ### 9. Troubleshooting
+
+<dl><dd>
 
 | Symptom | Fix |
 |---|---|
@@ -238,7 +281,13 @@ keybindings): Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)*
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 09. Diagnostics and observability
+
+<dl><dd>
 
 - Module: `SiteLog/Presentation/Diagnostics`
 
@@ -246,6 +295,8 @@ keybindings): Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)*
 to diagnose; cleanup can never delete anything not yet uploaded.
 
 ### 09.1 Upload status screen
+
+<dl><dd>
 
 ```
 Session 05 Sep — Ánh Dương Tower
@@ -259,7 +310,11 @@ Session 05 Sep — Ánh Dương Tower
   tasks; estimates from the trailing `throughputWindow`.
 - A closed realtime channel is not an error, only slower.
 
+</dd></dl>
+
 ### 09.2 Integrity checks and cleanup
+
+<dl><dd>
 
 | Check | Detects |
 |---|---|
@@ -278,7 +333,11 @@ Session 05 Sep — Ánh Dương Tower
 - Temp parts, prebuffer, tiles, derived images: a separate "reclaimable" line.
 - Every cleanup writes an audit entry.
 
+</dd></dl>
+
 ### 09.3 Diagnostic bundle and status flags
+
+<dl><dd>
 
 - `diagnostic-<date>.zip`: `device.json`, `permissions.json`, `upload-state.json` (no URLs),
   `integrity.json`, `logs.ndjson` (24 h).
@@ -294,7 +353,11 @@ Session 05 Sep — Ánh Dương Tower
 | Audit | Chain verification failed |
 | Sync | Metadata sync older than `staleSyncThreshold` |
 
+</dd></dl>
+
 ### 09.4 App-wide logging
+
+<dl><dd>
 
 - `os.Logger`, subsystem `app.dd.site.log`, category per module (`capture`, `upload`, `report`,
   `plans`, `devicelink`, `sync`, `security`).
@@ -330,7 +393,13 @@ enum DiagnosticsConstants {
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## Testing strategy
+
+<dl><dd>
 
 - Libraries and why: [D06](00-overview.md#d06--test-libraries).
 - Per-feature test lists live in each spec's **Tests** block; this section sets the rules.
@@ -370,7 +439,11 @@ enum DiagnosticsConstants {
 
 ---
 
+</dd></dl>
+
 ## 17. CI/CD and TestFlight
+
+<dl><dd>
 
 - Modules: `fastlane/`, `.github/workflows/`
 
@@ -423,7 +496,11 @@ enum DiagnosticsConstants {
 
 ---
 
+</dd></dl>
+
 ## 18. Push notifications and deep links
+
+<dl><dd>
 
 - Modules: `SiteLog/Presentation/Notifications`, `SiteLog/Presentation/DeepLinks`
 
@@ -466,7 +543,11 @@ shared `DeepLink` type; a link during cold launch is not lost.
 
 ---
 
+</dd></dl>
+
 ## 19. Performance profiling with Instruments
+
+<dl><dd>
 
 - Tooling only; signposts live next to the code they measure.
 
@@ -497,3 +578,5 @@ performance claim has a measurement behind it. Always a real device, Release bui
 - Profile before optimizing; justify a change with a before/after trace.
 - Save traces for failed budgets; record device and OS with every result.
 - Scenarios run on device before each TestFlight build.
+
+</dd></dl>

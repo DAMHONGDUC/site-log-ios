@@ -1,8 +1,14 @@
 # F15 — Accessibility and performance
 
+<dl><dd>
+
 - F15 · 14h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -11,7 +17,11 @@
 5. [Tests (after the feature works)](#tests-after-the-feature-works)
 6. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Accessibility and performance end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** VoiceOver walk unlock → projects → capture → report; every Instruments budget met.
@@ -26,21 +36,31 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/PrivacyInfo.xcprivacy    # 2
 SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 ```
 
+</dd></dl>
+
 ## 1. Polish — Accessibility pass
+
+<dl><dd>
 
 - **Goal:** every screen readable with Dynamic Type, VoiceOver and high contrast.
 
@@ -51,11 +71,19 @@ SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 
 #### Steps
 
+<dl><dd>
+
 1. VoiceOver walk: unlock → projects → capture → report.
 2. Severity readable without colour (shapes already in `DSStatusMarker`).
 3. Minimum 44 pt targets.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 2. Release — Budgets and feedback
+
+<dl><dd>
 
 - **Goal:** Instruments budgets met, TestFlight feedback closed. Submission is in F16.
 - **Spec:** [19](../feature-docs/05-platform.md#19-performance-profiling-with-instruments)
@@ -66,22 +94,38 @@ SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 
 #### Steps
 
+<dl><dd>
+
 1. Run scenarios 1–5 of 05 §19 on device, Release build; save traces.
 2. Close every open TestFlight feedback item.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - Every budget met with a recorded trace
 - No open TestFlight feedback
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **1. Polish — Accessibility pass**
 
 - Snapshots at `accessibility3`
 - Xcode Accessibility Inspector audit clean
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -89,3 +133,4 @@ SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F15 steps ticked |
 
+</dd></dl>

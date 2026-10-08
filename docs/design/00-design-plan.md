@@ -1,9 +1,15 @@
 # 00 — UI design plan (Figma)
 
+<dl><dd>
+
 - Screen inventory and Figma file structure for the whole app, derived from `docs/feature-docs/`.
 - Tokens in code: `Packages/DesignSystem` (`DSColor`, `DSFont`, `DSSpacing`, `DSRadius`, `DSSize`).
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Design principles](#1-design-principles)
 2. [Market scan and visual direction](#1a-market-scan-and-visual-direction)
@@ -12,7 +18,11 @@
 5. [Status](#4-status-2026-09-30)
 6. [Order of work](#5-order-of-work)
 
+</dd></dl>
+
 ## 1. Design principles
+
+<dl><dd>
 
 - One-handed, thumb-reach: primary actions (camera, save) in the lower half — [01](../feature-docs/01-field-work.md#01-projects-sessions-locations).
 - Readable outdoors and with gloves: min 44pt targets, 17pt body, high-contrast dark and light.
@@ -20,7 +30,11 @@
 - Camera is the home: sheets return to the camera, not to lists — [03](../feature-docs/01-field-work.md#031-flows).
 - Severity colour is the only strong colour: Critical red, Major orange, Minor yellow.
 
+</dd></dl>
+
 ## 1a. Market scan and visual direction
+
+<dl><dd>
 
 | App | What it does well | Taken for SiteLog |
 |---|---|---|
@@ -73,7 +87,11 @@
 - **Mockups:** [mockups/index.html](mockups/index.html) — 38 screens; import into Figma with the
   html.to.design plugin.
 
+</dd></dl>
+
 ## 2. Figma file structure
+
+<dl><dd>
 
 - File: [SiteLog — iOS App Design](https://www.figma.com/design/3Ru8x4sFZSQwlFI42wqrbH)
 
@@ -88,7 +106,11 @@
 - Figma and the mockups use IBM Plex Sans / Mono and Lucide icons (SF Pro and SF Symbols do not
   render there); the app ships SF Pro, SF Mono and SF Symbols.
 
+</dd></dl>
+
 ## 3. Screen inventory
+
+<dl><dd>
 
 | # | Group | Screens | Spec | Feature |
 |---|---|---|---|---|
@@ -104,7 +126,11 @@
 | S10 | Uploads & diagnostics | Upload status screen, diagnostic bundle export | 04, 09, 10 | F04, F11, F13 |
 | S11 | Settings | Account, devices (BLE pairing), app lock (S4: Lock app + Lock after), set passcode (S5), storage cleanup, delete account | 06, 07, 08, 09 | F01, F10, F11, F12 |
 
+</dd></dl>
+
 ## 4. Status (2026-09-30)
+
+<dl><dd>
 
 | Done in Figma | Not yet |
 |---|---|
@@ -117,9 +143,15 @@
   Privacy row opens S4.
 - Known fixes: camera screens 2.1/2.3 cut the shutter row (viewfinder too tall); 2.4 last button clipped.
 
+</dd></dl>
+
 ## 5. Order of work
+
+<dl><dd>
 
 - Design runs ahead of the features in [ROADMAP](../../ROADMAP.md).
 - UI skeleton (~30% of Figma, every screen on fake data) — done 2026-10-08.
 - Each feature (F01–F15) wires its skeleton screens to view models; the finish to Figma, dark mode pass and
   empty/error/offline states are F16, last.
+
+</dd></dl>

@@ -1,8 +1,14 @@
 # F08 — Floor plans and pins
 
+<dl><dd>
+
 - F08 · 16h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Floor plans and pins end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** real PDF plan imported, issues pinned, pins survive relaunch.
@@ -30,14 +40,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -47,13 +63,21 @@ SiteLog/
 └── Presentation/Plans/    # 3: PlanList, PlanViewer, PinPreview, PlanImport
 ```
 
+</dd></dl>
+
 ## 1. Domain — Plan types
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `Domain/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`), import / pin / move use cases |
 
+</dd></dl>
+
 ## 2. Fake data — In-memory plans
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
@@ -62,12 +86,20 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
 2. Seed it with 4 sheets, 6 pins — move the values out of `Core/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 3. View models — Wire the Plans screens
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -78,35 +110,55 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Real data — Import and pins
+
+<dl><dd>
 
 <details open>
 <summary><b>4.1 Floor plan import and storage</b></summary>
+<dl><dd>
 
 - **Goal:** import PDF/image plans, hashed, tiled on demand.
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
 
 #### Steps
 
+<dl><dd>
+
 1. Multi-page PDF → one `PlanSheet` per chosen page.
 2. Reject encrypted / oversized files with a reason.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.2 Pin coordinates and persistence</b></summary>
+<dl><dd>
 
 - **Goal:** one pin per issue in 0…1 coordinates; moves audited.
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **3. View models — Wire the Plans screens**
 
@@ -119,7 +171,11 @@ SiteLog/
 - `planPoint` round-trip through zoom / pan
 - Sheet delete blocked while pins exist
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -127,3 +183,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F08 steps ticked |
 
+</dd></dl>

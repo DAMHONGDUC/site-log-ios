@@ -1,9 +1,15 @@
 # Roadmap
 
+<dl><dd>
+
 - Work is guided **by feature**: one feature is finished end to end before the next starts.
 - Specs: [docs/feature-docs](docs/feature-docs/); step-by-step guides: [docs/feature-guide](docs/feature-guide/), one per feature.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [How work is split](#how-work-is-split)
 2. [Summary](#summary)
@@ -26,7 +32,11 @@
 19. [F16 — UI finish and App Store](#f16--ui-finish-and-app-store--48h)
 20. [Rules](#rules)
 
+</dd></dl>
+
 ## How work is split
+
+<dl><dd>
 
 ```mermaid
 flowchart LR
@@ -44,7 +54,11 @@ flowchart LR
 - Step format: `FXX.n - [layer] - [est hours] - description`.
 - Estimates: dev-hours for one developer new to Swift and SwiftUI, learning included.
 
+</dd></dl>
+
 ## Summary
+
+<dl><dd>
 
 ```mermaid
 flowchart TD
@@ -77,7 +91,11 @@ flowchart TD
 | UI skeleton | Done 2026-10-08: every screen at ~30% of Figma on `FakeData`, debug dev menu in Settings |
 | Goal | App Store release with the full scope; no feature is dropped |
 
+</dd></dl>
+
 ## F00 — Foundation · 26h
+
+<dl><dd>
 
 - Demo: builds with zero warnings, CI green, DesignSystem snapshot passes.
 - Spec: [00](docs/feature-docs/00-overview.md), [05](docs/feature-docs/05-platform.md)
@@ -89,7 +107,11 @@ flowchart TD
 - [ ] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
 - [ ] **F00.4** - [Tests] - [3h] - DesignSystem: hex test, `DSGallery`, snapshot test (tokens + components already built)
 
+</dd></dl>
+
 ## F01 — Access and app lock · 15h
+
+<dl><dd>
 
 - Demo: Face ID / passcode lock, re-lock after *Lock after*, app switcher overlay.
 - Spec: [07.2](docs/feature-docs/04-reporting-security.md#072-app-lock)
@@ -101,7 +123,11 @@ flowchart TD
 - [ ] **F01.4** - [Real data] - [8h] - Keychain + Face ID repository
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F02 — Projects, sessions, locations · 31h
+
+<dl><dd>
 
 - Demo: project → 80 generated locations → walkthrough, all offline and kept after relaunch.
 - Spec: [01](docs/feature-docs/01-field-work.md#01-projects-sessions-locations), [00 §3 Data model](docs/feature-docs/00-overview.md#3-data-model)
@@ -113,7 +139,11 @@ flowchart TD
 - [ ] **F02.4** - [Real data] - [15h] - SwiftData
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F03 — Capture · 20h
+
+<dl><dd>
 
 - Demo: photo captured and hashed in airplane mode, linked to a location, kept after relaunch.
 - Spec: [02](docs/feature-docs/01-field-work.md#02-capture-pipeline)
@@ -125,7 +155,11 @@ flowchart TD
 - [ ] **F03.4** - [Real data] - [14h] - Camera, disk, SHA-256
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F04 — Upload engine · TestFlight #1 · 89h
+
+<dl><dd>
 
 - Demo: 200 files reach storage and survive app kill and airplane mode; first TestFlight build.
 - Spec: [04 Upload engine](docs/feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](docs/feature-docs/03-backend.md#1-role), [17 CI/CD](docs/feature-docs/05-platform.md#17-cicd-and-testflight)
@@ -138,7 +172,11 @@ flowchart TD
 - [ ] **F04.5** - [Release] - [10h] - Signing and TestFlight #1
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F05 — Issues and before/after · 21h
+
+<dl><dd>
 
 - Demo: issue logged from the camera, re-checked next session, closed as a before/after pair.
 - Spec: [03](docs/feature-docs/01-field-work.md#03-issues-and-before-after-pairing), [12.3 dictation](docs/feature-docs/01-field-work.md#123-dictation-and-voice-notes)
@@ -150,7 +188,11 @@ flowchart TD
 - [ ] **F05.4** - [Real data] - [11h] - Issue logic and dictation
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F06 — Markup and stamps · 19h
+
+<dl><dd>
 
 - Demo: markup saved as a layer over the original; stamped copy shared with trusted time.
 - Spec: [12](docs/feature-docs/01-field-work.md#12-annotation-and-verifiable-stamps)
@@ -162,7 +204,11 @@ flowchart TD
 - [ ] **F06.4** - [Real data] - [13h] - Rendering and trusted time
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F07 — Reports and audit log · 31h
+
+<dl><dd>
 
 - Demo: signed, branded PDF and CSV from a real session, shared in airplane mode; audit chain verifies.
 - Spec: [05](docs/feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07.3 audit](docs/feature-docs/04-reporting-security.md#073-audit-log)
@@ -174,7 +220,11 @@ flowchart TD
 - [ ] **F07.4** - [Real data] - [25h] - CSV, PDF, audit chain
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F08 — Floor plans and pins · 16h
+
+<dl><dd>
 
 - Demo: real PDF plan imported, issues pinned, pins survive relaunch.
 - Spec: [11](docs/feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
@@ -186,7 +236,11 @@ flowchart TD
 - [ ] **F08.4** - [Real data] - [9h] - Import and pins
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F09 — Checklists · 10h
+
+<dl><dd>
 
 - Demo: checklist run in a room; a Fail creates one prefilled issue.
 - Spec: [13](docs/feature-docs/01-field-work.md#13-checklist-templates)
@@ -198,7 +252,11 @@ flowchart TD
 - [ ] **F09.4** - [Real data] - [4h] - Templates and results
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F10 — DeviceLink (BLE meters) · 18h
+
+<dl><dd>
 
 - Demo: laser reading from the macOS mock peripheral shows on the camera; capture never waits.
 - Spec: [06](docs/feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
@@ -210,7 +268,11 @@ flowchart TD
 - [ ] **F10.4** - [Real data] - [13h] - BLE and mock peripheral
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F11 — Diagnostics · TestFlight #2 · 17h
+
+<dl><dd>
 
 - Demo: integrity check, storage cleanup, diagnostic bundle, Crashlytics; second TestFlight build.
 - Spec: [09](docs/feature-docs/05-platform.md#09-diagnostics-and-observability), [19 Instruments](docs/feature-docs/05-platform.md#19-performance-profiling-with-instruments)
@@ -222,7 +284,11 @@ flowchart TD
 - [ ] **F11.4** - [Release] - [6h] - Instruments pass and TestFlight #2
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F12 — Auth and multi-device sync · 60h
+
+<dl><dd>
 
 - Demo: a second device sees the same data; deletes propagate.
 - Spec: [08](docs/feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](docs/feature-docs/03-backend.md#7-sync)
@@ -235,7 +301,11 @@ flowchart TD
 - [ ] **F12.5** - [Real data] - [44h] - Firebase Auth and sync engine
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F13 — Realtime progress and verification · 20h
+
+<dl><dd>
 
 - Demo: the Sync tab shows server-confirmed state as events arrive; mismatches are flagged.
 - Spec: [10](docs/feature-docs/02-upload-sync.md#10-realtime-progress-channel), [14 §8–9](docs/feature-docs/03-backend.md#8-integrity)
@@ -246,7 +316,11 @@ flowchart TD
 - [ ] **F13.3** - [Real data] - [17h] - Channel, bridge, verification worker
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F14 — Push and deep links · 11h
+
+<dl><dd>
 
 - Demo: a push opens its target; `sitelog://` links work after cold launch.
 - Spec: [18](docs/feature-docs/05-platform.md#18-push-notifications-and-deep-links)
@@ -257,7 +331,11 @@ flowchart TD
 - [ ] **F14.3** - [Real data] - [8h] - Push and routing
 - [ ] Tests written and green (after the feature works)
 
+</dd></dl>
+
 ## F15 — Accessibility and performance · 14h
+
+<dl><dd>
 
 - Demo: VoiceOver walk unlock → projects → capture → report; every Instruments budget met.
 - Spec: [19 Instruments](docs/feature-docs/05-platform.md#19-performance-profiling-with-instruments)
@@ -266,7 +344,11 @@ flowchart TD
 - [ ] **F15.1** - [Polish] - [8h] - Accessibility pass
 - [ ] **F15.2** - [Release] - [6h] - Budgets and feedback
 
+</dd></dl>
+
 ## F16 — UI finish and App Store · 48h
+
+<dl><dd>
 
 - Demo: every screen next to its Figma frame, light and dark; build submitted.
 - Spec: [Design plan](docs/design/00-design-plan.md)
@@ -282,7 +364,11 @@ flowchart TD
 - [ ] **F16.8** - [UI] - [5h] - Dark mode; empty, error, offline states; real imagery
 - [ ] **F16.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
 
+</dd></dl>
+
 ## Rules
+
+<dl><dd>
 
 1. One feature at a time, in the order above; a feature is done when its demo runs on a real device and its tests pass.
 2. Each step ends with something runnable, never "half a screen".
@@ -292,3 +378,5 @@ flowchart TD
 5. Visual work to Figma waits for `F16`; until then a step changes layout only when a view model needs it.
 6. A step estimated above 8h is split when you start it.
 7. Tick the box in the same commit that finishes the step.
+
+</dd></dl>

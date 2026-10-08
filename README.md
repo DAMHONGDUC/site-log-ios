@@ -1,16 +1,26 @@
 # SiteLog
 
+<dl><dd>
+
 - Offline-first iOS app for site supervisors: record construction site conditions, export a signed
   PDF inspection report.
 - Author: Dam Hong Duc · bundle ID `app.dd.site.log` · App Store: not published.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Getting started](#1-getting-started)
 2. [Docs map](#2-docs-map)
 3. [Repo layout](#3-repo-layout)
 
+</dd></dl>
+
 ## 1. Getting started
+
+<dl><dd>
 
 | Step | Action |
 |---|---|
@@ -19,7 +29,11 @@
 | 3 | Open `SiteLog.xcodeproj`, run the `SiteLog` scheme (⌘R) on an iOS 18.6+ simulator; tests ⌘U |
 | 4 | Full tooling (VS Code, hot reload, format on save): [05-platform § Dev setup](docs/feature-docs/05-platform.md#dev-setup) |
 
+</dd></dl>
+
 ## 2. Docs map
+
+<dl><dd>
 
 | Doc | Contents |
 |---|---|
@@ -33,7 +47,13 @@
 | [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
 | [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; [mockups](docs/design/mockups/index.html) |
 
+- Docs rule: content sits indented under its title. After editing any `.md`, run `python3 Tools/Docs/indent-md.py` (wraps sections in `<dl><dd>`; safe to re-run).
+
+</dd></dl>
+
 ## 3. Repo layout
+
+<dl><dd>
 
 - Architecture: Clean Architecture + MVVM, one app target, one folder per layer; `DesignSystem` is a Swift package.
 - Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
@@ -99,7 +119,7 @@ site-log-ios/
 │   └── Snapshots/
 ├── SiteLogUITests/
 ├── Backend/                              # Node + Postgres → 03-backend.md
-├── Tools/                                # CI/ Hammerspoon/ MockPeripheral/
+├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/
 │   ├── feature-docs/                     # project specs
@@ -111,3 +131,5 @@ site-log-ios/
 
 - Dependencies: `App` → every layer; `Presentation` → `Domain` ← `Data` → `DataSources`; `Presentation` → `DesignSystem`.
 - Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
+
+</dd></dl>

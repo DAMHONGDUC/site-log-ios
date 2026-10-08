@@ -1,8 +1,14 @@
 # F13 — Realtime progress and verification
 
+<dl><dd>
+
 - F13 · 20h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -12,7 +18,11 @@
 6. [Tests (after the feature works)](#tests-after-the-feature-works)
 7. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Realtime progress and verification end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** the Sync tab shows server-confirmed state as events arrive; mismatches are flagged.
@@ -28,14 +38,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 Backend/src/ws.ts, workers/verify.ts     # 3
@@ -46,25 +62,42 @@ SiteLog/
 └── Presentation/Uploads/UploadStatus/     # 2: live state
 ```
 
+</dd></dl>
+
 ## 1. Fake data — Fake event stream
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `SiteLog/Data/Fakes/FakeRealtimeChannel.swift` | Emits `jobCompleted` / `jobFailed` on a timer |
 
+</dd></dl>
+
 ## 2. View models — Live state on the Sync tab
+
+<dl><dd>
 
 - **Goal:** S10 shows server-confirmed state as events arrive.
 - **Spec:** [09.1](../feature-docs/05-platform.md#091-upload-status-screen)
 
 #### Steps
 
+<dl><dd>
+
 1. A closed channel is not an error, only slower — no red.
+
+</dd></dl>
+
+</dd></dl>
 
 ## 3. Real data — Channel, bridge, verification worker
 
+<dl><dd>
+
 <details open>
 <summary><b>3.1 Realtime client</b></summary>
+<dl><dd>
 
 - **Goal:** observation-only WebSocket: connect, auth in the first message, ping, reconnect with backoff.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel)
@@ -77,14 +110,18 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Token in the first `auth` message, never the URL.
 2. Re-arm `receive` after every message.
 3. Connect only in foreground with unsynced jobs.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.2 Events into the upload store</b></summary>
+<dl><dd>
 
 - **Goal:** the app layer turns events into `UploadStore` operations that only move jobs forward.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel)
@@ -93,16 +130,22 @@ SiteLog/
 |---|---|
 | `SiteLog/App/RealtimeBridge.swift` | Composition root: Realtime → UploadStore |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. `jobCompleted` trusted only if its `sha256` matches the local hash.
 2. Unknown `jobID` ignored; handling idempotent.
 3. Nightly CI builds the app with `Realtime` removed.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.3 Verification worker</b></summary>
+<dl><dd>
 
 - **Goal:** backend re-reads each object from R2 and flips `registered` → `verified` or `mismatch`.
 - **Spec:** [14 §8](../feature-docs/03-backend.md#8-integrity)
@@ -112,14 +155,25 @@ SiteLog/
 | `Backend/src/workers/verify.ts` | Streams the object, recomputes SHA-256 |
 | `Backend/src/jobs/abandoned.ts` | Aborts `created` uploads older than 7 days |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Mismatch pushes `jobFailed(integrity)` to the app.
 2. The report prints exactly the state reached.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **2. View models — Live state on the Sync tab**
 
@@ -138,7 +192,11 @@ SiteLog/
 - Worker flips `verified` or raises `integrity`
 - `/verify` shows the new state
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -146,3 +204,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F13 steps ticked |
 
+</dd></dl>

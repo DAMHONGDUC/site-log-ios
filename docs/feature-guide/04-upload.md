@@ -1,8 +1,14 @@
 # F04 — Upload engine · TestFlight #1
 
+<dl><dd>
+
 - F04 · 89h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -14,7 +20,11 @@
 8. [Tests (after the feature works)](#tests-after-the-feature-works)
 9. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Upload engine end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** 200 files reach storage and survive app kill and airplane mode; first TestFlight build.
@@ -32,14 +42,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 Backend/                          # 4: Node 22 + TypeScript + Fastify, Postgres, migrations/
@@ -55,7 +71,11 @@ SiteLog/
 └── Presentation/Uploads/         # 3: UploadStatus (Sync tab), UploadFiles
 ```
 
+</dd></dl>
+
 ## 1. Domain + fake — UploadKit API and in-memory store
+
+<dl><dd>
 
 - **Goal:** job record, states and the `UploadStore` protocol, plus `InMemoryUploadStore`.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
@@ -68,10 +88,18 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. New folder `SiteLog/DataSources/UploadKit/`; types inside are `nonisolated`.
 2. Check nothing in `UploadKit/` uses a type from another folder (review).
 
+</dd></dl>
+
+</dd></dl>
+
 ## 2. View models — Wire the Sync tab
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -80,16 +108,25 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
 5. “Waiting” uses `DSStatusMarker(.waiting)` — never red; reasons in plain language.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 3. Backend — Backend endpoints
+
+<dl><dd>
 
 <details open>
 <summary><b>3.1 Backend skeleton and first migrations</b></summary>
+<dl><dd>
 
 - **Goal:** Fastify app, Postgres, `0001_uploads.sql`, Firebase token check.
 - **Spec:** [14 §2–5](../feature-docs/03-backend.md#2-stack)
@@ -102,13 +139,17 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Throwaway Postgres for tests (Docker).
 2. `vitest` + `tsc` + ESLint in CI (Ubuntu job).
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.2 Presigned upload endpoint</b></summary>
+<dl><dd>
 
 - **Goal:** `POST /uploads` returns a single-PUT or multipart plan; keys checked against the caller’s uid.
 - **Spec:** [14 §3–4](../feature-docs/03-backend.md#3-endpoints)
@@ -118,15 +159,21 @@ SiteLog/
 | `Backend/src/routes/uploads.ts` | Begin, mode by `byteSize` (5 MB threshold, 8 MB parts) |
 | `Backend/src/keys.ts` | Strict key regex, no `..` |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Presign locally with `s3-request-presigner`; TTL 1 h.
 2. One R2 bucket per environment.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.3 Refresh, complete, abort</b></summary>
+<dl><dd>
 
 - **Goal:** idempotent `complete`, part URL refresh, abort.
 - **Spec:** [14 §7.3](../feature-docs/03-backend.md#73-idempotent-complete)
@@ -135,17 +182,29 @@ SiteLog/
 |---|---|
 | `Backend/src/routes/uploads.ts` | `/parts/refresh`, `/complete`, `DELETE` |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. `complete` twice → identical 200 body.
 2. Never 400 for transient conditions (§10).
 
+</dd></dl>
 </details>
+
+</dd></dl>
+
+</dd></dl>
 
 ## 4. Real data — UploadKit
 
+<dl><dd>
+
 <details open>
 <summary><b>4.1 Job model and local store</b></summary>
+<dl><dd>
 
 - **Goal:** SwiftData-backed `UploadStore` in `Persistence`.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
@@ -156,12 +215,16 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Lookup by `taskDescription = "jobID#part"`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.2 Single PUT via background URLSession</b></summary>
+<dl><dd>
 
 - **Goal:** files under 5 MB upload through a background session and survive suspension.
 - **Spec:** [04.3](../feature-docs/02-upload-sync.md#043-ios-background-constraints)
@@ -171,16 +234,22 @@ SiteLog/
 | `UploadKit/BackgroundSessionDelegate.swift` | Session delegate |
 | `UploadKit/UploadCoordinator.swift` | Actor, the only executor of effects |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. `isDiscretionary = false`, `sessionSendsLaunchEvents = true`.
 2. Wire `handleEventsForBackgroundURLSession` in AppDelegate.
 3. Enqueue the first batch in the foreground.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.3 State machine, retry, backoff</b></summary>
+<dl><dd>
 
 - **Goal:** pure `UploadStateMachine.reduce` and jittered backoff.
 - **Spec:** [04.4](../feature-docs/02-upload-sync.md#044-state-machine)
@@ -189,15 +258,21 @@ SiteLog/
 |---|---|
 | `UploadKit/UploadStateMachine.swift` | Events → (state, effects); no I/O |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. 401/403 and offline consume no retry budget.
 2. Delay `min(2s × 2^n, 300s) × jitter`, max 5 attempts; inject the RNG.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.4 Multipart and resume</b></summary>
+<dl><dd>
 
 - **Goal:** files over 5 MB in uniform 8 MB parts, resumable part by part.
 - **Spec:** [04.2](../feature-docs/02-upload-sync.md#042-protocol)
@@ -207,15 +282,21 @@ SiteLog/
 | `UploadKit/ChunkPlanner.swift` | Fixed-size parts |
 | `UploadKit/PartFileWriter.swift` | At most 2 temp part files per job |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Split this part when you start (planner · upload · complete).
 2. Final part failure never calls `complete`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.5 Kill and relaunch reconciliation</b></summary>
+<dl><dd>
 
 - **Goal:** cold launch reattaches, cancels or resets jobs so nothing sticks at 60%.
 - **Spec:** [04.3](../feature-docs/02-upload-sync.md#043-ios-background-constraints)
@@ -225,27 +306,39 @@ SiteLog/
 | `UploadKit/Reconciler.swift` | Three cases: reattach · cancel + log · reset to pending |
 | `SiteLog/App/Startup/Steps/ReconcileUploadsStep.swift` | Non-blocking startup step |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Recreate the session with the same identifier at launch.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.6 Wi-Fi only and URL refresh</b></summary>
+<dl><dd>
 
 - **Goal:** Wi-Fi-only policy (default on), dedupe by hash, proactive URL refresh.
 - **Spec:** [04.5](../feature-docs/02-upload-sync.md#045-policy)
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. `allowsCellularAccess = false` when Wi-Fi only.
 2. Same `sha256` in a project → reuse `remoteKey`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.7 UploadKit behind the screens</b></summary>
+<dl><dd>
 
 - **Goal:** real `UploadCoordinator` + SwiftData store behind the Sync tab; 200-file demo.
 
@@ -253,19 +346,34 @@ SiteLog/
 |---|---|
 | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Register the real store and coordinator.
 2. Run the 200-file demo with a kill in the middle.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - 200 files / 2 GB complete with matching server hashes
 - Airplane mode → waiting, budget intact
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## 5. Release — Signing and TestFlight #1
+
+<dl><dd>
 
 - **Goal:** a `v*` tag becomes a TestFlight build with no local step.
 - **Spec:** [17](../feature-docs/05-platform.md#17-cicd-and-testflight)
@@ -277,15 +385,27 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. App Store Connect API key in GitHub secrets (`ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`).
 2. Build number = latest TestFlight + 1.
 3. Push `v0.0.1`.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - TestFlight build appears; repo holds no `.p8`, certificate or profile
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **1. Domain + fake — UploadKit API and in-memory store**
 
@@ -320,7 +440,11 @@ SiteLog/
 - 60 s URL TTL refreshes automatically
 - Wi-Fi only on cellular sends zero bytes
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -329,3 +453,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F04 steps ticked |
 
+</dd></dl>

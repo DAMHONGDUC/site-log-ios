@@ -1,15 +1,25 @@
 # Reporting and security
 
+<dl><dd>
+
 - The paid deliverable and the protection of the evidence behind it.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 - [05 PDF and spreadsheet export](#05-pdf-and-spreadsheet-export) — sections, rendering, spreadsheet
 - [07 Security and audit log](#07-security-and-audit-log) — at rest, app lock, audit log, leaks and secrets
 
 ---
 
+</dd></dl>
+
 ## 05. PDF and spreadsheet export
+
+<dl><dd>
 
 - Module: `SiteLog/DataSources/Reporting`
 
@@ -25,6 +35,8 @@ network — never truncated, never missing images, never crashing on page 38 of 
 | PDF + CSV/XLSX via Files / `UIActivityViewController` | |
 
 ### 05.1 Sections
+
+<dl><dd>
 
 | Section | Source |
 |---|---|
@@ -48,7 +60,11 @@ struct ReportBranding: Codable, Sendable {
 - Branding: one `report_branding` row per user; the logo uploads like any file.
 - Signing sets `Session.state = .exported` (read-only); re-signing creates a `-R2` revision, keeps the original.
 
+</dd></dl>
+
 ### 05.2 Rendering
+
+<dl><dd>
 
 - `UIGraphicsPDFRenderer`: no third-party library, no WebView printing (HTML→PDF with 200 images
   gives blank pages).
@@ -124,7 +140,13 @@ enum ReportConstants {
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 07. Security and audit log
+
+<dl><dd>
 
 - Modules: `SiteLog/Presentation/Access/` (`FaceIDLock`, `PasscodeUnlock`, `PrivacyOverlay`), `SiteLog/Presentation/Settings/AppLock`, `Domain`
 
@@ -132,6 +154,8 @@ enum ReportConstants {
 never leaked into logs or analytics.
 
 ### 07.1 At rest
+
+<dl><dd>
 
 | Data | Protection |
 |---|---|
@@ -148,7 +172,11 @@ never leaked into logs or analytics.
 - `.completeUnlessOpen` encrypts on lock but keeps open files readable, which background upload needs.
 - `.complete` would stop uploads when the phone goes into a pocket.
 
+</dd></dl>
+
 ### 07.2 App lock
+
+<dl><dd>
 
 | Screen | Purpose |
 |---|---|
@@ -179,7 +207,11 @@ never leaked into logs or analytics.
 - A UI gate on `RootView`, not encryption (on a sheet it would be bypassable by killing the app).
 - Sensitive Keychain items use `.biometryCurrentSet`.
 
+</dd></dl>
+
 ### 07.3 Audit log
+
+<dl><dd>
 
 - Records every view, delete, export, report exclusion, metadata change, pin move, annotation edit.
 
@@ -201,7 +233,11 @@ struct AuditEntry: Codable, Sendable {
 - Entries survive project deletion.
 - Losing the key on device migration is accepted: the log is per device, and Diagnostics says so.
 
+</dd></dl>
+
 ### 07.4 Leaks and secrets
+
+<dl><dd>
 
 | Rule | Detail |
 |---|---|
@@ -249,3 +285,6 @@ enum SecurityConstants {
 - Lock after boundary (just under / at the value)
 - Biometry change turns Face ID off
 
+</dd></dl>
+
+</dd></dl>

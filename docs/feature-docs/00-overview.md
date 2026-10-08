@@ -1,10 +1,16 @@
 # 00 — Overview
 
+<dl><dd>
+
 - Product, market, data model, architecture, data flows, infrastructure, conventions.
 - Feature specs live in five files ([§8](#8-feature-specs)); spec numbers `01`–`19` are stable and
   used by [ROADMAP.md](../../ROADMAP.md), which also owns the build order.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Product](#1-product) — positioning, core rule, stack, non-goals
 2. [Market](#2-market)
@@ -16,7 +22,11 @@
 8. [Feature specs](#8-feature-specs)
 9. [Decisions](#9-decisions) — D01–D08, why each library or hand-written engine
 
+</dd></dl>
+
 ## 1. Product
+
+<dl><dd>
 
 | | |
 |---|---|
@@ -31,6 +41,8 @@ Create project → start session → walk floors/rooms, capture + log issues
 
 ### 1.1 Positioning and constraints
 
+<dl><dd>
+
 - Competitors lose evidence three ways: stalled or incomplete uploads, photos vanishing on reload,
   sync failing with no reason.
 - SiteLog assumes the network is bad.
@@ -42,13 +54,21 @@ Create project → start session → walk floors/rooms, capture + log issues
 | User closes the app and keeps walking | No state lives only in RAM |
 | The PDF is the paid deliverable | Never truncate, never silently drop images |
 
+</dd></dl>
+
 ### 1.2 Core rule
+
+<dl><dd>
 
 - `Capture` is immutable after creation; only descriptive metadata is editable.
 - Each carries a `sha256` computed after the file closes, before the DB write.
 - Annotations are a separate vector layer, so markup never invalidates a hash.
 
+</dd></dl>
+
 ### 1.3 Stack
+
+<dl><dd>
 
 | Area | Choice |
 |---|---|
@@ -71,7 +91,11 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
 | Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
 
+</dd></dl>
+
 ### 1.4 Non-goals
+
+<dl><dd>
 
 | Excluded | Reason |
 |---|---|
@@ -81,7 +105,13 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Burning annotations into original pixels | Destroys the hash |
 | RFIs, scheduling, budgets, CAD, real-time multi-user editing, cloud AI defect detection | Different product, or indefensible in a dispute |
 
+</dd></dl>
+
+</dd></dl>
+
 ## 2. Market
+
+<dl><dd>
 
 - Research: September 2026.
 
@@ -106,9 +136,15 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Verifiable capture | `Date()` is spoofable from Settings, breaking chain of custody | Wall clock + monotonic uptime + server offset, printed `timeConfidence`, server verification code ([12](01-field-work.md#12-annotation-and-verifiable-stamps)) |
 | Vietnamese handover | Signed two-party record has legal standing; buyers sign only after every defect is re-inspected; room-by-room | Signature page, before/after loop ([03](01-field-work.md#03-issues-and-before-after-pairing)), checklists are load-bearing |
 
+</dd></dl>
+
 ## 3. Data model
 
+<dl><dd>
+
 ### 3.1 Hierarchy
+
+<dl><dd>
 
 ```
 Project
@@ -124,7 +160,11 @@ Project
 
 - `Location` belongs to `Project`, not `Session`: this makes cross-session before/after pairing possible.
 
+</dd></dl>
+
 ### 3.2 Entities
+
+<dl><dd>
 
 | Entity | Fields | Rules |
 |---|---|---|
@@ -139,20 +179,34 @@ Project
 - No API deletes a `Capture` from an exported session; hiding sets `isExcludedFromReport` + audit entry.
 - Store relative paths: absolute ones break on reinstall.
 
+</dd></dl>
+
 ### 3.3 UploadState
+
+<dl><dd>
 
 - `pending → uploading → synced`; `failed` reachable from `uploading`.
 - `failed` is not terminal and never deletes local files.
 - Full job state machine: [04](02-upload-sync.md#04-upload-engine).
 
+</dd></dl>
+
 ### 3.4 Schema versioning
+
+<dl><dd>
 
 - `VersionedSchema` + `SchemaMigrationPlan` from v1; `#Unique`/`#Index` mirror the Postgres
   uniqueness rules (location code per project, capture `sha256` per project).
 - Per change: add `SchemaV{n}`, keep `SchemaV{n-1}`, declare a `MigrationStage`.
 - Test migrations against an old-version fixture store, never an empty one.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Architecture
+
+<dl><dd>
 
 - Clean Architecture: dependencies point inward to `Domain`.
 - One app target; each layer is a folder in `SiteLog/`.
@@ -169,6 +223,8 @@ flowchart LR
 ```
 
 ### 4.1 Repo layout
+
+<dl><dd>
 
 ```
 site-log-ios/
@@ -209,7 +265,11 @@ site-log-ios/
 - The folder skeleton exists from the start; empty folders hold a `.gitkeep` (excluded from the build in `project.yml`).
 - Why folders, not packages: [D09](#d09--layers-as-folders-in-one-app-target).
 
+</dd></dl>
+
 ### 4.2 Layers and dependency rules
+
+<dl><dd>
 
 | Layer | Folder | May use |
 |---|---|---|
@@ -234,7 +294,11 @@ site-log-ios/
 | `DesignSystem` uses nothing from the app | Compiler (separate package, no dependencies) |
 | Types in `Domain/`, `Data/`, `DataSources/` are `nonisolated` (the target defaults to `MainActor`) | Compiler + review |
 
+</dd></dl>
+
 ### 4.3 MVVM, use cases, repositories
+
+<dl><dd>
 
 | Type | Rules |
 |---|---|
@@ -244,7 +308,11 @@ site-log-ios/
 | Use case | One per user action, a `struct` with one `execute`; depends on repository protocols only |
 | Repository | One per aggregate: `ProjectRepository`, `CaptureRepository`, `IssueRepository`, … |
 
+</dd></dl>
+
 ### 4.4 Composition root (Factory)
+
+<dl><dd>
 
 - All registrations live in `SiteLog/App/AppDependencies.swift`.
 - `Domain` and `Data` never import `FactoryKit`.
@@ -273,7 +341,11 @@ final class ProjectListViewModel {
 | Tests | `@Suite(.container)` from `FactoryTesting` |
 | Injected seams | Repositories, `AppClock`, `UploadStore`, `UploadTransport`, `CaptureSessionControlling`, `RandomNumberGenerator` |
 
+</dd></dl>
+
 ### 4.5 Startup sequence
+
+<dl><dd>
 
 - Each step guarded and logged separately — never one `try` around init.
 
@@ -288,9 +360,17 @@ final class ProjectListViewModel {
 | 7 | Sweep orphan files, temp parts, stale derived images | Log only |
 | 8 | App lock gate at `RootView` (when Lock app is on) | Face ID → app passcode → forgot-passcode flow |
 
+</dd></dl>
+
+</dd></dl>
+
 ## 5. Data flows
 
+<dl><dd>
+
 ### 5.1 Capture → stored evidence
+
+<dl><dd>
 
 | # | Step | Thread | Failure |
 |---|---|---|---|
@@ -304,7 +384,11 @@ final class ProjectListViewModel {
 - **Invariant:** no DB row without a hash; no file without a row for longer than one launch.
 - Upload, reconciliation, sync: [02-upload-sync.md](02-upload-sync.md). Report export: [05](04-reporting-security.md#05-pdf-and-spreadsheet-export).
 
+</dd></dl>
+
 ### 5.2 Concurrency map
+
+<dl><dd>
 
 | Context | Type | Holds |
 |---|---|---|
@@ -319,9 +403,17 @@ final class ProjectListViewModel {
 - Never call `startRunning()` on main.
 - No `@unchecked Sendable` to silence a warning.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 6. Infrastructure
 
+<dl><dd>
+
 ### 6.1 Filesystem
+
+<dl><dd>
 
 | Path | Protection | Evidence |
 |---|---|---|
@@ -335,7 +427,11 @@ final class ProjectListViewModel {
 - Nothing backed up to iCloud (`isExcludedFromBackup`); R2 is the source of truth.
 - The DB stores relative paths.
 
+</dd></dl>
+
 ### 6.2 Configuration
+
+<dl><dd>
 
 | Item | Where | Committed |
 |---|---|---|
@@ -345,7 +441,13 @@ final class ProjectListViewModel {
 
 - Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`. CI: [17](05-platform.md#17-cicd-and-testflight).
 
+</dd></dl>
+
+</dd></dl>
+
 ## 7. Conventions
+
+<dl><dd>
 
 | Rule | Detail |
 |---|---|
@@ -385,7 +487,11 @@ final class ProjectListViewModel {
 4. Real data (Data impl, DTO, mapper; framework code in a data source); the Factory registration swaps the fake for it.
 5. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
 
+</dd></dl>
+
 ## 8. Feature specs
+
+<dl><dd>
 
 | File | Specs |
 |---|---|
@@ -397,11 +503,14 @@ final class ProjectListViewModel {
 
 - Every spec has the same shape: goal and scope, design, rules and risks, done and tests.
 
+</dd></dl>
+
 ## 9. Decisions
+
+<dl><dd>
 
 - Choices that are expensive to reverse: context, decision, rejected options, consequences.
 - A superseded decision stays, marked `Superseded by DNN`.
-
 
 | # | Decision | Status |
 |---|---|---|
@@ -420,6 +529,8 @@ final class ProjectListViewModel {
 ---
 
 ### D01 — Factory for dependency injection
+
+<dl><dd>
 
 - **Context:** one place must bind `Data` implementations to `Domain` protocols and let previews
   and tests swap them; a hand-written `make…()` per use case grows with every feature.
@@ -442,7 +553,11 @@ final class ProjectListViewModel {
   - Tests: `@Suite(.container)` (`FactoryTesting`), one isolated container per test.
   - Replacing the library touches one file plus the `@Injected` lines.
 
+</dd></dl>
+
 ### D02 — Hand-written upload engine
+
+<dl><dd>
 
 - Spec: [04](02-upload-sync.md#04-upload-engine)
 
@@ -463,7 +578,11 @@ final class ProjectListViewModel {
   - Largest block of work (F04 `UploadKit` steps) and the most test surface: state machine,
     `MockTransport` scripting 503/403/timeouts, kill-and-relaunch tests.
 
+</dd></dl>
+
 ### D03 — Node + PostgreSQL backend, hand-written sync
+
+<dl><dd>
 
 - Specs: [08](02-upload-sync.md#08-auth-and-sync), [14](03-backend.md)
 
@@ -484,7 +603,11 @@ final class ProjectListViewModel {
   - ~1800–2500 lines of TypeScript; a two-device convergence test.
   - Hosting, migrations, backups operated by us.
 
+</dd></dl>
+
 ### D04 — WebSocket realtime channel
+
+<dl><dd>
 
 - Spec: [10](02-upload-sync.md#10-realtime-progress-channel)
 
@@ -505,7 +628,11 @@ final class ProjectListViewModel {
   - App must build and pass tests with `Realtime` removed (nightly CI).
   - Backend serves the channel from the same process, fanned out by `pg_notify`.
 
+</dd></dl>
+
 ### D05 — Kingfisher for remote images
+
+<dl><dd>
 
 - **Context:** a second device shows photos from R2 via presigned GET; lists show hundreds of
   thumbnails. Caching, downsampling, cancellation, prefetch are commodity problems.
@@ -523,7 +650,11 @@ final class ProjectListViewModel {
   - Cache key drops the presigned query string, or every URL refresh re-downloads.
   - Cache cleared on sign-out and account deletion ([08](02-upload-sync.md#08-auth-and-sync)).
 
+</dd></dl>
+
 ### D06 — Test libraries
+
+<dl><dd>
 
 - Strategy: [05 § Testing](05-platform.md#testing-strategy)
 
@@ -545,7 +676,11 @@ final class ProjectListViewModel {
 
 - **Consequences:** snapshot references committed; recorded on one pinned simulator model and OS.
 
+</dd></dl>
+
 ### D07 — Firebase Crashlytics
+
+<dl><dd>
 
 - Spec: [09](05-platform.md#09-diagnostics-and-observability)
 
@@ -562,7 +697,11 @@ final class ProjectListViewModel {
   - No user content or PII in custom keys; IDs only.
   - Startup never blocks on Crashlytics ([§4.5](#45-startup-sequence)).
 
+</dd></dl>
+
 ### D08 — XcodeGen owns the Xcode project
+
+<dl><dd>
 
 - How-to: [Dev setup § XcodeGen](05-platform.md#2-xcodegen)
 
@@ -581,7 +720,11 @@ final class ProjectListViewModel {
   - A setting changed in Xcode's UI is lost on the next generate.
   - Run `xcodegen generate` after pulling a `project.yml` change.
 
+</dd></dl>
+
 ### D09 — Layers as folders in one app target
+
+<dl><dd>
 
 - **Context:** Clean Architecture needs layer boundaries. One SPM package per layer lets the compiler
   enforce them, but adds a manifest per layer, `public` on every cross-layer type and a build per package.
@@ -599,3 +742,7 @@ final class ProjectListViewModel {
 - **Consequences:**
   - The compiler no longer stops a view from using a `Data/` type; the CI script does.
   - Moving a folder to a package later means adding a manifest and `public`.
+
+</dd></dl>
+
+</dd></dl>

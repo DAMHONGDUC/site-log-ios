@@ -1,10 +1,16 @@
 # Field work
 
+<dl><dd>
+
 - What the supervisor does on site: organize the walk, capture, log and verify issues, pin them on
   plans, mark up photos, run checklists, read measuring tools.
 - Architecture and data model: [00-overview.md](00-overview.md).
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 | Spec | Topic |
 |---|---|
@@ -18,7 +24,11 @@
 
 ---
 
+</dd></dl>
+
 ## 01. Projects, sessions, locations
+
+<dl><dd>
 
 - Modules: `SiteLog/Presentation/Projects`, `Domain`, `Data`, `DataSources/Persistence`
 
@@ -84,7 +94,11 @@ enum LocationTemplateLimits {
 
 ---
 
+</dd></dl>
+
 ## 02. Capture pipeline
+
+<dl><dd>
 
 - Module: `SiteLog/DataSources/Capture`
 
@@ -99,6 +113,8 @@ before it reaches the DB.
 | 30-second pre-record buffer | |
 
 ### 02.1 Session and state
+
+<dl><dd>
 
 ```
 AVCaptureSession
@@ -118,7 +134,11 @@ idle → configuring → ready → capturingPhoto → ready
   `hashQueue`; UI on `@MainActor`. Never `startRunning()` on main (300–800 ms block).
 - `interrupted` (call, backgrounding) while recording **finalizes rather than discards**.
 
+</dd></dl>
+
 ### 02.2 Metadata and hashing
+
+<dl><dd>
 
 | Field | Source | When unavailable |
 |---|---|---|
@@ -142,7 +162,11 @@ func sha256(ofFileAt url: URL) throws -> String {
 - Stream in chunks: `Data(contentsOf:)` on a 1.5 GB video triggers jetsam.
 - Files: `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup.
 
+</dd></dl>
+
 ### 02.3 Pre-record buffer
+
+<dl><dd>
 
 - Keeps the last 30 s when record is pressed.
 - Never raw buffers in RAM: `AVAssetWriter` writes 3-second segments to `<Caches>/prebuffer/` in a
@@ -188,7 +212,13 @@ enum HashConstants { static let streamingChunkBytes: Int = 1_048_576 }
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 03. Issues and before-after pairing
+
+<dl><dd>
 
 - Modules: `SiteLog/Presentation/Issues`, `Domain`, `Data`
 
@@ -205,6 +235,8 @@ shoot verification, render the pair in the PDF.
 | Phrase library, on-device dictation, voice notes | |
 
 ### 03.1 Flows
+
+<dl><dd>
 
 ```
 Log:     Capture → shoot → [Attach issue] → sheet (description, severity=Major,
@@ -225,7 +257,11 @@ Close:   new Issue (status .verified, verification photo); old.resolvedByIssue =
 - Phrase library: ~30 seeded phrases; new typed phrases added; sorted by usage; synced via the
   backend's `phrases` table.
 
+</dd></dl>
+
 ### 03.2 Design
+
+<dl><dd>
 
 ```swift
 struct IssuePairing: Sendable, Equatable {
@@ -270,7 +306,13 @@ enum IssueDefaults {
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 06. DeviceLink BLE measuring tools
+
+<dl><dd>
 
 - Module: `SiteLog/DataSources/DeviceLink` · mock: `Tools/MockPeripheral/`
 
@@ -339,7 +381,11 @@ enum DeviceLinkConstants {
 
 ---
 
+</dd></dl>
+
 ## 11. Floor plans and issue pins
+
+<dl><dd>
 
 - Modules: `SiteLog/DataSources/Plans`, `SiteLog/Presentation/Plans`
 
@@ -410,13 +456,19 @@ enum PlanConstants {
 
 ---
 
+</dd></dl>
+
 ## 12. Annotation and verifiable stamps
+
+<dl><dd>
 
 - Modules: `SiteLog/DataSources/Capture` (rendering), `Domain` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 
 ### 12.1 Annotation layer
+
+<dl><dd>
 
 ```swift
 struct NormalizedPoint: Codable, Sendable, Equatable { var x: Double; var y: Double }
@@ -438,19 +490,31 @@ enum AnnotationShape: Codable, Sendable, Equatable {
 - Editor: Arrow (default), Box, Circle, Pen, Text; stroke scales with image size; undo capped at
   `maxUndoSteps`; commits on exit. Edits write an audit entry.
 
+</dd></dl>
+
 ### 12.2 Stamped derivatives
+
+<dl><dd>
 
 - File: `derived/<…>/<captureID>-stamped.jpg`.
 - Carries date/time, coordinates and accuracy, project, location code, logo.
 - Generated on demand, cached; never hashed, never evidence, excluded from integrity checks.
 
+</dd></dl>
+
 ### 12.3 Dictation and voice notes
+
+<dl><dd>
 
 - `SFSpeechRecognizer`, `requiresOnDeviceRecognition = true`: site audio never leaves the device.
 - Vietnamese and English; falls back to the phrase library.
 - A voice note is an ordinary audio `Capture`; dictated text lands in `Issue.detail`.
 
+</dd></dl>
+
 ### 12.4 Trusted time
+
+<dl><dd>
 
 ```swift
 struct TrustedTimestamp: Codable, Sendable {
@@ -471,7 +535,11 @@ struct TrustedTimestamp: Codable, Sendable {
 - Offset comes from the `Date` header of any backend response.
 - Confidence is **printed in the report**; a capture is never rejected for low confidence.
 
+</dd></dl>
+
 ### 12.5 Verification code
+
+<dl><dd>
 
 - On upload completion the backend records the hash and returns a short code.
 - Printed under each image; resolvable at `GET /verify/:code` ([03-backend.md](03-backend.md#3-endpoints)).
@@ -517,7 +585,13 @@ enum TrustedTimeConstants {
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 13. Checklist templates
+
+<dl><dd>
 
 - Modules: `SiteLog/Presentation/Checklists`, `Domain`, `Data`
 
@@ -576,3 +650,4 @@ enum ChecklistConstants {
 - JSON import validation
 - Built-ins fork on edit
 
+</dd></dl>

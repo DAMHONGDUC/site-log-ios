@@ -1,8 +1,14 @@
 # F01 — Access and app lock
 
+<dl><dd>
+
 - F01 · 15h · step-by-step guide with full code (steps 1–3); step 4 is a skeleton.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** A2 sign in, A1 Face ID lock, A3 passcode, privacy overlay, re-lock after *Lock after*, S4 app lock and S5 set passcode — first on a fake repository, then on Keychain + Face ID.
 - **Demo:** first launch → Continue offline → tabs; lock on → Face ID or passcode; back after *Lock after* → locked again.
@@ -31,6 +41,7 @@
 
 <details open>
 <summary><b>Flow</b></summary>
+<dl><dd>
 
 | When | Screen |
 |---|---|
@@ -41,9 +52,14 @@
 | App inactive / background, lock on | Privacy overlay on top |
 | Back after ≥ *Lock after* | A1 or A3 again (measured with `AppClock.uptime`) |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -61,7 +77,11 @@ SiteLog/
     └── Settings/AppLock/, SetPasscode/                # 3: + ViewModel next to each view
 ```
 
+</dd></dl>
+
 ## 1. Domain — access types and use cases
+
+<dl><dd>
 
 <b>File</b> · `SiteLog/Domain/Access/AccessSettings.swift`
 
@@ -249,14 +269,20 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 
 <details open>
 <summary><b>1.1 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
 | ⌘B | Builds; nothing uses the new types yet |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 2. Fake data — in-memory access repository
+
+<dl><dd>
 
 <b>File</b> · `SiteLog/Core/Helper/Logger/AppLogger.swift` *(replace)*
 
@@ -531,20 +557,27 @@ struct FakeDevDataActions: DevDataActions {
 
 <details open>
 <summary><b>2.1 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
 | ⌘B | Builds; screens still run on their skeleton closures |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 3. View models — wire the access screens
+
+<dl><dd>
 
 - Screens never navigate: they call a closure, `RootViewModel` picks the next phase.
 - Keep each skeleton view's layout; only its data and actions move to the view model.
 
 <details open>
 <summary><b>3.1 RootViewModel</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Root/RootViewModel.swift`
 
@@ -680,10 +713,12 @@ final class RootViewModel {
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.2 A2 Sign in</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
 
@@ -805,10 +840,12 @@ final class SignInViewModel {
 
 - Preview: `SignInView(onFinished: {})`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.3 A1 Face ID lock</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockViewModel.swift`
 
@@ -936,10 +973,12 @@ final class FaceIDLockViewModel {
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.4 A3 Passcode</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockViewModel.swift`
 
@@ -1066,10 +1105,12 @@ final class PasscodeUnlockViewModel {
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.5 RootView</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Root/RootView.swift` *(replace)*
 
@@ -1182,10 +1223,12 @@ struct RootView: View {
 
 - The skeleton's `FakeAccessStep` enum and `accessStep` state are gone.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.6 S4 App lock</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Settings/AppLock/AppLockViewModel.swift`
 
@@ -1265,10 +1308,12 @@ final class AppLockViewModel {
 | `ForEach(lockAfterOptions, id: \.self)` | `ForEach(viewModel.lockAfterOptions)`; radio on `viewModel.lockAfter == option.value`; tap sets `viewModel.lockAfter = option.value` |
 | end of `body` | `.task { await viewModel.load() }` and `.onDisappear { Task { await viewModel.save() } }` |
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.7 S5 Set passcode</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeViewModel.swift`
 
@@ -1345,10 +1390,12 @@ final class SetPasscodeViewModel {
 | `.onChange(of: code)` | at 6 digits: `Task { await viewModel.passcodeEntered(newValue); code = "" }` |
 | `AppLockView` | `SetPasscodeView(onDone: { isSetPasscodeShown = false })` |
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>3.8 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
@@ -1358,9 +1405,14 @@ final class SetPasscodeViewModel {
 | Settings → App lock → Change passcode | Enter twice; the new passcode unlocks A3 |
 | Dev menu → **Reset the app** | Back on A2 |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 4. Real data — Keychain and Face ID
+
+<dl><dd>
 
 - **Goal:** `KeychainAccessRepository` replaces `InMemoryAccessRepository`; screens and view models do not change.
 - **Spec:** [07.2](../feature-docs/04-reporting-security.md#072-app-lock)
@@ -1374,16 +1426,28 @@ final class SetPasscodeViewModel {
 
 #### Steps
 
+<dl><dd>
+
 1. Add `INFOPLIST_KEY_NSFaceIDUsageDescription` in `project.yml`, run `xcodegen`.
 2. Lockout counter survives relaunch; biometry change turns Face ID off.
 3. Forgot passcode: device passcode check (`LAContext` `.deviceOwnerAuthentication`), then S5.
 4. Change one registration in `AppDependencies`.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - Relaunch keeps the passcode, settings and lockout
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 <b>File</b> · `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift`
 
@@ -1438,7 +1502,11 @@ struct PasscodeUnlockViewModelTests {
 - `SetPasscodeViewModel`: mismatch returns to *enter*; match calls `setPasscode`
 - `KeychainAccessRepository`: hash round-trip, wrong passcode rejected, lockout survives relaunch, biometry change turns Face ID off
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -1446,3 +1514,4 @@ struct PasscodeUnlockViewModelTests {
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F01 steps ticked |
 
+</dd></dl>

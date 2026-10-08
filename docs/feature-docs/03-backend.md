@@ -1,10 +1,16 @@
 # Backend (spec 14)
 
+<dl><dd>
+
 - Directory: `Backend/` · Node.js + TypeScript ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync)).
 - Signs URLs, owns **all** application data, pushes state. Firebase: identity and crash reporting only.
 - Client side: [02-upload-sync.md](02-upload-sync.md).
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Role](#1-role)
 2. [Stack](#2-stack)
@@ -19,7 +25,11 @@
 11. [Operations](#11-operations)
 12. [Done and tests](#12-done-and-tests)
 
+</dd></dl>
+
 ## 1. Role
+
+<dl><dd>
 
 | Does | Does not |
 |---|---|
@@ -31,7 +41,11 @@
 
 - Expect ~1800–2500 lines of TypeScript.
 
+</dd></dl>
+
 ## 2. Stack
+
+<dl><dd>
 
 | Concern | Choice |
 |---|---|
@@ -46,7 +60,11 @@
 
 - Not Cloudflare Workers: `firebase-admin` needs Node APIs; WebSocket would need Durable Objects.
 
+</dd></dl>
+
 ## 3. Endpoints
+
+<dl><dd>
 
 | # | Method | Path | Auth | Purpose |
 |---|---|---|---|---|
@@ -71,7 +89,11 @@
   multipart uploads, **then** deletes rows in one transaction (rows first would lose the list of what
   to delete), returns counts, is idempotent.
 
+</dd></dl>
+
 ## 4. Auth
+
+<dl><dd>
 
 ```ts
 async function requireUser(req: FastifyRequest): Promise<{ uid: string }> {
@@ -88,11 +110,17 @@ async function requireUser(req: FastifyRequest): Promise<{ uid: string }> {
   an open relay into the bucket.
 - Auth failures return `401`, never `403` (the client reads `403` as an expired presigned URL).
 
+</dd></dl>
+
 ## 5. Database
+
+<dl><dd>
 
 - Migrations: `0001_uploads.sql`, `0002_sync_core.sql`, `0003_metadata.sql` — 16 tables + `pgmigrations`.
 
 ### 5.1 `uploads`
+
+<dl><dd>
 
 ```sql
 create type upload_mode  as enum ('single', 'multipart');
@@ -123,7 +151,11 @@ create index uploads_abandoned on uploads (created_at) where state = 'created';
 | Enums, partial indexes | No free-text states; small hot indexes |
 | No `parts` table | Refresh needs only `s3_upload_id`; `complete` carries the ETags |
 
+</dd></dl>
+
 ### 5.2 `sync_state`
+
+<dl><dd>
 
 ```sql
 create table sync_state (uid text primary key, last_rev bigint not null default 0,
@@ -138,7 +170,11 @@ update sync_state set last_rev = last_rev + 1 where uid = $1 returning last_rev;
 - The row lock serializes one user's writes → revs are gap-free and commit-ordered.
 - One person writes at human speed, so the lock costs nothing.
 
+</dd></dl>
+
 ### 5.3 Metadata tables
+
+<dl><dd>
 
 - Every synced table: `id uuid` (client-generated), `uid`, `rev`, `client_updated_at`, `deleted_at`,
   index on `(uid, rev)`.
@@ -162,7 +198,13 @@ update sync_state set last_rev = last_rev + 1 where uid = $1 returning last_rev;
 - Uniques use `where deleted_at is null` so tombstones do not block reuse.
 - No `plan_pins` table: one pin per issue fits in three columns.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 6. Flows
+
+<dl><dd>
 
 ```mermaid
 flowchart LR
@@ -202,15 +244,25 @@ sequenceDiagram
 - Small files: one `POST /uploads`, one PUT, one `complete` with `HeadObject`.
 - A lost `complete` response is retried and must return the byte-identical body ([§7.3](#73-idempotent-complete)).
 
+</dd></dl>
+
 ## 7. Sync
 
+<dl><dd>
+
 ### 7.1 Pull
+
+<dl><dd>
 
 - Per table: `select … where uid = $1 and rev > $2 order by rev limit $3`; merged, capped at `pullPageSize`.
 - Includes tombstones; `nextRev` = highest rev returned; `hasMore` when capped.
 - `since` older than the 90-day purge window → `{ resyncRequired: true }`.
 
+</dd></dl>
+
 ### 7.2 Push
+
+<dl><dd>
 
 ```sql
 begin;
@@ -228,7 +280,11 @@ commit;
 - Every statement filters `uid = $1`.
 - Nightly job purges tombstones older than 90 days.
 
+</dd></dl>
+
 ### 7.3 Idempotent complete
+
+<dl><dd>
 
 ```sql
 update uploads
@@ -248,7 +304,13 @@ returning object_key, verification_code, verify_state;
 - Parameterized queries only; `and uid = $n` on every user query.
 - `pg.Pool` sized under the platform cap; one transaction per request, released in `finally`.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 8. Integrity
+
+<dl><dd>
 
 - Recording a client-supplied hash does **not** verify it.
 - R2 checksum-on-write for presigned multipart is unreliable.
@@ -263,7 +325,11 @@ returning object_key, verification_code, verify_state;
 - Abandoned `created` uploads are aborted after 7 days.
 - The report prints exactly the state reached ([12.5](01-field-work.md#125-verification-code)).
 
+</dd></dl>
+
 ## 9. WebSocket
+
+<dl><dd>
 
 - Protocol: [10](02-upload-sync.md#10-realtime-progress-channel).
 
@@ -283,7 +349,11 @@ returning object_key, verification_code, verify_state;
 - At-most-once delivery; the client's `snapshot` on reconnect is the recovery path.
 - Works unchanged with one instance.
 
+</dd></dl>
+
 ## 10. Error contract
+
+<dl><dd>
 
 | Status | Client reads it as | Use for |
 |---|---|---|
@@ -298,7 +368,11 @@ returning object_key, verification_code, verify_state;
 - Returning `400` for a transient condition destroys an upload — the highest-risk backend mistake.
 - Error body: `{ "error": { "code": "invalid_key", "message": "…" } }`, never a stack trace.
 
+</dd></dl>
+
 ## 11. Operations
+
+<dl><dd>
 
 | Area | Rule |
 |---|---|
@@ -308,7 +382,11 @@ returning object_key, verification_code, verify_state;
 | Logs | Structured JSON `{uid, uploadId, key, byteSize, partCount, durationMs, status}`; never URLs, tokens or service-account JSON |
 | Abuse | Rate limit per uid on `/uploads`, per IP on `/verify` |
 
+</dd></dl>
+
 ## 12. Done and tests
+
+<dl><dd>
 
 **Done**
 
@@ -337,3 +415,4 @@ returning object_key, verification_code, verify_state;
 - `pg_notify` reaches a second instance
 - Worker flips `verified` or raises `integrity`
 
+</dd></dl>

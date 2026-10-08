@@ -1,8 +1,14 @@
 # F10 — DeviceLink (BLE meters)
 
+<dl><dd>
+
 - F10 · 18h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** DeviceLink (BLE meters) end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** laser reading from the macOS mock peripheral shows on the camera; capture never waits.
@@ -30,14 +40,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -50,20 +66,32 @@ SiteLog/Presentation/
 └── Capture/Camera/           # 3: measurement overlay, status dot
 ```
 
+</dd></dl>
+
 ## 1. Domain — DeviceLink types
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `Domain/DeviceLink/` | `DeviceReading`, `DeviceLink` protocol (scan, connect, readings stream) |
 
+</dd></dl>
+
 ## 2. Fake data — Fake device link
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `SiteLog/Data/Fakes/FakeDeviceLink.swift` | Emits 3.42 m every few seconds; a nearby list |
 | `SiteLog/App/AppDependencies.swift` | Registers the fake |
 
+</dd></dl>
+
 ## 3. View models — Wire pairing and overlay
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -72,12 +100,20 @@ SiteLog/Presentation/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Real data — BLE and mock peripheral
+
+<dl><dd>
 
 - **Goal:** scan → connect → read a laser or moisture meter; macOS mock for CI.
 - **Spec:** [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
@@ -90,10 +126,18 @@ SiteLog/Presentation/
 
 #### Steps
 
+<dl><dd>
+
 1. Split when you start (manager · profiles · mock).
 2. Never blocks capture.
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **4. Real data — BLE and mock peripheral**
 
@@ -101,7 +145,11 @@ SiteLog/Presentation/
 - Reconnect backoff capped
 - Full flow against the mock
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -109,3 +157,4 @@ SiteLog/Presentation/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F10 steps ticked |
 
+</dd></dl>

@@ -1,5 +1,7 @@
 # Upload and sync
 
+<dl><dd>
+
 - How bytes and metadata leave the device and reach other devices. Server side: [03-backend.md](03-backend.md).
 
 | Path | Carries | Spec |
@@ -9,7 +11,11 @@
 | WebSocket | Server-side job state | [10](#10-realtime-progress-channel) |
 | BLE | Measuring tools only | [06](01-field-work.md#06-devicelink-ble-measuring-tools) |
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 - [04 Upload engine](#04-upload-engine) — boundary, protocol, background constraints, state machine, policy
 - [08 Auth and sync](#08-auth-and-sync) — offline-first and auth, protocol, client engine
@@ -17,7 +23,11 @@
 
 ---
 
+</dd></dl>
+
 ## 04. Upload engine
+
+<dl><dd>
 
 - Module: `SiteLog/DataSources/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
 
@@ -25,6 +35,8 @@
 reboot and presigned-URL expiry.
 
 ### 04.1 Boundary
+
+<dl><dd>
 
 - In: a file URL, metadata, an endpoint, an injected store. Does not import `Domain`.
 
@@ -44,7 +56,11 @@ public protocol UploadStore: Sendable {
 - Files: `UploadCoordinator` (actor, entry point), `UploadStateMachine` (pure), `ChunkPlanner`,
   `PresignedURLProvider`, `BackgroundSessionDelegate`.
 
+</dd></dl>
+
 ### 04.2 Protocol
+
+<dl><dd>
 
 - The backend never touches bytes. Endpoints: [03-backend.md §3](03-backend.md#3-endpoints).
 
@@ -60,7 +76,11 @@ public protocol UploadStore: Sendable {
   equal non-final parts, so `ChunkPlanner` splits by fixed size).
 - Every call carries a Firebase ID token; the key prefix must match its uid.
 
+</dd></dl>
+
 ### 04.3 iOS background constraints
+
+<dl><dd>
 
 | Constraint | Consequence |
 |---|---|
@@ -82,7 +102,11 @@ public protocol UploadStore: Sendable {
 
 - A [realtime](#10-realtime-progress-channel) `snapshot` adds server state; jobs only move forward.
 
+</dd></dl>
+
 ### 04.4 State machine
+
+<dl><dd>
 
 ```
 pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → completing → synced
@@ -113,7 +137,11 @@ public struct UploadStateMachine {
 - Retry: `delay = min(2s × 2^attempt, 300s) × jitter(0.8…1.2)`, max 5 attempts.
 - Jitter is mandatory: 200 files failing at one signal loss must not retry together.
 
+</dd></dl>
+
 ### 04.5 Policy
+
+<dl><dd>
 
 | Policy | Detail |
 |---|---|
@@ -172,7 +200,13 @@ public enum UploadConstants {
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 08. Auth and sync
+
+<dl><dd>
 
 - Modules: `SiteLog/Presentation/Sync`, `Data` (sync engine), `DataSources/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
 
@@ -196,6 +230,8 @@ delta protocol.
 
 ### 08.1 Offline-first and auth
 
+<dl><dd>
+
 - Local is the source of truth while recording; the server once synced. Writes land in SwiftData and
   return immediately; no screen waits on the network.
 - Launching offline after a prior sign-in goes straight in.
@@ -203,7 +239,11 @@ delta protocol.
   with `checkRevoked: true`; keys embed the uid (`{uid}/{projectID}/…`). One 401 interceptor
   refreshes; no retry budget consumed.
 
+</dd></dl>
+
 ### 08.2 Protocol
+
+<dl><dd>
 
 ```
 POST /sync/pull  { since: <rev>, limit }        → { changes: {table: [rows]}, nextRev, hasMore }
@@ -224,7 +264,11 @@ POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
   captures → issues → issue_captures → annotations → checklist_*`); the server applies a batch in one
   transaction with deferred constraints.
 
+</dd></dl>
+
 ### 08.3 Client engine
+
+<dl><dd>
 
 ```swift
 actor MetadataSyncEngine {          // Data/; triggered by use cases
@@ -281,7 +325,13 @@ enum SyncConstants {
 
 ---
 
+</dd></dl>
+
+</dd></dl>
+
 ## 10. Realtime progress channel
+
+<dl><dd>
 
 - Module: `SiteLog/DataSources/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
 
@@ -342,3 +392,4 @@ public enum RealtimeConstants {
 - Unknown `jobID`
 - Flow against a mock WebSocket server
 
+</dd></dl>

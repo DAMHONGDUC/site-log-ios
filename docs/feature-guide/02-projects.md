@@ -1,8 +1,14 @@
 # F02 — Projects, sessions, locations
 
+<dl><dd>
+
 - F02 · 31h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Projects, sessions, locations end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** project → 80 generated locations → walkthrough, all offline and kept after relaunch.
@@ -30,14 +40,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -49,7 +65,11 @@ SiteLog/
                                 #    Survey, Room, BulkLocations, CloneTree, EndSession
 ```
 
+</dd></dl>
+
 ## 1. Domain — Entities, protocols, use cases
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
@@ -59,12 +79,20 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Entities are plain `Sendable` structs; no SwiftData in Domain.
 2. Protocols use `async throws`.
 3. `GenerateLocationsUseCase` is pure: template `"{floor}-{unit:02}"` → preview (first 5, last 3, total); cap `maxGeneratedPerBatch` 2000, `maxDepth` 3; duplicates rejected.
 4. List rows (`LocationRow`) get their counts from one batched call.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 2. Fake data — In-memory repositories
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
@@ -73,12 +101,20 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
 2. Seed it with “Riverside Tower B”, 37 of 82 rooms, 4 sessions — move the values out of `Core/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 3. View models — Wire the Projects screens
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -94,6 +130,8 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
@@ -101,10 +139,17 @@ SiteLog/
 5. Summaries are sentences (“14 open issues, 2 of them overdue”).
 6. A 500-row survey list stays at 60 fps.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Real data — SwiftData
+
+<dl><dd>
 
 <details open>
 <summary><b>4.1 SwiftData schema and repositories</b></summary>
+<dl><dd>
 
 - **Goal:** SwiftData models in `DataSources/Persistence/` and repository implementations in `Data/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
@@ -116,15 +161,19 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Create the folder `SiteLog/DataSources/Persistence/`; types inside are `nonisolated`.
 2. Write models mirroring the entities; store relative file paths.
 3. Write repositories with a `@ModelActor` for writes.
 4. Cascade delete project → sessions, locations, plans.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.2 Schema versioning and migrations</b></summary>
+<dl><dd>
 
 - **Goal:** `VersionedSchema` + `SchemaMigrationPlan` from day one.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
@@ -135,15 +184,26 @@ SiteLog/
 | `Persistence/Schema/MigrationPlan.swift` | Stages list (empty until V2) |
 | `Persistence/Tests/Fixtures/` | A 100-location `SchemaV1` store |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Wrap models in `SchemaV1`.
 2. Add the startup step `DatabaseStep` (blocks launch) to `StartupSequence`.
 3. Commit a fixture store for migration tests.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **1. Domain — Entities, protocols, use cases**
 
@@ -164,7 +224,11 @@ SiteLog/
 - Open the fixture store with the current plan
 - Store file has `.complete` protection
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -172,3 +236,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F02 steps ticked |
 
+</dd></dl>

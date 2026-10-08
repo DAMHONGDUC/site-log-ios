@@ -1,8 +1,14 @@
 # F00 — Foundation
 
+<dl><dd>
+
 - F00 · 26h (8h done) · step-by-step guide with full, tested code.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [4. DesignSystem tests](#4-designsystem-tests)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** what every feature builds on — layer folders, DI, CI, DesignSystem.
 - **Demo:** the app builds with zero warnings, CI is green, the DesignSystem gallery snapshot passes.
@@ -32,7 +42,11 @@
 
 - Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–4 any time.
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 site-log-ios/
@@ -54,6 +68,7 @@ site-log-ios/
 
 <details open>
 <summary><b>Adding files</b></summary>
+<dl><dd>
 
 | Editor | New Swift file |
 |---|---|
@@ -61,9 +76,14 @@ site-log-ios/
 | VS Code | Explorer → right-click → **New File…**; SweetPad regenerates the project |
 | DesignSystem | Files under `Packages/DesignSystem/Sources` are picked up by SPM in both editors |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 0. Entry point (done)
+
+<dl><dd>
 
 | # | Runs | File |
 |---|---|---|
@@ -75,13 +95,18 @@ site-log-ios/
 
 - Try the failure screen: pass `TestFailStartupStep()` in `RootView`’s `StartupSequence(steps:)`, run, then remove it.
 
+</dd></dl>
+
 ## 1. Layer folders, Factory DI, AppClock
+
+<dl><dd>
 
 - **Goal:** layer folders in the app target, one composition root (Factory), an injectable clock, test libraries ready.
 - **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
 
 <details open>
 <summary><b>1.1 project.yml — add libraries</b></summary>
+<dl><dd>
 
 <b>File</b> · `project.yml → packages:` *(add under Inject)*
 
@@ -168,10 +193,12 @@ site-log-ios/
 | Xcode | Close the project → `xcodegen generate` in Terminal → reopen |
 | VS Code | Save `project.yml`; run `xcodegen generate` in the terminal |
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>1.2 Layer folders + DesignSystem package</b></summary>
+<dl><dd>
 
 - Layers are folders, not packages ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the one exception is `DesignSystem`.
 - The folders `SiteLog/Domain/`, `SiteLog/Data/` already exist; delete a folder's `.gitkeep` when you add its first file.
@@ -236,10 +263,12 @@ let package = Package(
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>1.3 AppClock</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/Core/Helper/Clock/AppClock.swift`
 
@@ -339,10 +368,12 @@ struct SystemClockTests {
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>1.4 Composition root</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLog/App/AppDependencies.swift` *(F00 version; F01 adds Access)*
 
@@ -374,10 +405,12 @@ extension Container {
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>1.5 First Factory test</b></summary>
+<dl><dd>
 
 <b>File</b> · `SiteLogTests/SiteLogTests.swift` *(replace)*
 
@@ -425,25 +458,33 @@ struct AppDependenciesTests {
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>1.6 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
 | ⌘B (Xcode) or SweetPad Build | Zero warnings |
 | ⌘U | `clockCanBeReplacedInTests` and `uptimeMovesForward` pass |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 2. Fastlane test lane, PR checks
+
+<dl><dd>
 
 - **Goal:** one command (`bundle exec fastlane test`) runs the `DesignSystem` package tests and the app tests; GitHub runs it on every PR.
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
 <details open>
 <summary><b>2.1 Files</b></summary>
+<dl><dd>
 
 <b>File</b> · `Gemfile`
 
@@ -579,10 +620,12 @@ end
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>2.2 Workflow (lint + test)</b></summary>
+<dl><dd>
 
 <b>File</b> · `.github/workflows/pr-checks.yml` *(step 2 version)*
 
@@ -636,10 +679,12 @@ jobs:
 
 </details>
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>2.3 Self-hosted runner (your Mac, once)</b></summary>
+<dl><dd>
 
 | Step | Action |
 |---|---|
@@ -648,19 +693,26 @@ jobs:
 | 3 | Start it: `./run.sh` (or `./svc.sh install && ./svc.sh start` to run at login) |
 | 4 | Private repo only: a public repo would run strangers’ PR code on your Mac |
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>2.4 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
 | `bundle install` then `bundle exec fastlane test` | “Test Succeeded”, “fastlane.tools finished successfully” |
 | Open a PR | **lint** and **test** jobs green |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 3. CI guards
+
+<dl><dd>
 
 - **Goal:** rules that reviews forget are checked by machine: no `print(`, layer rules, secrets, the app builds with warnings as errors.
 - Make each script executable once: `chmod +x Tools/CI/*.sh`.
@@ -900,6 +952,7 @@ jobs:
 
 <details open>
 <summary><b>3.1 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
@@ -909,9 +962,14 @@ jobs:
 | Add `struct Probe {}` in `SiteLog/Data/`, use `Probe()` in a view, run `check-imports.sh` | Exit 1; then delete both |
 | Use `AppLogger` in a Domain file, run `check-imports.sh` | Exit 1; then remove it |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## 4. DesignSystem tests
+
+<dl><dd>
 
 - Tokens and components are already in `Packages/DesignSystem` (built with the UI skeleton).
 - The feature is done, so its tests come now.
@@ -1077,6 +1135,7 @@ struct DesignSystemSnapshotTests {
 
 <details open>
 <summary><b>4.1 Check</b></summary>
+<dl><dd>
 
 | Step | Expect |
 |---|---|
@@ -1084,9 +1143,14 @@ struct DesignSystemSnapshotTests {
 | ⌘U the first time | Snapshot test fails and records `__Snapshots__/…light.png`, `…dark.png` |
 | ⌘U again | Passes; commit the two PNGs |
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -1095,3 +1159,4 @@ struct DesignSystemSnapshotTests {
 | CI green | PR shows guards, lint, build, test passing |
 | Roadmap | F00 steps ticked |
 
+</dd></dl>

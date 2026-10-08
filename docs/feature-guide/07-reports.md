@@ -1,8 +1,14 @@
 # F07 — Reports and audit log
 
+<dl><dd>
+
 - F07 · 31h · skeleton guide — full code is added when this feature starts.
 
+</dd></dl>
+
 ## Contents
+
+<dl><dd>
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
@@ -13,7 +19,11 @@
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
+</dd></dl>
+
 ## Overview
+
+<dl><dd>
 
 - **Goal:** Reports and audit log end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** signed, branded PDF and CSV from a real session, shared in airplane mode; audit chain verifies.
@@ -30,14 +40,20 @@
 
 <details open>
 <summary><b>Order</b></summary>
+<dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
 - Real data changes only registrations in `AppDependencies`, never views or view models.
 - Tests come last, once the feature works end to end.
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
 ## Target structure
+
+<dl><dd>
 
 ```text
 SiteLog/
@@ -47,14 +63,22 @@ SiteLog/
 └── Presentation/Reports/          # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
 ```
 
+</dd></dl>
+
 ## 1. Domain — Report types
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
 | `Domain/Reporting/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
 | `Domain/Security/AuditEntry.swift` | Audit entry |
 
+</dd></dl>
+
 ## 2. Fake data — In-memory reports
+
+<dl><dd>
 
 | File | Holds |
 |---|---|
@@ -63,12 +87,20 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
 2. Seed it with Eastline branding and R-0930-07 — move the values out of `Core/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 3. View models — Wire the report flow
+
+<dl><dd>
 
 | Skeleton folder | View model work |
 |---|---|
@@ -79,27 +111,40 @@ SiteLog/
 
 #### Steps
 
+<dl><dd>
+
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
 
+</dd></dl>
+
+</dd></dl>
+
 ## 4. Real data — CSV, PDF, audit chain
+
+<dl><dd>
 
 <details open>
 <summary><b>4.1 Report data model and CSV</b></summary>
+<dl><dd>
 
 - **Goal:** one-fetch `SessionSnapshot` and streamed CSV.
 - **Spec:** [05](../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export)
 
 #### Steps
 
+<dl><dd>
+
 1. CSV columns from spec 05; stream with `FileHandle`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.2 PDF renderer</b></summary>
+<dl><dd>
 
 - **Goal:** paginated PDF that never drops an image.
 - **Spec:** [05.2](../feature-docs/04-reporting-security.md#052-rendering)
@@ -109,28 +154,40 @@ SiteLog/
 | `Reporting/ReportLayoutEngine.swift` | Pure; counts images |
 | `Reporting/PDFPageRenderer.swift` | `UIGraphicsPDFRenderer`, one autoreleasepool per page |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Split this part when you start (layout · render · integrity footer).
 2. Temp file + atomic move.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.3 Audit chain</b></summary>
+<dl><dd>
 
 - **Goal:** HMAC-chained audit log, verified at launch.
 - **Spec:** [07.3](../feature-docs/04-reporting-security.md#073-audit-log)
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Key generated once, Keychain only.
 2. Verify step runs async after `.ready`.
 
+</dd></dl>
 </details>
 
 <details open>
 <summary><b>4.4 Real logic behind the screens</b></summary>
+<dl><dd>
 
 - **Goal:** real issues, lock and reports; export from a real session.
 
@@ -138,19 +195,34 @@ SiteLog/
 |---|---|
 | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
+</dd></dl>
+
 #### Steps
+
+<dl><dd>
 
 1. Register real repositories, Keychain lock, renderer.
 
+</dd></dl>
+
 #### Done when
+
+<dl><dd>
 
 - Before/after pair in the PDF
 - Signed PDF + CSV shared in airplane mode
 - App lock uses Keychain + Face ID
 
+</dd></dl>
 </details>
 
+</dd></dl>
+
+</dd></dl>
+
 ## Tests (after the feature works)
+
+<dl><dd>
 
 **4. Real data — CSV, PDF, audit chain**
 
@@ -162,7 +234,11 @@ SiteLog/
 - 100-entry chain verifies
 - Edit at 50 / mid-chain delete detected at the right index
 
+</dd></dl>
+
 ## Feature done
+
+<dl><dd>
 
 | Check | How |
 |---|---|
@@ -170,3 +246,4 @@ SiteLog/
 | Tests | `bundle exec fastlane test` green |
 | Roadmap | F07 steps ticked |
 
+</dd></dl>
