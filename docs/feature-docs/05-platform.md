@@ -467,6 +467,8 @@ enum DiagnosticsConstants {
 | PR checks | PR, push to `main` | `swiftlint --strict`, lane `test` |
 | TestFlight | tag `v*`, manual | lane `beta`, in the protected `testflight` environment |
 
+![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
+
 **Runners** — private repo, so hosted macOS minutes bill at 10× (≈200 per month).
 
 | Runner | When | Jobs |

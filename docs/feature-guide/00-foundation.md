@@ -465,6 +465,8 @@ struct AppDependenciesTests {
 - **Goal:** one command (`bundle exec fastlane test`) runs the `DesignSystem` package tests and the app tests; GitHub runs it on every PR.
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
+![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
+
 <details open>
 <summary><strong>2.1 Files</strong></summary>
 <dl><dd>

@@ -379,6 +379,8 @@ SiteLog/
 - **Goal:** a `v*` tag becomes a TestFlight build with no local step.
 - **Spec:** [17](../feature-docs/05-platform.md#17-cicd-and-testflight)
 
+![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
+
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-edit">Edit</b> | `fastlane/Fastfile` | Lanes `beta`, `release` |
