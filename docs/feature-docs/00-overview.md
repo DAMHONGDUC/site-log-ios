@@ -719,6 +719,8 @@ final class ProjectListViewModel {
 - **Consequences:**
   - A setting changed in Xcode's UI is lost on the next generate.
   - Run `xcodegen generate` after pulling a `project.yml` change.
+  - Sources are synced folders (`type: syncedFolder`): adding a file never touches `project.pbxproj`,
+    so Xcode no longer reloads the whole project on every new file.
 
 </dd></dl>
 

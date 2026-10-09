@@ -79,11 +79,13 @@ flowchart LR
 |---|---|
 | After changing `project.yml` | `xcodegen` |
 | After pulling a `project.yml` change | `xcodegen` |
-| Adding files in Xcode | Nothing: `SiteLog/` is a synced folder |
-| Adding or removing files in VS Code | Automatic: `sweetpad.xcodegen.autogenerate` is on |
+| Adding, removing, renaming files (Xcode, VS Code, Finder, git) | Nothing: `SiteLog/`, `SiteLogTests/`, `SiteLogUITests/` are synced folders |
+| Adding an empty folder with a `.gitkeep` | `xcodegen`, so the `.gitkeep` stays out of the build |
+| After deleting a `.gitkeep` | Nothing now; the next `xcodegen` drops it from `project.pbxproj`, commit that |
 
 - Close the project in Xcode before regenerating, or Xcode keeps the old one in memory.
 - The generated `.xcodeproj` stays committed, so the repo opens without running XcodeGen first.
+- Synced folders: Xcode reads the folders from disk, so `project.pbxproj` lists no files and only changes with `project.yml`. Every file in a folder belongs to that folder's target.
 
 | `project.yml` owns | Key |
 |---|---|
@@ -217,7 +219,7 @@ flowchart LR
 
 | File | Purpose |
 |---|---|
-| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save, 100-column ruler, SweetPad scheme, `xcodegen` on file add/remove, Debug Console in expression mode |
+| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save, 100-column ruler, SweetPad scheme, `xcodegen` autogenerate off (synced folders), Debug Console in expression mode |
 | [`.vscode/launch.json`](../../.vscode/launch.json) | **Run SiteLog (simulator)** (CodeLLDB): build, run, Restart rebuilds, Stop kills the app |
 | [`.vscode/sitelog_sim.py`](../../.vscode/sitelog_sim.py) | In LLDB: build, install, `simctl launch --wait-for-debugger`, attach by pid, stream app logs |
 | [`.vscode/tasks.json`](../../.vscode/tasks.json) | `sitelog: build`: manual build with full output (F5 does not use it) |
@@ -230,7 +232,7 @@ flowchart LR
 | App logs | **Debug Console**: every `AppLogger` line plus stdout/stderr |
 | Debug Console input | Swift expression directly (`self.title`); LLDB commands with `/cmd ` (`/cmd bt`) |
 | Hot reload | Save; F5 starts InjectionNext if needed; Console shows `🔥 Recompiling` → `✅ Hot reload complete` |
-| New file | Create in the explorer; SweetPad runs `xcodegen` |
+| New file | Create in the explorer; Xcode and the build pick it up (synced folder) |
 
 **Simulator choice (F5), in order:**
 
@@ -272,7 +274,8 @@ keybindings): Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)*
 | Symptom | Fix |
 |---|---|
 | "No such module" / no completion in VS Code | Build once, regenerate build server config, restart LSP |
-| New file not visible in Xcode | `xcodegen generate`, let Xcode reload |
+| New file not visible in Xcode | It must sit inside `SiteLog/`, `SiteLogTests/` or `SiteLogUITests/` |
+| `Multiple commands produce … .gitkeep` | A new `.gitkeep` is not excluded yet: `xcodegen generate` |
 | No app logs in the Debug Console | Check for `sitelog_launch failed`; logs come only from `AppLogger` (subsystem `app.dd.site.log`) |
 | `Build failed` / `sitelog_launch failed` | Lines above say why (compiler error, unknown simulator name, install error) |
 | `install timed out` | An older SiteLog is held by another debugger session; stop it, F5 |
