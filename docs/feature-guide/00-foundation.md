@@ -62,7 +62,7 @@ site-log-ios/
 │   └── Data/Fakes/                           # every feature: in-memory repositories
 └── SiteLogTests/
     ├── SiteLogTests.swift                    # 1: FixedClock + Factory test
-    ├── Core/SystemClockTests.swift           # 1
+    ├── Core/Helper/Clock/SystemClockTests.swift   # 1: mirrors SiteLog/Core/Helper/Clock/
     └── Snapshots/DesignSystemSnapshotTests.swift  # 4
 ```
 
@@ -322,7 +322,7 @@ nonisolated struct SystemClock: AppClock {
 
 ---
 
-<b>File</b> · `SiteLogTests/Core/SystemClockTests.swift`
+<b>File</b> · `SiteLogTests/Core/Helper/Clock/SystemClockTests.swift`
 
 <b>Explain</b> · Checks that `SystemClock.uptime` moves forward.
 

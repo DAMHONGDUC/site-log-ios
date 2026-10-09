@@ -5,15 +5,31 @@
 //  Created by Duc Dam Dev on 19/9/26.
 //
 
+import FactoryKit
+import FactoryTesting
+import Foundation
 import Testing
+
 @testable import SiteLog
 
-struct SiteLogTests {
+struct FixedLock: AppClock {
+    let now: Date
+    let uptime: ContinuousClock.Instant
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
+}
+
+struct AppDependenciesTest {
+
+    @Test func clockCanBeReplacedInTests() {
+        let fixedDate = Date(timeIntervalSince1970: 0)
+
+        Container.shared.clock.register {
+            FixedLock(now: fixedDate, uptime: ContinuousClock.now)
+        }
+
+        let clock = Container.shared.clock()
+
+        #expect(clock.now == fixedDate)
     }
 
 }

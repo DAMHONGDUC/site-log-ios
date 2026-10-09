@@ -249,7 +249,7 @@ site-log-ios/
 │       ├── Helper/                   # Logger/AppLogger, Clock/AppClock + SystemClock; use nothing else from the app
 │       └── Resources/                # Assets.xcassets, localization, seeded templates
 ├── Packages/DesignSystem/            # Swift package: Tokens/ Components/ (UI only)
-├── SiteLogTests/                     # mirrors SiteLog/: Domain/ Data/ DataSources/ Presentation/ Snapshots/
+├── SiteLogTests/                     # mirrors SiteLog/: Core/ Domain/ Data/ DataSources/ Presentation/ Snapshots/
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
 ├── Tools/Hammerspoon/                # format-on-save config for Xcode
