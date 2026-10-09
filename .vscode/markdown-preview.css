@@ -9,3 +9,20 @@ p > b:first-child,
 details > summary > b {
     color: #2f81f7 !important;
 }
+
+/* File tags in guides: New, Edit, Replace, Check (GitHub shows them bold only). */
+b[class^="tag-"] {
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.tag-new { color: #1a7f37; background: rgba(46, 160, 67, 0.15); }
+.tag-edit { color: #9a6700; background: rgba(212, 167, 44, 0.18); }
+.tag-replace { color: #cf222e; background: rgba(248, 81, 73, 0.15); }
+.tag-check { color: #57606a; background: rgba(110, 118, 129, 0.15); }
+
+body.vscode-dark .tag-new { color: #3fb950; }
+body.vscode-dark .tag-edit { color: #d29922; }
+body.vscode-dark .tag-replace { color: #f85149; }
+body.vscode-dark .tag-check { color: #8b949e; }
