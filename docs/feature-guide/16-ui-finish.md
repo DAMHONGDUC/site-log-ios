@@ -35,6 +35,7 @@
 - **Specs:** [Design plan](../design/00-design-plan.md), [mockups](../design/mockups/index.html), [Figma file](https://www.figma.com/design/3Ru8x4sFZSQwlFI42wqrbH)
 - **Starting point:** every screen on real logic (F00–F15), still at the ~30% skeleton look with placeholders.
 - **Status:** skeleton — parts, files, order, tests. Filled in when this feature starts.
+- **File tags:** <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -239,9 +240,9 @@ fastlane/Fastfile                # 9: release lane waits for processing
 
 - **Goal:** the finished UI still passes the F15 accessibility pass; App Store listing and submission.
 
-| File | Holds |
-|---|---|
-| `fastlane/Fastfile` | `release` lane waits for processing |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `fastlane/Fastfile` | `release` lane waits for processing |
 
 <details open>
 <summary><strong>9.1 Steps</strong></summary>

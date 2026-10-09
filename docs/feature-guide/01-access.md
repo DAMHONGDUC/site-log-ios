@@ -31,6 +31,7 @@
 - **Starts from:** F00 step 1 (Factory, `AppClock`) and the skeleton screens in `Presentation/Access/`, `Settings/AppLock/`, `Settings/SetPasscode/`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`. Domain and Presentation never name a fake; `AppDependencies` picks it.
 - **How to use:** try each file from its hints first; open **Code** only to check or when stuck.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -83,7 +84,7 @@ SiteLog/
 
 <dl><dd>
 
-<b>File</b> · `SiteLog/Domain/Access/AccessSettings.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessSettings.swift`
 
 <b>Explain</b> · The settings that decide which access screen comes first: welcome seen, lock on, Face ID, *Lock after*.
 
@@ -113,7 +114,7 @@ nonisolated struct AccessSettings: Sendable {
 
 ---
 
-<b>File</b> · `SiteLog/Domain/Access/PasscodeCheck.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/PasscodeCheck.swift`
 
 <b>Explain</b> · Result of checking a typed passcode: correct, wrong with tries left, or locked out.
 
@@ -140,7 +141,7 @@ nonisolated enum PasscodeCheck: Sendable {
 
 ---
 
-<b>File</b> · `SiteLog/Domain/Access/AccessRepository.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessRepository.swift`
 
 <b>Explain</b> · What the access flow needs from storage; the fake implements it now, Keychain in step 4.
 
@@ -169,7 +170,7 @@ nonisolated protocol AccessRepository: Sendable {
 
 ---
 
-<b>File</b> · `SiteLog/Domain/Access/AccessUseCases.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessUseCases.swift`
 
 <b>Explain</b> · One use case per user action; view models call these, never the repository.
 
@@ -276,7 +277,7 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 
 <dl><dd>
 
-<b>File</b> · `SiteLog/Core/Helper/Logger/AppLogger.swift` *(replace)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/Core/Helper/Logger/AppLogger.swift`
 
 <b>Explain</b> · Logger categories, now `nonisolated` and with an `access` category.
 
@@ -306,7 +307,7 @@ nonisolated enum AppLogger {
 
 ---
 
-<b>File</b> · `SiteLog/Data/Fakes/InMemoryAccessRepository.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Data/Fakes/InMemoryAccessRepository.swift`
 
 <b>Explain</b> · Fake `AccessRepository` kept in memory: demo passcode `123456`, Face ID always matches.
 
@@ -406,7 +407,7 @@ actor InMemoryAccessRepository: AccessRepository {
 
 ---
 
-<b>File</b> · `SiteLog/App/AppDependencies.swift` *(F01 version)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F01 version)*
 
 <b>Explain</b> · Registers the access fake, one factory per use case, and the dev menu actions.
 
@@ -481,7 +482,7 @@ extension Container {
 
 ---
 
-<b>File</b> · `SiteLog/App/DevData/FakeDevDataActions.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DevData/FakeDevDataActions.swift`
 
 <b>Explain</b> · Connects the dev menu’s Seed data / Delete all data to the fakes (Debug only).
 
@@ -517,7 +518,7 @@ struct FakeDevDataActions: DevDataActions {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/DevMenu/DevMenuSection.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/DevMenu/DevMenuSection.swift`
 
 <b>Explain</b> · Takes the dev menu actions from the container; add `import FactoryKit` at the top.
 
@@ -535,7 +536,11 @@ struct FakeDevDataActions: DevDataActions {
 
 </details>
 
-- `NoopDevDataActions` in `DevDataActions.swift` is no longer used: delete it.
+---
+
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/DevMenu/DevDataActions.swift`
+
+<b>Explain</b> · `NoopDevDataActions` is no longer used: delete that struct.
 
 <details open>
 <summary><strong>2.1 Check</strong></summary>
@@ -561,7 +566,7 @@ struct FakeDevDataActions: DevDataActions {
 <summary><strong>3.1 RootViewModel</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Root/RootViewModel.swift`
+<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/Presentation/Root/RootViewModel.swift` *(the file is empty today)*
 
 <b>Explain</b> · Decides which screen shows after startup (welcome, Face ID, passcode, tabs) and re-locks after *Lock after*.
 
@@ -700,7 +705,7 @@ final class RootViewModel {
 <summary><strong>3.2 A2 Sign in</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
 
 <b>Explain</b> · A2 actions: sign-in stubs until F12, and Continue offline.
 
@@ -748,7 +753,7 @@ final class SignInViewModel {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift`
 
 <b>Explain</b> · Owns a `SignInViewModel` instead of two closures.
 
@@ -774,7 +779,7 @@ final class SignInViewModel {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift` *(continued)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift` *(continued)*
 
 <b>Explain</b> · Dock buttons call the view model.
 
@@ -821,7 +826,7 @@ final class SignInViewModel {
 <summary><strong>3.3 A1 Face ID lock</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockViewModel.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockViewModel.swift`
 
 <b>Explain</b> · A1: asks for Face ID when the screen appears; the user can switch to the passcode.
 
@@ -880,7 +885,7 @@ final class FaceIDLockViewModel {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift`
 
 <b>Explain</b> · Owns a `FaceIDLockViewModel` instead of closures.
 
@@ -905,7 +910,7 @@ final class FaceIDLockViewModel {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift` *(continued)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift` *(continued)*
 
 <b>Explain</b> · Dock buttons call the view model; Face ID is asked when the screen appears.
 
@@ -948,7 +953,7 @@ final class FaceIDLockViewModel {
 <summary><strong>3.4 A3 Passcode</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockViewModel.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockViewModel.swift`
 
 <b>Explain</b> · A3: checks the 6 digits, shows tries left, disables the keypad when locked out.
 
@@ -1011,7 +1016,7 @@ final class PasscodeUnlockViewModel {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift`
 
 <b>Explain</b> · Keeps `code` for the keypad; the view model checks it.
 
@@ -1043,7 +1048,7 @@ final class PasscodeUnlockViewModel {
 
 ---
 
-<b>File</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift` *(continued)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift` *(continued)*
 
 <b>Explain</b> · Sends the 6 digits to the view model, then clears them.
 
@@ -1074,7 +1079,7 @@ final class PasscodeUnlockViewModel {
 <summary><strong>3.5 RootView</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Root/RootView.swift` *(replace)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/Presentation/Root/RootView.swift`
 
 <b>Explain</b> · Drives the access flow from `RootViewModel`; replaces the temporary `@State` flow.
 
@@ -1190,7 +1195,7 @@ struct RootView: View {
 <summary><strong>3.6 S4 App lock</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Settings/AppLock/AppLockViewModel.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/Settings/AppLock/AppLockViewModel.swift`
 
 <b>Explain</b> · S4: loads and saves Lock app, Face ID and *Lock after*.
 
@@ -1259,6 +1264,12 @@ final class AppLockViewModel {
 
 </details>
 
+---
+
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/AppLock/AppLockView.swift`
+
+<b>Explain</b> · Reads and saves the settings through `AppLockViewModel`.
+
 | In `AppLockView` | Change to |
 |---|---|
 | `@State isLockOn / isFaceIDOn / lockAfter` and `lockAfterOptions` | `@State private var viewModel = AppLockViewModel()` |
@@ -1273,7 +1284,7 @@ final class AppLockViewModel {
 <summary><strong>3.7 S5 Set passcode</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeViewModel.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeViewModel.swift`
 
 <b>Explain</b> · S5: enter a new passcode twice; saved only when both match.
 
@@ -1339,6 +1350,12 @@ final class SetPasscodeViewModel {
 
 </details>
 
+---
+
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeView.swift`
+
+<b>Explain</b> · Hands the typed digits to `SetPasscodeViewModel`.
+
 | In `SetPasscodeView` | Change to |
 |---|---|
 | top of the struct | `@State private var viewModel: SetPasscodeViewModel` + `init(onDone:)` like A3 |
@@ -1373,12 +1390,12 @@ final class SetPasscodeViewModel {
 - **Goal:** `KeychainAccessRepository` replaces `InMemoryAccessRepository`; screens and view models do not change.
 - **Spec:** [07.2](../feature-docs/04-reporting-security.md#072-app-lock)
 
-| File | Holds |
-|---|---|
-| `Data/Security/KeychainAccessRepository.swift` | Settings in `UserDefaults`; passcode as PBKDF2-SHA256 with a 16-byte salt and the lockout counter in Keychain |
-| `Data/Security/BiometricAuthenticator.swift` | `LAContext`, biometry-change detection |
-| `App/AppDependencies.swift` | `accessRepository` returns `KeychainAccessRepository()` |
-| `App/DevData/FakeDevDataActions.swift` | Delete all data also clears the Keychain items |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Data/Security/KeychainAccessRepository.swift` | Settings in `UserDefaults`; passcode as PBKDF2-SHA256 with a 16-byte salt and the lockout counter in Keychain |
+| <b class="tag-new">New</b> | `Data/Security/BiometricAuthenticator.swift` | `LAContext`, biometry-change detection |
+| <b class="tag-edit">Edit</b> | `App/AppDependencies.swift` | `accessRepository` returns `KeychainAccessRepository()` |
+| <b class="tag-edit">Edit</b> | `App/DevData/FakeDevDataActions.swift` | Delete all data also clears the Keychain items |
 
 #### Steps
 
@@ -1405,7 +1422,7 @@ final class SetPasscodeViewModel {
 
 <dl><dd>
 
-<b>File</b> · `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift`
 
 <b>Explain</b> · Correct passcode unlocks; a wrong one shows the tries left.
 

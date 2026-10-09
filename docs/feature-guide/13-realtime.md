@@ -29,6 +29,7 @@
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [14 §8–9](../feature-docs/03-backend.md#8-integrity)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -68,9 +69,9 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/FakeRealtimeChannel.swift` | Emits `jobCompleted` / `jobFailed` on a timer |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeRealtimeChannel.swift` | Emits `jobCompleted` / `jobFailed` on a timer |
 
 </dd></dl>
 
@@ -102,11 +103,11 @@ SiteLog/
 - **Goal:** observation-only WebSocket: connect, auth in the first message, ping, reconnect with backoff.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel)
 
-| File | Holds |
-|---|---|
-| `SiteLog/DataSources/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
-| `SiteLog/DataSources/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
-| `Backend/src/ws.ts` | Server side per 14 §9 |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/DataSources/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
+| <b class="tag-new">New</b> | `SiteLog/DataSources/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
+| <b class="tag-new">New</b> | `Backend/src/ws.ts` | Server side per 14 §9 |
 
 #### Steps
 
@@ -126,9 +127,9 @@ SiteLog/
 - **Goal:** the app layer turns events into `UploadStore` operations that only move jobs forward.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel)
 
-| File | Holds |
-|---|---|
-| `SiteLog/App/RealtimeBridge.swift` | Composition root: Realtime → UploadStore |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/App/RealtimeBridge.swift` | Composition root: Realtime → UploadStore |
 
 </dd></dl>
 
@@ -150,10 +151,10 @@ SiteLog/
 - **Goal:** backend re-reads each object from R2 and flips `registered` → `verified` or `mismatch`.
 - **Spec:** [14 §8](../feature-docs/03-backend.md#8-integrity)
 
-| File | Holds |
-|---|---|
-| `Backend/src/workers/verify.ts` | Streams the object, recomputes SHA-256 |
-| `Backend/src/jobs/abandoned.ts` | Aborts `created` uploads older than 7 days |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Backend/src/workers/verify.ts` | Streams the object, recomputes SHA-256 |
+| <b class="tag-new">New</b> | `Backend/src/jobs/abandoned.ts` | Aborts `created` uploads older than 7 days |
 
 </dd></dl>
 

@@ -30,6 +30,7 @@
 - **Spec:** [12](../feature-docs/01-field-work.md#12-annotation-and-verifiable-stamps)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -69,9 +70,9 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Annotation/` | `AnnotationShape`, `NormalizedPoint` (0…1), `TrustedTimestamp` |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Annotation/` | `AnnotationShape`, `NormalizedPoint` (0…1), `TrustedTimestamp` |
 
 </dd></dl>
 
@@ -79,10 +80,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/InMemoryAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
 
@@ -101,10 +102,10 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Annotation/MarkupEditor/` | M1: tools, colours, undo capped at `maxUndoSteps`, commit on exit |
-| `Presentation/Annotation/StampPreview/` | M2: stamp toggles, share |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Annotation/MarkupEditor/` | M1: tools, colours, undo capped at `maxUndoSteps`, commit on exit |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Annotation/StampPreview/` | M2: stamp toggles, share |
 
 #### Steps
 

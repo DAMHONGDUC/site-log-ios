@@ -30,6 +30,7 @@
 - **Spec:** [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -72,9 +73,9 @@ SiteLog/Presentation/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/DeviceLink/` | `DeviceReading`, `DeviceLink` protocol (scan, connect, readings stream) |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/DeviceLink/` | `DeviceReading`, `DeviceLink` protocol (scan, connect, readings stream) |
 
 </dd></dl>
 
@@ -82,10 +83,10 @@ SiteLog/Presentation/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/FakeDeviceLink.swift` | Emits 3.42 m every few seconds; a nearby list |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeDeviceLink.swift` | Emits 3.42 m every few seconds; a nearby list |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake |
 
 </dd></dl>
 
@@ -93,10 +94,10 @@ SiteLog/Presentation/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Settings/Devices/` | S2: my devices, nearby, pair |
-| `Presentation/Capture/Camera/` | Reading overlay and status dot |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Settings/Devices/` | S2: my devices, nearby, pair |
+| <b class="tag-edit">Edit</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Capture/Camera/` | Reading overlay and status dot |
 
 #### Steps
 
@@ -118,11 +119,11 @@ SiteLog/Presentation/
 - **Goal:** scan → connect → read a laser or moisture meter; macOS mock for CI.
 - **Spec:** [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
 
-| File | Holds |
-|---|---|
-| `DeviceLink/DeviceLinkManager.swift` | Actor around `CBCentralManager` |
-| `DeviceLink/Profiles/` | One file per vendor; pure `parse` |
-| `Tools/MockPeripheral/` | Scripts values, disconnects, garbage bytes |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `DeviceLink/DeviceLinkManager.swift` | Actor around `CBCentralManager` |
+| <b class="tag-new">New</b> | `DeviceLink/Profiles/` | One file per vendor; pure `parse` |
+| <b class="tag-new">New</b> | `Tools/MockPeripheral/` | Scripts values, disconnects, garbage bytes |
 
 #### Steps
 

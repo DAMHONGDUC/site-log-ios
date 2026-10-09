@@ -29,6 +29,7 @@
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -68,9 +69,9 @@ SiteLog/
 
 - No fake needed: the parser is pure and push uses `xcrun simctl push` in the Simulator.
 
-| File | Holds |
-|---|---|
-| `Domain/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
 
 </dd></dl>
 
@@ -101,10 +102,10 @@ SiteLog/
 - **Goal:** push that carries a destination only; works fully when denied.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
 
-| File | Holds |
-|---|---|
-| `project.yml` | Push capability, `aps-environment`, `remote-notification` background mode |
-| `SiteLog/App/AppDelegate.swift` | Token registration (logged truncated), re-sent on change |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `project.yml` | Push capability, `aps-environment`, `remote-notification` background mode |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDelegate.swift` | Token registration (logged truncated), re-sent on change |
 
 #### Steps
 
@@ -123,10 +124,10 @@ SiteLog/
 - **Goal:** `sitelog://<route>/<id>` parsed once, routed after cold launch.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
 
-| File | Holds |
-|---|---|
-| `Domain/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
-| `Presentation/DeepLinks/DeepLinkRouter.swift` | Holds the destination until a view consumes it |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `Domain/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
+| <b class="tag-new">New</b> | `Presentation/DeepLinks/DeepLinkRouter.swift` | Holds the destination until a view consumes it |
 
 </dd></dl>
 

@@ -30,6 +30,7 @@
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -69,9 +70,9 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`), import / pin / move use cases |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`), import / pin / move use cases |
 
 </dd></dl>
 
@@ -79,10 +80,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/InMemoryPlanRepository.swift` | Plan sheets and pins |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryPlanRepository.swift` | Plan sheets and pins |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
 
@@ -101,12 +102,12 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Plans/PlanList/` | M3: sheets of a project |
-| `Presentation/Plans/PlanViewer/` | M4: pins and clusters; long-press drops a pin |
-| `Presentation/Plans/PinPreview/` | M5: issue summary, move, open |
-| `Presentation/Plans/PlanImport/` | Files / photo import |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Plans/PlanList/` | M3: sheets of a project |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Plans/PlanViewer/` | M4: pins and clusters; long-press drops a pin |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Plans/PinPreview/` | M5: issue summary, move, open |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Plans/PlanImport/` | Files / photo import |
 
 #### Steps
 

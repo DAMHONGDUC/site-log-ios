@@ -30,6 +30,7 @@
 - **Spec:** [03](../feature-docs/01-field-work.md#03-issues-and-before-after-pairing), [12.3 dictation](../feature-docs/01-field-work.md#123-dictation-and-voice-notes)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -69,9 +70,9 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Issues/` | `Issue`, `IssuePairing`, `PairIssuesUseCase` (pure), log / close / carry-over use cases |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Issues/` | `Issue`, `IssuePairing`, `PairIssuesUseCase` (pure), log / close / carry-over use cases |
 
 </dd></dl>
 
@@ -79,10 +80,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/InMemoryIssueRepository.swift` | Issues per project and room |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryIssueRepository.swift` | Issues per project and room |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
 
@@ -101,13 +102,13 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Issues/IssueSheet/` | C2 / K3: severity default Major, assignee, due, phrases |
-| `Presentation/Issues/IssueList/` | C5: Open / Closed / All, grouped by level; tab badge count |
-| `Presentation/Issues/IssueDetail/` | C6: facts, Mark up, Re-check now |
-| `Presentation/Issues/VerificationCamera/` | C3: ghost opacity from `IssueDefaults.overlayOpacity` |
-| `Presentation/Issues/OutcomePicker/` | C4: close / keep open / raise |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Issues/IssueSheet/` | C2 / K3: severity default Major, assignee, due, phrases |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Issues/IssueList/` | C5: Open / Closed / All, grouped by level; tab badge count |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Issues/IssueDetail/` | C6: facts, Mark up, Re-check now |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Issues/VerificationCamera/` | C3: ghost opacity from `IssueDefaults.overlayOpacity` |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Issues/OutcomePicker/` | C4: close / keep open / raise |
 
 #### Steps
 

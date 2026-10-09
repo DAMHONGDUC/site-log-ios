@@ -30,6 +30,7 @@
 - **Spec:** [13](../feature-docs/01-field-work.md#13-checklist-templates)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -69,9 +70,9 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Checklists/` | Template, item, run, result; answer use case (Fail → issue through F05) |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Checklists/` | Template, item, run, result; answer use case (Fail → issue through F05) |
 
 </dd></dl>
 
@@ -79,10 +80,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/InMemoryChecklistRepository.swift` | Templates and runs |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryChecklistRepository.swift` | Templates and runs |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
 
@@ -101,11 +102,11 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Checklists/TemplatePicker/` | K1: resume, recent, all |
-| `Presentation/Checklists/ChecklistRun/` | K2: one tap per item, “14 of 22” |
-| `Presentation/Checklists/ChecklistDone/` | K4: result sentence, issues sent |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Checklists/TemplatePicker/` | K1: resume, recent, all |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Checklists/ChecklistRun/` | K2: one tap per item, “14 of 22” |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Checklists/ChecklistDone/` | K4: result sentence, issues sent |
 
 #### Steps
 

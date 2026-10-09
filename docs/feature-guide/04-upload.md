@@ -31,6 +31,7 @@
 - **Spec:** [04 Upload engine](../feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](../feature-docs/03-backend.md#1-role), [17 CI/CD](../feature-docs/05-platform.md#17-cicd-and-testflight)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -80,11 +81,11 @@ SiteLog/
 - **Goal:** job record, states and the `UploadStore` protocol, plus `InMemoryUploadStore`.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
 
-| File | Holds |
-|---|---|
-| `UploadKit/UploadStore.swift` | Protocol from spec 04.1 |
-| `UploadKit/UploadJobRecord.swift` | Job, part, state enums |
-| `UploadKit/InMemoryUploadStore.swift` | Fake used before the real store and by tests |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `UploadKit/UploadStore.swift` | Protocol from spec 04.1 |
+| <b class="tag-new">New</b> | `UploadKit/UploadJobRecord.swift` | Job, part, state enums |
+| <b class="tag-new">New</b> | `UploadKit/InMemoryUploadStore.swift` | Fake used before the real store and by tests |
 
 #### Steps
 
@@ -101,10 +102,10 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Uploads/UploadStatus/` | U1: big figure, waiting reasons, failed + Retry, Wi-Fi only |
-| `Presentation/Uploads/UploadFiles/` | U2: today's files with state |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Uploads/UploadStatus/` | U1: big figure, waiting reasons, failed + Retry, Wi-Fi only |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Uploads/UploadFiles/` | U2: today's files with state |
 
 #### Steps
 
@@ -131,11 +132,11 @@ SiteLog/
 - **Goal:** Fastify app, Postgres, `0001_uploads.sql`, Firebase token check.
 - **Spec:** [14 §2–5](../feature-docs/03-backend.md#2-stack)
 
-| File | Holds |
-|---|---|
-| `Backend/src/server.ts` | Fastify, `/health`, `requireUser` |
-| `Backend/migrations/0001_uploads.sql` | Table from 14 §5.1 |
-| `Backend/.env.example` | Every config key; `.env` gitignored |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Backend/src/server.ts` | Fastify, `/health`, `requireUser` |
+| <b class="tag-new">New</b> | `Backend/migrations/0001_uploads.sql` | Table from 14 §5.1 |
+| <b class="tag-new">New</b> | `Backend/.env.example` | Every config key; `.env` gitignored |
 
 #### Steps
 
@@ -154,10 +155,10 @@ SiteLog/
 - **Goal:** `POST /uploads` returns a single-PUT or multipart plan; keys checked against the caller’s uid.
 - **Spec:** [14 §3–4](../feature-docs/03-backend.md#3-endpoints)
 
-| File | Holds |
-|---|---|
-| `Backend/src/routes/uploads.ts` | Begin, mode by `byteSize` (5 MB threshold, 8 MB parts) |
-| `Backend/src/keys.ts` | Strict key regex, no `..` |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Backend/src/routes/uploads.ts` | Begin, mode by `byteSize` (5 MB threshold, 8 MB parts) |
+| <b class="tag-new">New</b> | `Backend/src/keys.ts` | Strict key regex, no `..` |
 
 </dd></dl>
 
@@ -178,9 +179,9 @@ SiteLog/
 - **Goal:** idempotent `complete`, part URL refresh, abort.
 - **Spec:** [14 §7.3](../feature-docs/03-backend.md#73-idempotent-complete)
 
-| File | Holds |
-|---|---|
-| `Backend/src/routes/uploads.ts` | `/parts/refresh`, `/complete`, `DELETE` |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `Backend/src/routes/uploads.ts` | `/parts/refresh`, `/complete`, `DELETE` |
 
 </dd></dl>
 
@@ -209,9 +210,9 @@ SiteLog/
 - **Goal:** SwiftData-backed `UploadStore` in `Persistence`.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
 
-| File | Holds |
-|---|---|
-| `Persistence/SwiftDataUploadStore.swift` | Implements `UploadStore` |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Persistence/SwiftDataUploadStore.swift` | Implements `UploadStore` |
 
 #### Steps
 
@@ -229,10 +230,10 @@ SiteLog/
 - **Goal:** files under 5 MB upload through a background session and survive suspension.
 - **Spec:** [04.3](../feature-docs/02-upload-sync.md#043-ios-background-constraints)
 
-| File | Holds |
-|---|---|
-| `UploadKit/BackgroundSessionDelegate.swift` | Session delegate |
-| `UploadKit/UploadCoordinator.swift` | Actor, the only executor of effects |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `UploadKit/BackgroundSessionDelegate.swift` | Session delegate |
+| <b class="tag-new">New</b> | `UploadKit/UploadCoordinator.swift` | Actor, the only executor of effects |
 
 </dd></dl>
 
@@ -254,9 +255,9 @@ SiteLog/
 - **Goal:** pure `UploadStateMachine.reduce` and jittered backoff.
 - **Spec:** [04.4](../feature-docs/02-upload-sync.md#044-state-machine)
 
-| File | Holds |
-|---|---|
-| `UploadKit/UploadStateMachine.swift` | Events → (state, effects); no I/O |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `UploadKit/UploadStateMachine.swift` | Events → (state, effects); no I/O |
 
 </dd></dl>
 
@@ -277,10 +278,10 @@ SiteLog/
 - **Goal:** files over 5 MB in uniform 8 MB parts, resumable part by part.
 - **Spec:** [04.2](../feature-docs/02-upload-sync.md#042-protocol)
 
-| File | Holds |
-|---|---|
-| `UploadKit/ChunkPlanner.swift` | Fixed-size parts |
-| `UploadKit/PartFileWriter.swift` | At most 2 temp part files per job |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `UploadKit/ChunkPlanner.swift` | Fixed-size parts |
+| <b class="tag-new">New</b> | `UploadKit/PartFileWriter.swift` | At most 2 temp part files per job |
 
 </dd></dl>
 
@@ -301,10 +302,10 @@ SiteLog/
 - **Goal:** cold launch reattaches, cancels or resets jobs so nothing sticks at 60%.
 - **Spec:** [04.3](../feature-docs/02-upload-sync.md#043-ios-background-constraints)
 
-| File | Holds |
-|---|---|
-| `UploadKit/Reconciler.swift` | Three cases: reattach · cancel + log · reset to pending |
-| `SiteLog/App/Startup/Steps/ReconcileUploadsStep.swift` | Non-blocking startup step |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `UploadKit/Reconciler.swift` | Three cases: reattach · cancel + log · reset to pending |
+| <b class="tag-new">New</b> | `SiteLog/App/Startup/Steps/ReconcileUploadsStep.swift` | Non-blocking startup step |
 
 </dd></dl>
 
@@ -342,9 +343,9 @@ SiteLog/
 
 - **Goal:** real `UploadCoordinator` + SwiftData store behind the Sync tab; 200-file demo.
 
-| File | Holds |
-|---|---|
-| `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
 </dd></dl>
 
@@ -378,10 +379,10 @@ SiteLog/
 - **Goal:** a `v*` tag becomes a TestFlight build with no local step.
 - **Spec:** [17](../feature-docs/05-platform.md#17-cicd-and-testflight)
 
-| File | Holds |
-|---|---|
-| `fastlane/Fastfile` | Lanes `beta`, `release` |
-| `.github/workflows/testflight.yml` | Tag `v*`, protected `testflight` environment |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `fastlane/Fastfile` | Lanes `beta`, `release` |
+| <b class="tag-new">New</b> | `.github/workflows/testflight.yml` | Tag `v*`, protected `testflight` environment |
 
 #### Steps
 

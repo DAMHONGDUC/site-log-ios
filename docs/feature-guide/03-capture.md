@@ -30,6 +30,7 @@
 - **Spec:** [02](../feature-docs/01-field-work.md#02-capture-pipeline)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -69,10 +70,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Capture/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
-| `Domain/Capture/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Capture/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
+| <b class="tag-new">New</b> | `Domain/Capture/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
 
 </dd></dl>
 
@@ -80,10 +81,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/FakeCaptureSource.swift` | Returns a bundled JPEG; works in the Simulator |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeCaptureSource.swift` | Returns a bundled JPEG; works in the Simulator |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake |
 
 </dd></dl>
 
@@ -91,10 +92,10 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Capture/Camera/` | C1: shutter, mode, room pill, thumbnail count |
-| `Presentation/Capture/CaptureReview/` | Hash + time, retake / use photo |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Capture/Camera/` | C1: shutter, mode, room pill, thumbnail count |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Capture/CaptureReview/` | Hash + time, retake / use photo |
 
 #### Steps
 
@@ -121,11 +122,11 @@ SiteLog/
 - **Goal:** one `AVCaptureSession` behind `CaptureSessionControlling`, testable without a camera.
 - **Spec:** [02.1](../feature-docs/01-field-work.md#021-session-and-state)
 
-| File | Holds |
-|---|---|
-| `SiteLog/DataSources/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
-| `Capture/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
-| `Capture/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/DataSources/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
+| <b class="tag-new">New</b> | `Capture/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
+| <b class="tag-new">New</b> | `Capture/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
 
 #### Steps
 
@@ -145,10 +146,10 @@ SiteLog/
 - **Goal:** each photo written to `media/…` and hashed before the DB row exists.
 - **Spec:** [02.2](../feature-docs/01-field-work.md#022-metadata-and-hashing)
 
-| File | Holds |
-|---|---|
-| `Capture/FileHasher.swift` | Streams SHA-256 in 1 MB chunks |
-| `Capture/MediaStore.swift` | Path `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Capture/FileHasher.swift` | Streams SHA-256 in 1 MB chunks |
+| <b class="tag-new">New</b> | `Capture/MediaStore.swift` | Path `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup |
 
 </dd></dl>
 
@@ -168,9 +169,9 @@ SiteLog/
 
 - **Goal:** swap fakes for SwiftData repositories and the real camera; run the airplane-mode demo.
 
-| File | Holds |
-|---|---|
-| `SiteLog/App/AppDependencies.swift` | Register `SwiftData*Repository`, `AVCaptureSessionController` |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `SwiftData*Repository`, `AVCaptureSessionController` |
 
 </dd></dl>
 

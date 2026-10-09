@@ -30,6 +30,7 @@
 - **Spec:** [05](../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07.3 audit](../feature-docs/04-reporting-security.md#073-audit-log)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -69,10 +70,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Reporting/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
-| `Domain/Security/AuditEntry.swift` | Audit entry |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Reporting/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
+| <b class="tag-new">New</b> | `Domain/Security/AuditEntry.swift` | Audit entry |
 
 </dd></dl>
 
@@ -80,10 +81,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/InMemoryReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
 
@@ -102,12 +103,12 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Reports/ReportBuilder/` | R2: grouping, sections |
-| `Presentation/Reports/Branding/` | R3: letterhead |
-| `Presentation/Reports/SignaturePad/` | R4: two parties (PencilKit) |
-| `Presentation/Reports/PDFPreview/` | R5: preview, estimated size, share |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Reports/ReportBuilder/` | R2: grouping, sections |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Reports/Branding/` | R3: letterhead |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Reports/SignaturePad/` | R4: two parties (PencilKit) |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Reports/PDFPreview/` | R5: preview, estimated size, share |
 
 #### Steps
 
@@ -149,10 +150,10 @@ SiteLog/
 - **Goal:** paginated PDF that never drops an image.
 - **Spec:** [05.2](../feature-docs/04-reporting-security.md#052-rendering)
 
-| File | Holds |
-|---|---|
-| `Reporting/ReportLayoutEngine.swift` | Pure; counts images |
-| `Reporting/PDFPageRenderer.swift` | `UIGraphicsPDFRenderer`, one autoreleasepool per page |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Reporting/ReportLayoutEngine.swift` | Pure; counts images |
+| <b class="tag-new">New</b> | `Reporting/PDFPageRenderer.swift` | `UIGraphicsPDFRenderer`, one autoreleasepool per page |
 
 </dd></dl>
 
@@ -191,9 +192,9 @@ SiteLog/
 
 - **Goal:** real issues, lock and reports; export from a real session.
 
-| File | Holds |
-|---|---|
-| `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
 </dd></dl>
 

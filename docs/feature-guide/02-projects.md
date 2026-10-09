@@ -30,6 +30,7 @@
 - **Spec:** [01](../feature-docs/01-field-work.md#01-projects-sessions-locations), [00 §3 Data model](../feature-docs/00-overview.md#3-data-model)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -71,11 +72,11 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
-| `Domain/Projects/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
-| `Domain/Projects/UseCases/` | `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
+| <b class="tag-new">New</b> | `Domain/Projects/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
+| <b class="tag-new">New</b> | `Domain/Projects/UseCases/` | `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
 
 #### Steps
 
@@ -94,10 +95,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/InMemoryProjectRepository.swift` | Projects, sessions, locations in memory (one actor per aggregate is fine) |
-| `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryProjectRepository.swift` | Projects, sessions, locations in memory (one actor per aggregate is fine) |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
 
@@ -116,17 +117,17 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Projects/ProjectList/` | P1: projects + walkthrough in progress |
-| `Presentation/Projects/NewProject/` | P2: create through `CreateProjectUseCase` |
-| `Presentation/Projects/ProjectDetail/` | P3: Sessions · Locations tabs, sentence summary |
-| `Presentation/Projects/StartSession/` | P4: start through `StartSessionUseCase` |
-| `Presentation/Projects/Survey/` | P5: rooms per unit, filter chips, badge counts |
-| `Presentation/Projects/Room/` | P7: room detail, photos, checklist row |
-| `Presentation/Projects/BulkLocations/` | P6: template form + preview from the use case |
-| `Presentation/Projects/CloneTree/` | Copy a location tree |
-| `Presentation/Projects/EndSession/` | R1: session summary |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/ProjectList/` | P1: projects + walkthrough in progress |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/NewProject/` | P2: create through `CreateProjectUseCase` |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/ProjectDetail/` | P3: Sessions · Locations tabs, sentence summary |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/StartSession/` | P4: start through `StartSessionUseCase` |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/Survey/` | P5: rooms per unit, filter chips, badge counts |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/Room/` | P7: room detail, photos, checklist row |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/BulkLocations/` | P6: template form + preview from the use case |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/CloneTree/` | Copy a location tree |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Projects/EndSession/` | R1: session summary |
 
 #### Steps
 
@@ -154,10 +155,10 @@ SiteLog/
 - **Goal:** SwiftData models in `DataSources/Persistence/` and repository implementations in `Data/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
 
-| File | Holds |
-|---|---|
-| `SiteLog/DataSources/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
-| `SiteLog/Data/Repositories/SwiftData*Repository.swift` | Implements the step 1 protocols; mappers model ↔ entity |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/DataSources/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
+| <b class="tag-new">New</b> | `SiteLog/Data/Repositories/SwiftData*Repository.swift` | Implements the step 1 protocols; mappers model ↔ entity |
 
 #### Steps
 
@@ -178,11 +179,11 @@ SiteLog/
 - **Goal:** `VersionedSchema` + `SchemaMigrationPlan` from day one.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
 
-| File | Holds |
-|---|---|
-| `Persistence/Schema/SchemaV1.swift` | First versioned schema |
-| `Persistence/Schema/MigrationPlan.swift` | Stages list (empty until V2) |
-| `Persistence/Tests/Fixtures/` | A 100-location `SchemaV1` store |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Persistence/Schema/SchemaV1.swift` | First versioned schema |
+| <b class="tag-new">New</b> | `Persistence/Schema/MigrationPlan.swift` | Stages list (empty until V2) |
+| <b class="tag-new">New</b> | `Persistence/Tests/Fixtures/` | A 100-location `SchemaV1` store |
 
 </dd></dl>
 

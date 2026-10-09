@@ -31,6 +31,7 @@
 - **Spec:** [08](../feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](../feature-docs/03-backend.md#7-sync)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -74,10 +75,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Auth/` | `AuthService` (Apple, email, sign out, delete account) |
-| `Domain/Sync/` | `SyncEngine` (status, last synced, errors) |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Auth/` | `AuthService` (Apple, email, sign out, delete account) |
+| <b class="tag-new">New</b> | `Domain/Sync/` | `SyncEngine` (status, last synced, errors) |
 
 </dd></dl>
 
@@ -85,10 +86,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `SiteLog/Data/Fakes/FakeAuthService.swift` | Signs in “Hanh Nguyen” instantly |
-| `SiteLog/Data/Fakes/FakeSyncEngine.swift` | “Synced 2 minutes ago” |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeAuthService.swift` | Signs in “Hanh Nguyen” instantly |
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeSyncEngine.swift` | “Synced 2 minutes ago” |
 
 </dd></dl>
 
@@ -96,11 +97,11 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Access/SignIn/` | A2: replace the logging stubs in `SignInViewModel` (F01) |
-| `Presentation/Settings/Account/` | Profile, sign out; delete account alert in Settings |
-| `Presentation/Uploads/UploadStatus/` | Last synced, errors |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-edit">Edit</b> view model | `Presentation/Access/SignIn/` | A2: replace the logging stubs in `SignInViewModel` (F01) |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Settings/Account/` | Profile, sign out; delete account alert in Settings |
+| <b class="tag-edit">Edit</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Uploads/UploadStatus/` | Last synced, errors |
 
 #### Steps
 
@@ -224,9 +225,9 @@ SiteLog/
 
 - **Goal:** Real Firebase + sync behind the screens.
 
-| File | Holds |
-|---|---|
-| `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
 </dd></dl>
 

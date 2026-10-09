@@ -30,6 +30,7 @@
 - **Spec:** [09](../feature-docs/05-platform.md#09-diagnostics-and-observability), [19 Instruments](../feature-docs/05-platform.md#19-performance-profiling-with-instruments)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -70,10 +71,10 @@ SiteLog/
 
 <dl><dd>
 
-| File | Holds |
-|---|---|
-| `Domain/Diagnostics/` | Integrity result, storage breakdown, device flags |
-| `SiteLog/Data/Fakes/FakeDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Domain/Diagnostics/` | Integrity result, storage breakdown, device flags |
+| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB |
 
 </dd></dl>
 
@@ -81,10 +82,10 @@ SiteLog/
 
 <dl><dd>
 
-| Skeleton folder | View model work |
-|---|---|
-| `Presentation/Diagnostics/DiagnosticExport/` | U3: integrity, storage, export |
-| `Presentation/Settings/StorageCleanup/` | Synced-only cleanup |
+| Action | Skeleton folder | View model work |
+|---|---|---|
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Diagnostics/DiagnosticExport/` | U3: integrity, storage, export |
+| <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Settings/StorageCleanup/` | Synced-only cleanup |
 
 #### Steps
 
@@ -157,9 +158,9 @@ SiteLog/
 
 - **Goal:** real plans, checklists, DeviceLink, diagnostics; first Instruments pass; TestFlight build.
 
-| File | Holds |
-|---|---|
-| `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
 
 #### Steps
 

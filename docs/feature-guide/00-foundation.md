@@ -31,6 +31,7 @@
 - **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
 - **How to use:** try each file from its hints first; open **Code** only to check or when stuck.
+- **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
@@ -108,7 +109,7 @@ site-log-ios/
 <summary><strong>1.1 project.yml — add libraries</strong></summary>
 <dl><dd>
 
-<b>File</b> · `project.yml → packages:` *(add under Inject)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `packages:` *(add under `Inject`)*
 
 <b>Explain</b> · Adds the local DesignSystem package and two libraries: Factory (DI) and swift-snapshot-testing.
 
@@ -135,7 +136,7 @@ site-log-ios/
 
 ---
 
-<b>File</b> · `project.yml → targets.SiteLog.dependencies` *(add)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLog.dependencies` *(add at the end)*
 
 <b>Explain</b> · Lets the app target use DesignSystem and FactoryKit.
 
@@ -156,7 +157,7 @@ site-log-ios/
 
 ---
 
-<b>File</b> · `project.yml → targets.SiteLogTests`
+<b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLogTests` *(replace its `dependencies` and `settings`)*
 
 <b>Explain</b> · Lets the tests use the app, FactoryTesting and SnapshotTesting.
 
@@ -205,7 +206,7 @@ site-log-ios/
 | Layer rules are checked by `Tools/CI/check-imports.sh` (step 3) | The compiler no longer stops a view from using a `Data/` type |
 | `DesignSystem` is a package: `public` API, `import DesignSystem` | UI only; the compiler keeps it free of `Domain` and app code |
 
-<b>File</b> · `Packages/DesignSystem/Package.swift`
+<b>File</b> · <b class="tag-check">Check</b> · `Packages/DesignSystem/Package.swift`
 
 <b>Explain</b> · Manifest of the DesignSystem package: one library and its test target.
 
@@ -262,7 +263,7 @@ let package = Package(
 <summary><strong>1.3 AppClock</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/Core/Helper/Clock/AppClock.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Core/Helper/Clock/AppClock.swift`
 
 <b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, DataSources and Presentation need time.
 
@@ -291,7 +292,7 @@ nonisolated protocol AppClock: Sendable {
 
 ---
 
-<b>File</b> · `SiteLog/Core/Helper/Clock/SystemClock.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Core/Helper/Clock/SystemClock.swift`
 
 <b>Explain</b> · The real `AppClock` used by the running app.
 
@@ -322,7 +323,7 @@ nonisolated struct SystemClock: AppClock {
 
 ---
 
-<b>File</b> · `SiteLogTests/Core/Helper/Clock/SystemClockTests.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Core/Helper/Clock/SystemClockTests.swift`
 
 <b>Explain</b> · Checks that `SystemClock.uptime` moves forward.
 
@@ -361,7 +362,7 @@ struct SystemClockTests {
 <summary><strong>1.4 Composition root</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLog/App/AppDependencies.swift` *(F00 version; F01 adds Access)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F00 version; F01 adds Access)*
 
 <b>Explain</b> · Composition root: the one place that registers which implementation backs each protocol (Factory).
 
@@ -396,7 +397,7 @@ extension Container {
 <summary><strong>1.5 First Factory test</strong></summary>
 <dl><dd>
 
-<b>File</b> · `SiteLogTests/SiteLogTests.swift` *(replace)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLogTests/SiteLogTests.swift`
 
 <b>Explain</b> · First Factory test: swaps the real clock for a fixed one.
 
@@ -468,7 +469,7 @@ struct AppDependenciesTests {
 <summary><strong>2.1 Files</strong></summary>
 <dl><dd>
 
-<b>File</b> · `Gemfile`
+<b>File</b> · <b class="tag-new">New</b> · `Gemfile`
 
 <b>Explain</b> · Pins the fastlane version so `bundle exec fastlane` runs the same everywhere.
 
@@ -490,7 +491,7 @@ gem "fastlane", "~> 2.228"
 
 ---
 
-<b>File</b> · `fastlane/Appfile`
+<b>File</b> · <b class="tag-new">New</b> · `fastlane/Appfile`
 
 <b>Explain</b> · App bundle id for fastlane.
 
@@ -510,7 +511,7 @@ app_identifier("app.dd.site.log")
 
 ---
 
-<b>File</b> · `fastlane/Fastfile`
+<b>File</b> · <b class="tag-new">New</b> · `fastlane/Fastfile`
 
 <b>Explain</b> · fastlane lanes; `test` runs the unit and snapshot tests exactly like CI.
 
@@ -577,7 +578,7 @@ end
 
 ---
 
-<b>File</b> · `.swiftlint.yml → excluded` *(add)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `.swiftlint.yml` → `excluded:` *(add one line)*
 
 <b>Explain</b> · Keeps SwiftLint out of Fastlane’s build output.
 
@@ -601,7 +602,7 @@ end
 <summary><strong>2.2 Workflow (lint + test)</strong></summary>
 <dl><dd>
 
-<b>File</b> · `.github/workflows/pr-checks.yml` *(step 2 version)*
+<b>File</b> · <b class="tag-new">New</b> · `.github/workflows/pr-checks.yml` *(step 2 version)*
 
 <b>Explain</b> · GitHub Actions workflow run on every pull request: lint and tests.
 
@@ -689,7 +690,7 @@ jobs:
 - **Goal:** rules that reviews forget are checked by machine: no `print(`, layer rules, secrets, the app builds with warnings as errors.
 - Make each script executable once: `chmod +x Tools/CI/*.sh`.
 
-<b>File</b> · `Tools/CI/check-no-print.sh`
+<b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-no-print.sh`
 
 <b>Explain</b> · Fails CI when app code uses `print(`; logging goes through `AppLogger`.
 
@@ -723,7 +724,7 @@ echo "OK: no print( calls"
 
 ---
 
-<b>File</b> · `Tools/CI/check-imports.sh`
+<b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-imports.sh`
 
 <b>Explain</b> · Fails CI when a layer uses one it must not, e.g. a view using a `Data/` type.
 
@@ -795,7 +796,7 @@ echo "OK: layer rules"
 
 ---
 
-<b>File</b> · `Tools/CI/build-strict.sh`
+<b>File</b> · <b class="tag-new">New</b> · `Tools/CI/build-strict.sh`
 
 <b>Explain</b> · Builds the app with warnings treated as errors.
 
@@ -840,7 +841,7 @@ echo "OK: the app builds with zero warnings"
 
 ---
 
-<b>File</b> · `.github/workflows/pr-checks.yml` *(final: adds guards + build jobs)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `.github/workflows/pr-checks.yml` *(final: adds guards + build jobs)*
 
 <b>Explain</b> · Final workflow: adds the guards job and the strict build before the tests.
 
@@ -938,7 +939,7 @@ jobs:
 - Tokens and components are already in `Packages/DesignSystem` (built with the UI skeleton).
 - The feature is done, so its tests come now.
 
-<b>File</b> · `Packages/DesignSystem/Tests/DesignSystemTests/DesignSystemTests.swift` *(replace)*
+<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/DesignSystem/Tests/DesignSystemTests/DesignSystemTests.swift`
 
 <b>Explain</b> · Unit test for the hex colour helper behind `DSColor`.
 
@@ -976,7 +977,7 @@ struct DesignSystemTests {
 
 ---
 
-<b>File</b> · `Packages/DesignSystem/Sources/DesignSystem/Components/DSGallery.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DesignSystem/Sources/DesignSystem/Components/DSGallery.swift`
 
 <b>Explain</b> · Every DesignSystem component on one screen, for previews and the snapshot test.
 
@@ -1056,7 +1057,7 @@ public struct DSGallery: View {
 
 ---
 
-<b>File</b> · `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift`
 
 <b>Explain</b> · Snapshots `DSGallery` in light and dark; fails when a component’s look changes.
 
