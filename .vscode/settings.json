@@ -20,7 +20,8 @@
   // CodeLLDB: Debug Console evaluates expressions directly (no '?' prefix, no mode banner).
   // LLDB commands still work with a '/cmd ' prefix, e.g. `/cmd bt`.
   "lldb.consoleMode": "evaluate",
-  "sweetpad.xcodegen.autogenerate": true,
+  // Sources are synced folders: adding a file never needs xcodegen.
+  "sweetpad.xcodegen.autogenerate": false,
   "sweetpad.build.xcodeWorkspacePath": "SiteLog.xcodeproj",
   "sweetpad.build.scheme": "SiteLog",
   // Guide preview: same 16 px indent for sub-sections as GitHub.
