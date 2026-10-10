@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import SiteLog
+@testable import Core
 
 struct SystemClockTests {
     @Test func uptimeMovesForward() async throws {

@@ -1,5 +1,6 @@
 #if DEBUG
 
+import Core
 import os
 import SwiftUI
 

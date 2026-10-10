@@ -1,18 +1,20 @@
 //
 //  SystemClock.swift
-//  SiteLog
+//  Core
 //
 //  Created by Duc Dam Dev on 8/10/26.
 //
 
 import Foundation
 
-struct SystemClock: AppClock {
-    var now: Date {
+public struct SystemClock: AppClock {
+    public init() {}
+
+    public var now: Date {
         return Date.now
     }
 
-    var uptime: ContinuousClock.Instant {
+    public var uptime: ContinuousClock.Instant {
         return ContinuousClock.now
     }
 }

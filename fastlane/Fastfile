@@ -8,8 +8,8 @@ SIMULATOR_NAME = "iPhone 17 Pro"
 SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
 
-# Local packages, tested one by one so a package never leans on the app
-PACKAGES = ["DesignSystem"]
+# Local packages with a test target, tested one by one so a package never leans on the app
+PACKAGES = ["DesignSystem", "Core"]
 
 # Fastlane runs inside fastlane/, so the repo root is one level up
 ROOT = File.expand_path("..", __dir__)

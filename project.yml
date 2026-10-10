@@ -31,6 +31,12 @@ settings:
 packages:
   DesignSystem:
     path: Packages/DesignSystem
+  Core:
+    path: Packages/Core
+  DomainLayer:
+    path: Packages/DomainLayer
+  DataLayer:
+    path: Packages/DataLayer
   Inject:
     url: https://github.com/krzysztofzablocki/Inject
     from: 1.6.0
@@ -66,6 +72,9 @@ targets:
           - "**/.gitkeep"
     dependencies:
       - package: DesignSystem
+      - package: Core
+      - package: DomainLayer
+      - package: DataLayer
       - package: Inject
       - package: Factory
         product: FactoryKit
@@ -120,6 +129,7 @@ targets:
           - "**/.gitkeep"
     dependencies:
       - target: SiteLog
+      - package: Core
       - package: Factory
         product: FactoryTesting
       - package: SnapshotTesting

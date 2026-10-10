@@ -5,6 +5,7 @@
 //  Created by Duc Dam Dev on 19/9/26.
 //
 
+import Core
 import FactoryKit
 import FactoryTesting
 import Foundation

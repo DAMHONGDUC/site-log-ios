@@ -5,8 +5,9 @@
 //  Created by Duc Dam Dev on 1/10/26.
 //
 
-import UIKit
+import Core
 import os
+import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
