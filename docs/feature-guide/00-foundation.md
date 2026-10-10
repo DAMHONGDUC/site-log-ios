@@ -74,7 +74,7 @@ site-log-ios/
 | Editor | New Swift file |
 |---|---|
 | Xcode | Right-click the folder → **New Empty File**; nothing else (`SiteLog/` is a synced folder) |
-| VS Code | Explorer → right-click → **New File…**; SweetPad regenerates the project |
+| VS Code | Explorer → right-click → **New File…**; nothing else (synced folder) |
 | DesignSystem | Files under `Packages/DesignSystem/Sources` are picked up by SPM in both editors |
 
 </dd></dl>
