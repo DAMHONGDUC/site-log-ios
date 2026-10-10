@@ -42,6 +42,7 @@ packages:
     from: 1.19.6
 fileGroups:
   - docs
+  - fastlane
   - README.md
   - ROADMAP.md
   - .gitignore
@@ -49,6 +50,9 @@ fileGroups:
   - .swift-format
   - .swiftlint.yml
   - project.yml
+  - Gemfile
+  - .vscode
+  - .github
 targets:
   SiteLog:
     type: application

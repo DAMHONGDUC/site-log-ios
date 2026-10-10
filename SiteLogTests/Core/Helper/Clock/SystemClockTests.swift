@@ -11,7 +11,7 @@ struct SystemClockTests {
         try await Task.sleep(for: .milliseconds(10))
 
         let second = systemClock.uptime
-        
+
         #expect(first < second)
     }
 }

@@ -1,0 +1,29 @@
+name: PR checks
+
+on: 
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency: 
+  group: pr-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: ghcr.io/realm/swiftlint:0.65.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftLint (warnings fail)
+        run: swiftlint --strict
+
+  test:
+    run-on: [self-hosted, macOS]
+    need: [lint]
+    steps:
+      - uses: action/checkout@v4
+      - name: Install gems
+        run: bundle install
+      - name: Fastlane test
+        run: bundle exec fastlane test
