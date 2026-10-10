@@ -28,8 +28,8 @@
 - **Goal:** Diagnostics end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** integrity check, storage cleanup, diagnostic bundle, Crashlytics; second TestFlight build.
 - **Spec:** [09](../feature-docs/05-platform.md#09-diagnostics-and-observability), [19 Instruments](../feature-docs/05-platform.md#19-performance-profiling-with-instruments)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,9 +57,10 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Diagnostics/   # 1: integrity + storage snapshot
+└── DataLayer/Sources/DataLayer/Fakes/   # 1: FakeDiagnosticsRepository
 SiteLog/
-├── Domain/Diagnostics/          # 1: integrity + storage snapshot
-├── Data/Fakes/                  # 1: FakeDiagnosticsRepository
 └── Presentation/
     ├── Diagnostics/DiagnosticExport/   # 2: U3
     └── Settings/StorageCleanup/        # 2
@@ -73,8 +74,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Diagnostics/` | Integrity result, storage breakdown, device flags |
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Diagnostics/` | Integrity result, storage breakdown, device flags |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB |
 
 </dd></dl>
 
@@ -94,7 +95,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

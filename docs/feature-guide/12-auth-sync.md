@@ -29,8 +29,8 @@
 - **Goal:** Auth and multi-device sync end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** a second device sees the same data; deletes propagate.
 - **Spec:** [08](../feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](../feature-docs/03-backend.md#7-sync)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -61,12 +61,13 @@
 ```text
 Backend/migrations/0002_sync_core.sql, 0003_metadata.sql   # 4
 Backend/src/routes/sync.ts                                 # 4
+Packages/
+├── DomainLayer/Sources/DomainLayer/Auth/, Sync/                                                # 1: AuthService, SyncEngine protocols
+├── DataLayer/Sources/DataLayer/Fakes/                                                # 2: FakeAuthService, FakeSyncEngine
+└── DataLayer/Sources/DataLayer/Sync/MetadataSyncEngine.swift (actor), MutationQueue  # 5
 SiteLog/
-├── Domain/Auth/, Sync/                    # 1: AuthService, SyncEngine protocols
-├── Data/Fakes/                            # 2: FakeAuthService, FakeSyncEngine
-├── Data/Sync/MetadataSyncEngine.swift (actor), MutationQueue   # 5
-├── App/AppDelegate.swift                  # 5: FirebaseApp.configure() first
-└── Presentation/Access/SignIn/, Settings/Account/, Uploads/UploadStatus/   # 3
+├── App/AppDelegate.swift                                                             # 5: FirebaseApp.configure() first
+└── Presentation/Access/SignIn/, Settings/Account/, Uploads/UploadStatus/             # 3
 ```
 
 </dd></dl>
@@ -77,8 +78,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Auth/` | `AuthService` (Apple, email, sign out, delete account) |
-| <b class="tag-new">New</b> | `Domain/Sync/` | `SyncEngine` (status, last synced, errors) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Auth/` | `AuthService` (Apple, email, sign out, delete account) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Sync/` | `SyncEngine` (status, last synced, errors) |
 
 </dd></dl>
 
@@ -88,8 +89,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeAuthService.swift` | Signs in “Hanh Nguyen” instantly |
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeSyncEngine.swift` | “Synced 2 minutes ago” |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeAuthService.swift` | Signs in “Hanh Nguyen” instantly |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeSyncEngine.swift` | “Synced 2 minutes ago” |
 
 </dd></dl>
 
@@ -110,7 +111,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

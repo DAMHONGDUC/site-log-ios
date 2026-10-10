@@ -28,8 +28,8 @@
 - **Goal:** Capture end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** photo captured and hashed in airplane mode, linked to a location, kept after relaunch.
 - **Spec:** [02](../feature-docs/01-field-work.md#02-capture-pipeline)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,11 +57,12 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Capture/                             # 1: RecordCaptureUseCase, CaptureSource protocol
+├── DataLayer/Sources/DataLayer/Fakes/FakeCaptureSource.swift  # 2: returns a bundled image
+└── DataLayer/Sources/DataLayer/DataSources/Local/Capture/     # 4: CaptureSessionControlling, AVCaptureSessionController, FileHasher, MediaStore
 SiteLog/
-├── Domain/Capture/              # 1: RecordCaptureUseCase, CaptureSource protocol
-├── Data/Fakes/FakeCaptureSource.swift   # 2: returns a bundled image
-├── DataSources/Capture/         # 4: CaptureSessionControlling, AVCaptureSessionController, FileHasher, MediaStore
-└── Presentation/Capture/        # 3: Camera, CaptureReview
+└── Presentation/Capture/                                      # 3: Camera, CaptureReview
 ```
 
 </dd></dl>
@@ -72,8 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Capture/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
-| <b class="tag-new">New</b> | `Domain/Capture/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
 
 </dd></dl>
 
@@ -83,7 +84,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeCaptureSource.swift` | Returns a bundled JPEG; works in the Simulator |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeCaptureSource.swift` | Returns a bundled JPEG; works in the Simulator |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake |
 
 </dd></dl>
@@ -104,7 +105,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 5. Hi-vis yellow only on the shutter; never blocks on upload state.
 
 </dd></dl>
@@ -124,7 +125,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/DataSources/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
 | <b class="tag-new">New</b> | `Capture/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
 | <b class="tag-new">New</b> | `Capture/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
 

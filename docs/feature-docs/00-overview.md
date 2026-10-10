@@ -73,7 +73,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Area | Choice |
 |---|---|
 | UI | SwiftUI, iOS 18.6 deployment target; Swift 6 strict concurrency, `MainActor` default isolation |
-| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM, one app target with a folder per layer, `DesignSystem` package ([D09](#d09--layers-as-folders-in-one-app-target)) |
+| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM; `DomainLayer`, `DataLayer`, `Core`, `DesignSystem` are local Swift packages, Presentation lives in the app target ([D09](#d09--layers-as-local-swift-packages)) |
 | Dependency injection | [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`) ([D01](#d01--factory-for-dependency-injection)) |
 | Concurrency | Swift Concurrency — `actor` for upload, `@MainActor` for view models |
 | Local store | SwiftData (`#Unique`, `#Index` need iOS 18) |
@@ -228,28 +228,29 @@ flowchart LR
 
 ```
 site-log-ios/
-├── SiteLog/                          # one app target; each layer is a folder
+├── SiteLog/                          # app target: composition root + Presentation
 │   ├── App/                          # composition root: may use everything
 │   │   ├── SiteLogApp.swift          # @main
 │   │   ├── AppDelegate.swift         # process-level iOS events
 │   │   ├── AppDependencies.swift     # Factory registrations
-│   │   └── Startup/                  # guarded startup steps (Steps/ per step)
-│   ├── Presentation/                 # View + ViewModel
-│   │   ├── Root/                     # RootView + RootViewModel: startup → access → main tabs
-│   │   ├── Access/                   # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
-│   │   ├── MainTab/
-│   │   └── <Feature>/                # 2+ screens → one subfolder per screen
-│   ├── Domain/                       # Entities/ UseCases/ Repositories/
-│   ├── Data/                         # Repositories/ DTOs/ Mappers/
-│   ├── DataSources/                  # Persistence/ (SwiftData) Networking/ (backend HTTP client)
-│   │                                 # Capture/ UploadKit/ Reporting/ Plans/ DeviceLink/ Realtime/
-│   └── Core/                         # app-wide support, no business logic
-│       ├── Config/                   # *.xcconfig, entitlements
-│       ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
-│       ├── Helper/                   # Logger/AppLogger, Clock/AppClock + SystemClock; use nothing else from the app
-│       └── Resources/                # Assets.xcassets, localization, seeded templates
-├── Packages/DesignSystem/            # Swift package: Tokens/ Components/ (UI only)
-├── SiteLogTests/                     # mirrors SiteLog/: Core/ Domain/ Data/ DataSources/ Presentation/ Snapshots/
+│   │   ├── Startup/                  # guarded startup steps (Steps/ per step)
+│   │   ├── Config/                   # *.xcconfig, entitlements
+│   │   ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
+│   │   └── Resources/                # Assets.xcassets, localization, seeded templates
+│   └── Presentation/                 # View + ViewModel
+│       ├── Root/                     # RootView + RootViewModel: startup → access → main tabs
+│       ├── Access/                   # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
+│       ├── MainTab/
+│       └── <Feature>/                # 2+ screens → one subfolder per screen
+├── Packages/                         # local Swift packages; each has Sources/<Name>/ and Tests/<Name>Tests/
+│   ├── DomainLayer/                  # Entities/ UseCases/ Repositories/ — Foundation only
+│   ├── DataLayer/                    # Repositories/ DTOs/ Mappers/ Fakes/ — uses Domain + Core
+│   │   └── DataSources/              # framework code
+│   │       ├── Local/                # Persistence/ (SwiftData) Capture/ Reporting/ Plans/ DeviceLink/
+│   │       └── Remote/               # Networking/ (backend HTTP client) UploadKit/ Realtime/
+│   ├── Core/                         # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
+│   └── DesignSystem/                 # Tokens/ Components/ (UI only)
+├── SiteLogTests/                     # app tests: Presentation/ Snapshots/ (package tests live in each package)
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
 ├── Tools/Hammerspoon/                # format-on-save config for Xcode
@@ -262,8 +263,8 @@ site-log-ios/
 └── project.yml                       # XcodeGen
 ```
 
-- The folder skeleton exists from the start; empty folders hold a `.gitkeep` (excluded from the build in `project.yml`).
-- Why folders, not packages: [D09](#d09--layers-as-folders-in-one-app-target).
+- The folder skeleton exists from the start; empty folders hold a `.gitkeep` (excluded from the app build in `project.yml`; SwiftPM ignores hidden files).
+- Why packages: [D09](#d09--layers-as-local-swift-packages).
 
 </dd></dl>
 
@@ -271,28 +272,28 @@ site-log-ios/
 
 <dl><dd>
 
-| Layer | Folder | May use |
+| Layer | Where | May use |
 |---|---|---|
-| Presentation | `SiteLog/Presentation/` | `Domain`, `DesignSystem`, `FactoryKit` (`@Injected` only) |
-| Domain | `SiteLog/Domain/` | `Foundation` only |
-| Data | `SiteLog/Data/` | `Domain` and data sources |
-| Data sources | `SiteLog/DataSources/<Name>/` | Frameworks; `Domain` for shared value types; never `Data` or each other |
+| Presentation | `SiteLog/Presentation/` (app target) | `DomainLayer`, `Core`, `DesignSystem`, `FactoryKit` (`@Injected` only); never `DataLayer` |
+| Domain | `Packages/DomainLayer` | `Foundation` only |
+| Data | `Packages/DataLayer` (`Repositories/`, `DTOs/`, `Mappers/`, `Fakes/`) | `DomainLayer`, `Core` and data sources |
+| Data sources | `Packages/DataLayer/…/DataSources/Local/<Name>/` (on the device), `…/Remote/<Name>/` (server) | Frameworks; `Domain` for shared value types; never repositories or each other |
 | DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI only; never `Domain` or app code |
-| Core | `SiteLog/Core/` (`Helper/Logger`, `Helper/Clock`, `Config`, `Resources`) | `Foundation`, `os` (`Fakes/` also `DesignSystem` until it is gone); used by every layer except `Domain` |
-| Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`) | Everything, plus `FactoryKit` |
+| Core | `Packages/Core` (`Logger/`, `Clock/`) | `Foundation`, `os`; used by every layer except `Domain` |
+| Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`, `Config/`, `Fakes/`, `Resources/`) | Everything, plus `FactoryKit` |
 
 | Rule | Enforcement |
 |---|---|
-| `Domain` imports nothing beyond `Foundation` | CI `check-imports.sh` |
-| Presentation and `Domain` never use a type declared in `Data/` or `DataSources/` | CI `check-imports.sh` |
-| `Domain` never uses a type declared in `Core/` | CI `check-imports.sh` |
+| `Domain` imports nothing beyond `Foundation` | CI `check-imports.sh` (a package may still import Apple frameworks) |
+| `DomainLayer` never uses `DataLayer` or `Core`; `Core` uses no other layer | Compiler (package dependencies) |
+| Presentation never imports `DataLayer` (the app links it for `App/` only) | CI `check-imports.sh` |
 | Presentation never uses SwiftData, `ModelContext` or `URLSession` | CI `check-imports.sh` |
 | View models call use cases only — never a repository | Review |
 | Repository protocols in `Domain`, implementations in `Data` | Review |
 | DTOs and `@Model` types never cross into `Domain` or Presentation | CI `check-imports.sh` + review |
 | `UploadKit` and `Realtime` use nothing from the rest of the app, and not each other | Review |
 | `DesignSystem` uses nothing from the app | Compiler (separate package, no dependencies) |
-| Types in `Domain/`, `Data/`, `DataSources/` are `nonisolated` (the target defaults to `MainActor`) | Compiler + review |
+| Package types the app uses are `public` (with a `public init`); package code is `nonisolated` by default | Compiler |
 
 </dd></dl>
 
@@ -435,7 +436,7 @@ final class ProjectListViewModel {
 
 | Item | Where | Committed |
 |---|---|---|
-| `GoogleService-Info.plist` | `SiteLog/Core/Config/` | No — CI writes it from a secret |
+| `GoogleService-Info.plist` | `SiteLog/App/Config/` | No — CI writes it from a secret |
 | Backend URL, bucket, feature flags | `*.xcconfig` per environment → `AppConfig` | `.example` only |
 | R2 access keys | Backend only | Never in the app |
 
@@ -482,7 +483,7 @@ final class ProjectListViewModel {
 **Adding a feature**
 
 1. Domain: entity, repository protocol, use cases.
-2. Fake data: in-memory repository in `Data/Fakes/` (the only place fakes live), registered in `AppDependencies`.
+2. Fake data: in-memory repository in `Packages/DataLayer/Sources/DataLayer/Fakes/` (the only place fakes live), registered in `AppDependencies`.
 3. View models wired into the screens, running on the fake.
 4. Real data (Data impl, DTO, mapper; framework code in a data source); the Factory registration swaps the fake for it.
 5. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
@@ -522,7 +523,7 @@ final class ProjectListViewModel {
 | [D06](#d06--test-libraries) | Swift Testing + swift-snapshot-testing + FactoryTesting | Accepted |
 | [D07](#d07--firebase-crashlytics) | Firebase Crashlytics for crash reporting | Accepted |
 | [D08](#d08--xcodegen-owns-the-xcode-project) | XcodeGen owns the Xcode project | Accepted |
-| [D09](#d09--layers-as-folders-in-one-app-target) | Layers as folders in one app target | Accepted |
+| [D09](#d09--layers-as-local-swift-packages) | Layers as local Swift packages | Accepted |
 
 - D01–D08 accepted 2026-09-30, D09 2026-10-04. New decision: copy a section, keep its four parts, add a row above.
 
@@ -613,7 +614,7 @@ final class ProjectListViewModel {
 
 - **Context:** the server learns about assembly, checksum results and hash mismatches before the app,
   especially after a kill mid-upload.
-- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `SiteLog/DataSources/Realtime`: connect,
+- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime`: connect,
   auth with the Firebase ID token, ping, reconnect with backoff, events reconciled into the upload
   store. Never controls `UploadKit`.
 
@@ -724,26 +725,27 @@ final class ProjectListViewModel {
 
 </dd></dl>
 
-### D09 — Layers as folders in one app target
+### D09 — Layers as local Swift packages
 
 <dl><dd>
 
-- **Context:** Clean Architecture needs layer boundaries. One SPM package per layer lets the compiler
-  enforce them, but adds a manifest per layer, `public` on every cross-layer type and a build per package.
-- **Decision:** one app target; `Domain/`, `Data/`, `DataSources/`, `Presentation/` are folders in `SiteLog/`.
-  - Exception: `DesignSystem` is a Swift package — pure UI with no app dependencies, so the compiler
-    keeps it reusable and its previews build alone.
-  - Layer rules: `Tools/CI/check-imports.sh` + review ([§4.2](#42-layers-and-dependency-rules)).
-  - Types in `Domain/`, `Data/`, `DataSources/` are `nonisolated`: the target defaults to `MainActor`.
+- **Context:** Clean Architecture needs layer boundaries. As folders in one target, only a CI script
+  could stop a wrong reference; the compiler could not.
+- **Decision:** `DomainLayer`, `DataLayer` (with `DataSources/Local` and `Remote`), `Core` and `DesignSystem`
+  are local Swift packages in `Packages/`; the app target keeps `App/` (composition root) and `Presentation/`.
+  - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
+  - `DataLayer`, not `Data`: a module named `Data` would clash with `Foundation.Data`.
+  - Left to `Tools/CI/check-imports.sh`: Domain imports Foundation only; Presentation never imports `DataLayer`.
 
 | Rejected | Why not |
 |---|---|
-| One SPM package per layer | Manifests, `public` everywhere, more setup than one developer needs |
+| Layers as folders in one target | The compiler cannot stop a view from using a `Data` type; only a grep script can |
 | One package per feature (microfeatures) | About 30 packages; built for many teams |
 
 - **Consequences:**
-  - The compiler no longer stops a view from using a `Data/` type; the CI script does.
-  - Moving a folder to a package later means adding a manifest and `public`.
+  - Every type another layer uses is `public`, with a `public init` for structs.
+  - Package code is `nonisolated` by default; only the app target defaults to `MainActor`.
+  - A package with no tests yet has no test target; `fastlane test` lists only packages with tests.
 
 </dd></dl>
 

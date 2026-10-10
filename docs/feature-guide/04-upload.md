@@ -29,8 +29,8 @@
 - **Goal:** Upload engine end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** 200 files reach storage and survive app kill and airplane mode; first TestFlight build.
 - **Spec:** [04 Upload engine](../feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](../feature-docs/03-backend.md#1-role), [17 CI/CD](../feature-docs/05-platform.md#17-cicd-and-testflight)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -60,14 +60,15 @@
 
 ```text
 Backend/                          # 4: Node 22 + TypeScript + Fastify, Postgres, migrations/
-SiteLog/
-├── DataSources/UploadKit/        # 1–4: uses nothing from the rest of the app
+Packages/DataLayer/Sources/DataLayer/DataSources/
+├── Remote/UploadKit/             # 1–4: uses nothing from the rest of the app
 │   ├── UploadStore.swift, InMemoryUploadStore.swift
 │   ├── UploadStateMachine.swift, ChunkPlanner.swift
 │   ├── UploadCoordinator.swift (actor), BackgroundSessionDelegate.swift
 │   └── PresignedURLProvider.swift
-├── DataSources/Networking/       # 4: backend HTTP client
-├── DataSources/Persistence/      # 4: SwiftData UploadStore
+├── Remote/Networking/            # 4: backend HTTP client
+└── Local/Persistence/            # 4: SwiftData UploadStore
+SiteLog/
 ├── App/AppDelegate.swift         # 4: handleEventsForBackgroundURLSession
 └── Presentation/Uploads/         # 3: UploadStatus (Sync tab), UploadFiles
 ```
@@ -91,7 +92,7 @@ SiteLog/
 
 <dl><dd>
 
-1. New folder `SiteLog/DataSources/UploadKit/`; types inside are `nonisolated`.
+1. New folder `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/UploadKit/`; mark what the app uses `public`.
 2. Check nothing in `UploadKit/` uses a type from another folder (review).
 
 </dd></dl>
@@ -114,7 +115,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 5. “Waiting” uses `DSStatusMarker(.waiting)` — never red; reasons in plain language.
 
 </dd></dl>

@@ -28,8 +28,8 @@
 - **Goal:** Checklists end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** checklist run in a room; a Fail creates one prefilled issue.
 - **Spec:** [13](../feature-docs/01-field-work.md#13-checklist-templates)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,11 +57,12 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Checklists/          # 1: template, item, run, result
+├── DataLayer/Sources/DataLayer/Fakes/         # 2: InMemoryChecklistRepository with built-in templates
+└── DataLayer/Sources/DataLayer/Repositories/  # 4: seeded templates, run results
 SiteLog/
-├── Domain/Checklists/        # 1: template, item, run, result
-├── Data/Fakes/               # 2: InMemoryChecklistRepository with built-in templates
-├── Data/Repositories/        # 4: seeded templates, run results
-└── Presentation/Checklists/  # 3: TemplatePicker, ChecklistRun, ChecklistDone
+└── Presentation/Checklists/                   # 3: TemplatePicker, ChecklistRun, ChecklistDone
 ```
 
 </dd></dl>
@@ -72,7 +73,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Checklists/` | Template, item, run, result; answer use case (Fail → issue through F05) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Checklists/` | Template, item, run, result; answer use case (Fail → issue through F05) |
 
 </dd></dl>
 
@@ -82,7 +83,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryChecklistRepository.swift` | Templates and runs |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryChecklistRepository.swift` | Templates and runs |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
@@ -90,7 +91,7 @@ SiteLog/
 <dl><dd>
 
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
-2. Seed it with “Finishing handover” (22 items) and 5 other templates — move the values out of `Core/Fakes/FakeData.swift`.
+2. Seed it with “Finishing handover” (22 items) and 5 other templates — move the values out of `App/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
@@ -115,7 +116,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

@@ -28,8 +28,8 @@
 - **Goal:** Floor plans and pins end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** real PDF plan imported, issues pinned, pins survive relaunch.
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,11 +57,12 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Plans/                          # 1: PlanSheet, pin as NormalizedPoint
+├── DataLayer/Sources/DataLayer/Fakes/                    # 2: InMemoryPlanRepository
+└── DataLayer/Sources/DataLayer/DataSources/Local/Plans/  # 4: PDFKit + CATiledLayer, tile cache
 SiteLog/
-├── Domain/Plans/          # 1: PlanSheet, pin as NormalizedPoint
-├── Data/Fakes/            # 2: InMemoryPlanRepository
-├── DataSources/Plans/     # 4: PDFKit + CATiledLayer, tile cache
-└── Presentation/Plans/    # 3: PlanList, PlanViewer, PinPreview, PlanImport
+└── Presentation/Plans/                                   # 3: PlanList, PlanViewer, PinPreview, PlanImport
 ```
 
 </dd></dl>
@@ -72,7 +73,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`), import / pin / move use cases |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`), import / pin / move use cases |
 
 </dd></dl>
 
@@ -82,7 +83,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryPlanRepository.swift` | Plan sheets and pins |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryPlanRepository.swift` | Plan sheets and pins |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
@@ -90,7 +91,7 @@ SiteLog/
 <dl><dd>
 
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
-2. Seed it with 4 sheets, 6 pins — move the values out of `Core/Fakes/FakeData.swift`.
+2. Seed it with 4 sheets, 6 pins — move the values out of `App/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
@@ -116,7 +117,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

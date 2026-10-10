@@ -28,8 +28,8 @@
 - **Goal:** DeviceLink (BLE meters) end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** laser reading from the macOS mock peripheral shows on the camera; capture never waits.
 - **Spec:** [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,14 +57,14 @@
 <dl><dd>
 
 ```text
-SiteLog/
-├── Domain/DeviceLink/        # 1: DeviceReading, DeviceLink protocol
-├── Data/Fakes/               # 2: FakeDeviceLink (scripted readings)
-├── DataSources/DeviceLink/   # 4: DeviceLinkManager (actor), Profiles/
-Tools/MockPeripheral/         # 4: macOS BLE simulator
+Packages/
+├── DomainLayer/Sources/DomainLayer/DeviceLink/                          # 1: DeviceReading, DeviceLink protocol
+├── DataLayer/Sources/DataLayer/Fakes/                         # 2: FakeDeviceLink (scripted readings)
+└── DataLayer/Sources/DataLayer/DataSources/Local/DeviceLink/  # 4: DeviceLinkManager (actor), Profiles/
 SiteLog/Presentation/
-├── Settings/Devices/         # 3: S2 pairing
-└── Capture/Camera/           # 3: measurement overlay, status dot
+├── Settings/Devices/                                          # 3: S2 pairing
+└── Capture/Camera/                                            # 3: measurement overlay, status dot
+Tools/MockPeripheral/                                          # 4: macOS BLE simulator
 ```
 
 </dd></dl>
@@ -75,7 +75,7 @@ SiteLog/Presentation/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/DeviceLink/` | `DeviceReading`, `DeviceLink` protocol (scan, connect, readings stream) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/DeviceLink/` | `DeviceReading`, `DeviceLink` protocol (scan, connect, readings stream) |
 
 </dd></dl>
 
@@ -85,7 +85,7 @@ SiteLog/Presentation/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeDeviceLink.swift` | Emits 3.42 m every few seconds; a nearby list |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeDeviceLink.swift` | Emits 3.42 m every few seconds; a nearby list |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake |
 
 </dd></dl>
@@ -106,7 +106,7 @@ SiteLog/Presentation/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

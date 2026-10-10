@@ -47,10 +47,10 @@ flowchart LR
 ```
 
 - Every feature runs the same steps: Domain → fake data → view models → real data → tests.
-- **Fakes live only in the Data layer** (`SiteLog/Data/Fakes/`). Domain and Presentation never name a fake;
+- **Fakes live only in the Data layer** (`Packages/DataLayer/Sources/DataLayer/Fakes/`). Domain and Presentation never name a fake;
   `AppDependencies` picks fake or real, and the dev menu seeds / clears the fakes.
 - The UI skeleton (~30% of Figma, every screen) is done; a feature's view models replace its `FakeData` use
-  in `Core/Fakes/FakeData.swift` and delete those types. The other ~70% of the UI is `F16`, last.
+  in `App/Fakes/FakeData.swift` and delete those types. The other ~70% of the UI is `F16`, last.
 - Step format: `FXX.n - [layer] - [est hours] - description`.
 - Estimates: dev-hours for one developer new to Swift and SwiftUI, learning included.
 
@@ -372,7 +372,7 @@ flowchart TD
 
 1. One feature at a time, in the order above; a feature is done when its demo runs on a real device and its tests pass.
 2. Each step ends with something runnable, never "half a screen".
-3. Fakes only in `Data/Fakes/`; switching fake → real changes `AppDependencies` only.
+3. Fakes only in `Packages/DataLayer/Sources/DataLayer/Fakes/`; switching fake → real changes `AppDependencies` only.
 4. Tests come after a feature is done: once it works end to end, write the tests listed in its guide.
    No tests while a step is still being built.
 5. Visual work to Figma waits for `F16`; until then a step changes layout only when a view model needs it.

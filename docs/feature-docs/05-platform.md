@@ -79,7 +79,7 @@ flowchart LR
 |---|---|
 | After changing `project.yml` | `xcodegen` |
 | After pulling a `project.yml` change | `xcodegen` |
-| Adding, removing, renaming files (Xcode, VS Code, Finder, git) | Nothing: `SiteLog/`, `SiteLogTests/`, `SiteLogUITests/` are synced folders |
+| Adding, removing, renaming files (Xcode, VS Code, Finder, git) | Nothing: `SiteLog/`, `SiteLogTests/`, `SiteLogUITests/` are synced folders; `Packages/*` are SwiftPM packages, which pick up files on their own |
 | Adding an empty folder with a `.gitkeep` | `xcodegen`, so the `.gitkeep` stays out of the build |
 | After deleting a `.gitkeep` | Nothing now; the next `xcodegen` drops it from `project.pbxproj`, commit that |
 
@@ -90,7 +90,7 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local `DesignSystem` package and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
+| Local packages (`DesignSystem`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
 | App target, bundle id, iOS 18.6 | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
@@ -409,9 +409,10 @@ enum DiagnosticsConstants {
 
 | Layer | Target | Tool | What |
 |---|---|---|---|
-| Domain | `SiteLogTests/Domain` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
-| Data | `SiteLogTests/Data` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
-| Data sources | `SiteLogTests/DataSources/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
+| Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
+| Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
+| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
+| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Local|Remote>/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
 | DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding); components via snapshots |
 | Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Each screen: light, dark, `accessibility3` Dynamic Type |

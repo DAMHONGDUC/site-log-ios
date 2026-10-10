@@ -71,7 +71,7 @@ Packages/DesignSystem/Sources/DesignSystem/
 ├── Tokens/                      # 1: tokens checked against Figma variables
 └── Components/                  # 1: DSSeverityPicker, DSAnswerRow, DSToggleRow… finished to Figma
 SiteLog/
-├── Core/Resources/Assets.xcassets/   # 2, 8: app mark, real imagery
+├── App/Resources/Assets.xcassets/    # 2, 8: app mark, real imagery
 └── Presentation/
     ├── Components/              # 4–5: SitePhoto, PlanDrawing, CameraControls, CaptureToolbar finished
     ├── Access/ Projects/ Capture/ Issues/ Annotation/ Plans/

@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [0. Entry point (done)](#0-entry-point-done)
-4. [1. Layer folders, Factory DI, AppClock](#1-layer-folders-factory-di-appclock)
+4. [1. Layer packages, Factory DI, AppClock](#1-layer-packages-factory-di-appclock)
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
 7. [4. DesignSystem tests](#4-designsystem-tests)
@@ -25,7 +25,7 @@
 
 <dl><dd>
 
-- **Goal:** what every feature builds on — layer folders, DI, CI, DesignSystem.
+- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem.
 - **Demo:** the app builds with zero warnings, CI is green, the DesignSystem gallery snapshot passes.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
 - **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
@@ -36,7 +36,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | 0 | Tooling | 8h | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
-| [1](#1-layer-folders-factory-di-appclock) | Architecture | 6h | not start | Layer folders, Factory DI, `AppClock`, test libraries |
+| [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | not start | Layer packages, Factory DI, `AppClock`, test libraries |
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
 | [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `DSGallery`, snapshot test |
@@ -55,15 +55,15 @@ site-log-ios/
 ├── fastlane/Appfile, Fastfile                # 2
 ├── .github/workflows/pr-checks.yml           # 2 + 3
 ├── Tools/CI/                                 # 3: check-no-print, check-imports, build-strict
-├── project.yml                               # 1: DesignSystem, Factory, SnapshotTesting
-├── Packages/DesignSystem/                    # done: Tokens/, Components/; 4: DSGallery + tests
-├── SiteLog/
-│   ├── App/AppDependencies.swift             # 1 (clock) → F01 (access)
-│   ├── Core/Helper/Clock/                    # 1: AppClock, SystemClock
-│   └── Data/Fakes/                           # every feature: in-memory repositories
+├── project.yml                               # 1: local packages, Factory, SnapshotTesting
+├── Packages/
+│   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
+│   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
+│   ├── DataLayer/                            # 1: empty layer folders + DataSources/Local, Remote
+│   └── DesignSystem/                         # done: Tokens/, Components/; 4: DSGallery + tests
+├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
 └── SiteLogTests/
     ├── SiteLogTests.swift                    # 1: FixedClock + Factory test
-    ├── Core/Helper/Clock/SystemClockTests.swift   # 1: mirrors SiteLog/Core/Helper/Clock/
     └── Snapshots/DesignSystemSnapshotTests.swift  # 4
 ```
 
@@ -75,7 +75,7 @@ site-log-ios/
 |---|---|
 | Xcode | Right-click the folder → **New Empty File**; nothing else (`SiteLog/` is a synced folder) |
 | VS Code | Explorer → right-click → **New File…**; nothing else (synced folder) |
-| DesignSystem | Files under `Packages/DesignSystem/Sources` are picked up by SPM in both editors |
+| Packages | Files under `Packages/<Name>/Sources/<Name>/` are picked up by SwiftPM in both editors |
 
 </dd></dl>
 </details>
@@ -98,11 +98,12 @@ site-log-ios/
 
 </dd></dl>
 
-## 1. Layer folders, Factory DI, AppClock
+## 1. Layer packages, Factory DI, AppClock
 
 <dl><dd>
 
-- **Goal:** layer folders in the app target, one composition root (Factory), an injectable clock, test libraries ready.
+- **Goal:** `DomainLayer`, `DataLayer` and `Core` as local packages, one composition root (Factory), an injectable clock, test libraries ready.
+- **Why packages:** [D09](../feature-docs/00-overview.md#d09--layers-as-local-swift-packages).
 - **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
 
 <details open>
@@ -111,7 +112,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `packages:` *(add under `Inject`)*
 
-<b>Explain</b> · Adds the local DesignSystem package and two libraries: Factory (DI) and swift-snapshot-testing.
+<b>Explain</b> · Adds the four local packages (DesignSystem, Core, DomainLayer, DataLayer) and two libraries: Factory (DI) and swift-snapshot-testing.
 
 <b>Think</b>
 
@@ -139,6 +140,12 @@ site-log-ios/
 ```yaml
   DesignSystem:
     path: # folder of the local package
+  Core:
+    path:
+  DomainLayer:
+    path:
+  DataLayer:
+    path:
   Factory:
     url: # git URL
     from: # lowest version you accept
@@ -155,6 +162,12 @@ site-log-ios/
 ```yaml
   DesignSystem:
     path: Packages/DesignSystem
+  Core:
+    path: Packages/Core
+  DomainLayer:
+    path: Packages/DomainLayer
+  DataLayer:
+    path: Packages/DataLayer
   Factory:
     url: https://github.com/hmlongco/Factory
     from: 3.4.1
@@ -173,7 +186,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLog.dependencies` *(add at the end)*
 
-<b>Explain</b> · Lets the app target use DesignSystem and FactoryKit.
+<b>Explain</b> · Lets the app target use the four local packages and FactoryKit.
 
 <b>Think</b>
 
@@ -198,6 +211,9 @@ site-log-ios/
 
 ```yaml
       - package: DesignSystem
+      - package: Core
+      - package: DomainLayer
+      - package: DataLayer
       - package: Factory
         product: FactoryKit
 ```
@@ -212,7 +228,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLogTests` *(replace its `dependencies` and `settings`)*
 
-<b>Explain</b> · Lets the tests use the app, FactoryTesting and SnapshotTesting.
+<b>Explain</b> · Lets the tests use the app, Core (for `AppClock`), FactoryTesting and SnapshotTesting.
 
 <b>Think</b>
 
@@ -229,7 +245,7 @@ site-log-ios/
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `- target: SiteLog`, `- package: Factory` + `product: FactoryTesting`, `- package: SnapshotTesting`.
+- `- target: SiteLog`, `- package: Core`, `- package: Factory` + `product: FactoryTesting`, `- package: SnapshotTesting`.
 - `settings.base.SWIFT_VERSION`.
 
 </details>
@@ -240,6 +256,7 @@ site-log-ios/
 ```yaml
     dependencies:
       - target: SiteLog
+      - package: Core
       - package: Factory
         product: FactoryTesting
       - package: SnapshotTesting
@@ -264,19 +281,21 @@ site-log-ios/
 </details>
 
 <details open>
-<summary><strong>1.2 Layer folders + DesignSystem package</strong></summary>
+<summary><strong>1.2 Layer packages</strong></summary>
 <dl><dd>
 
-- Layers are folders, not packages ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the one exception is `DesignSystem`.
-- The folders `SiteLog/Domain/`, `SiteLog/Data/` already exist; delete a folder's `.gitkeep` when you add its first file.
+- Each layer is a local Swift package in `Packages/` ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
+- The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
 - `Packages/DesignSystem/Sources/DesignSystem/DesignSystem.swift` (Xcode template): replace its content with `public enum DesignSystem {}` so the package still builds without `print`; delete it once the tokens exist (already done).
 
 | Rule | Why |
 |---|---|
-| Types in `Domain/` and `Data/` are `nonisolated` | The app target defaults to `MainActor`; these types also run on background actors |
-| No `public`, no `import Domain` | One module: everything is visible already |
-| Layer rules are checked by `Tools/CI/check-imports.sh` (step 3) | The compiler no longer stops a view from using a `Data/` type |
-| `DesignSystem` is a package: `public` API, `import DesignSystem` | UI only; the compiler keeps it free of `Domain` and app code |
+| Types the app uses are `public`; structs also get a `public init` | Other modules see only `public`; a struct's memberwise init is never public |
+| `import DomainLayer`, `import Core`, … where needed | Each package is its own module |
+| No `nonisolated` in packages | Package code is nonisolated by default; only the app target defaults to `MainActor` |
+| A package needs one `.swift` file to build | Until the first real type lands, a `Placeholder.swift` keeps it compiling |
+| `.gitkeep` in package folders is fine | SwiftPM ignores hidden files |
+| `Tools/CI/check-imports.sh` (step 3) still checks two rules | Domain imports Foundation only; Presentation never imports `DataLayer` |
 
 <b>File</b> · <b class="tag-check">Check</b> · `Packages/DesignSystem/Package.swift`
 
@@ -367,6 +386,199 @@ let package = Package(
 
 - Add `import FactoryKit` to any DesignSystem file and build. The app has Factory, so why does the package fail? Remove it after.
 
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/Core/Package.swift`
+
+<b>Explain</b> · Core package: app-wide helpers (clock, logger), with a test target. Depends on nothing.
+
+<b>Think</b>
+
+- Why may every layer except Domain use Core, while Core may use no layer?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Same shape as DesignSystem: one library, one target, one test target.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// swift-tools-version: 6.4
+
+import PackageDescription
+
+let package = Package(
+    name: "Core",
+    platforms: [
+        .iOS(.v18)
+    ],
+    products: [
+        .library(
+            name: "Core",
+            targets: ["Core"]
+        )
+    ],
+    targets: [
+        // App-wide helpers: logger, clock. Knows nothing about features
+        .target(
+            name: "Core",
+            swiftSettings: [
+                .enableUpcomingFeature("ApproachableConcurrency")
+            ],
+        ),
+        .testTarget(
+            name: "CoreTests",
+            dependencies: ["Core"],
+            swiftSettings: [
+                .enableUpcomingFeature("ApproachableConcurrency")
+            ],
+        ),
+    ]
+)
+```
+
+</details>
+
+<b>Try</b>
+
+- In Xcode, pick the scheme **Core** and build it alone. Why is that faster than building the app?
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Package.swift` + `Sources/DomainLayer/Placeholder.swift`
+
+<b>Explain</b> · Domain package: entities, repository protocols, use cases. No dependencies; no test target until the first Domain test.
+
+<b>Think</b>
+
+- DomainLayer lists no dependencies. What does that stop the compiler from allowing?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Like Core, minus the test target; folders `Entities/`, `UseCases/`, `Repositories/` with a `.gitkeep` each.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// swift-tools-version: 6.4
+
+import PackageDescription
+
+let package = Package(
+    name: "DomainLayer",
+    platforms: [
+        .iOS(.v18)
+    ],
+    products: [
+        .library(
+            name: "DomainLayer",
+            targets: ["DomainLayer"]
+        )
+    ],
+    targets: [
+        // Entities, repository protocols, use cases. Foundation only
+        .target(
+            name: "DomainLayer",
+            swiftSettings: [
+                .enableUpcomingFeature("ApproachableConcurrency")
+            ],
+        ),
+    ]
+)
+```
+
+```swift
+// Placeholder.swift
+// A package needs one source file to build; delete this when the first DomainLayer type lands.
+enum DomainLayerPlaceholder {}
+```
+
+</details>
+
+<b>Try</b>
+
+- Add `import Core` to `Placeholder.swift` and build the **DomainLayer** scheme: read the error. Remove it.
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Package.swift` + `Sources/DataLayer/Placeholder.swift`
+
+<b>Explain</b> · DataLayer package: repositories, DTOs, mappers, fakes and `DataSources/Local`, `DataSources/Remote`. Uses Domain and Core.
+
+<b>Think</b>
+
+- Why `DataLayer` and not `Data`? (Hint: what does `Data` already mean in Foundation?)
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A local package can depend on other local packages by path.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `dependencies: [.package(path: "../DomainLayer"), …]` at the package level; `dependencies: ["DomainLayer", "Core"]` on the target.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// swift-tools-version: 6.4
+
+import PackageDescription
+
+let package = Package(
+    name: "DataLayer",
+    platforms: [
+        .iOS(.v18)
+    ],
+    products: [
+        .library(
+            name: "DataLayer",
+            targets: ["DataLayer"]
+        )
+    ],
+    dependencies: [
+        .package(path: "../DomainLayer"),
+        .package(path: "../Core"),
+    ],
+    targets: [
+        // Repositories, DTOs, mappers, fakes and data sources (Local, Remote)
+        .target(
+            name: "DataLayer",
+            dependencies: ["DomainLayer", "Core"],
+            swiftSettings: [
+                .enableUpcomingFeature("ApproachableConcurrency")
+            ],
+        ),
+    ]
+)
+```
+
+```swift
+// Placeholder.swift
+// A package needs one source file to build; delete this when the first DataLayer type lands.
+enum DataLayerPlaceholder {}
+```
+
+</details>
+
+<b>Try</b>
+
+- Add `.package(path: "../DataLayer")` to DomainLayer’s manifest and `"DataLayer"` to its target. Build: what does SwiftPM say about the cycle? Undo it.
+
 </dd></dl>
 </details>
 
@@ -374,7 +586,7 @@ let package = Package(
 <summary><strong>1.3 AppClock</strong></summary>
 <dl><dd>
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Core/Helper/Clock/AppClock.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/Core/Sources/Core/Clock/AppClock.swift`
 
 <b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, DataSources and Presentation need time.
 
@@ -393,7 +605,7 @@ let package = Package(
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `protocol`, `{ get }`, `Sendable`, `nonisolated`.
+- `public protocol`, `{ get }`, `Sendable`.
 - `Date` for `now`, `ContinuousClock.Instant` for `uptime`.
 
 </details>
@@ -404,7 +616,7 @@ let package = Package(
 ```swift
 import Foundation
 
-nonisolated protocol AppClock: Sendable {
+public protocol AppClock: Sendable {
     var now: /* type */ { get }
     var uptime: /* type */ { get }
 }
@@ -420,7 +632,7 @@ import Foundation
 
 // The app's clock, injected everywhere time matters, so tests can control time.
 // Named AppClock so it does not clash with Swift's built-in `Clock` protocol.
-nonisolated protocol AppClock: Sendable {
+public protocol AppClock: Sendable {
     // Wall-clock time: timestamps saved with records (createdAt, capturedAt)
     var now: Date { get }
     // Monotonic time: measuring durations; never jumps when the user changes the time
@@ -434,10 +646,11 @@ nonisolated protocol AppClock: Sendable {
 
 - Remove `Sendable`, build app and tests: does anything complain yet? Where would a non-`Sendable` clock become a problem? (Hint: the actor in F01.) Put it back.
 - Swift already has a `Clock` protocol. Look it up in the docs: what would naming ours `Clock` hide?
+- Remove `public` and build the app: read what `AppDependencies.swift` can no longer see. Put it back.
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Core/Helper/Clock/SystemClock.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/Core/Sources/Core/Clock/SystemClock.swift`
 
 <b>Explain</b> · The real `AppClock` used by the running app.
 
@@ -455,6 +668,7 @@ nonisolated protocol AppClock: Sendable {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
+- `public struct`, `public init() {}`, `public var`.
 - `Date()`, `ContinuousClock.now`.
 
 </details>
@@ -465,9 +679,11 @@ nonisolated protocol AppClock: Sendable {
 ```swift
 import Foundation
 
-nonisolated struct SystemClock: AppClock {
-    var now: Date { /* current wall-clock time */ }
-    var uptime: ContinuousClock.Instant { /* current monotonic time */ }
+public struct SystemClock: AppClock {
+    public init() {}
+
+    public var now: Date { /* current wall-clock time */ }
+    public var uptime: ContinuousClock.Instant { /* current monotonic time */ }
 }
 ```
 
@@ -480,12 +696,15 @@ nonisolated struct SystemClock: AppClock {
 import Foundation
 
 // The real clock used by the running app.
-nonisolated struct SystemClock: AppClock {
-    var now: Date {
+public struct SystemClock: AppClock {
+    // A struct's memberwise init is internal; other modules need this one
+    public init() {}
+
+    public var now: Date {
         return Date()
     }
 
-    var uptime: ContinuousClock.Instant {
+    public var uptime: ContinuousClock.Instant {
         return ContinuousClock.now
     }
 }
@@ -499,7 +718,7 @@ nonisolated struct SystemClock: AppClock {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Core/Helper/Clock/SystemClockTests.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/Core/Tests/CoreTests/SystemClockTests.swift`
 
 <b>Explain</b> · Checks that `SystemClock.uptime` moves forward.
 
@@ -517,7 +736,7 @@ nonisolated struct SystemClock: AppClock {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@Test func … async throws`, `try await Task.sleep(for: .milliseconds(10))`, `#expect`, `@testable import SiteLog`.
+- `@Test func … async throws`, `try await Task.sleep(for: .milliseconds(10))`, `#expect`, `@testable import Core`.
 
 </details>
 
@@ -527,7 +746,7 @@ nonisolated struct SystemClock: AppClock {
 ```swift
 import Foundation
 import Testing
-@testable import SiteLog
+@testable import Core
 
 struct SystemClockTests {
     @Test func uptimeMovesForward() async throws {
@@ -546,7 +765,7 @@ struct SystemClockTests {
 ```swift
 import Foundation
 import Testing
-@testable import SiteLog
+@testable import Core
 
 struct SystemClockTests {
     @Test func uptimeMovesForward() async throws {
@@ -593,7 +812,7 @@ struct SystemClockTests {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `import FactoryKit`, `extension Container`, `Factory<any AppClock>`, `self { … }`, `.singleton`.
+- `import Core` and `import FactoryKit`, `extension Container`, `Factory<any AppClock>`, `self { … }`, `.singleton`.
 
 </details>
 
@@ -601,6 +820,7 @@ struct SystemClockTests {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
 import FactoryKit
 
 extension Container {
@@ -616,6 +836,7 @@ extension Container {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
 import FactoryKit
 
 // Composition root: the only place that knows which implementation backs each protocol.
@@ -669,6 +890,7 @@ extension Container {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
 import FactoryKit
 import FactoryTesting
 import Foundation
@@ -695,6 +917,7 @@ struct AppDependenciesTests {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
 import FactoryKit
 import FactoryTesting
 import Foundation
@@ -739,7 +962,8 @@ struct AppDependenciesTests {
 | Step | Expect |
 |---|---|
 | ⌘B (Xcode) or SweetPad Build | Zero warnings |
-| ⌘U | `clockCanBeReplacedInTests` and `uptimeMovesForward` pass |
+| ⌘U (scheme SiteLog) | `clockCanBeReplacedInTests` passes |
+| ⌘U (scheme Core) | `uptimeMovesForward` passes |
 
 </dd></dl>
 </details>
@@ -902,8 +1126,8 @@ SIMULATOR_NAME = "iPhone 17 Pro"
 SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
 
-# Local packages, tested one by one so a package never leans on the app
-PACKAGES = ["DesignSystem"]
+# Local packages with a test target, tested one by one so a package never leans on the app
+PACKAGES = ["DesignSystem", "Core"]
 
 # Fastlane runs inside fastlane/, so the repo root is one level up
 ROOT = File.expand_path("..", __dir__)
@@ -1197,24 +1421,25 @@ echo "OK: no print( calls"
 
 <b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-imports.sh`
 
-<b>Explain</b> · Fails CI when a layer uses one it must not, e.g. a view using a `Data/` type.
+<b>Explain</b> · Fails CI on the two layer rules the package graph cannot enforce: Domain imports Foundation only; Presentation never imports `DataLayer`.
 
 <b>Think</b>
 
-- Layers are folders in one target, so `import` cannot stop a view from using a `Data/` type. What text in a Swift file gives that use away?
+- DomainLayer has no package dependencies, so it cannot `import Core`. Why can it still `import UIKit`?
+- The app links `DataLayer` so `App/AppDependencies.swift` can register it. What stops a view in the same target from importing it too?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Four rules, each one collect → search → report; a `failed` flag so every rule runs before the script exits.
+- Three rules, each one search → report; a `failed` flag so every rule runs before the script exits.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `grep -rhoE '(class|struct|enum|actor|protocol)[[:space:]]+[A-Z][A-Za-z0-9_]*'`, `awk '{print $2}'`, `sort -u`.
-- `grep -rnw` (whole word), `for name in $list; do … done`.
+- `grep -rhE '^[[:space:]]*import '`, `sed -E 's/^[[:space:]]*//'`, `sort -u`, `grep -vE '^import Foundation$'`.
+- `grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import DataLayer$'`.
 
 </details>
 
@@ -1226,11 +1451,9 @@ echo "OK: no print( calls"
 set -euo pipefail
 failed=0
 
-# Rule 1: Domain imports Foundation only
-# Rule 2: types declared in Data/ or DataSources/ never used in Presentation/ or Domain/
-#   step 1: collect the type names   step 2: grep each as a whole word
-# Rule 3: types declared in Core/ never used in Domain/
-# Rule 4: Presentation never imports SwiftData/CoreData, never uses ModelContext/URLSession
+# Rule 1: every import in Packages/DomainLayer/Sources is "import Foundation"
+# Rule 2: nothing in SiteLog/Presentation imports DataLayer
+# Rule 3: Presentation never imports SwiftData/CoreData, never uses ModelContext/URLSession
 
 if [ "$failed" -ne 0 ]; then
   exit 1
@@ -1246,44 +1469,28 @@ echo "OK: layer rules"
 ```bash
 #!/usr/bin/env bash
 # Enforces the layer rules in docs/feature-docs/00-overview.md §4.2.
-# Layers are folders in one target, so the compiler cannot stop a wrong reference: this script does.
+# Package dependencies already stop Domain and Core from using other layers; these rules cover the rest.
 set -euo pipefail
 
 failed=0
 
-# Rule 1: Domain imports Foundation only
-domain_imports=$(grep -rhE '^[[:space:]]*import ' SiteLog/Domain --include='*.swift' | sed -E 's/^[[:space:]]*//' | sort -u | grep -vE '^import Foundation$' || true)
+# Rule 1: Domain imports Foundation only (a package may still import any Apple framework)
+domain_imports=$(grep -rhE '^[[:space:]]*import ' Packages/DomainLayer/Sources --include='*.swift' | sed -E 's/^[[:space:]]*//' | sort -u | grep -vE '^import Foundation$' || true)
 if [ -n "$domain_imports" ]; then
   echo "Domain may import Foundation only. Found:"
   echo "$domain_imports"
   failed=1
 fi
 
-# Rule 2: Presentation and Domain never use a type declared in Data/ or DataSources/
-# Step 1: collect the name of every type declared there
-data_types=$(grep -rhoE '(class|struct|enum|actor|protocol)[[:space:]]+[A-Z][A-Za-z0-9_]*' SiteLog/Data SiteLog/DataSources --include='*.swift' 2>/dev/null | awk '{print $2}' | sort -u || true)
-# Step 2: look for each name as a whole word in Presentation and Domain
-for type_name in $data_types; do
-  uses=$(grep -rnw "$type_name" SiteLog/Presentation SiteLog/Domain --include='*.swift' || true)
-  if [ -n "$uses" ]; then
-    echo "Presentation and Domain may not use $type_name (declared in Data). Found:"
-    echo "$uses"
-    failed=1
-  fi
-done
+# Rule 2: Presentation never imports DataLayer (the app links it only for App/AppDependencies.swift)
+data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import DataLayer$' SiteLog/Presentation --include='*.swift' || true)
+if [ -n "$data_imports" ]; then
+  echo "Presentation may not import DataLayer; use Domain use cases. Found:"
+  echo "$data_imports"
+  failed=1
+fi
 
-# Rule 3: Domain never uses a type declared in Core/ (Core is for the outer layers)
-core_types=$(grep -rhoE '(class|struct|enum|actor|protocol)[[:space:]]+[A-Z][A-Za-z0-9_]*' SiteLog/Core --include='*.swift' 2>/dev/null | awk '{print $2}' | sort -u || true)
-for type_name in $core_types; do
-  uses=$(grep -rnw "$type_name" SiteLog/Domain --include='*.swift' || true)
-  if [ -n "$uses" ]; then
-    echo "Domain may not use $type_name (declared in Core). Found:"
-    echo "$uses"
-    failed=1
-  fi
-done
-
-# Rule 4: Presentation never touches storage or the network directly
+# Rule 3: Presentation never touches storage or the network directly
 direct_access=$(grep -rnE '^[[:space:]]*import (SwiftData|CoreData)$|ModelContext|URLSession' SiteLog/Presentation --include='*.swift' || true)
 if [ -n "$direct_access" ]; then
   echo "Presentation may not use SwiftData, ModelContext or URLSession. Found:"
@@ -1302,7 +1509,7 @@ echo "OK: layer rules"
 
 <b>Try</b>
 
-- Why `-w`? Remove it, add `struct Log {}` in `SiteLog/Data/`, run the script: which false alarms appear? Undo both.
+- Add `import DataLayer` to any view, run the script, read the output. Remove it.
 
 ---
 
@@ -1502,9 +1709,9 @@ jobs:
 |---|---|
 | Run each script from the repo root | `OK: …` |
 | Add `print("x")` to any Swift file, run `check-no-print.sh` | Exit 1 with the file and line; then remove it |
-| Add `import UIKit` to a Domain file, run `check-imports.sh` | Exit 1; then remove it |
-| Add `struct Probe {}` in `SiteLog/Data/`, use `Probe()` in a view, run `check-imports.sh` | Exit 1; then delete both |
-| Use `AppLogger` in a Domain file, run `check-imports.sh` | Exit 1; then remove it |
+| Add `import UIKit` to `Packages/DomainLayer/Sources/DomainLayer/Placeholder.swift`, run `check-imports.sh` | Exit 1; then remove it |
+| Add `import DataLayer` to any view, run `check-imports.sh` | Exit 1; then remove it |
+| Add `import Core` to DomainLayer’s `Placeholder.swift`, build | Compiler error: DomainLayer does not depend on Core; then remove it |
 
 </dd></dl>
 </details>

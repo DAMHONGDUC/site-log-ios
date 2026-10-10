@@ -27,8 +27,8 @@
 - **Goal:** Push and deep links end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** a push opens its target; `sitelog://` links work after cold launch.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -55,10 +55,11 @@
 <dl><dd>
 
 ```text
+Packages/
+└── DomainLayer/Sources/DomainLayer/DeepLinks/DeepLink.swift  # 1: pure parser
 SiteLog/
-├── Domain/DeepLinks/DeepLink.swift      # 1: pure parser
-├── App/AppDelegate.swift                # 3: push token
-└── Presentation/Notifications/, DeepLinks/   # 2–3
+├── App/AppDelegate.swift                           # 3: push token
+└── Presentation/Notifications/, DeepLinks/         # 2–3
 ```
 
 </dd></dl>
@@ -71,7 +72,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
 
 </dd></dl>
 
@@ -126,7 +127,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `Domain/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
+| <b class="tag-edit">Edit</b> | `Packages/DomainLayer/Sources/DomainLayer/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
 | <b class="tag-new">New</b> | `Presentation/DeepLinks/DeepLinkRouter.swift` | Holds the destination until a view consumes it |
 
 </dd></dl>

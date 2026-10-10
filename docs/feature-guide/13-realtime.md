@@ -27,8 +27,8 @@
 - **Goal:** Realtime progress and verification end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** the Sync tab shows server-confirmed state as events arrive; mismatches are flagged.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [14 §8–9](../feature-docs/03-backend.md#8-integrity)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file.
 
 | Step | Layer | Hours | Status | What |
@@ -56,11 +56,12 @@
 
 ```text
 Backend/src/ws.ts, workers/verify.ts     # 3
+Packages/
+├── DataLayer/Sources/DataLayer/Fakes/FakeRealtimeChannel.swift  # 1: scripted events
+└── DataLayer/Sources/DataLayer/DataSources/Remote/Realtime/     # 3: RealtimeChannel (actor), messages
 SiteLog/
-├── Data/Fakes/FakeRealtimeChannel.swift   # 1: scripted events
-├── DataSources/Realtime/                  # 3: RealtimeChannel (actor), messages
-├── App/RealtimeBridge.swift               # 3
-└── Presentation/Uploads/UploadStatus/     # 2: live state
+├── App/RealtimeBridge.swift                                     # 3
+└── Presentation/Uploads/UploadStatus/                           # 2: live state
 ```
 
 </dd></dl>
@@ -71,7 +72,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/FakeRealtimeChannel.swift` | Emits `jobCompleted` / `jobFailed` on a timer |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeRealtimeChannel.swift` | Emits `jobCompleted` / `jobFailed` on a timer |
 
 </dd></dl>
 
@@ -105,8 +106,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/DataSources/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
-| <b class="tag-new">New</b> | `SiteLog/DataSources/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
 | <b class="tag-new">New</b> | `Backend/src/ws.ts` | Server side per 14 §9 |
 
 #### Steps

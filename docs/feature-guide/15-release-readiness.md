@@ -26,8 +26,8 @@
 - **Goal:** Accessibility and performance end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** VoiceOver walk unlock → projects → capture → report; every Instruments budget met.
 - **Spec:** [19 Instruments](../feature-docs/05-platform.md#19-performance-profiling-with-instruments)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |

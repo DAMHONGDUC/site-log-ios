@@ -28,8 +28,8 @@
 - **Goal:** Reports and audit log end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** signed, branded PDF and CSV from a real session, shared in airplane mode; audit chain verifies.
 - **Spec:** [05](../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07.3 audit](../feature-docs/04-reporting-security.md#073-audit-log)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,11 +57,12 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Reporting/, Security/AuditEntry.swift  # 1
+├── DataLayer/Sources/DataLayer/Fakes/                           # 2: InMemoryReportRepository
+└── DataLayer/Sources/DataLayer/DataSources/Local/Reporting/     # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
 SiteLog/
-├── Domain/Reporting/, Security/AuditEntry.swift   # 1
-├── Data/Fakes/                    # 2: InMemoryReportRepository
-├── DataSources/Reporting/         # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
-└── Presentation/Reports/          # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
+└── Presentation/Reports/                                        # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
 ```
 
 </dd></dl>
@@ -72,8 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Reporting/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
-| <b class="tag-new">New</b> | `Domain/Security/AuditEntry.swift` | Audit entry |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Reporting/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Security/AuditEntry.swift` | Audit entry |
 
 </dd></dl>
 
@@ -83,7 +84,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
@@ -91,7 +92,7 @@ SiteLog/
 <dl><dd>
 
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
-2. Seed it with Eastline branding and R-0930-07 — move the values out of `Core/Fakes/FakeData.swift`.
+2. Seed it with Eastline branding and R-0930-07 — move the values out of `App/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
@@ -117,7 +118,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

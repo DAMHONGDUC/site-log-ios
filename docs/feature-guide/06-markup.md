@@ -28,8 +28,8 @@
 - **Goal:** Markup and stamps end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** markup saved as a layer over the original; stamped copy shared with trusted time.
 - **Spec:** [12](../feature-docs/01-field-work.md#12-annotation-and-verifiable-stamps)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,11 +57,12 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Annotation/                                                # 1: AnnotationShape, NormalizedPoint
+├── DataLayer/Sources/DataLayer/Fakes/                                               # 2: InMemoryAnnotationRepository, FixedTrustedClock
+└── DataLayer/Sources/DataLayer/DataSources/Local/Capture/Annotation/, TrustedTime/  # 4
 SiteLog/
-├── Domain/Annotation/                    # 1: AnnotationShape, NormalizedPoint
-├── Data/Fakes/                           # 2: InMemoryAnnotationRepository, FixedTrustedClock
-├── DataSources/Capture/Annotation/, TrustedTime/   # 4
-└── Presentation/Annotation/              # 3: MarkupEditor, StampPreview
+└── Presentation/Annotation/                                                         # 3: MarkupEditor, StampPreview
 ```
 
 </dd></dl>
@@ -72,7 +73,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Annotation/` | `AnnotationShape`, `NormalizedPoint` (0…1), `TrustedTimestamp` |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Annotation/` | `AnnotationShape`, `NormalizedPoint` (0…1), `TrustedTimestamp` |
 
 </dd></dl>
 
@@ -82,7 +83,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
@@ -90,7 +91,7 @@ SiteLog/
 <dl><dd>
 
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
-2. Seed it with one markup on the crack photo — move the values out of `Core/Fakes/FakeData.swift`.
+2. Seed it with one markup on the crack photo — move the values out of `App/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
@@ -114,7 +115,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
 

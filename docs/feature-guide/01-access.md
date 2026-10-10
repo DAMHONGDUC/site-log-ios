@@ -29,7 +29,7 @@
 - **Demo:** first launch → Continue offline → tabs; lock on → Face ID or passcode; back after *Lock after* → locked again.
 - **Spec:** [07.2 App lock](../feature-docs/04-reporting-security.md#072-app-lock); mockups: Access board, S4, S5.
 - **Starts from:** F00 step 1 (Factory, `AppClock`) and the skeleton screens in `Presentation/Access/`, `Settings/AppLock/`, `Settings/SetPasscode/`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`. Domain and Presentation never name a fake; `AppDependencies` picks it.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`. Domain and Presentation never name a fake; `AppDependencies` picks it.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
 
@@ -63,15 +63,16 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Access/                 # 1: AccessSettings, PasscodeCheck, AccessRepository, AccessUseCases
+├── DataLayer/Sources/DataLayer/
+│   ├── Fakes/InMemoryAccessRepository.swift      # 2
+│   └── Security/                                 # 4: KeychainAccessRepository, BiometricAuthenticator
+└── Core/Sources/Core/Logger/AppLogger.swift      # 2: access category
 SiteLog/
-├── Domain/Access/                        # 1: AccessSettings, PasscodeCheck, AccessRepository, AccessUseCases
-├── Data/
-│   ├── Fakes/InMemoryAccessRepository.swift   # 2
-│   └── Security/                         # 4: KeychainAccessRepository, BiometricAuthenticator
 ├── App/
 │   ├── AppDependencies.swift             # 2: access registrations (+ dev data actions)
 │   └── DevData/FakeDevDataActions.swift  # 2: dev menu → fakes (Debug only)
-├── Core/Helper/Logger/AppLogger.swift    # 2: access category
 └── Presentation/
     ├── Root/RootView.swift, RootViewModel.swift      # 3
     ├── Access/SignIn/, FaceIDLock/, PasscodeUnlock/   # 3: + ViewModel next to each view
@@ -84,7 +85,7 @@ SiteLog/
 
 <dl><dd>
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessSettings.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/AccessSettings.swift`
 
 <b>Explain</b> · The settings that decide which access screen comes first: welcome seen, lock on, Face ID, *Lock after*.
 
@@ -103,7 +104,8 @@ SiteLog/
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `nonisolated struct … : Sendable`, `Bool`, `Duration` (`.seconds(10)`).
+- `public struct … : Sendable`, `public var`, and a `public init` (a struct’s memberwise init is never public).
+- `Bool`, `Duration` (`.seconds(10)`).
 
 </details>
 
@@ -111,11 +113,13 @@ SiteLog/
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
-nonisolated struct AccessSettings: Sendable {
+public struct AccessSettings: Sendable {
     // welcome seen?
     // lock on?
     // Face ID on?
     // lock after how long?
+
+    // public init(...): the memberwise one is not public
 }
 ```
 
@@ -126,15 +130,23 @@ nonisolated struct AccessSettings: Sendable {
 
 ```swift
 // Everything the access flow needs to decide which screen comes first.
-nonisolated struct AccessSettings: Sendable {
+public struct AccessSettings: Sendable {
     // false until the user leaves the welcome screen (A2) once
-    var hasSeenWelcome: Bool
+    public var hasSeenWelcome: Bool
     // Settings → Privacy → App lock → Lock app
-    var isLockEnabled: Bool
+    public var isLockEnabled: Bool
     // Settings → Privacy → App lock → Unlock with Face ID
-    var isFaceIDEnabled: Bool
+    public var isFaceIDEnabled: Bool
     // Settings → Privacy → App lock → Lock after
-    var lockAfter: Duration
+    public var lockAfter: Duration
+
+    // The memberwise init is internal; DataLayer needs a public one
+    public init(hasSeenWelcome: Bool, isLockEnabled: Bool, isFaceIDEnabled: Bool, lockAfter: Duration) {
+        self.hasSeenWelcome = hasSeenWelcome
+        self.isLockEnabled = isLockEnabled
+        self.isFaceIDEnabled = isFaceIDEnabled
+        self.lockAfter = lockAfter
+    }
 }
 ```
 
@@ -143,10 +155,11 @@ nonisolated struct AccessSettings: Sendable {
 <b>Try</b>
 
 - Add `import SwiftUI` at the top and run `Tools/CI/check-imports.sh`. Why must Domain stay Foundation-only? Remove it.
+- Delete the `public init`, then build the app after step 2: read what `InMemoryAccessRepository` can no longer do. Put it back.
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/PasscodeCheck.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/PasscodeCheck.swift`
 
 <b>Explain</b> · Result of checking a typed passcode: correct, wrong with tries left, or locked out.
 
@@ -164,7 +177,7 @@ nonisolated struct AccessSettings: Sendable {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `enum`, associated values: `case wrong(triesLeft: Int)`.
+- `public enum` (its cases are public with it), associated values: `case wrong(triesLeft: Int)`.
 
 </details>
 
@@ -172,7 +185,7 @@ nonisolated struct AccessSettings: Sendable {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
-nonisolated enum PasscodeCheck: Sendable {
+public enum PasscodeCheck: Sendable {
     case correct
     case wrong(/* ? */)
     case lockedOut(/* ? */)
@@ -186,7 +199,7 @@ nonisolated enum PasscodeCheck: Sendable {
 
 ```swift
 // The answer after the user types 6 digits on A3.
-nonisolated enum PasscodeCheck: Sendable {
+public enum PasscodeCheck: Sendable {
     // right passcode → open the app
     case correct
     // wrong passcode, still allowed to try
@@ -204,7 +217,7 @@ nonisolated enum PasscodeCheck: Sendable {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessRepository.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/AccessRepository.swift`
 
 <b>Explain</b> · What the access flow needs from storage; the fake implements it now, Keychain in step 4.
 
@@ -223,7 +236,7 @@ nonisolated enum PasscodeCheck: Sendable {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `nonisolated protocol … : Sendable`, `async` methods returning `AccessSettings`, `PasscodeCheck`, `Bool`.
+- `public protocol … : Sendable`, `async` methods returning `AccessSettings`, `PasscodeCheck`, `Bool`.
 
 </details>
 
@@ -231,7 +244,7 @@ nonisolated enum PasscodeCheck: Sendable {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
-nonisolated protocol AccessRepository: Sendable {
+public protocol AccessRepository: Sendable {
     // load / save settings
     // mark welcome seen
     // check / set passcode
@@ -246,7 +259,7 @@ nonisolated protocol AccessRepository: Sendable {
 
 ```swift
 // Domain only says WHAT it needs. HOW (memory, Keychain, Face ID) lives in Data/.
-nonisolated protocol AccessRepository: Sendable {
+public protocol AccessRepository: Sendable {
     func loadSettings() async -> AccessSettings
     func saveSettings(_ settings: AccessSettings) async
     func markWelcomeSeen() async
@@ -265,7 +278,7 @@ nonisolated protocol AccessRepository: Sendable {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessUseCases.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/AccessUseCases.swift`
 
 <b>Explain</b> · One use case per user action; view models call these, never the repository.
 
@@ -283,7 +296,7 @@ nonisolated protocol AccessRepository: Sendable {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `private let repository: any AccessRepository`, `init(repository:)`, `func execute(…) async`.
+- `public struct`, `private let repository: any AccessRepository`, `public init(repository:)`, `public func execute(…) async`.
 
 </details>
 
@@ -291,14 +304,14 @@ nonisolated protocol AccessRepository: Sendable {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
-nonisolated struct LoadAccessSettingsUseCase: Sendable {
+public struct LoadAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         // store it
     }
 
-    func execute() async -> AccessSettings {
+    public func execute() async -> AccessSettings {
         // ask the repository
     }
 }
@@ -315,74 +328,74 @@ nonisolated struct LoadAccessSettingsUseCase: Sendable {
 ```swift
 // One use case per user action. Each one forwards to the repository for now.
 
-nonisolated struct LoadAccessSettingsUseCase: Sendable {
+public struct LoadAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    func execute() async -> AccessSettings {
+    public func execute() async -> AccessSettings {
         return await repository.loadSettings()
     }
 }
 
-nonisolated struct SaveAccessSettingsUseCase: Sendable {
+public struct SaveAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    func execute(_ settings: AccessSettings) async {
+    public func execute(_ settings: AccessSettings) async {
         await repository.saveSettings(settings)
     }
 }
 
-nonisolated struct FinishWelcomeUseCase: Sendable {
+public struct FinishWelcomeUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    func execute() async {
+    public func execute() async {
         await repository.markWelcomeSeen()
     }
 }
 
-nonisolated struct CheckPasscodeUseCase: Sendable {
+public struct CheckPasscodeUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    func execute(passcode: String) async -> PasscodeCheck {
+    public func execute(passcode: String) async -> PasscodeCheck {
         return await repository.checkPasscode(passcode)
     }
 }
 
-nonisolated struct SetPasscodeUseCase: Sendable {
+public struct SetPasscodeUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    func execute(passcode: String) async {
+    public func execute(passcode: String) async {
         await repository.setPasscode(passcode)
     }
 }
 
-nonisolated struct UnlockWithBiometricsUseCase: Sendable {
+public struct UnlockWithBiometricsUseCase: Sendable {
     private let repository: any AccessRepository
 
-    init(repository: any AccessRepository) {
+    public init(repository: any AccessRepository) {
         self.repository = repository
     }
 
-    func execute() async -> Bool {
+    public func execute() async -> Bool {
         return await repository.unlockWithBiometrics()
     }
 }
@@ -411,25 +424,25 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 
 <dl><dd>
 
-<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/Core/Helper/Logger/AppLogger.swift`
+<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/Core/Sources/Core/Logger/AppLogger.swift`
 
-<b>Explain</b> · Logger categories, now `nonisolated` and with an `access` category.
+<b>Explain</b> · Logger categories in Core, now with an `access` category.
 
 <b>Think</b>
 
-- `InMemoryAccessRepository` is an `actor`. What happens when it calls a logger that belongs to the main actor?
+- DataLayer and the app both log. Why does the logger live in Core, not in the app target?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- The same enum, now `nonisolated`, plus one category per feature.
+- The same public enum, plus one category per feature.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `Logger(subsystem:category:)` from `os`, `nonisolated enum`, `static let`.
+- `Logger(subsystem:category:)` from `os`, `public static let`.
 
 </details>
 
@@ -439,14 +452,13 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 ```swift
 import os
 
-// nonisolated: loggers are usable from any actor, not only the main one
-nonisolated enum AppLogger {
-    static let subsystem = "app.dd.site.log"
-    static let startup = Logger(subsystem: subsystem, category: "Startup")
+public enum AppLogger {
+    public static let subsystem = "app.dd.site.log"
+    public static let startup = Logger(subsystem: subsystem, category: "Startup")
     // Debug-only developer menu actions
-    static let devMenu = Logger(subsystem: subsystem, category: "DevMenu")
+    public static let devMenu = Logger(subsystem: subsystem, category: "DevMenu")
     // new: one category per feature
-    static let access = Logger(subsystem: subsystem, category: "Access")
+    public static let access = Logger(subsystem: subsystem, category: "Access")
 }
 ```
 
@@ -454,14 +466,12 @@ nonisolated enum AppLogger {
 
 <b>Try</b>
 
-- After the fake repository exists, remove `nonisolated` here and build: read the error. Put it back.
+- Remove `public` from `access` and build: which files fail, and in which modules? Put it back.
 - Open Console.app, filter on subsystem `app.dd.site.log`, and watch the `Access` lines while you use A3.
 
----
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryAccessRepository.swift`
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Data/Fakes/InMemoryAccessRepository.swift`
-
-<b>Explain</b> · Fake `AccessRepository` kept in memory: demo passcode `123456`, Face ID always matches.
+<b>Explain</b> · Fake `AccessRepository` in DataLayer, kept in memory: demo passcode `123456`, Face ID always matches.
 
 <b>Think</b>
 
@@ -478,7 +488,8 @@ nonisolated enum AppLogger {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `actor … : AccessRepository`; an actor method satisfies an `async` requirement without writing `async`.
+- `public actor … : AccessRepository`, `public init() {}`, `public func` for every method the app calls; `import Core`, `import DomainLayer`.
+- An actor method satisfies an `async` requirement without writing `async`.
 - `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`.
 
 </details>
@@ -487,9 +498,11 @@ nonisolated enum AppLogger {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import os
 
-actor InMemoryAccessRepository: AccessRepository {
+public actor InMemoryAccessRepository: AccessRepository {
     private static let firstLaunch = AccessSettings(/* first-launch values */)
 
     private var settings = InMemoryAccessRepository.firstLaunch
@@ -497,20 +510,22 @@ actor InMemoryAccessRepository: AccessRepository {
     private let freeTries = 5
     private var wrongTries = 0
 
-    func loadSettings() -> AccessSettings { }
-    func saveSettings(_ newSettings: AccessSettings) { }
-    func markWelcomeSeen() { }
+    public init() {}
 
-    func checkPasscode(_ typed: String) -> PasscodeCheck {
+    public func loadSettings() -> AccessSettings { }
+    public func saveSettings(_ newSettings: AccessSettings) { }
+    public func markWelcomeSeen() { }
+
+    public func checkPasscode(_ typed: String) -> PasscodeCheck {
         // right → reset the counter, .correct
         // wrong → count it, .wrong(triesLeft:) or .lockedOut(wait:)
     }
 
-    func setPasscode(_ newPasscode: String) { }
-    func unlockWithBiometrics() async -> Bool { /* sleep 0.5 s, true */ }
+    public func setPasscode(_ newPasscode: String) { }
+    public func unlockWithBiometrics() async -> Bool { /* sleep 0.5 s, true */ }
 
-    func reset() { /* back to first launch */ }
-    func seed() { /* welcome seen */ }
+    public func reset() { /* back to first launch */ }
+    public func seed() { /* welcome seen */ }
 }
 ```
 
@@ -520,12 +535,14 @@ actor InMemoryAccessRepository: AccessRepository {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import os
 
 // Fake repository so the whole flow runs before Keychain and Face ID exist.
 // Step 4 replaces it with KeychainAccessRepository; only AppDependencies changes.
 // Everything resets on every cold launch, because it only lives in memory.
-actor InMemoryAccessRepository: AccessRepository {
+public actor InMemoryAccessRepository: AccessRepository {
     // First-launch values: welcome not seen, lock on, Face ID on, re-lock after 10 seconds
     private static let firstLaunch = AccessSettings(
         hasSeenWelcome: false,
@@ -540,19 +557,22 @@ actor InMemoryAccessRepository: AccessRepository {
     private let freeTries = 5
     private var wrongTries = 0
 
-    func loadSettings() -> AccessSettings {
+    // An actor's default init is internal; AppDependencies needs this one
+    public init() {}
+
+    public func loadSettings() -> AccessSettings {
         return settings
     }
 
-    func saveSettings(_ newSettings: AccessSettings) {
+    public func saveSettings(_ newSettings: AccessSettings) {
         settings = newSettings
     }
 
-    func markWelcomeSeen() {
+    public func markWelcomeSeen() {
         settings.hasSeenWelcome = true
     }
 
-    func checkPasscode(_ typed: String) -> PasscodeCheck {
+    public func checkPasscode(_ typed: String) -> PasscodeCheck {
         if typed == passcode {
             wrongTries = 0
             return .correct
@@ -568,12 +588,12 @@ actor InMemoryAccessRepository: AccessRepository {
         return .lockedOut(wait: .seconds(60))
     }
 
-    func setPasscode(_ newPasscode: String) {
+    public func setPasscode(_ newPasscode: String) {
         passcode = newPasscode
         wrongTries = 0
     }
 
-    func unlockWithBiometrics() async -> Bool {
+    public func unlockWithBiometrics() async -> Bool {
         // Pretend Face ID takes half a second, then always matches
         do {
             try await Task.sleep(for: .milliseconds(500))
@@ -588,14 +608,14 @@ actor InMemoryAccessRepository: AccessRepository {
     // MARK: - Dev menu
 
     // Delete all data → back to first launch
-    func reset() {
+    public func reset() {
         settings = InMemoryAccessRepository.firstLaunch
         passcode = "123456"
         wrongTries = 0
     }
 
     // Seed data → a returning user: welcome seen, lock on
-    func seed() {
+    public func seed() {
         settings.hasSeenWelcome = true
     }
 }
@@ -628,6 +648,7 @@ actor InMemoryAccessRepository: AccessRepository {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
+- `import Core`, `import DataLayer`, `import DomainLayer`: the composition root is the one app file that imports DataLayer.
 - `Factory<InMemoryAccessRepository>`, `Factory<any AccessRepository>`, `self { self.inMemoryAccessRepository() }`, `#if DEBUG`.
 
 </details>
@@ -636,6 +657,9 @@ actor InMemoryAccessRepository: AccessRepository {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
+import DataLayer
+import DomainLayer
 import FactoryKit
 
 extension Container {
@@ -666,6 +690,9 @@ extension Container {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
+import DataLayer
+import DomainLayer
 import FactoryKit
 
 // Composition root: the only place that knows which implementation backs each protocol.
@@ -737,7 +764,7 @@ extension Container {
 
 <b>Think</b>
 
-- Why does this live in `App/`, not in `Presentation/DevMenu/` or `Data/Fakes/`?
+- Why does this live in `App/`, not in `Presentation/DevMenu/` or `Packages/DataLayer/Sources/DataLayer/Fakes/`?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -759,6 +786,7 @@ extension Container {
 ```swift
 #if DEBUG
 
+import DataLayer
 import FactoryKit
 
 // Dev menu → fakes in Data/. Every feature adds its fake here when it lands.
@@ -878,6 +906,8 @@ struct FakeDevDataActions: DevDataActions {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -911,6 +941,8 @@ final class RootViewModel {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1065,6 +1097,8 @@ final class RootViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1088,6 +1122,8 @@ final class SignInViewModel {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1261,6 +1297,8 @@ final class SignInViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1284,6 +1322,8 @@ final class FaceIDLockViewModel {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1463,6 +1503,8 @@ final class FaceIDLockViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1495,6 +1537,8 @@ final class PasscodeUnlockViewModel {
 <summary><b>Code</b></summary>
 
 ```swift
+import Core
+import DomainLayer
 import FactoryKit
 import Observation
 import os
@@ -1838,6 +1882,7 @@ struct RootView: View {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import DomainLayer
 import FactoryKit
 import Observation
 
@@ -1863,6 +1908,7 @@ final class AppLockViewModel {
 <summary><b>Code</b></summary>
 
 ```swift
+import DomainLayer
 import FactoryKit
 import Observation
 
@@ -1977,6 +2023,7 @@ final class AppLockViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import DomainLayer
 import FactoryKit
 import Observation
 
@@ -2004,6 +2051,7 @@ final class SetPasscodeViewModel {
 <summary><b>Code</b></summary>
 
 ```swift
+import DomainLayer
 import FactoryKit
 import Observation
 
@@ -2167,6 +2215,7 @@ final class SetPasscodeViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import DataLayer
 import FactoryKit
 import FactoryTesting
 import Testing
@@ -2193,6 +2242,7 @@ struct PasscodeUnlockViewModelTests {
 <summary><b>Code</b></summary>
 
 ```swift
+import DataLayer
 import FactoryKit
 import FactoryTesting
 import Testing

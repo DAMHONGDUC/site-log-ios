@@ -55,67 +55,70 @@
 
 <dl><dd>
 
-- Architecture: Clean Architecture + MVVM, one app target, one folder per layer; `DesignSystem` is a Swift package.
+- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `DesignSystem` are local Swift packages; the app target holds `App/` and `Presentation/`.
 - Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
 
 ```
 site-log-ios/
-├── SiteLog/                              # one app target; each layer is a folder
+├── SiteLog/                              # app target: composition root + Presentation
 │   ├── App/                              # composition root: may use every layer
 │   │   ├── SiteLogApp.swift              # @main
 │   │   ├── AppDelegate.swift
 │   │   ├── AppDependencies.swift         # Factory registrations
-│   │   └── Startup/
-│   │       ├── StartupSequence.swift
-│   │       └── Steps/                    # Crashlytics, Keychain, ModelContainer, UploadReconcile,
-│   │                                     # AuditVerify, OrphanSweep
-│   ├── Presentation/                     # MVVM: View + ViewModel; 2+ screens → 1 folder / screen
-│   │   ├── Root/  MainTab/  Components/
-│   │   ├── Access/                       # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
-│   │   ├── Projects/                     # ProjectList/ NewProject/ ProjectDetail/ StartSession/
-│   │   │                                 # Survey/ BulkLocations/ CloneTree/ EndSession/
-│   │   ├── Capture/                      # Camera/ CaptureReview/
-│   │   ├── Issues/                       # IssueSheet/ IssueList/ VerificationCamera/ OutcomePicker/
-│   │   ├── Annotation/                   # MarkupEditor/ StampPreview/
-│   │   ├── Plans/                        # PlanList/ PlanViewer/ PinPreview/ PlanImport/
-│   │   ├── Checklists/                   # TemplatePicker/ ChecklistRun/
-│   │   ├── Reports/                      # ReportBuilder/ Branding/ SignaturePad/ PDFPreview/
-│   │   ├── Uploads/                      # UploadStatus/
-│   │   ├── Diagnostics/                  # DiagnosticExport/
-│   │   ├── Settings/                     # Account/ Devices/ AppLock/ SetPasscode/ StorageCleanup/
-│   │   ├── Notifications/
-│   │   └── DeepLinks/
-│   ├── Domain/                           # Foundation only, nonisolated
-│   │   ├── Entities/                     # Project, Session, Location, Capture, Issue, Annotation,
-│   │   │                                 # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
-│   │   ├── UseCases/                     # <Verb><Noun>UseCase
-│   │   └── Repositories/                 # protocols
-│   ├── Data/                             # implements Domain, nonisolated
-│   │   ├── Repositories/                 # SwiftData<X>Repository, Keychain…, MetadataSyncEngine
-│   │   ├── DTOs/
-│   │   └── Mappers/
-│   ├── DataSources/                      # framework code, nonisolated
-│   │   ├── Persistence/                  # SwiftData @Model, SchemaV1…n, migration plan
-│   │   ├── Networking/                   # backend HTTP client
-│   │   ├── Capture/                      # AVFoundation, hashing, stamping
-│   │   ├── UploadKit/                    # background URLSession engine (standalone)
-│   │   ├── Realtime/                     # WebSocket channel (standalone)
-│   │   ├── Reporting/                    # PDF + CSV export
-│   │   ├── Plans/                        # PDFKit + CATiledLayer
-│   │   └── DeviceLink/                   # CoreBluetooth
-│   └── Core/                             # app-wide support, no business logic
-│       ├── Config/                       # *.xcconfig, entitlements, GoogleService-Info.plist (CI)
-│       ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
-│       ├── Helper/                       # Logger/AppLogger, Clock/AppClock + SystemClock
-│       └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
-├── Packages/
-│   └── DesignSystem/                     # Swift package, UI only: never imports Domain or app code
+│   │   ├── Startup/
+│   │   │   ├── StartupSequence.swift
+│   │   │   └── Steps/                    # Crashlytics, Keychain, ModelContainer, UploadReconcile,
+│   │   │                                 # AuditVerify, OrphanSweep
+│   │   ├── Config/                       # *.xcconfig, entitlements, GoogleService-Info.plist (CI)
+│   │   ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
+│   │   └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
+│   └── Presentation/                     # MVVM: View + ViewModel; 2+ screens → 1 folder / screen
+│       ├── Root/  MainTab/  Components/
+│       ├── Access/                       # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
+│       ├── Projects/                     # ProjectList/ NewProject/ ProjectDetail/ StartSession/
+│       │                                 # Survey/ BulkLocations/ CloneTree/ EndSession/
+│       ├── Capture/                      # Camera/ CaptureReview/
+│       ├── Issues/                       # IssueSheet/ IssueList/ VerificationCamera/ OutcomePicker/
+│       ├── Annotation/                   # MarkupEditor/ StampPreview/
+│       ├── Plans/                        # PlanList/ PlanViewer/ PinPreview/ PlanImport/
+│       ├── Checklists/                   # TemplatePicker/ ChecklistRun/
+│       ├── Reports/                      # ReportBuilder/ Branding/ SignaturePad/ PDFPreview/
+│       ├── Uploads/                      # UploadStatus/
+│       ├── Diagnostics/                  # DiagnosticExport/
+│       ├── Settings/                     # Account/ Devices/ AppLock/ SetPasscode/ StorageCleanup/
+│       ├── Notifications/
+│       └── DeepLinks/
+├── Packages/                             # local Swift packages: Sources/<Name>/ + Tests/<Name>Tests/
+│   ├── DomainLayer/                      # Foundation only
+│   │   └── Sources/DomainLayer/
+│   │       ├── Entities/                 # Project, Session, Location, Capture, Issue, Annotation,
+│   │       │                             # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
+│   │       ├── UseCases/                 # <Verb><Noun>UseCase
+│   │       └── Repositories/             # protocols
+│   ├── DataLayer/                        # implements Domain; uses Domain + Core
+│   │   └── Sources/DataLayer/
+│   │       ├── Repositories/             # SwiftData<X>Repository, Keychain…, MetadataSyncEngine
+│   │       ├── DTOs/
+│   │       ├── Mappers/
+│   │       └── DataSources/              # framework code
+│   │           ├── Local/                # on the device
+│   │           │   ├── Persistence/      # SwiftData @Model, SchemaV1…n, migration plan
+│   │           │   ├── Capture/          # AVFoundation, hashing, stamping
+│   │           │   ├── Reporting/        # PDF + CSV export
+│   │           │   ├── Plans/            # PDFKit + CATiledLayer
+│   │           │   └── DeviceLink/       # CoreBluetooth
+│   │           └── Remote/               # talks to the server
+│   │               ├── Networking/       # backend HTTP client
+│   │               ├── UploadKit/        # background URLSession engine (standalone)
+│   │               └── Realtime/         # WebSocket channel (standalone)
+│   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
+│   └── DesignSystem/                     # UI only: never imports Domain or app code
 │       ├── Sources/DesignSystem/
 │       │   ├── Tokens/                   # DSColor, DSFont, DSSpacing, DSRadius, DSSize
 │       │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
 │       └── Tests/DesignSystemTests/
-├── SiteLogTests/                         # mirrors SiteLog/
-│   ├── Domain/  Data/  DataSources/  Presentation/
+├── SiteLogTests/                         # app tests; package tests live in each package
+│   ├── Presentation/
 │   └── Snapshots/
 ├── SiteLogUITests/
 ├── Backend/                              # Node + Postgres → 03-backend.md
@@ -129,7 +132,7 @@ site-log-ios/
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
 ```
 
-- Dependencies: `App` → every layer; `Presentation` → `Domain` ← `Data` → `DataSources`; `Presentation` → `DesignSystem`.
+- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `DesignSystem`; `DataLayer` → `DomainLayer` + `Core`; inside `DataLayer`, repositories → `DataSources/Local` and `DataSources/Remote`.
 - Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
 
 </dd></dl>

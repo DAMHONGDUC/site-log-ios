@@ -28,8 +28,8 @@
 - **Goal:** Projects, sessions, locations end to end: Domain → fake data → view models → real data → tests.
 - **Demo:** project → 80 generated locations → walkthrough, all offline and kept after relaunch.
 - **Spec:** [01](../feature-docs/01-field-work.md#01-projects-sessions-locations), [00 §3 Data model](../feature-docs/00-overview.md#3-data-model)
-- **Starts from:** the skeleton screens (~30% of Figma) that read `Core/Fakes/FakeData.swift`.
-- **Fakes:** only in `SiteLog/Data/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
+- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -57,13 +57,14 @@
 <dl><dd>
 
 ```text
+Packages/
+├── DomainLayer/Sources/DomainLayer/Projects/                             # 1: Project, Session, Location, Capture, protocols, use cases
+├── DataLayer/Sources/DataLayer/Fakes/                          # 2: InMemoryProjectRepository (+ session, location)
+├── DataLayer/Sources/DataLayer/Repositories/                   # 4: SwiftData*Repository, mappers
+└── DataLayer/Sources/DataLayer/DataSources/Local/Persistence/  # 4: @Model types, SchemaV1, migration plan
 SiteLog/
-├── Domain/Projects/            # 1: Project, Session, Location, Capture, protocols, use cases
-├── Data/Fakes/                 # 2: InMemoryProjectRepository (+ session, location)
-├── Data/Repositories/          # 4: SwiftData*Repository, mappers
-├── DataSources/Persistence/    # 4: @Model types, SchemaV1, migration plan
-└── Presentation/Projects/      # 3: ProjectList, NewProject, ProjectDetail, StartSession,
-                                #    Survey, Room, BulkLocations, CloneTree, EndSession
+└── Presentation/Projects/                                      # 3: ProjectList, NewProject, ProjectDetail, StartSession,
+                                                                #    Survey, Room, BulkLocations, CloneTree, EndSession
 ```
 
 </dd></dl>
@@ -74,9 +75,9 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Domain/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
-| <b class="tag-new">New</b> | `Domain/Projects/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
-| <b class="tag-new">New</b> | `Domain/Projects/UseCases/` | `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/UseCases/` | `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
 
 #### Steps
 
@@ -97,7 +98,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/Data/Fakes/InMemoryProjectRepository.swift` | Projects, sessions, locations in memory (one actor per aggregate is fine) |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryProjectRepository.swift` | Projects, sessions, locations in memory (one actor per aggregate is fine) |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
 
 #### Steps
@@ -105,7 +106,7 @@ SiteLog/
 <dl><dd>
 
 1. Implement the Domain protocol as an `actor` that keeps everything in memory.
-2. Seed it with “Riverside Tower B”, 37 of 82 rooms, 4 sessions — move the values out of `Core/Fakes/FakeData.swift`.
+2. Seed it with “Riverside Tower B”, 37 of 82 rooms, 4 sessions — move the values out of `App/Fakes/FakeData.swift`.
 3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
@@ -136,7 +137,7 @@ SiteLog/
 1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
 3. Loading, empty (`DSEmptyState`) and error states; previews for each.
-4. Delete this feature's `Fake*` types from `Core/Fakes/FakeData.swift` once nothing uses them.
+4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 5. Summaries are sentences (“14 open issues, 2 of them overdue”).
 6. A 500-row survey list stays at 60 fps.
 
@@ -152,19 +153,19 @@ SiteLog/
 <summary><strong>4.1 SwiftData schema and repositories</strong></summary>
 <dl><dd>
 
-- **Goal:** SwiftData models in `DataSources/Persistence/` and repository implementations in `Data/`.
+- **Goal:** SwiftData models in `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/` and repository implementations in `Packages/DataLayer/Sources/DataLayer/Repositories/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `SiteLog/DataSources/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
-| <b class="tag-new">New</b> | `SiteLog/Data/Repositories/SwiftData*Repository.swift` | Implements the step 1 protocols; mappers model ↔ entity |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftData*Repository.swift` | Implements the step 1 protocols; mappers model ↔ entity |
 
 #### Steps
 
 <dl><dd>
 
-1. Create the folder `SiteLog/DataSources/Persistence/`; types inside are `nonisolated`.
+1. Create the folder `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/`; mark what the app uses `public`.
 2. Write models mirroring the entities; store relative file paths.
 3. Write repositories with a `@ModelActor` for writes.
 4. Cascade delete project → sessions, locations, plans.
