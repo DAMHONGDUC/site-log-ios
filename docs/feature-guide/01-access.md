@@ -30,7 +30,7 @@
 - **Spec:** [07.2 App lock](../feature-docs/04-reporting-security.md#072-app-lock); mockups: Access board, S4, S5.
 - **Starts from:** F00 step 1 (Factory, `AppClock`) and the skeleton screens in `Presentation/Access/`, `Settings/AppLock/`, `Settings/SetPasscode/`.
 - **Fakes:** only in `SiteLog/Data/Fakes/`. Domain and Presentation never name a fake; `AppDependencies` picks it.
-- **How to use:** try each file from its hints first; open **Code** only to check or when stuck.
+- **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
 
 | Step | Layer | Hours | Status | What |
@@ -88,10 +88,38 @@ SiteLog/
 
 <b>Explain</b> · The settings that decide which access screen comes first: welcome seen, lock on, Face ID, *Lock after*.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `nonisolated struct … : Sendable` with four `var`s.
-- `lockAfter` is a `Duration`, not seconds as `Int`.
+- A first-time user and a returning user with the lock on see different screens. Which facts does the app need to decide?
+- Why a `Duration` for *Lock after*, not an `Int` of seconds?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A plain value type with four fields: no logic, no storage.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `nonisolated struct … : Sendable`, `Bool`, `Duration` (`.seconds(10)`).
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+nonisolated struct AccessSettings: Sendable {
+    // welcome seen?
+    // lock on?
+    // Face ID on?
+    // lock after how long?
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -112,15 +140,46 @@ nonisolated struct AccessSettings: Sendable {
 
 </details>
 
+<b>Try</b>
+
+- Add `import SwiftUI` at the top and run `Tools/CI/check-imports.sh`. Why must Domain stay Foundation-only? Remove it.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/PasscodeCheck.swift`
 
 <b>Explain</b> · Result of checking a typed passcode: correct, wrong with tries left, or locked out.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `nonisolated enum` with three cases; `wrong` carries `triesLeft`, `lockedOut` carries `wait`.
+- After 6 digits, which outcomes are possible, and what extra information does the screen need for each?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- An enum whose cases carry exactly the data the screen needs (associated values).
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `enum`, associated values: `case wrong(triesLeft: Int)`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+nonisolated enum PasscodeCheck: Sendable {
+    case correct
+    case wrong(/* ? */)
+    case lockedOut(/* ? */)
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -139,16 +198,48 @@ nonisolated enum PasscodeCheck: Sendable {
 
 </details>
 
+<b>Try</b>
+
+- Imagine returning `(ok: Bool, triesLeft: Int?, wait: Duration?)` instead. Which impossible combination could that tuple hold that the enum cannot?
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessRepository.swift`
 
 <b>Explain</b> · What the access flow needs from storage; the fake implements it now, Keychain in step 4.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `nonisolated protocol … : Sendable`; every method is `async`.
-- Load / save settings, mark welcome seen, check / set passcode, unlock with biometrics.
+- Domain must not know about Keychain or Face ID. How can a use case still ask “is this passcode right?”
+- The fake answers instantly. Why is every method `async` anyway?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A protocol listing what the access flow needs from storage; the implementations live in `Data/`.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `nonisolated protocol … : Sendable`, `async` methods returning `AccessSettings`, `PasscodeCheck`, `Bool`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+nonisolated protocol AccessRepository: Sendable {
+    // load / save settings
+    // mark welcome seen
+    // check / set passcode
+    // unlock with biometrics → Bool
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -168,16 +259,55 @@ nonisolated protocol AccessRepository: Sendable {
 
 </details>
 
+<b>Try</b>
+
+- Picture step 4: the real `unlockWithBiometrics` waits for the user’s face. What would break if the method were not `async`?
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Domain/Access/AccessUseCases.swift`
 
 <b>Explain</b> · One use case per user action; view models call these, never the repository.
 
-<b>Hint</b>
+<b>Think</b>
 
-- One `nonisolated struct` per action, holding `any AccessRepository`.
-- Each has one `execute(…)` that forwards to the repository.
+- Each use case only forwards to the repository. Why have them at all? Where would a rule like “log every failed try” go?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- One small struct per user action: holds the repository, has one `execute`.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `private let repository: any AccessRepository`, `init(repository:)`, `func execute(…) async`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+nonisolated struct LoadAccessSettingsUseCase: Sendable {
+    private let repository: any AccessRepository
+
+    init(repository: any AccessRepository) {
+        // store it
+    }
+
+    func execute() async -> AccessSettings {
+        // ask the repository
+    }
+}
+
+// Same shape: SaveAccessSettings, FinishWelcome, CheckPasscode,
+// SetPasscode, UnlockWithBiometrics
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -260,6 +390,10 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 
 </details>
 
+<b>Try</b>
+
+- Write the first use case, then the other five without looking. Compare the names with **Code**.
+
 <details open>
 <summary><strong>1.1 Check</strong></summary>
 <dl><dd>
@@ -281,10 +415,23 @@ nonisolated struct UnlockWithBiometricsUseCase: Sendable {
 
 <b>Explain</b> · Logger categories, now `nonisolated` and with an `access` category.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Make the enum `nonisolated` so actors can log.
-- Add an `access` category next to `startup` and `devMenu`.
+- `InMemoryAccessRepository` is an `actor`. What happens when it calls a logger that belongs to the main actor?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- The same enum, now `nonisolated`, plus one category per feature.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `Logger(subsystem:category:)` from `os`, `nonisolated enum`, `static let`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -305,18 +452,69 @@ nonisolated enum AppLogger {
 
 </details>
 
+<b>Try</b>
+
+- After the fake repository exists, remove `nonisolated` here and build: read the error. Put it back.
+- Open Console.app, filter on subsystem `app.dd.site.log`, and watch the `Access` lines while you use A3.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Data/Fakes/InMemoryAccessRepository.swift`
 
 <b>Explain</b> · Fake `AccessRepository` kept in memory: demo passcode `123456`, Face ID always matches.
 
-<b>Hint</b>
+<b>Think</b>
 
-- An `actor` conforming to `AccessRepository`; state lives in private `var`s.
-- Passcode check: 5 free tries, then `.lockedOut(wait: .seconds(60))`.
-- Fake Face ID: sleep 0.5 s, return `true`.
-- `reset()` back to first launch; `seed()` marks the welcome as seen.
+- Two checks can run at the same time. With a `class`, what could go wrong with `wrongTries += 1`? What does `actor` change?
+- What should “Delete all data” bring the app back to?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- An actor holding the settings, the passcode and a wrong-try counter; each protocol method reads or writes them; `reset()` and `seed()` serve the dev menu.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `actor … : AccessRepository`; an actor method satisfies an `async` requirement without writing `async`.
+- `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import os
+
+actor InMemoryAccessRepository: AccessRepository {
+    private static let firstLaunch = AccessSettings(/* first-launch values */)
+
+    private var settings = InMemoryAccessRepository.firstLaunch
+    private var passcode = "123456"
+    private let freeTries = 5
+    private var wrongTries = 0
+
+    func loadSettings() -> AccessSettings { }
+    func saveSettings(_ newSettings: AccessSettings) { }
+    func markWelcomeSeen() { }
+
+    func checkPasscode(_ typed: String) -> PasscodeCheck {
+        // right → reset the counter, .correct
+        // wrong → count it, .wrong(triesLeft:) or .lockedOut(wait:)
+    }
+
+    func setPasscode(_ newPasscode: String) { }
+    func unlockWithBiometrics() async -> Bool { /* sleep 0.5 s, true */ }
+
+    func reset() { /* back to first launch */ }
+    func seed() { /* welcome seen */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -405,17 +603,64 @@ actor InMemoryAccessRepository: AccessRepository {
 
 </details>
 
+<b>Try</b>
+
+- Type 5 wrong passcodes, then the right one. Does it unlock? Should it? Note what the real step 4 version must do differently.
+
 ---
 
 <b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F01 version)*
 
 <b>Explain</b> · Registers the access fake, one factory per use case, and the dev menu actions.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Register the fake by its concrete type (`inMemoryAccessRepository`, `.singleton`).
-- `accessRepository` returns it as `any AccessRepository`; one `Factory` per use case.
-- Under `#if DEBUG`, `devDataActions` returns `FakeDevDataActions()`.
+- The dev menu needs `reset()`, which is not part of `AccessRepository`. How can it reach the fake while Presentation never knows the fake exists?
+- Why is the repository `.singleton` but the use cases are not?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Register the fake by its concrete type (singleton), hand it out as the protocol, build each use case from the protocol.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `Factory<InMemoryAccessRepository>`, `Factory<any AccessRepository>`, `self { self.inMemoryAccessRepository() }`, `#if DEBUG`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+
+extension Container {
+    var clock: Factory<any AppClock> { /* unchanged */ }
+
+    var inMemoryAccessRepository: Factory<InMemoryAccessRepository> {
+        // the fake, singleton
+    }
+
+    var accessRepository: Factory<any AccessRepository> {
+        // the fake, as the protocol
+    }
+
+    var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
+        // built from accessRepository
+    }
+    // … one per use case
+
+    #if DEBUG
+    var devDataActions: Factory<any DevDataActions> { /* FakeDevDataActions() */ }
+    #endif
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -480,16 +725,33 @@ extension Container {
 
 </details>
 
+<b>Try</b>
+
+- Remove `.singleton` from `inMemoryAccessRepository`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DevData/FakeDevDataActions.swift`
 
 <b>Explain</b> · Connects the dev menu’s Seed data / Delete all data to the fakes (Debug only).
 
-<b>Hint</b>
+<b>Think</b>
 
-- `#if DEBUG` struct conforming to `DevDataActions`.
-- Seed / delete call `seed()` / `reset()` on `Container.shared.inMemoryAccessRepository()`.
+- Why does this live in `App/`, not in `Presentation/DevMenu/` or `Data/Fakes/`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A Debug-only struct that implements the dev menu’s protocol by calling the fakes.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `#if DEBUG … #endif`, `DevDataActions` (`seedData()`, `deleteAllData()`), `await Container.shared.inMemoryAccessRepository().reset()`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -516,15 +778,33 @@ struct FakeDevDataActions: DevDataActions {
 
 </details>
 
+<b>Try</b>
+
+- Why must `devDataActions` in `AppDependencies` sit inside `#if DEBUG` too? Remove that `#if`, build for Release, read the error.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/DevMenu/DevMenuSection.swift`
 
 <b>Explain</b> · Takes the dev menu actions from the container; add `import FactoryKit` at the top.
 
-<b>Hint</b>
+<b>Think</b>
 
-- The default of `actions` comes from the container instead of `NoopDevDataActions()`.
+- Until now `actions` defaulted to a no-op. Who decides the real actions after this change?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- The default value now comes from the container.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `import FactoryKit`, `Container.shared.devDataActions()`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -535,6 +815,10 @@ struct FakeDevDataActions: DevDataActions {
 ```
 
 </details>
+
+<b>Try</b>
+
+- Dev menu → **Delete all data**, then **Reset the app**: which screen appears, and which methods ran on the way?
 
 ---
 
@@ -570,12 +854,58 @@ struct FakeDevDataActions: DevDataActions {
 
 <b>Explain</b> · Decides which screen shows after startup (welcome, Face ID, passcode, tabs) and re-locks after *Lock after*.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `@MainActor @Observable`; a `Phase` enum: loading, welcome, faceIDLock, passcodeLock, unlocked.
-- `load()` reads the settings → welcome, or lock / open.
-- Background: remember `clock.uptime`; foreground: re-read settings, lock again if away ≥ *Lock after*.
-- `showsPrivacyOverlay` while inactive or in the background with the lock on.
+- Draw the screens as states and the events that move between them: welcome done, unlocked, use passcode, app left, app back.
+- Why measure time away with `uptime`, not `Date`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A `Phase` enum is the one source of truth for which screen shows; small methods react to events; a private `lockOrOpen()` holds the lock rule.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@MainActor @Observable`, `private(set) var`, `@ObservationIgnored @Injected(\.loadAccessSettings)`.
+- `ContinuousClock.Instant`; `clock.uptime - leftAt` gives a `Duration`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import Observation
+import os
+
+@MainActor @Observable
+final class RootViewModel {
+    enum Phase { /* loading, welcome, faceIDLock, passcodeLock, unlocked */ }
+
+    private(set) var phase: Phase = .loading
+    private(set) var showsPrivacyOverlay = false
+
+    // injected: loadAccessSettings, clock
+    // remembered: settings, wentToBackgroundAt
+
+    func load() async { /* settings → welcome, or lockOrOpen() */ }
+    func welcomeFinished() { }
+    func unlocked() { }
+    func usePasscode() { }
+
+    func appBecameInactive() { }
+    func appWentToBackground() { /* overlay; start the timer only if unlocked */ }
+    func appBecameActive() async { /* hide overlay; re-read settings; lock if away ≥ lockAfter */ }
+
+    private func lockOrOpen() { /* lock off → unlocked; Face ID on → faceIDLock; else passcodeLock */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -698,6 +1028,10 @@ final class RootViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Remove the `if phase == .unlocked` guard in `appWentToBackground()`. Go Home while A3 is showing, wait 10 s, come back: what changes? Put it back.
+
 </dd></dl>
 </details>
 
@@ -709,10 +1043,46 @@ final class RootViewModel {
 
 <b>Explain</b> · A2 actions: sign-in stubs until F12, and Continue offline.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Inject `finishWelcome`; keep an `onFinished` closure from `RootView`.
-- Apple / email only log for now; Continue offline runs the use case, then `onFinished()`.
+- Why does the view model get an `onFinished` closure instead of setting `RootViewModel.phase` itself?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- One use case, one closure; each button is one method.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@ObservationIgnored @Injected(\.finishWelcome)`, `@ObservationIgnored private let onFinished: () -> Void`, `init(onFinished: @escaping () -> Void)`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import Observation
+import os
+
+@MainActor @Observable
+final class SignInViewModel {
+    // injected finishWelcome
+    // onFinished closure
+
+    init(onFinished: @escaping () -> Void) { }
+
+    func signInWithAppleTapped() { /* log only, F12 */ }
+    func continueWithEmailTapped() { /* log only */ }
+    func continueOfflineTapped() async { /* use case, then onFinished() */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -751,16 +1121,33 @@ final class SignInViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Remove `@escaping` and read the error. Why must a stored closure be escaping?
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift`
 
 <b>Explain</b> · Owns a `SignInViewModel` instead of two closures.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Swap the two closure properties for `@State private var viewModel`.
-- Create it in `init(onFinished:)` with `State(initialValue:)`.
+- SwiftUI rebuilds view structs often. With `let viewModel = SignInViewModel(…)`, what would happen to the view model?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- `@State` keeps the view model for the view’s lifetime; set it once in `init` through `_viewModel`.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@State private var viewModel: SignInViewModel`, `_viewModel = State(initialValue: …)`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -777,15 +1164,33 @@ final class SignInViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Temporarily add `AppLogger.access.debug("SignInViewModel init")` in the view model’s `init`, tap around, count the lines in Console. Try again with `private let` instead of `@State`. Undo both.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift` *(continued)*
 
 <b>Explain</b> · Dock buttons call the view model.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Each dock button calls the view model; Continue offline inside a `Task`.
+- A button action is synchronous, but `continueOfflineTapped()` is `async`. How do you call it?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Each dock button calls one view model method.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `Task { await … }`, `.buttonStyle(.ds(…))`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -817,6 +1222,10 @@ final class SignInViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Remove the `Task { }` around the call and read the compiler message.
+
 - Preview: `SignInView(onFinished: {})`.
 
 </dd></dl>
@@ -830,10 +1239,46 @@ final class SignInViewModel {
 
 <b>Explain</b> · A1: asks for Face ID when the screen appears; the user can switch to the passcode.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `isChecking` disables the button while Face ID runs.
-- `onAppear()` asks right away; a match calls `onUnlocked`, else stay on the screen.
+- What should the user see while Face ID runs? What stops a double tap from starting two checks?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- An `isChecking` flag around the use case call; match → closure, no match → stay on the screen.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `private(set) var isChecking`, `@Injected(\.unlockWithBiometrics)`, two closures.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import Observation
+import os
+
+@MainActor @Observable
+final class FaceIDLockViewModel {
+    private(set) var isChecking = false
+    // injected unlockWithBiometrics; onUnlocked, onUsePasscode
+
+    init(onUnlocked: @escaping () -> Void, onUsePasscode: @escaping () -> Void) { }
+
+    func onAppear() async { /* ask right away */ }
+    func unlockTapped() async { /* checking on → ask → checking off → unlock or log */ }
+    func usePasscodeTapped() { }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -883,15 +1328,33 @@ final class FaceIDLockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Make the fake’s `unlockWithBiometrics` return `false`. Run: what does A1 do, and how does the user get in? Undo it.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift`
 
 <b>Explain</b> · Owns a `FaceIDLockViewModel` instead of closures.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Replace the closures with a view model created in `init(onUnlocked:onUsePasscode:)`.
+- Same pattern as Sign in: what moves from closures into the view model?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- The view owns the view model in `@State`, created in `init` from the two closures.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@State private var viewModel`, `State(initialValue:)`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -908,16 +1371,33 @@ final class FaceIDLockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Write this `init` from memory, without looking at Sign in.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift` *(continued)*
 
 <b>Explain</b> · Dock buttons call the view model; Face ID is asked when the screen appears.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Unlock button → `unlockTapped()` in a `Task`, disabled while checking.
-- Add `.task { await viewModel.onAppear() }`.
+- `.onAppear` or `.task`: which one cancels its work when the view goes away?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Buttons call the view model; Face ID starts when the screen appears.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `.task { await … }`, `.disabled(viewModel.isChecking)`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -946,6 +1426,10 @@ final class FaceIDLockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Replace `.task` with `.onAppear { Task { … } }`, then tap **Enter passcode** while Face ID is still running: what keeps going? Undo it.
+
 </dd></dl>
 </details>
 
@@ -957,10 +1441,55 @@ final class FaceIDLockViewModel {
 
 <b>Explain</b> · A3: checks the 6 digits, shows tries left, disables the keypad when locked out.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `passcodeEntered(_:)` runs `checkPasscode` and switches on the result.
-- Fill `message` for wrong / locked out; set `isLockedOut`; never log the digits.
+- Which outcome of `PasscodeCheck` needs which text on screen? What must never appear in the logs?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- One method runs the check and `switch`es over the result; each case sets `message` / `isLockedOut`, or unlocks.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `switch result { case .wrong(let triesLeft): … }`, `wait.components.seconds`, string interpolation, `AppLogger.access.info`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import Observation
+import os
+
+@MainActor @Observable
+final class PasscodeUnlockViewModel {
+    let passcodeLength = 6
+    private(set) var message = ""
+    private(set) var isLockedOut = false
+    // injected checkPasscode; onUnlocked
+
+    init(onUnlocked: @escaping () -> Void) { }
+
+    func passcodeEntered(_ passcode: String) async {
+        let result = await checkPasscode.execute(passcode: passcode)
+        switch result {
+        case .correct: // clear the message, unlock
+        case .wrong(let triesLeft): // log the count only, show the message
+        case .lockedOut(let wait): // lock the keypad, show minutes
+        }
+    }
+
+    func forgotPasscodeTapped() { /* step 4 */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1014,15 +1543,33 @@ final class PasscodeUnlockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Add a case `.notSet` to `PasscodeCheck` and build: where does the compiler make you handle it? Remove it.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift`
 
 <b>Explain</b> · Keeps `code` for the keypad; the view model checks it.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Keep `@State code` for the keypad; add the view model in `init(onUnlocked:)`.
+- Why does `code` stay in the view while the check moves to the view model?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- The keypad’s digits are view state; checking them is logic.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@State private var viewModel`, `@State private var code`, `init(onUnlocked:)`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1039,6 +1586,10 @@ final class PasscodeUnlockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- In one sentence: what belongs in a view’s `@State`, and what belongs in its view model?
+
 | In `body` | Change to |
 |---|---|
 | `Text("2 tries left before a 1-minute wait")` | `Text(viewModel.message)` |
@@ -1052,9 +1603,23 @@ final class PasscodeUnlockViewModel {
 
 <b>Explain</b> · Sends the 6 digits to the view model, then clears them.
 
-<b>Hint</b>
+<b>Think</b>
 
-- At 6 digits, hand the code to the view model, then clear it.
+- When should the passcode be checked: on each digit or at the sixth? Why clear `code` afterwards?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Watch `code`; at full length hand it to the view model, then clear it.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `.onChange(of: code) { _, newValue in … }`, `newValue.count == viewModel.passcodeLength`, `Task`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1072,6 +1637,10 @@ final class PasscodeUnlockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Remove `code = ""`, type a wrong passcode: can you type again? Undo it.
+
 </dd></dl>
 </details>
 
@@ -1083,12 +1652,56 @@ final class PasscodeUnlockViewModel {
 
 <b>Explain</b> · Drives the access flow from `RootViewModel`; replaces the temporary `@State` flow.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Own `startupVM` and `rootVM`; a `ZStack` puts the privacy overlay on top.
-- Forward `scenePhase` changes to the view model.
-- Switch on `rootVM.phase`; every screen gets closures that call `rootVM`.
-- Debug: pass `ResetAppAction` that calls `rootVM.load()`.
+- Which object owns the access flow’s state, and which one only shows it?
+- What does SwiftUI tell you when the app goes to the app switcher or the background?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A `ZStack` of content plus overlay; `onChange(of: scenePhase)` forwards app events; `content` shows startup until ready, then `accessFlow` switches on `rootVM.phase`.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@Environment(\.scenePhase)`, `.onChange(of:)`, `@ViewBuilder`, `switch` inside a view, `.task { await rootVM.load() }`, `#if DEBUG`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import Inject
+import SwiftUI
+
+struct RootView: View {
+    @ObserveInjection var inject
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var startupVM = /* … */
+    @State private var rootVM = RootViewModel()
+
+    var body: some View {
+        ZStack {
+            content
+            // privacy overlay when rootVM.showsPrivacyOverlay
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            // active / inactive / background → rootVM
+        }
+        .enableInjection()
+    }
+
+    @ViewBuilder private var content: some View { /* startup, or accessFlow + load */ }
+    @ViewBuilder private var accessFlow: some View { /* switch rootVM.phase */ }
+    @ViewBuilder private var mainTabs: some View { /* MainTabView; resetApp in Debug */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1186,6 +1799,10 @@ struct RootView: View {
 
 </details>
 
+<b>Try</b>
+
+- While unlocked, pull down Control Center: which `scenePhase` arrives, and does the overlay show?
+
 - The skeleton's `FakeAccessStep` enum and `accessStep` state are gone.
 
 </dd></dl>
@@ -1199,10 +1816,48 @@ struct RootView: View {
 
 <b>Explain</b> · S4: loads and saves Lock app, Face ID and *Lock after*.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Bindable `var`s for the toggles and `lockAfter`; a list of `LockAfterOption`.
-- `load()` copies the settings in; `save()` writes them back.
+- Save on every toggle, or once when the screen closes? What does each choice cost?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Copy the settings into bindable vars on load; write them back on save; a list of options for the radio rows.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `struct LockAfterOption: Identifiable` with `var id: String { title }`, `guard var updated = settings`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import Observation
+
+@MainActor @Observable
+final class AppLockViewModel {
+    struct LockAfterOption: Identifiable { /* title, value, id */ }
+
+    var isLockOn = true
+    var isFaceIDOn = true
+    var lockAfter: Duration = .seconds(300)
+    let lockAfterOptions = [ /* Immediately, 1 min, 5 min, 15 min, 1 h */ ]
+
+    // injected load / save; remembered settings
+
+    func load() async { /* copy the settings in */ }
+    func save() async { /* copy the vars back, save */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1264,11 +1919,19 @@ final class AppLockViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Set *Lock after* to **Immediately**, go Home and straight back: locked? Which methods made that happen?
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/AppLock/AppLockView.swift`
 
 <b>Explain</b> · Reads and saves the settings through `AppLockViewModel`.
+
+<b>Think</b>
+
+- `ForEach(lockAfterOptions, id: \.self)` loses its `id:` argument. Why does `Identifiable` make it unnecessary?
 
 | In `AppLockView` | Change to |
 |---|---|
@@ -1276,6 +1939,10 @@ final class AppLockViewModel {
 | `toggleRow("Lock app", isOn: $isLockOn)` | `toggleRow("Lock app", isOn: $viewModel.isLockOn)` (same for Face ID) |
 | `ForEach(lockAfterOptions, id: \.self)` | `ForEach(viewModel.lockAfterOptions)`; radio on `viewModel.lockAfter == option.value`; tap sets `viewModel.lockAfter = option.value` |
 | end of `body` | `.task { await viewModel.load() }` and `.onDisappear { Task { await viewModel.save() } }` |
+
+<b>Try</b>
+
+- Change *Lock after*, go back, reopen S4: is the new value shown? Which two view model methods made that happen?
 
 </dd></dl>
 </details>
@@ -1288,10 +1955,50 @@ final class AppLockViewModel {
 
 <b>Explain</b> · S5: enter a new passcode twice; saved only when both match.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Two stages: enter, confirm; remember the first entry.
-- Match → `setPasscode` + `onDone()`; mismatch → message, back to enter.
+- Write the steps of “set a new passcode” as states. What happens on a mismatch?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A two-stage enum; remember the first entry; compare on confirm.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `enum Stage`, a computed `var title: String`, `@Injected(\.setPasscode)`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import Observation
+
+@MainActor @Observable
+final class SetPasscodeViewModel {
+    enum Stage { /* enter, confirm */ }
+    private(set) var stage: Stage = .enter
+    private(set) var message = ""
+    // injected setPasscode; firstEntry; onDone
+
+    init(onDone: @escaping () -> Void) { }
+
+    var title: String { /* one text per stage */ }
+
+    func passcodeEntered(_ passcode: String) async {
+        // enter → remember it, go to confirm
+        // confirm → match: save + onDone; mismatch: message, back to enter
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1350,11 +2057,19 @@ final class SetPasscodeViewModel {
 
 </details>
 
+<b>Try</b>
+
+- Why is `firstEntry` `@ObservationIgnored`? Think about what SwiftUI would redraw without it.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeView.swift`
 
 <b>Explain</b> · Hands the typed digits to `SetPasscodeViewModel`.
+
+<b>Think</b>
+
+- This screen and A3 both read 6 digits. Which parts of A3’s wiring can you reuse?
 
 | In `SetPasscodeView` | Change to |
 |---|---|
@@ -1362,6 +2077,10 @@ final class SetPasscodeViewModel {
 | `Text("Enter a 6-digit passcode")` | `Text(viewModel.title)`; add `Text(viewModel.message)` under the dots |
 | `.onChange(of: code)` | at 6 digits: `Task { await viewModel.passcodeEntered(newValue); code = "" }` |
 | `AppLockView` | `SetPasscodeView(onDone: { isSetPasscodeShown = false })` |
+
+<b>Try</b>
+
+- Wire it up without reading the table, then compare.
 
 </dd></dl>
 </details>
@@ -1426,10 +2145,49 @@ final class SetPasscodeViewModel {
 
 <b>Explain</b> · Correct passcode unlocks; a wrong one shows the tries left.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `@MainActor @Suite(.container)`; register a fresh `InMemoryAccessRepository` per test.
-- `123456` unlocks; `000000` leaves “Wrong passcode. 4 tries left.”
+- The fake is a singleton. If test A types a wrong passcode, what does test B see unless something resets it?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Fresh container per test, a fresh fake, the view model, one `passcodeEntered` call; check the closure and the message.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@MainActor @Suite(.container)`, `Container.shared.inMemoryAccessRepository.register { … }`, a `var didUnlock` set by the closure, `#expect`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import FactoryTesting
+import Testing
+@testable import SiteLog
+
+@MainActor
+@Suite(.container)
+struct PasscodeUnlockViewModelTests {
+    @Test func correctPasscodeUnlocks() async {
+        // 1. register a fresh fake
+        // 2. view model whose onUnlocked sets a flag
+        // 3. enter "123456", #expect the flag
+    }
+
+    @Test func wrongPasscodeShowsTriesLeft() async {
+        // enter "000000", #expect no unlock and the message
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1468,6 +2226,10 @@ struct PasscodeUnlockViewModelTests {
 ```
 
 </details>
+
+<b>Try</b>
+
+- Write the `RootViewModel` “*Lock after* reached” test listed below, using `FixedClock` from F00.
 
 - `RootViewModel`: lock off → unlocked; Face ID off → passcode; *Lock after* reached → locked (fixed clock)
 - `SetPasscodeViewModel`: mismatch returns to *enter*; match calls `setPasscode`

@@ -30,7 +30,7 @@
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
 - **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
-- **How to use:** try each file from its hints first; open **Code** only to check or when stuck.
+- **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
 
 | Step | Layer | Hours | Status | What |
@@ -113,10 +113,41 @@ site-log-ios/
 
 <b>Explain</b> · Adds the local DesignSystem package and two libraries: Factory (DI) and swift-snapshot-testing.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Three entries under `packages:`: the local `DesignSystem` path, Factory, swift-snapshot-testing.
-- Use `from:` versions so SPM can take compatible updates.
+- Why list packages in `project.yml` instead of adding them with Xcode’s **Add Package** button?
+- `from: 3.4.1` lets SPM pick which versions? Why not pin one exact version?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Each package is a named entry: a local one points at a folder, a remote one at a git URL plus a version rule.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- Local: `path:`. Remote: `url:` + `from:`.
+- The entry name (`Factory`) is what targets refer to later in `dependencies`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```yaml
+  DesignSystem:
+    path: # folder of the local package
+  Factory:
+    url: # git URL
+    from: # lowest version you accept
+  SnapshotTesting:
+    url:
+    from:
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -134,15 +165,33 @@ site-log-ios/
 
 </details>
 
+<b>Try</b>
+
+- Misspell `Factory` as `Factroy` here only, run `xcodegen generate`, read the error: which part of `project.yml` does it point to? Fix it after.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLog.dependencies` *(add at the end)*
 
 <b>Explain</b> · Lets the app target use DesignSystem and FactoryKit.
 
-<b>Hint</b>
+<b>Think</b>
 
-- The app target needs `DesignSystem` and the `FactoryKit` product of Factory.
+- Factory ships two products, `FactoryKit` and `FactoryTesting`. Which one belongs in the app, which in the tests, and why?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Link only what the app uses; test-only libraries never ship inside the app.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `- package: <name>`; add `product:` when the product name differs from the package name.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -155,16 +204,35 @@ site-log-ios/
 
 </details>
 
+<b>Try</b>
+
+- Remove the two `Factory` lines, `xcodegen generate`, build: which file fails first, with what message? Put them back.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLogTests` *(replace its `dependencies` and `settings`)*
 
 <b>Explain</b> · Lets the tests use the app, FactoryTesting and SnapshotTesting.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Tests depend on the app target, `FactoryTesting` and `SnapshotTesting`.
-- Set `SWIFT_VERSION` to 6.0, like the app.
+- `@testable import SiteLog` needs what from the test target?
+- Why should tests use the same Swift version as the app?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Tests link the app plus the test-only libraries, with the same Swift 6 rules as the app.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `- target: SiteLog`, `- package: Factory` + `product: FactoryTesting`, `- package: SnapshotTesting`.
+- `settings.base.SWIFT_VERSION`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -182,6 +250,10 @@ site-log-ios/
 ```
 
 </details>
+
+<b>Try</b>
+
+- Delete `- target: SiteLog`, regenerate, run ⌘U: read what the test target can no longer see. Put it back.
 
 | Editor | Then |
 |---|---|
@@ -210,11 +282,46 @@ site-log-ios/
 
 <b>Explain</b> · Manifest of the DesignSystem package: one library and its test target.
 
-<b>Hint</b>
+<b>Think</b>
 
-- One `.library` product and one `.target` named `DesignSystem`, platform iOS 18.
-- Add a `.testTarget` `DesignSystemTests` that depends on it.
-- Enable the `ApproachableConcurrency` upcoming feature on both targets.
+- In a package, what is the difference between a *target* and a *product*?
+- Why can `DesignSystem` never import anything from the app?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A target is code that compiles into a module; a product is what other code may import; a test target holds that module’s tests.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `Package(name:platforms:products:targets:)`, `.library(name:targets:)`, `.target(name:swiftSettings:)`, `.testTarget(name:dependencies:)`.
+- `.enableUpcomingFeature("ApproachableConcurrency")`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+// swift-tools-version: 6.4
+
+import PackageDescription
+
+let package = Package(
+    name: "DesignSystem",
+    platforms: [ /* iOS 18 */ ],
+    products: [ /* one library */ ],
+    targets: [
+        // .target: the code
+        // .testTarget: its tests
+    ]
+)
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -256,6 +363,10 @@ let package = Package(
 
 </details>
 
+<b>Try</b>
+
+- Add `import FactoryKit` to any DesignSystem file and build. The app has Factory, so why does the package fail? Remove it after.
+
 </dd></dl>
 </details>
 
@@ -267,10 +378,39 @@ let package = Package(
 
 <b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, DataSources and Presentation need time.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `nonisolated protocol … : Sendable`, so any actor can read it.
-- Two read-only requirements: `now: Date` and `uptime: ContinuousClock.Instant`.
+- If code calls `Date.now` directly, how would you write a test for “a log created at 8:00”?
+- To measure “how long was the app away”, would `Date` work if the user changes the phone’s time?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A protocol with two read-only properties: wall-clock time to save, monotonic time to measure. Callers depend on the protocol, never on a concrete clock.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `protocol`, `{ get }`, `Sendable`, `nonisolated`.
+- `Date` for `now`, `ContinuousClock.Instant` for `uptime`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import Foundation
+
+nonisolated protocol AppClock: Sendable {
+    var now: /* type */ { get }
+    var uptime: /* type */ { get }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -290,16 +430,48 @@ nonisolated protocol AppClock: Sendable {
 
 </details>
 
+<b>Try</b>
+
+- Remove `Sendable`, build app and tests: does anything complain yet? Where would a non-`Sendable` clock become a problem? (Hint: the actor in F01.) Put it back.
+- Swift already has a `Clock` protocol. Look it up in the docs: what would naming ours `Clock` hide?
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Core/Helper/Clock/SystemClock.swift`
 
 <b>Explain</b> · The real `AppClock` used by the running app.
 
-<b>Hint</b>
+<b>Think</b>
 
-- A `nonisolated struct` that conforms to `AppClock`.
-- `now` returns `Date()`; `uptime` returns `ContinuousClock.now`.
+- Why computed properties here, not stored `let`s?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Every read asks the system for the current time.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `Date()`, `ContinuousClock.now`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import Foundation
+
+nonisolated struct SystemClock: AppClock {
+    var now: Date { /* current wall-clock time */ }
+    var uptime: ContinuousClock.Instant { /* current monotonic time */ }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -321,16 +493,52 @@ nonisolated struct SystemClock: AppClock {
 
 </details>
 
+<b>Try</b>
+
+- Change `now` to a stored `let now = Date()`. Read it twice, one second apart: what do you get, and which F01 feature would that break? Undo it.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Core/Helper/Clock/SystemClockTests.swift`
 
 <b>Explain</b> · Checks that `SystemClock.uptime` moves forward.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Read `uptime`, wait ~10 ms with `Task.sleep`, read it again.
-- `#expect` the second value is greater.
+- What one property of `uptime` is worth testing? Why not test `now == Date()`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Read, wait a little, read again, compare.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@Test func … async throws`, `try await Task.sleep(for: .milliseconds(10))`, `#expect`, `@testable import SiteLog`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import Foundation
+import Testing
+@testable import SiteLog
+
+struct SystemClockTests {
+    @Test func uptimeMovesForward() async throws {
+        // 1. read uptime
+        // 2. sleep ~10 ms
+        // 3. read again, #expect it grew
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -355,6 +563,10 @@ struct SystemClockTests {
 
 </details>
 
+<b>Try</b>
+
+- Flip `>` to `<`, run ⌘U, read how Swift Testing prints both values. Flip it back.
+
 </dd></dl>
 </details>
 
@@ -366,10 +578,39 @@ struct SystemClockTests {
 
 <b>Explain</b> · Composition root: the one place that registers which implementation backs each protocol (Factory).
 
-<b>Hint</b>
+<b>Think</b>
 
-- `import FactoryKit`, then `extension Container`.
-- One `Factory<any AppClock>` named `clock` that builds `SystemClock()`, scoped `.singleton`.
+- If every view model wrote `SystemClock()` itself, what would a test have to do to change the time?
+- Why should a clock be `.singleton` but a use case not?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- One `Container` extension lists every dependency; each is a `Factory` that knows how to build the real thing.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `import FactoryKit`, `extension Container`, `Factory<any AppClock>`, `self { … }`, `.singleton`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+
+extension Container {
+    var clock: Factory</* protocol type */> {
+        self { /* the real clock */ }./* scope */
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -390,6 +631,10 @@ extension Container {
 
 </details>
 
+<b>Try</b>
+
+- Delete `.singleton`: does anything change for a `struct` clock? When would it matter? (Think of a class that holds state, like F01’s fake repository.)
+
 </dd></dl>
 </details>
 
@@ -401,11 +646,50 @@ extension Container {
 
 <b>Explain</b> · First Factory test: swaps the real clock for a fixed one.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Write `FixedClock: AppClock` with stored `now` and `uptime`.
-- Mark the suite `@Suite(.container)` so each test gets a fresh container.
-- Register `FixedClock` on `Container.shared.clock`, resolve it, `#expect` the fixed date.
+- Tests run in parallel. If two tests register different clocks on the same shared container, what goes wrong?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A fake clock with fixed values; register it, resolve through the container like the app does, check you got the fake.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@Suite(.container)` from FactoryTesting.
+- `Container.shared.clock.register { … }`, `Container.shared.clock()`, `Date(timeIntervalSince1970:)`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import FactoryKit
+import FactoryTesting
+import Foundation
+import Testing
+@testable import SiteLog
+
+struct FixedClock: AppClock {
+    // two stored properties
+}
+
+@Suite(.container)
+struct AppDependenciesTests {
+    @Test func clockCanBeReplacedInTests() {
+        // 1. pick a fixed date
+        // 2. register a FixedClock on Container.shared.clock
+        // 3. resolve the clock, #expect its now
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -441,6 +725,10 @@ struct AppDependenciesTests {
 
 </details>
 
+<b>Try</b>
+
+- Remove `.container`, add a second test that registers a different date, run ⌘U several times: does it ever fail? Put `.container` back.
+
 </dd></dl>
 </details>
 
@@ -475,9 +763,24 @@ struct AppDependenciesTests {
 
 <b>Explain</b> · Pins the fastlane version so `bundle exec fastlane` runs the same everywhere.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `source "https://rubygems.org"` plus one pinned `gem "fastlane"` line.
+- Your Mac has fastlane 2.238 and the CI Mac 2.230. A lane passes locally and fails on CI. How do you stop that?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Say where gems come from and the one gem you need, with a version rule.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `source "https://rubygems.org"`, `gem "fastlane", "~> 2.228"`.
+- `~> 2.228` means ≥ 2.228 and < 3.0.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -491,15 +794,34 @@ gem "fastlane", "~> 2.228"
 
 </details>
 
+<b>Try</b>
+
+- Run `bundle exec fastlane --version` and `fastlane --version`. Same version? Why can they differ?
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `fastlane/Appfile`
 
 <b>Explain</b> · App bundle id for fastlane.
 
-<b>Hint</b>
+<b>Think</b>
 
-- One line: `app_identifier` with the app bundle id.
+- Which fastlane actions need the app’s bundle id? (Look ahead: TestFlight upload in F04.)
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- One line of config shared by every lane.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `app_identifier("…")`.
+- The bundle id is in `project.yml` → `PRODUCT_BUNDLE_IDENTIFIER`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -511,17 +833,60 @@ app_identifier("app.dd.site.log")
 
 </details>
 
+<b>Try</b>
+
+- Find the bundle id in `project.yml` yourself instead of copying it from **Code**.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `fastlane/Fastfile`
 
 <b>Explain</b> · fastlane lanes; `test` runs the unit and snapshot tests exactly like CI.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Pin one simulator (name + OS) so snapshots compare the same pixels everywhere.
-- Lane `test`: `xcodegen generate` → `xcodebuild test` for each package → `run_tests` for `SiteLogTests`.
-- Write DerivedData and results under `build/`.
+- Why test the `DesignSystem` package on its own instead of only through the app?
+- Snapshot tests compare pixels. Why pin one simulator name and OS?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Constants for the simulator, the packages and the paths; one lane `test` in three steps: generate the project → test each package → test the app.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `default_platform(:ios)`, `platform :ios do … end`, `lane :test do … end`, `sh("…")`.
+- `run_tests(project:, scheme:, device:, only_testing:, derived_data_path:, code_coverage:, output_directory:)`.
+- `File.expand_path("..", __dir__)`, `File.join`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```ruby
+default_platform(:ios)
+
+SIMULATOR_NAME = "..."
+SIMULATOR_OS = "..."
+DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
+PACKAGES = [...]
+ROOT = File.expand_path("..", __dir__)
+DERIVED_DATA = File.join(ROOT, "build", "DerivedData")
+
+platform :ios do
+  lane :test do
+    # 1. xcodegen generate (sh)
+    # 2. each package: xcodebuild test (sh)
+    # 3. run_tests for SiteLogTests
+  end
+end
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -578,15 +943,34 @@ end
 
 </details>
 
+<b>Try</b>
+
+- Set `SIMULATOR_OS` to a version you do not have, run the lane, read where it fails. Undo it.
+- Why `ROOT` and not the current folder? Run the lane from the repo root and from inside `fastlane/`.
+
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `.swiftlint.yml` → `excluded:` *(add one line)*
 
 <b>Explain</b> · Keeps SwiftLint out of Fastlane’s build output.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Add `build` to `excluded` so SwiftLint skips Fastlane output.
+- SwiftLint checks every `.swift` file under the repo. Which `.swift` files end up inside `build/` after a fastlane run?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Tell SwiftLint to skip the build output folder.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- One more item under `excluded:`.
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -596,6 +980,10 @@ end
 ```
 
 </details>
+
+<b>Try</b>
+
+- Open `build/DerivedData/SourcePackages/checkouts/`: whose code is there, and why would linting it fail the build?
 
 </dd></dl>
 </details>
@@ -608,11 +996,52 @@ end
 
 <b>Explain</b> · GitHub Actions workflow run on every pull request: lint and tests.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Run on `pull_request` and pushes to `main`; cancel older runs of the same branch.
-- Job `lint`: SwiftLint `--strict` in the official container on Ubuntu.
-- Job `test` on the self-hosted Mac, after `lint`: `bundle install` → `bundle exec fastlane test`.
+- Why run lint on Ubuntu but the tests on your Mac?
+- Five pushes arrive in one minute. Without `concurrency`, what happens to your Mac?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Triggers (`on`), one concurrency group per branch, two jobs: `lint`, then `test`.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `on: pull_request` / `push: branches:`, `concurrency: group: / cancel-in-progress:`.
+- `jobs.<id>.runs-on`, `container:`, `needs:`, `steps:` with `uses:` / `run:`, `actions/checkout@v4`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```yaml
+name: PR checks
+
+on:
+  # PRs, and pushes to main
+
+concurrency:
+  # one group per branch, cancel older runs
+
+jobs:
+  lint:
+    runs-on: # Ubuntu
+    container: # SwiftLint image
+    steps:
+      # checkout, swiftlint --strict
+  test:
+    runs-on: # your Mac
+    needs: # lint
+    steps:
+      # checkout, bundle install, bundle exec fastlane test
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -653,6 +1082,10 @@ jobs:
 ```
 
 </details>
+
+<b>Try</b>
+
+- Push a branch with one SwiftLint warning: which job fails, and does `test` run at all?
 
 </dd></dl>
 </details>
@@ -696,10 +1129,42 @@ jobs:
 
 <b>Explain</b> · Fails CI when app code uses `print(`; logging goes through `AppLogger`.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `grep` for `print(` in `SiteLog`, `SiteLogTests`, `Packages`; ignore `.build`.
-- Matches → print them and `exit 1`; none → `OK`.
+- Why is `print(` banned but `AppLogger` allowed? Where does each one end up on a user’s phone?
+- The pattern skips `.print(` and `myprint(`. Why?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Search, list the matches, fail if there are any.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `set -euo pipefail`, `grep -rnE '…' --include='*.swift' --exclude-dir='.build'`, `|| true`, `[ -n "$matches" ]`, `exit 1`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+matches=$(grep ... || true)   # why || true?
+
+if [ -n "$matches" ]; then
+  # explain, list, fail
+fi
+
+echo "OK: no print( calls"
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -724,17 +1189,56 @@ echo "OK: no print( calls"
 
 </details>
 
+<b>Try</b>
+
+- Delete `|| true` and run it on a clean repo: why does it now fail with no output? Put it back.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-imports.sh`
 
 <b>Explain</b> · Fails CI when a layer uses one it must not, e.g. a view using a `Data/` type.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Rule 1: every `import` in `Domain/` must be `Foundation`.
-- Rules 2–3: collect type names declared in `Data/`, `DataSources/` and `Core/`; grep them as whole words where they are banned.
-- Rule 4: `Presentation/` never imports SwiftData or uses `ModelContext` / `URLSession`.
+- Layers are folders in one target, so `import` cannot stop a view from using a `Data/` type. What text in a Swift file gives that use away?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Four rules, each one collect → search → report; a `failed` flag so every rule runs before the script exits.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `grep -rhoE '(class|struct|enum|actor|protocol)[[:space:]]+[A-Z][A-Za-z0-9_]*'`, `awk '{print $2}'`, `sort -u`.
+- `grep -rnw` (whole word), `for name in $list; do … done`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+failed=0
+
+# Rule 1: Domain imports Foundation only
+# Rule 2: types declared in Data/ or DataSources/ never used in Presentation/ or Domain/
+#   step 1: collect the type names   step 2: grep each as a whole word
+# Rule 3: types declared in Core/ never used in Domain/
+# Rule 4: Presentation never imports SwiftData/CoreData, never uses ModelContext/URLSession
+
+if [ "$failed" -ne 0 ]; then
+  exit 1
+fi
+echo "OK: layer rules"
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -796,16 +1300,55 @@ echo "OK: layer rules"
 
 </details>
 
+<b>Try</b>
+
+- Why `-w`? Remove it, add `struct Log {}` in `SiteLog/Data/`, run the script: which false alarms appear? Undo both.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `Tools/CI/build-strict.sh`
 
 <b>Explain</b> · Builds the app with warnings treated as errors.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `xcodegen generate`, then `xcodebuild clean build` into `build/`, output to a log file.
-- Fail when the log has `warning:` lines from `SiteLog/` or `Packages/` files.
+- Why not just turn on `SWIFT_TREAT_WARNINGS_AS_ERRORS`? (The first comment in **Code** answers it.)
+- Why `clean build` and not `build`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Generate → clean build into a log → grep warnings from our own files → fail if any.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `xcodebuild clean build -project … -scheme … -destination … -derivedDataPath … -quiet > "$log" 2>&1`.
+- `grep -E '/(SiteLog|Packages)/[^:]+:[0-9]+:[0-9]+: warning: '`, `sort -u`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+destination="..."
+derived_data="$(pwd)/build/DerivedData-strict"
+log="$(pwd)/build/strict-build.log"
+mkdir -p build
+
+# 1. xcodegen generate
+# 2. xcodebuild clean build ... > "$log" 2>&1
+# 3. warnings=$(grep ... "$log" | sort -u || true)
+# 4. not empty → list them, exit 1
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -841,17 +1384,47 @@ echo "OK: the app builds with zero warnings"
 
 </details>
 
+<b>Try</b>
+
+- Add `let unused = 1` inside any function, run the script, read the output. Remove it.
+
 ---
 
 <b>File</b> · <b class="tag-replace">Replace</b> · `.github/workflows/pr-checks.yml` *(final: adds guards + build jobs)*
 
 <b>Explain</b> · Final workflow: adds the guards job and the strict build before the tests.
 
-<b>Hint</b>
+<b>Think</b>
 
-- Add a `guards` job on Ubuntu: the two scripts + gitleaks (`fetch-depth: 0`).
-- Add a `build` job on the Mac running `build-strict.sh`, after `guards` and `lint`.
-- `test` now runs after `build`.
+- Which jobs are cheap and which are slow? In what order do they fail fastest?
+- Why does gitleaks need `fetch-depth: 0`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Two cheap Ubuntu jobs in parallel → strict build on the Mac → tests on the Mac.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `needs: [guards, lint]`, `with: fetch-depth: 0`, `uses: gitleaks/gitleaks-action@v2` with `GITHUB_TOKEN`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```yaml
+jobs:
+  guards:   # Ubuntu: checkout (full history), 2 scripts, gitleaks
+  lint:     # Ubuntu: swiftlint --strict
+  build:    # Mac, needs guards + lint: build-strict.sh
+  test:     # Mac, needs build: bundle install, fastlane test
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -917,6 +1490,10 @@ jobs:
 
 </details>
 
+<b>Try</b>
+
+- Draw the job graph from the `needs:` lines yourself, then compare it with the diagram at the top of step 2.
+
 <details open>
 <summary><strong>3.1 Check</strong></summary>
 <dl><dd>
@@ -945,10 +1522,43 @@ jobs:
 
 <b>Explain</b> · Unit test for the hex colour helper behind `DSColor`.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `@testable import DesignSystem` to reach the internal `UIColor(hex:)`.
-- Decode `0xFFD400`, read the components with `getRed`, `#expect` 1, 0xD4/255, 0.
+- `UIColor(hex:)` is `internal`. How can a test in another module call it?
+- Why compare with `CGFloat(0xD4) / 255` instead of `0.83`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Build a colour from hex, read its RGB back, compare each part.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@testable import DesignSystem`, `getRed(_:green:blue:alpha:)` with `&` (inout), `#expect`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import Testing
+import UIKit
+@testable import DesignSystem
+
+struct DesignSystemTests {
+    @Test func hexColourIsDecoded() {
+        // 1. UIColor(hex: 0xFFD400)
+        // 2. four CGFloat vars, getRed(&...)
+        // 3. #expect red, green, blue
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -977,16 +1587,62 @@ struct DesignSystemTests {
 
 </details>
 
+<b>Try</b>
+
+- Replace `CGFloat(0xD4) / 255` with `0.83`: does it pass? What does that say about comparing decimals?
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DesignSystem/Sources/DesignSystem/Components/DSGallery.swift`
 
 <b>Explain</b> · Every DesignSystem component on one screen, for previews and the snapshot test.
 
-<b>Hint</b>
+<b>Think</b>
 
-- A `public struct DSGallery: View` stacking one of every component.
-- Fill the screen with `DSColor.canvas`; add Light and Dark previews.
+- Why one screen with every component instead of one snapshot per component?
+- Why must it be `public`, with a `public init`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- A vertical stack with one example of each component group, on the canvas colour, plus Light and Dark previews.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `public struct … : View`, `public init() {}`, `DSSpacing`, `DSColor.canvas.ignoresSafeArea()`.
+- `.buttonStyle(.ds(.primary))`, `#Preview("Dark") { … .preferredColorScheme(.dark) }`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import SwiftUI
+
+public struct DSGallery: View {
+    public init() {}
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+            // section header
+            // two list rows
+            // chips + count badge
+            // one status marker per kind
+            // the five button styles
+            // empty state
+        }
+        // fill the screen with DSColor.canvas
+    }
+}
+
+// #Preview Light and Dark
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1057,16 +1713,56 @@ public struct DSGallery: View {
 
 </details>
 
+<b>Try</b>
+
+- Delete `public init() {}` and use `DSGallery()` from the app target: read the error, then put it back.
+
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift`
 
 <b>Explain</b> · Snapshots `DSGallery` in light and dark; fails when a component’s look changes.
 
-<b>Hint</b>
+<b>Think</b>
 
-- `@MainActor` suite; `@Test(arguments:)` over light and dark.
-- Host `DSGallery` in a `UIHostingController`, `assertSnapshot(…, as: .image(on: .iPhone13Pro))`.
+- A snapshot test has no `#expect` that you write. What does it compare against, and where does that come from the first time?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- One test run twice (light, dark): host the SwiftUI view in UIKit and compare it as an image on a fixed device.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `@MainActor`, `@Test(arguments:)`, `.environment(\.colorScheme, scheme)`.
+- `UIHostingController(rootView:)`, `assertSnapshot(of:as:named:)`, `.image(on: .iPhone13Pro)`.
+
+</details>
+
+<details open>
+<summary><b>Hint 3 · Skeleton</b></summary>
+
+```swift
+import DesignSystem
+import SnapshotTesting
+import SwiftUI
+import Testing
+
+@MainActor
+struct DesignSystemSnapshotTests {
+    @Test(arguments: [/* light, dark */])
+    func gallery(scheme: ColorScheme) {
+        // 1. DSGallery with that colour scheme
+        // 2. wrap it in a UIHostingController
+        // 3. assertSnapshot(..., named: "\(scheme)")
+    }
+}
+```
+
+</details>
 
 <details>
 <summary><b>Code</b></summary>
@@ -1093,6 +1789,10 @@ struct DesignSystemSnapshotTests {
 ```
 
 </details>
+
+<b>Try</b>
+
+- After the references exist, change one `DSSpacing` value and run ⌘U: open the failure diff image. Undo the change.
 
 <details open>
 <summary><strong>4.1 Check</strong></summary>
