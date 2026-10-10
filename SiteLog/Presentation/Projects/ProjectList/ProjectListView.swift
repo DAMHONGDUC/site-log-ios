@@ -1,6 +1,6 @@
 // P1 · Projects
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -11,20 +11,20 @@ struct ProjectListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 liveSessionPanel
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, SDSpacing.regular)
 
                 projectsSection
 
                 Text("Saved on this iPhone · synced at 8:47")
-                    .font(DSFont.footnote)
-                    .foregroundStyle(DSColor.textTertiary)
+                    .font(SDFont.footnote)
+                    .foregroundStyle(SDColor.textTertiary)
                     .frame(maxWidth: .infinity)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Projects")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -41,59 +41,59 @@ struct ProjectListView: View {
     }
 
     private var liveSessionPanel: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.medium) {
-            HStack(spacing: DSSpacing.small) {
-                DSLiveDot()
+        VStack(alignment: .leading, spacing: SDSpacing.medium) {
+            HStack(spacing: SDSpacing.small) {
+                SDLiveDot()
                 Text("Walkthrough in progress · since 8:12")
-                    .font(DSFont.footnote)
+                    .font(SDFont.footnote)
             }
 
             VStack(alignment: .leading) {
                 Text("Riverside Tower B")
-                    .font(DSFont.headline)
+                    .font(SDFont.headline)
                 Text("Level 7 · 37 of 82 rooms")
-                    .font(DSFont.subhead)
-                    .foregroundStyle(DSColor.textSecondary)
+                    .font(SDFont.subhead)
+                    .foregroundStyle(SDColor.textSecondary)
             }
 
-            DSProgressBar(value: 37.0 / 82.0)
+            SDProgressBar(value: 37.0 / 82.0)
 
             HStack {
                 Text("46 photos, 7 new issues")
-                    .font(DSFont.footnote)
-                    .foregroundStyle(DSColor.textSecondary)
+                    .font(SDFont.footnote)
+                    .foregroundStyle(SDColor.textSecondary)
                 Spacer()
                 NavigationLink("Resume") {
                     SurveyView()
                 }
-                .buttonStyle(.ds(.primary, small: true))
+                .buttonStyle(.sd(.primary, small: true))
             }
         }
-        .padding(DSSpacing.regular)
-        .background(DSColor.fill, in: RoundedRectangle(cornerRadius: 14))
+        .padding(SDSpacing.regular)
+        .background(SDColor.fill, in: RoundedRectangle(cornerRadius: 14))
     }
 
     private var projectsSection: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-            DSSectionHeader(title: "All projects")
+        VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+            SDSectionHeader(title: "All projects")
 
             VStack(spacing: 0) {
                 ForEach(FakeData.projects) { project in
                     NavigationLink {
                         ProjectDetailView(project: project)
                     } label: {
-                        DSListRow(title: project.name, subtitle: project.summary, showsChevron: true) {
+                        SDListRow(title: project.name, subtitle: project.summary, showsChevron: true) {
                             SitePhotoThumb(variant: project.photoVariant, size: 44)
                         }
                     }
                     .buttonStyle(.plain)
 
-                    DSDivider()
+                    SDDivider()
                 }
 
-                DSListRow(title: "Archived", value: "2", showsChevron: true) {
+                SDListRow(title: "Archived", value: "2", showsChevron: true) {
                     Image(systemName: "archivebox")
-                        .foregroundStyle(DSColor.textTertiary)
+                        .foregroundStyle(SDColor.textTertiary)
                 }
             }
         }

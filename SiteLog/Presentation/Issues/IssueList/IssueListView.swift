@@ -1,6 +1,6 @@
 // C5 · Issues
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -17,11 +17,11 @@ struct IssueListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 Text("Riverside Tower B")
-                    .font(DSFont.subhead)
-                    .foregroundStyle(DSColor.textSecondary)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .font(SDFont.subhead)
+                    .foregroundStyle(SDColor.textSecondary)
+                    .padding(.horizontal, SDSpacing.regular)
 
                 Picker("Filter", selection: $filter) {
                     ForEach(Filter.allCases, id: \.self) { item in
@@ -29,10 +29,10 @@ struct IssueListView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
                 if visibleIssues.isEmpty {
-                    DSEmptyState(
+                    SDEmptyState(
                         systemImage: "checkmark.circle",
                         title: "Nothing here",
                         message: "Issues you log on site show up in this list."
@@ -44,9 +44,9 @@ struct IssueListView: View {
                     }
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Issues")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -80,8 +80,8 @@ struct IssueListView: View {
     private func levelSection(_ level: String) -> some View {
         let issues = visibleIssues.filter { $0.level == level }
 
-        return VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-            DSSectionHeader(title: level, trailing: "\(issues.count) open")
+        return VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+            SDSectionHeader(title: level, trailing: "\(issues.count) open")
 
             ForEach(issues) { issue in
                 NavigationLink {
@@ -91,7 +91,7 @@ struct IssueListView: View {
                 }
                 .buttonStyle(.plain)
 
-                DSDivider()
+                SDDivider()
             }
         }
     }
@@ -101,15 +101,15 @@ struct IssueRow: View {
     let issue: FakeIssue
 
     var body: some View {
-        DSListRow(title: issue.title, subtitle: "\(issue.room) · \(issue.assignee)") {
+        SDListRow(title: issue.title, subtitle: "\(issue.room) · \(issue.assignee)") {
             SitePhotoThumb(variant: issue.photoVariant, size: 48, showsCrack: issue.number == 3)
         } trailing: {
             VStack(alignment: .trailing) {
-                DSStatusMarker(kind: issue.isOpen ? issue.severity : .resolved, text: severityText)
+                SDStatusMarker(kind: issue.isOpen ? issue.severity : .resolved, text: severityText)
                 if !issue.due.isEmpty {
                     Text(issue.due)
-                        .font(DSFont.footnote)
-                        .foregroundStyle(issue.isLate ? DSColor.critical : DSColor.textSecondary)
+                        .font(SDFont.footnote)
+                        .foregroundStyle(issue.isLate ? SDColor.critical : SDColor.textSecondary)
                 }
             }
         }

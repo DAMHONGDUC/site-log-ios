@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 // Values from COLOR_TOKENS in docs/design/mockups/index.html
-public enum DSColor {
+public enum SDColor {
     public static let canvas = dynamic(light: 0xFFFFFF, dark: 0x0F1011)
     public static let raised = dynamic(light: 0xFFFFFF, dark: 0x18191B)
     public static let fill = dynamic(light: 0xF3F2EF, dark: 0x232427)

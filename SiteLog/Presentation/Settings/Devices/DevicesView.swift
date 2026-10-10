@@ -1,6 +1,6 @@
 // S2 · Laser meter
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -9,42 +9,42 @@ struct DevicesView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "My devices")
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "My devices")
                     ForEach(FakeData.myDevices) { device in
-                        DSListRow(title: device.name, subtitle: device.detail) {
+                        SDListRow(title: device.name, subtitle: device.detail) {
                             EmptyView()
                         } trailing: {
                             if device.isConnected {
-                                DSStatusMarker(kind: .resolved)
+                                SDStatusMarker(kind: .resolved)
                             }
                         }
-                        DSDivider()
+                        SDDivider()
                     }
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Nearby", trailing: "Searching…")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Nearby", trailing: "Searching…")
                     ForEach(FakeData.nearbyDevices) { device in
-                        DSListRow(title: device.name, subtitle: device.detail) {
+                        SDListRow(title: device.name, subtitle: device.detail) {
                             EmptyView()
                         } trailing: {
                             Button("Pair") {}
-                                .buttonStyle(.ds(.secondary, small: true))
+                                .buttonStyle(.sd(.secondary, small: true))
                         }
-                        DSDivider()
+                        SDDivider()
                     }
                 }
 
                 Text("The camera never waits for the meter. If it disconnects, you keep shooting and we reconnect quietly.")
-                    .font(DSFont.footnote)
-                    .foregroundStyle(DSColor.textSecondary)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .font(SDFont.footnote)
+                    .foregroundStyle(SDColor.textSecondary)
+                    .padding(.horizontal, SDSpacing.regular)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Laser meter")
         .navigationBarTitleDisplayMode(.inline)
         .enableInjection()

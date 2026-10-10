@@ -1,6 +1,6 @@
 // M3 · Plans
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -8,25 +8,25 @@ struct PlanListView: View {
     @ObserveInjection var inject
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+        VStack(alignment: .leading, spacing: SDSpacing.regular) {
             VStack(spacing: 0) {
                 ForEach(FakeData.plans) { plan in
                     NavigationLink {
                         PlanViewerView(plan: plan)
                     } label: {
-                        DSListRow(title: plan.title, subtitle: plan.detail, showsChevron: true) {
+                        SDListRow(title: plan.title, subtitle: plan.detail, showsChevron: true) {
                             planThumb
                         }
                     }
                     .buttonStyle(.plain)
 
-                    DSDivider()
+                    SDDivider()
                 }
             }
 
             Text("Plans live on this iPhone and open without signal.")
-                .font(DSFont.footnote)
-                .foregroundStyle(DSColor.textTertiary)
+                .font(SDFont.footnote)
+                .foregroundStyle(SDColor.textTertiary)
                 .frame(maxWidth: .infinity)
         }
         .enableInjection()
@@ -34,7 +34,7 @@ struct PlanListView: View {
 
     private var planThumb: some View {
         Image(systemName: "map")
-            .foregroundStyle(DSColor.textSecondary)
+            .foregroundStyle(SDColor.textSecondary)
     }
 }
 

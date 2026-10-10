@@ -1,6 +1,6 @@
 // C6 · Issue detail
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -14,7 +14,7 @@ struct IssueDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 TabView {
                     ForEach(0..<3, id: \.self) { index in
                         SitePhoto(variant: issue.photoVariant + index, showsCrack: index == 0)
@@ -23,28 +23,28 @@ struct IssueDetailView: View {
                 .tabViewStyle(.page)
                 .frame(height: 250)
 
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
-                    DSStatusMarker(kind: issue.severity, text: "\(severityName) · #\(issue.number)")
+                VStack(alignment: .leading, spacing: SDSpacing.small) {
+                    SDStatusMarker(kind: issue.severity, text: "\(severityName) · #\(issue.number)")
                     Text(issue.title)
-                        .font(DSFont.title)
+                        .font(SDFont.title)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
                 VStack(spacing: 0) {
-                    DSListRow(title: "Room", value: issue.room)
-                    DSDivider()
-                    DSListRow(title: "Assigned to", value: issue.assignee)
-                    DSDivider()
-                    DSListRow(title: "Due", value: issue.due.isEmpty ? "No date" : issue.due)
+                    SDListRow(title: "Room", value: issue.room)
+                    SDDivider()
+                    SDListRow(title: "Assigned to", value: issue.assignee)
+                    SDDivider()
+                    SDListRow(title: "Due", value: issue.due.isEmpty ? "No date" : issue.due)
                 }
 
                 Text("Opened by Hanh on 12 Aug · still open on 28 Aug")
-                    .font(DSFont.footnote)
-                    .foregroundStyle(DSColor.textSecondary)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .font(SDFont.footnote)
+                    .foregroundStyle(SDColor.textSecondary)
+                    .padding(.horizontal, SDSpacing.regular)
             }
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -63,16 +63,16 @@ struct IssueDetailView: View {
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            HStack(spacing: DSSpacing.small) {
+            HStack(spacing: SDSpacing.small) {
                 Button("Mark up") {
                     isMarkupShown = true
                 }
-                .buttonStyle(.ds(.secondary))
+                .buttonStyle(.sd(.secondary))
 
                 Button("Re-check now") {
                     isRecheckShown = true
                 }
-                .buttonStyle(.ds(.primary))
+                .buttonStyle(.sd(.primary))
             }
         }
         .fullScreenCover(isPresented: $isMarkupShown) {

@@ -1,6 +1,6 @@
 // P7 · Room
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -19,27 +19,27 @@ struct RoomView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 header
 
                 recheckBanner
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Photos", trailing: "6 today")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Photos", trailing: "6 today")
                     photoGrid
                 }
 
                 NavigationLink {
                     ChecklistRunView()
                 } label: {
-                    DSListRow(title: "Finishing checklist", subtitle: "14 of 22 answered", value: "64%", showsChevron: true)
+                    SDListRow(title: "Finishing checklist", subtitle: "14 of 22 answered", value: "64%", showsChevron: true)
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -82,24 +82,24 @@ struct RoomView: View {
     private var header: some View {
         VStack(alignment: .leading) {
             Text(room.name)
-                .font(DSFont.largeTitle)
+                .font(SDFont.largeTitle)
             Text("\(unitName) · Level 7")
-                .font(DSFont.subhead)
-                .foregroundStyle(DSColor.textSecondary)
+                .font(SDFont.subhead)
+                .foregroundStyle(SDColor.textSecondary)
         }
-        .padding(.horizontal, DSSpacing.regular)
+        .padding(.horizontal, SDSpacing.regular)
     }
 
     private var recheckBanner: some View {
-        HStack(alignment: .top, spacing: DSSpacing.medium) {
-            DSStatusMarker(kind: .major)
+        HStack(alignment: .top, spacing: SDSpacing.medium) {
+            SDStatusMarker(kind: .major)
 
             VStack(alignment: .leading) {
                 Text("2 issues to re-check from 12 Aug")
-                    .font(DSFont.body.weight(.medium))
+                    .font(SDFont.body.weight(.medium))
                 Text("Crack by the skirting, loose socket cover")
-                    .font(DSFont.subhead)
-                    .foregroundStyle(DSColor.textSecondary)
+                    .font(SDFont.subhead)
+                    .foregroundStyle(SDColor.textSecondary)
             }
 
             Spacer()
@@ -107,7 +107,7 @@ struct RoomView: View {
             NavigationLink("Compare") {
                 OutcomePickerView(issue: FakeData.issues[1])
             }
-            .font(DSFont.subhead)
+            .font(SDFont.subhead)
         }
     }
 

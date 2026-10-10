@@ -1,6 +1,6 @@
 // R1 · Walkthrough finished
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -10,51 +10,51 @@ struct EndSessionView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
+                VStack(alignment: .leading, spacing: SDSpacing.small) {
                     Text("Tue 30 Sep · 8:12 to 14:00")
-                        .font(DSFont.footnote)
-                        .foregroundStyle(DSColor.textSecondary)
+                        .font(SDFont.footnote)
+                        .foregroundStyle(SDColor.textSecondary)
                     Text("All 82 rooms checked in just under six hours.")
                         .font(.title.bold())
                 }
                 .padding(.top)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
                 Text("You took \(Text("112 photos").bold()), logged \(Text("7 new issues").bold()) and closed \(Text("9").bold()) from last time.")
-                    .font(DSFont.body)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .font(SDFont.body)
+                    .padding(.horizontal, SDSpacing.regular)
 
                 VStack(spacing: 0) {
-                    DSListRow(title: "Every photo is fingerprinted", subtitle: "Nothing was edited after capture") {
+                    SDListRow(title: "Every photo is fingerprinted", subtitle: "Nothing was edited after capture") {
                         Image(systemName: "checkmark.shield")
-                            .foregroundStyle(DSColor.success)
+                            .foregroundStyle(SDColor.success)
                     }
-                    DSDivider()
+                    SDDivider()
                     NavigationLink {
                         UploadStatusView()
                     } label: {
-                        DSListRow(title: "Uploading 87 of 112", subtitle: "Keeps going if you close the app") {
+                        SDListRow(title: "Uploading 87 of 112", subtitle: "Keeps going if you close the app") {
                             Image(systemName: "arrow.triangle.2.circlepath")
-                                .foregroundStyle(DSColor.textSecondary)
+                                .foregroundStyle(SDColor.textSecondary)
                         }
                     }
                     .buttonStyle(.plain)
                 }
             }
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
             NavigationLink("Make the report") {
                 ReportBuilderView()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
 
             Button("Later") {
                 dismiss()
             }
-            .buttonStyle(.ds(.ghost))
+            .buttonStyle(.sd(.ghost))
         }
         .enableInjection()
     }

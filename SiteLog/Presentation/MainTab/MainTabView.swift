@@ -5,7 +5,7 @@
 //  Created by Duc Dam Dev on 1/10/26.
 //
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -37,7 +37,7 @@ struct MainTabView: View {
                 }
             }
         }
-        .tint(DSColor.textPrimary)
+        .tint(SDColor.textPrimary)
         .enableInjection()
     }
 }

@@ -1,6 +1,6 @@
 // P3 · Project overview
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -21,7 +21,7 @@ struct ProjectDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 header
 
                 Picker("Section", selection: $section) {
@@ -30,7 +30,7 @@ struct ProjectDetailView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
                 switch section {
                 case .sessions:
@@ -41,9 +41,9 @@ struct ProjectDetailView: View {
                     PlanListView()
                 }
             }
-            .padding(.bottom, DSSpacing.regular)
+            .padding(.bottom, SDSpacing.regular)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -75,12 +75,12 @@ struct ProjectDetailView: View {
     private var header: some View {
         VStack(alignment: .leading) {
             Text(project.name)
-                .font(DSFont.largeTitle)
+                .font(SDFont.largeTitle)
             Text("\(project.client) · \(project.area)")
-                .font(DSFont.subhead)
-                .foregroundStyle(DSColor.textSecondary)
+                .font(SDFont.subhead)
+                .foregroundStyle(SDColor.textSecondary)
         }
-        .padding(.horizontal, DSSpacing.regular)
+        .padding(.horizontal, SDSpacing.regular)
     }
 
     @ViewBuilder private var dock: some View {
@@ -89,31 +89,31 @@ struct ProjectDetailView: View {
             NavigationLink("Resume walkthrough") {
                 SurveyView()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
         case .locations:
             NavigationLink("Add rooms in bulk") {
                 BulkLocationsView()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
         case .plans:
             Button {
                 isPlanImportShown = true
             } label: {
                 Label("Import a plan", systemImage: "doc.badge.plus")
             }
-            .buttonStyle(.ds(.secondary))
+            .buttonStyle(.sd(.secondary))
         }
     }
 
     private var sessionsContent: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.large) {
+        VStack(alignment: .leading, spacing: SDSpacing.large) {
             Text("\(Text("14 open issues").bold()), 2 of them overdue. Last full walkthrough on 12 Aug with Hanh.")
-                .font(DSFont.body)
-                .foregroundStyle(DSColor.textSecondary)
-                .padding(.horizontal, DSSpacing.regular)
+                .font(SDFont.body)
+                .foregroundStyle(SDColor.textSecondary)
+                .padding(.horizontal, SDSpacing.regular)
 
-            VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                DSSectionHeader(title: "Sessions", trailing: String(FakeData.sessions.count))
+            VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                SDSectionHeader(title: "Sessions", trailing: String(FakeData.sessions.count))
 
                 ForEach(FakeData.sessions) { session in
                     NavigationLink {
@@ -127,42 +127,42 @@ struct ProjectDetailView: View {
                     }
                     .buttonStyle(.plain)
 
-                    DSDivider()
+                    SDDivider()
                 }
             }
         }
     }
 
     private func sessionRow(_ session: FakeSession) -> some View {
-        DSListRow(title: session.title, subtitle: session.summary, showsChevron: true) {
+        SDListRow(title: session.title, subtitle: session.summary, showsChevron: true) {
             if session.isLive {
-                DSLiveDot()
+                SDLiveDot()
             } else {
                 Color.clear
                     .frame(width: 10, height: 10)
             }
         } trailing: {
             if session.hasPDF {
-                DSFileTag(text: "PDF")
+                SDFileTag(text: "PDF")
             }
         }
     }
 
     private var locationsContent: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.large) {
+        VStack(alignment: .leading, spacing: SDSpacing.large) {
             ForEach(FakeData.units) { unit in
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: unit.name, trailing: "\(unit.rooms.count) rooms")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: unit.name, trailing: "\(unit.rooms.count) rooms")
 
                     ForEach(unit.rooms) { room in
                         NavigationLink {
                             RoomView(room: room, unitName: unit.name)
                         } label: {
-                            DSListRow(title: room.name, showsChevron: true)
+                            SDListRow(title: room.name, showsChevron: true)
                         }
                         .buttonStyle(.plain)
 
-                        DSDivider()
+                        SDDivider()
                     }
                 }
             }
@@ -171,11 +171,11 @@ struct ProjectDetailView: View {
                 CloneTreeView()
             } label: {
                 Text("Copy rooms from another project")
-                    .font(DSFont.subhead.weight(.semibold))
+                    .font(SDFont.subhead.weight(.semibold))
                     .underline()
-                    .foregroundStyle(DSColor.textPrimary)
+                    .foregroundStyle(SDColor.textPrimary)
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, SDSpacing.regular)
         }
     }
 }

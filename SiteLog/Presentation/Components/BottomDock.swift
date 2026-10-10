@@ -1,4 +1,4 @@
-import DesignSystem
+import SystemDesign
 import SwiftUI
 
 private struct BottomDockModifier<Dock: View>: ViewModifier {
@@ -14,7 +14,7 @@ private struct BottomDockModifier<Dock: View>: ViewModifier {
                 .padding()
                 .background {
                     if showsBackground {
-                        DSColor.raised
+                        SDColor.raised
                             .ignoresSafeArea()
                     }
                 }

@@ -29,8 +29,8 @@ settings:
     Release:
       VALIDATE_PRODUCT: YES
 packages:
-  DesignSystem:
-    path: Packages/DesignSystem
+  SystemDesign:
+    path: Packages/SystemDesign
   Core:
     path: Packages/Core
   DomainLayer:
@@ -71,7 +71,7 @@ targets:
         excludes:
           - "**/.gitkeep"
     dependencies:
-      - package: DesignSystem
+      - package: SystemDesign
       - package: Core
       - package: DomainLayer
       - package: DataLayer

@@ -1,6 +1,6 @@
 // S4 · App lock
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -16,45 +16,45 @@ struct AppLockView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
-                    VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                        DSSectionHeader(title: "Lock app")
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
+                VStack(alignment: .leading, spacing: SDSpacing.small) {
+                    VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                        SDSectionHeader(title: "Lock app")
                         toggleRow("Lock app", isOn: $isLockOn)
-                        DSDivider()
+                        SDDivider()
                         toggleRow("Unlock with Face ID", isOn: $isFaceIDOn)
-                        DSDivider()
+                        SDDivider()
                         Button {
                             isSetPasscodeShown = true
                         } label: {
-                            DSListRow(title: "Change passcode", showsChevron: true)
+                            SDListRow(title: "Change passcode", showsChevron: true)
                         }
                         .buttonStyle(.plain)
                     }
                     footnote("Face ID can fail under a helmet or mask. Your passcode always works.")
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
-                    VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                        DSSectionHeader(title: "Lock after")
+                VStack(alignment: .leading, spacing: SDSpacing.small) {
+                    VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                        SDSectionHeader(title: "Lock after")
                         ForEach(lockAfterOptions, id: \.self) { option in
                             Button {
                                 lockAfter = option
                             } label: {
-                                DSListRow(title: option) {
-                                    DSRadioMark(isOn: lockAfter == option)
+                                SDListRow(title: option) {
+                                    SDRadioMark(isOn: lockAfter == option)
                                 }
                             }
                             .buttonStyle(.plain)
-                            DSDivider()
+                            SDDivider()
                         }
                     }
                     footnote("Counted from when you leave SiteLog. Uploads keep running while it’s locked.")
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("App lock")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isSetPasscodeShown) {
@@ -65,16 +65,16 @@ struct AppLockView: View {
 
     private func toggleRow(_ title: String, isOn: Binding<Bool>) -> some View {
         Toggle(title, isOn: isOn)
-            .tint(DSColor.success)
-            .frame(minHeight: DSSize.rowMinHeight)
-            .padding(.horizontal, DSSpacing.regular)
+            .tint(SDColor.success)
+            .frame(minHeight: SDSize.rowMinHeight)
+            .padding(.horizontal, SDSpacing.regular)
     }
 
     private func footnote(_ text: String) -> some View {
         Text(text)
-            .font(DSFont.footnote)
-            .foregroundStyle(DSColor.textSecondary)
-            .padding(.horizontal, DSSpacing.regular)
+            .font(SDFont.footnote)
+            .foregroundStyle(SDColor.textSecondary)
+            .padding(.horizontal, SDSpacing.regular)
     }
 }
 

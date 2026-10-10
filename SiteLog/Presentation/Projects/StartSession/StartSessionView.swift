@@ -1,6 +1,6 @@
 // P4 · New walkthrough
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -21,36 +21,36 @@ struct StartSessionView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.regular) {
-                    DSTextField("Inspector", text: $inspector)
+                VStack(alignment: .leading, spacing: SDSpacing.regular) {
+                    SDTextField("Inspector", text: $inspector)
 
-                    VStack(alignment: .leading, spacing: DSSpacing.small) {
+                    VStack(alignment: .leading, spacing: SDSpacing.small) {
                         Text("Weather")
-                            .font(DSFont.footnote)
-                            .foregroundStyle(DSColor.textSecondary)
-                        HStack(spacing: DSSpacing.small) {
+                            .font(SDFont.footnote)
+                            .foregroundStyle(SDColor.textSecondary)
+                        HStack(spacing: SDSpacing.small) {
                             ForEach(weatherOptions, id: \.title) { option in
-                                DSChip(title: option.title, systemImage: option.icon, isSelected: weather == option.title) {
+                                SDChip(title: option.title, systemImage: option.icon, isSelected: weather == option.title) {
                                     weather = option.title
                                 }
                             }
                         }
                     }
 
-                    DSTextField(
+                    SDTextField(
                         "Note for the report",
                         placeholder: "e.g. finishing check, levels 7–9",
                         text: $note,
                         isMultiline: true
                     )
 
-                    HStack(alignment: .top, spacing: DSSpacing.small) {
-                        DSStatusMarker(kind: .major)
+                    HStack(alignment: .top, spacing: SDSpacing.small) {
+                        SDStatusMarker(kind: .major)
                         Text("14 issues from 12 Aug will be waiting in their rooms for you to re-check.")
-                            .font(DSFont.subhead)
+                            .font(SDFont.subhead)
                     }
                 }
-                .padding(DSSpacing.regular)
+                .padding(SDSpacing.regular)
             }
             .navigationTitle("New walkthrough")
             .navigationBarTitleDisplayMode(.inline)
@@ -65,7 +65,7 @@ struct StartSessionView: View {
                 Button("Start") {
                     dismiss()
                 }
-                .buttonStyle(.ds(.primary))
+                .buttonStyle(.sd(.primary))
             }
         }
         .enableInjection()

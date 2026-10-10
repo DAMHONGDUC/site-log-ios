@@ -1,6 +1,6 @@
 // P2 · New project
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -16,13 +16,13 @@ struct NewProjectView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: DSSpacing.regular) {
-                    DSTextField("Name", placeholder: "Riverside Tower B", text: $name)
+                VStack(spacing: SDSpacing.regular) {
+                    SDTextField("Name", placeholder: "Riverside Tower B", text: $name)
                         .focused($isNameFocused)
-                    DSTextField("Site address", placeholder: "Street, district", text: $address)
-                    DSTextField("Client", placeholder: "Optional", text: $client)
+                    SDTextField("Site address", placeholder: "Street, district", text: $address)
+                    SDTextField("Client", placeholder: "Optional", text: $client)
                 }
-                .padding(DSSpacing.regular)
+                .padding(SDSpacing.regular)
             }
             .navigationTitle("New project")
             .navigationBarTitleDisplayMode(.inline)
@@ -37,7 +37,7 @@ struct NewProjectView: View {
                 Button("Create project") {
                     dismiss()
                 }
-                .buttonStyle(.ds(.primary))
+                .buttonStyle(.sd(.primary))
             }
             .onAppear {
                 isNameFocused = true

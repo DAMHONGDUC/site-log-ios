@@ -1,7 +1,7 @@
 #if DEBUG
 
 import Core
-import DesignSystem
+import SystemDesign
 import Inject
 import os
 import SwiftUI
@@ -22,8 +22,8 @@ struct DevMenuSection: View {
     @State private var lastResult: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-            DSSectionHeader(title: "Debug")
+        VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+            SDSectionHeader(title: "Debug")
 
             actionRow(
                 title: "Seed data",
@@ -34,7 +34,7 @@ struct DevMenuSection: View {
                     await actions.seedData()
                 }
             }
-            DSDivider()
+            SDDivider()
 
             actionRow(
                 title: "Delete all data",
@@ -44,7 +44,7 @@ struct DevMenuSection: View {
             ) {
                 pendingAction = .deleteAll
             }
-            DSDivider()
+            SDDivider()
 
             actionRow(
                 title: "Reset the app",
@@ -57,10 +57,10 @@ struct DevMenuSection: View {
 
             if let lastResult {
                 Text(lastResult)
-                    .font(DSFont.footnote)
-                    .foregroundStyle(DSColor.textSecondary)
-                    .padding(.horizontal, DSSpacing.regular)
-                    .padding(.top, DSSpacing.medium)
+                    .font(SDFont.footnote)
+                    .foregroundStyle(SDColor.textSecondary)
+                    .padding(.horizontal, SDSpacing.regular)
+                    .padding(.top, SDSpacing.medium)
             }
         }
         .disabled(isWorking)
@@ -92,10 +92,10 @@ struct DevMenuSection: View {
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            DSListRow(title: title, subtitle: subtitle) {
+            SDListRow(title: title, subtitle: subtitle) {
                 Image(systemName: systemImage)
                     .font(.system(size: 20))
-                    .foregroundStyle(isDestructive ? DSColor.critical : DSColor.textPrimary)
+                    .foregroundStyle(isDestructive ? SDColor.critical : SDColor.textPrimary)
                     .frame(width: 26)
             }
         }

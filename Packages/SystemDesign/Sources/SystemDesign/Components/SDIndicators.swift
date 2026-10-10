@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct DSCountBadge: View {
+public struct SDCountBadge: View {
     let count: Int
 
     public init(count: Int) {
@@ -13,11 +13,11 @@ public struct DSCountBadge: View {
             .foregroundStyle(Color.white)
             .padding(.horizontal, 5)
             .frame(minWidth: 18, minHeight: 18)
-            .background(DSColor.critical, in: Capsule())
+            .background(SDColor.critical, in: Capsule())
     }
 }
 
-public struct DSProgressBar: View {
+public struct SDProgressBar: View {
     // 0...1
     let value: Double
 
@@ -29,9 +29,9 @@ public struct DSProgressBar: View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(DSColor.fill)
+                    .fill(SDColor.fill)
                 Capsule()
-                    .fill(DSColor.textPrimary)
+                    .fill(SDColor.textPrimary)
                     .frame(width: proxy.size.width * min(max(value, 0), 1))
             }
         }
@@ -39,18 +39,18 @@ public struct DSProgressBar: View {
     }
 }
 
-public struct DSLiveDot: View {
+public struct SDLiveDot: View {
     public init() {}
 
     public var body: some View {
         Circle()
-            .fill(DSColor.hiVis)
+            .fill(SDColor.hiVis)
             .frame(width: 10, height: 10)
-            .overlay(Circle().stroke(DSColor.textPrimary, lineWidth: 1.5))
+            .overlay(Circle().stroke(SDColor.textPrimary, lineWidth: 1.5))
     }
 }
 
-public struct DSFileTag: View {
+public struct SDFileTag: View {
     let text: String
 
     public init(text: String) {
@@ -60,14 +60,14 @@ public struct DSFileTag: View {
     public var body: some View {
         Text(text)
             .font(.caption2.weight(.semibold))
-            .foregroundStyle(DSColor.textSecondary)
+            .foregroundStyle(SDColor.textSecondary)
             .padding(.horizontal, 5)
             .frame(height: 20)
-            .overlay(RoundedRectangle(cornerRadius: 4).stroke(DSColor.textSecondary, lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(SDColor.textSecondary, lineWidth: 1))
     }
 }
 
-public struct DSRadioMark: View {
+public struct SDRadioMark: View {
     let isOn: Bool
 
     public init(isOn: Bool) {
@@ -78,13 +78,13 @@ public struct DSRadioMark: View {
         ZStack {
             if isOn {
                 Circle()
-                    .fill(DSColor.textPrimary)
+                    .fill(SDColor.textPrimary)
                 Image(systemName: "checkmark")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(DSColor.onPrimary)
+                    .foregroundStyle(SDColor.onPrimary)
             } else {
                 Circle()
-                    .strokeBorder(DSColor.lineStrong, lineWidth: 1.5)
+                    .strokeBorder(SDColor.lineStrong, lineWidth: 1.5)
             }
         }
         .frame(width: 22, height: 22)
@@ -92,14 +92,14 @@ public struct DSRadioMark: View {
 }
 
 #Preview {
-    VStack(spacing: DSSpacing.regular) {
-        DSCountBadge(count: 14)
-        DSProgressBar(value: 37.0 / 82.0)
-        DSLiveDot()
-        DSFileTag(text: "PDF")
+    VStack(spacing: SDSpacing.regular) {
+        SDCountBadge(count: 14)
+        SDProgressBar(value: 37.0 / 82.0)
+        SDLiveDot()
+        SDFileTag(text: "PDF")
         HStack {
-            DSRadioMark(isOn: true)
-            DSRadioMark(isOn: false)
+            SDRadioMark(isOn: true)
+            SDRadioMark(isOn: false)
         }
     }
     .padding()

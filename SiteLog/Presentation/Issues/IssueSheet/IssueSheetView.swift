@@ -1,6 +1,6 @@
 // C2 · New issue
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -11,12 +11,12 @@ struct IssueSheetView: View {
     // Set when opened from a failed checklist item
     var checklistItem: FakeChecklistItem?
 
-    @State private var severity: DSStatusMarker.Kind = .major
+    @State private var severity: SDStatusMarker.Kind = .major
     @State private var details = ""
     @State private var assignee = "Tuan’s masonry crew"
     @State private var due = "Fri 3 Oct"
 
-    private let severities: [(kind: DSStatusMarker.Kind, title: String)] = [
+    private let severities: [(kind: SDStatusMarker.Kind, title: String)] = [
         (.critical, "Critical"),
         (.major, "Major"),
         (.minor, "Minor"),
@@ -25,18 +25,18 @@ struct IssueSheetView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.regular) {
+                VStack(alignment: .leading, spacing: SDSpacing.regular) {
                     if let checklistItem {
                         Text("From checklist item \(checklistItem.number). A photo is required.")
-                            .font(DSFont.footnote)
-                            .foregroundStyle(DSColor.textSecondary)
+                            .font(SDFont.footnote)
+                            .foregroundStyle(SDColor.textSecondary)
                     }
 
                     photoRow
 
                     severityPicker
 
-                    DSTextField(
+                    SDTextField(
                         checklistItem == nil ? nil : "What’s wrong",
                         placeholder: "Describe the issue",
                         text: $details,
@@ -45,13 +45,13 @@ struct IssueSheetView: View {
 
                     quickPhrases
 
-                    HStack(spacing: DSSpacing.medium) {
-                        DSTextField("Assigned to", text: $assignee)
-                        DSTextField("Due", text: $due)
+                    HStack(spacing: SDSpacing.medium) {
+                        SDTextField("Assigned to", text: $assignee)
+                        SDTextField("Due", text: $due)
                             .frame(width: 112)
                     }
                 }
-                .padding(DSSpacing.regular)
+                .padding(SDSpacing.regular)
             }
             .navigationTitle("New issue")
             .navigationBarTitleDisplayMode(.inline)
@@ -63,18 +63,18 @@ struct IssueSheetView: View {
                 }
             }
             .bottomDock {
-                HStack(spacing: DSSpacing.small) {
+                HStack(spacing: SDSpacing.small) {
                     Button {} label: {
                         Image(systemName: "mappin.and.ellipse")
                     }
-                    .buttonStyle(.ds(.secondary))
+                    .buttonStyle(.sd(.secondary))
                     .frame(width: 50)
                     .accessibilityLabel("Pin on plan")
 
                     Button(checklistItem == nil ? "Save, next photo" : "Save issue") {
                         dismiss()
                     }
-                    .buttonStyle(.ds(.primary))
+                    .buttonStyle(.sd(.primary))
                 }
             }
             .onAppear {
@@ -87,23 +87,23 @@ struct IssueSheetView: View {
     }
 
     private var photoRow: some View {
-        HStack(spacing: DSSpacing.medium) {
+        HStack(spacing: SDSpacing.medium) {
             SitePhotoThumb(variant: 0, size: 52, showsCrack: true)
 
             VStack(alignment: .leading) {
                 Text("1 photo")
-                    .font(DSFont.body.weight(.medium))
+                    .font(SDFont.body.weight(.medium))
                 Text("10:42:18 · 7f3a…c91e")
-                    .font(DSFont.code)
-                    .foregroundStyle(DSColor.textSecondary)
+                    .font(SDFont.code)
+                    .foregroundStyle(SDColor.textSecondary)
             }
 
             Spacer()
 
             Button("Add") {}
-                .font(DSFont.subhead.weight(.semibold))
+                .font(SDFont.subhead.weight(.semibold))
                 .underline()
-                .foregroundStyle(DSColor.textPrimary)
+                .foregroundStyle(SDColor.textPrimary)
         }
     }
 
@@ -117,9 +117,9 @@ struct IssueSheetView: View {
     }
 
     private var quickPhrases: some View {
-        HStack(spacing: DSSpacing.small) {
+        HStack(spacing: SDSpacing.small) {
             ForEach(FakeData.quickPhrases, id: \.self) { phrase in
-                DSChip(title: phrase, isSelected: false) {
+                SDChip(title: phrase, isSelected: false) {
                     details = phrase
                 }
             }

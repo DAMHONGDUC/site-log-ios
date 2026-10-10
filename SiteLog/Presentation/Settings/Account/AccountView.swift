@@ -1,4 +1,4 @@
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -7,29 +7,29 @@ struct AccountView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 VStack(spacing: 0) {
-                    DSListRow(title: "Name", value: FakeData.inspector)
-                    DSDivider()
-                    DSListRow(title: "Signed in with", value: "Apple")
-                    DSDivider()
-                    DSListRow(title: "Last sync", value: "2 minutes ago")
+                    SDListRow(title: "Name", value: FakeData.inspector)
+                    SDDivider()
+                    SDListRow(title: "Signed in with", value: "Apple")
+                    SDDivider()
+                    SDListRow(title: "Last sync", value: "2 minutes ago")
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Devices", trailing: "2")
-                    DSListRow(title: "iPhone 16", subtitle: "This iPhone")
-                    DSDivider()
-                    DSListRow(title: "iPad Air", subtitle: "Last seen yesterday")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Devices", trailing: "2")
+                    SDListRow(title: "iPhone 16", subtitle: "This iPhone")
+                    SDDivider()
+                    SDListRow(title: "iPad Air", subtitle: "Last seen yesterday")
                 }
 
                 Button("Sign out") {}
-                    .buttonStyle(.ds(.danger))
-                    .padding(.horizontal, DSSpacing.regular)
+                    .buttonStyle(.sd(.danger))
+                    .padding(.horizontal, SDSpacing.regular)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
         .enableInjection()

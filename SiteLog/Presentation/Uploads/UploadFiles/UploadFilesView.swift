@@ -1,6 +1,6 @@
 // U2 · Today's files
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -13,25 +13,25 @@ struct UploadFilesView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 Picker("Filter", selection: $filter) {
                     ForEach(filters, id: \.self) { item in
                         Text(item).tag(item)
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
                 VStack(spacing: 0) {
                     ForEach(FakeData.uploadFiles) { file in
                         fileRow(file)
-                        DSDivider()
+                        SDDivider()
                     }
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Today’s files")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -43,23 +43,23 @@ struct UploadFilesView: View {
     }
 
     private func fileRow(_ file: FakeUploadFile) -> some View {
-        HStack(spacing: DSSpacing.medium) {
+        HStack(spacing: SDSpacing.medium) {
             SitePhotoThumb(variant: file.photoVariant, size: 44)
 
             VStack(alignment: .leading) {
                 Text(file.name)
-                    .font(DSFont.subhead.monospaced())
+                    .font(SDFont.subhead.monospaced())
                 Text(file.detail)
-                    .font(DSFont.subhead)
-                    .foregroundStyle(DSColor.textSecondary)
+                    .font(SDFont.subhead)
+                    .foregroundStyle(SDColor.textSecondary)
             }
 
             Spacer()
 
-            DSStatusMarker(kind: file.kind, text: file.status, isLate: file.kind == .critical)
+            SDStatusMarker(kind: file.kind, text: file.status, isLate: file.kind == .critical)
         }
-        .frame(minHeight: DSSize.rowMinHeight)
-        .padding(.horizontal, DSSpacing.regular)
+        .frame(minHeight: SDSize.rowMinHeight)
+        .padding(.horizontal, SDSpacing.regular)
     }
 }
 

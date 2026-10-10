@@ -1,7 +1,7 @@
 import SwiftUI
 
 // Values from TYPE_TOKENS; all Dynamic Type styles
-public enum DSFont {
+public enum SDFont {
     public static let largeTitle = Font.largeTitle.bold()
     public static let title = Font.title2.bold()
     public static let section = Font.title3.weight(.semibold)

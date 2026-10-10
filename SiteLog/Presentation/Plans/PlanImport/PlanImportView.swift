@@ -1,4 +1,4 @@
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -8,17 +8,17 @@ struct PlanImportView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: DSSpacing.medium) {
-                RoundedRectangle(cornerRadius: DSRadius.large)
-                    .strokeBorder(DSColor.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+            VStack(spacing: SDSpacing.medium) {
+                RoundedRectangle(cornerRadius: SDRadius.large)
+                    .strokeBorder(SDColor.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
                     .frame(height: 140)
                     .overlay {
-                        VStack(spacing: DSSpacing.small) {
+                        VStack(spacing: SDSpacing.small) {
                             Image(systemName: "doc.badge.plus")
                             Text("PDF, one sheet or many")
-                                .font(DSFont.subhead)
+                                .font(SDFont.subhead)
                         }
-                        .foregroundStyle(DSColor.textSecondary)
+                        .foregroundStyle(SDColor.textSecondary)
                     }
 
                 Button {
@@ -26,16 +26,16 @@ struct PlanImportView: View {
                 } label: {
                     Label("Choose from Files", systemImage: "folder")
                 }
-                .buttonStyle(.ds(.primary))
+                .buttonStyle(.sd(.primary))
 
                 Button {
                     dismiss()
                 } label: {
                     Label("Photograph a printed sheet", systemImage: "camera")
                 }
-                .buttonStyle(.ds(.secondary))
+                .buttonStyle(.sd(.secondary))
             }
-            .padding(DSSpacing.regular)
+            .padding(SDSpacing.regular)
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Import a plan")
             .navigationBarTitleDisplayMode(.inline)

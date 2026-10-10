@@ -1,6 +1,6 @@
 // Placeholder plan; the PDFKit viewer replaces it in F08
 
-import DesignSystem
+import SystemDesign
 import SwiftUI
 
 struct PlanDrawing: View {
@@ -10,10 +10,10 @@ struct PlanDrawing: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .topLeading) {
-                DSColor.plan
+                SDColor.plan
                     .overlay {
                         Text("Floor plan")
-                            .foregroundStyle(DSColor.textTertiary)
+                            .foregroundStyle(SDColor.textTertiary)
                     }
 
                 ForEach(pins) { pin in
@@ -33,26 +33,26 @@ struct PlanPinView: View {
 
     var body: some View {
         Text(String(pin.number))
-            .font(DSFont.footnote.bold())
+            .font(SDFont.footnote.bold())
             .foregroundStyle(Color.white)
             .frame(width: 28, height: 28)
             .background(color, in: Circle())
-            .frame(width: DSSize.minTapTarget, height: DSSize.minTapTarget)
+            .frame(width: SDSize.minTapTarget, height: SDSize.minTapTarget)
             .contentShape(Rectangle())
     }
 
     private var color: Color {
         switch pin.severity {
         case .critical:
-            return DSColor.critical
+            return SDColor.critical
         case .major:
-            return DSColor.major
+            return SDColor.major
         case .minor:
-            return DSColor.minor
+            return SDColor.minor
         case .resolved:
-            return DSColor.success
+            return SDColor.success
         case .waiting:
-            return DSColor.waiting
+            return SDColor.waiting
         }
     }
 }

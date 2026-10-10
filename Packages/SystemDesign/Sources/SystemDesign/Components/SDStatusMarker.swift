@@ -1,7 +1,7 @@
 import SwiftUI
 
 // Shapes keep severity readable without colour
-public struct DSStatusMarker: View {
+public struct SDStatusMarker: View {
     public enum Kind: CaseIterable, Sendable {
         case critical
         case major
@@ -28,7 +28,7 @@ public struct DSStatusMarker: View {
 
             if !text.isEmpty {
                 Text(text)
-                    .font(DSFont.footnote)
+                    .font(SDFont.footnote)
                     .foregroundStyle(textColor)
             }
         }
@@ -38,36 +38,36 @@ public struct DSStatusMarker: View {
         switch kind {
         case .critical:
             RoundedRectangle(cornerRadius: 1)
-                .fill(DSColor.critical)
+                .fill(SDColor.critical)
         case .major:
-            DSTriangle()
-                .fill(DSColor.major)
+            SDTriangle()
+                .fill(SDColor.major)
         case .minor:
             Circle()
-                .strokeBorder(DSColor.minor, lineWidth: 2)
+                .strokeBorder(SDColor.minor, lineWidth: 2)
         case .resolved:
             Circle()
-                .fill(DSColor.success)
+                .fill(SDColor.success)
         case .waiting:
             Circle()
-                .strokeBorder(DSColor.waiting, style: StrokeStyle(lineWidth: 1.5, dash: [2, 2]))
+                .strokeBorder(SDColor.waiting, style: StrokeStyle(lineWidth: 1.5, dash: [2, 2]))
         }
     }
 
     private var textColor: Color {
         if isLate {
-            return DSColor.critical
+            return SDColor.critical
         }
         switch kind {
         case .resolved, .waiting:
-            return DSColor.textSecondary
+            return SDColor.textSecondary
         case .critical, .major, .minor:
-            return DSColor.textPrimary
+            return SDColor.textPrimary
         }
     }
 }
 
-public struct DSTriangle: Shape {
+public struct SDTriangle: Shape {
     public init() {}
 
     public func path(in rect: CGRect) -> Path {
@@ -81,12 +81,12 @@ public struct DSTriangle: Shape {
 }
 
 #Preview {
-    VStack(alignment: .leading, spacing: DSSpacing.small) {
-        DSStatusMarker(kind: .critical, text: "Critical")
-        DSStatusMarker(kind: .major, text: "Major")
-        DSStatusMarker(kind: .minor, text: "Minor")
-        DSStatusMarker(kind: .resolved, text: "Resolved")
-        DSStatusMarker(kind: .waiting, text: "Waiting")
-        DSStatusMarker(kind: .critical, text: "Failed", isLate: true)
+    VStack(alignment: .leading, spacing: SDSpacing.small) {
+        SDStatusMarker(kind: .critical, text: "Critical")
+        SDStatusMarker(kind: .major, text: "Major")
+        SDStatusMarker(kind: .minor, text: "Minor")
+        SDStatusMarker(kind: .resolved, text: "Resolved")
+        SDStatusMarker(kind: .waiting, text: "Waiting")
+        SDStatusMarker(kind: .critical, text: "Failed", isLate: true)
     }
 }

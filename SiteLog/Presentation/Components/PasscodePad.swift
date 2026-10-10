@@ -1,4 +1,4 @@
-import DesignSystem
+import SystemDesign
 import SwiftUI
 
 struct PasscodeDots: View {
@@ -22,12 +22,12 @@ struct PasscodeNumberPad: View {
     private let columns = Array(repeating: GridItem(.flexible()), count: 3)
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: DSSpacing.regular) {
+        LazyVGrid(columns: columns, spacing: SDSpacing.regular) {
             ForEach(keys, id: \.self) { key in
                 keyView(key)
             }
         }
-        .padding(.horizontal, DSSpacing.xLarge)
+        .padding(.horizontal, SDSpacing.xLarge)
     }
 
     @ViewBuilder private func keyView(_ key: String) -> some View {
@@ -46,7 +46,7 @@ struct PasscodeNumberPad: View {
                     code.append(key)
                 }
             }
-            .font(DSFont.title)
+            .font(SDFont.title)
             .buttonStyle(.bordered)
         }
     }

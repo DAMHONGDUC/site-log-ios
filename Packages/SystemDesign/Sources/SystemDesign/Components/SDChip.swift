@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct DSChip: View {
+public struct SDChip: View {
     let title: String
     let systemImage: String?
     let isSelected: Bool
@@ -15,13 +15,13 @@ public struct DSChip: View {
 
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: DSSpacing.tiny) {
+            HStack(spacing: SDSpacing.tiny) {
                 if let systemImage {
                     Image(systemName: systemImage)
                 }
                 Text(title)
             }
-            .font(DSFont.subhead)
+            .font(SDFont.subhead)
             .foregroundStyle(textColor)
             .padding(.horizontal, 13)
             .frame(height: 32)
@@ -32,23 +32,23 @@ public struct DSChip: View {
 
     private var textColor: Color {
         if isSelected {
-            return DSColor.onPrimary
+            return SDColor.onPrimary
         }
-        return DSColor.textPrimary
+        return SDColor.textPrimary
     }
 
     private var backgroundColor: Color {
         if isSelected {
-            return DSColor.textPrimary
+            return SDColor.textPrimary
         }
-        return DSColor.fill
+        return SDColor.fill
     }
 }
 
 #Preview {
-    HStack(spacing: DSSpacing.small) {
-        DSChip(title: "All", isSelected: true, action: {})
-        DSChip(title: "Not checked", isSelected: false, action: {})
-        DSChip(title: "Sunny", systemImage: "sun.max", isSelected: false, action: {})
+    HStack(spacing: SDSpacing.small) {
+        SDChip(title: "All", isSelected: true, action: {})
+        SDChip(title: "Not checked", isSelected: false, action: {})
+        SDChip(title: "Sunny", systemImage: "sun.max", isSelected: false, action: {})
     }
 }

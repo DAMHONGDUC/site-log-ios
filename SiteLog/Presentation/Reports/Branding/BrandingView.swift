@@ -1,6 +1,6 @@
 // R3 · Letterhead
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -14,37 +14,37 @@ struct BrandingView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                HStack(spacing: DSSpacing.medium) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
+                HStack(spacing: SDSpacing.medium) {
                     Text("EL")
                         .font(.title3.bold())
-                        .foregroundStyle(DSColor.onPrimary)
+                        .foregroundStyle(SDColor.onPrimary)
                         .frame(width: 64, height: 64)
-                        .background(DSColor.textPrimary, in: RoundedRectangle(cornerRadius: DSSpacing.medium))
+                        .background(SDColor.textPrimary, in: RoundedRectangle(cornerRadius: SDSpacing.medium))
 
                     VStack(alignment: .leading) {
                         Text("Eastline logo.png")
-                            .font(DSFont.body.weight(.medium))
+                            .font(SDFont.body.weight(.medium))
                         Text("Shown on the cover and every page")
-                            .font(DSFont.subhead)
-                            .foregroundStyle(DSColor.textSecondary)
+                            .font(SDFont.subhead)
+                            .foregroundStyle(SDColor.textSecondary)
                     }
 
                     Spacer()
 
                     Button("Change") {}
-                        .font(DSFont.subhead.weight(.semibold))
+                        .font(SDFont.subhead.weight(.semibold))
                         .underline()
-                        .foregroundStyle(DSColor.textPrimary)
+                        .foregroundStyle(SDColor.textPrimary)
                 }
 
-                DSTextField("Company", text: $company)
-                DSTextField("Prepared for", text: $preparedFor)
-                DSTextField("Footer", text: $footer, isMultiline: true)
+                SDTextField("Company", text: $company)
+                SDTextField("Prepared for", text: $preparedFor)
+                SDTextField("Footer", text: $footer, isMultiline: true)
             }
-            .padding(DSSpacing.regular)
+            .padding(SDSpacing.regular)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Your letterhead")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
@@ -52,7 +52,7 @@ struct BrandingView: View {
             Button("Save") {
                 dismiss()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
         }
         .enableInjection()
     }

@@ -1,6 +1,6 @@
 // M5 · Pin preview
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -19,33 +19,33 @@ struct PinPreviewView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: DSSpacing.medium) {
-                HStack(alignment: .top, spacing: DSSpacing.medium) {
+            VStack(alignment: .leading, spacing: SDSpacing.medium) {
+                HStack(alignment: .top, spacing: SDSpacing.medium) {
                     SitePhotoThumb(variant: issue.photoVariant, size: 64)
 
                     VStack(alignment: .leading) {
-                        DSStatusMarker(kind: pin.severity, text: "Pin \(pin.number)")
+                        SDStatusMarker(kind: pin.severity, text: "Pin \(pin.number)")
                         Text(issue.title)
-                            .font(DSFont.headline)
+                            .font(SDFont.headline)
                         Text("\(issue.room) · \(issue.assignee) · \(issue.due)")
-                            .font(DSFont.subhead)
-                            .foregroundStyle(DSColor.textSecondary)
+                            .font(SDFont.subhead)
+                            .foregroundStyle(SDColor.textSecondary)
                     }
                 }
 
-                HStack(spacing: DSSpacing.small) {
+                HStack(spacing: SDSpacing.small) {
                     Button("Move pin") {
                         dismiss()
                     }
-                    .buttonStyle(.ds(.secondary))
+                    .buttonStyle(.sd(.secondary))
 
                     Button("Open") {
                         isIssueShown = true
                     }
-                    .buttonStyle(.ds(.primary))
+                    .buttonStyle(.sd(.primary))
                 }
             }
-            .padding(DSSpacing.regular)
+            .padding(SDSpacing.regular)
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationDestination(isPresented: $isIssueShown) {
                 IssueDetailView(issue: issue)

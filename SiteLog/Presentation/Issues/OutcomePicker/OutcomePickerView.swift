@@ -1,6 +1,6 @@
 // C4 · Re-check outcome
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -20,7 +20,7 @@ struct OutcomePickerView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 HStack {
                     beforeAfterPhoto(label: "12 Aug", showsCrack: true)
                     beforeAfterPhoto(label: "Today", showsCrack: false)
@@ -28,32 +28,32 @@ struct OutcomePickerView: View {
 
                 VStack(alignment: .leading) {
                     Text(issue.title)
-                        .font(DSFont.headline)
+                        .font(SDFont.headline)
                     Text("\(issue.assignee) · opened 12 Aug")
-                        .font(DSFont.subhead)
-                        .foregroundStyle(DSColor.textSecondary)
+                        .font(SDFont.subhead)
+                        .foregroundStyle(SDColor.textSecondary)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Has it been fixed?")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Has it been fixed?")
 
                     ForEach(outcomes, id: \.title) { item in
                         Button {
                             outcome = item.title
                         } label: {
-                            DSListRow(title: item.title, subtitle: item.detail) {
-                                DSRadioMark(isOn: outcome == item.title)
+                            SDListRow(title: item.title, subtitle: item.detail) {
+                                SDRadioMark(isOn: outcome == item.title)
                             }
                         }
                         .buttonStyle(.plain)
 
-                        DSDivider()
+                        SDDivider()
                     }
                 }
             }
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Issue #\(issue.number)")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -67,7 +67,7 @@ struct OutcomePickerView: View {
             Button("Save") {
                 dismiss()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
         }
         .enableInjection()
     }
@@ -77,7 +77,7 @@ struct OutcomePickerView: View {
             SitePhoto(variant: issue.photoVariant, showsCrack: showsCrack)
                 .aspectRatio(3 / 4, contentMode: .fit)
             Text(label)
-                .font(DSFont.footnote)
+                .font(SDFont.footnote)
         }
     }
 }

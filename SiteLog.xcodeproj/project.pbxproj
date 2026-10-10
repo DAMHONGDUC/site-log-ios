@@ -12,7 +12,7 @@
 		40158483A8CEC1D5AC772780 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 83D5A5CDF3756978814D0880 /* Inject */; };
 		586DDA4915F031E8394973F5 /* DataLayer in Frameworks */ = {isa = PBXBuildFile; productRef = E6BA7B07192ED4BB66427DF5 /* DataLayer */; };
 		76E5D497300014EC0A8AB608 /* FactoryTesting in Frameworks */ = {isa = PBXBuildFile; productRef = DE89C684A1710964FCAB995A /* FactoryTesting */; };
-		A2D43370E146203EC023A1DB /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 925462D85DDB19476E667759 /* DesignSystem */; };
+		A2D43370E146203EC023A1DB /* SystemDesign in Frameworks */ = {isa = PBXBuildFile; productRef = 7C1543F31CFAFC7AC4DDB889 /* SystemDesign */; };
 		AD188812459C06D2D17072F6 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 0BCDC70CCD88CBDCEA4C07CC /* Core */; };
 		C65A97A600258CF890BDFC96 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 7E104F64322B1E451963CD1C /* Core */; };
 		EE545A5F2F2ECEF0E780FC10 /* DomainLayer in Frameworks */ = {isa = PBXBuildFile; productRef = FCFA0FDC9BCF9CC06260AAB1 /* DomainLayer */; };
@@ -53,6 +53,7 @@
 		3E6A8A5E14B8E52C29D69082 /* 03-backend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "03-backend.md"; sourceTree = "<group>"; };
 		481F629DD7508CE23DFEB031 /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
+		52D8C9A9922BF0B22698203A /* SystemDesign */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SystemDesign; path = Packages/SystemDesign; sourceTree = SOURCE_ROOT; };
 		57AF6868C430FD5F5D09492E /* 01-access.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-access.md"; sourceTree = "<group>"; };
 		57E76234BE1FF431FD5D99C5 /* 09-checklists.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "09-checklists.md"; sourceTree = "<group>"; };
 		5AD0C910EB8272791258E0D2 /* markdown-preview.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "markdown-preview.css"; sourceTree = "<group>"; };
@@ -92,7 +93,6 @@
 		DCA4470BC33DB6BD64190F2E /* DomainLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DomainLayer; path = Packages/DomainLayer; sourceTree = SOURCE_ROOT; };
 		E17E082E4731B0114159562B /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
-		F0D19FCFBA693CEAFA6D9024 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignSystem; path = Packages/DesignSystem; sourceTree = SOURCE_ROOT; };
 		F312F03E20FBC9CEE2FF7848 /* pr-checks.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "pr-checks.yml"; sourceTree = "<group>"; };
 		FAF69F5B98D8BF7D4E07E3C7 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		FBEE0ADF2B33B1381F148C20 /* 05-issues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "05-issues.md"; sourceTree = "<group>"; };
@@ -160,7 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2D43370E146203EC023A1DB /* DesignSystem in Frameworks */,
+				A2D43370E146203EC023A1DB /* SystemDesign in Frameworks */,
 				C65A97A600258CF890BDFC96 /* Core in Frameworks */,
 				EE545A5F2F2ECEF0E780FC10 /* DomainLayer in Frameworks */,
 				586DDA4915F031E8394973F5 /* DataLayer in Frameworks */,
@@ -350,8 +350,8 @@
 			children = (
 				EC6FF8E04051F71410547E06 /* Core */,
 				5FB96206F20F929D04596D79 /* DataLayer */,
-				F0D19FCFBA693CEAFA6D9024 /* DesignSystem */,
 				DCA4470BC33DB6BD64190F2E /* DomainLayer */,
+				52D8C9A9922BF0B22698203A /* SystemDesign */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -403,7 +403,7 @@
 			);
 			name = SiteLog;
 			packageProductDependencies = (
-				925462D85DDB19476E667759 /* DesignSystem */,
+				7C1543F31CFAFC7AC4DDB889 /* SystemDesign */,
 				7E104F64322B1E451963CD1C /* Core */,
 				FCFA0FDC9BCF9CC06260AAB1 /* DomainLayer */,
 				E6BA7B07192ED4BB66427DF5 /* DataLayer */,
@@ -475,8 +475,8 @@
 				F3C90C1E09A9266C812DB026 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 				68054681526956D339AC097D /* XCLocalSwiftPackageReference "Packages/Core" */,
 				CEE7F7CBD41A7CB244539A02 /* XCLocalSwiftPackageReference "Packages/DataLayer" */,
-				B0EBCF6B6784D6BEC451AA06 /* XCLocalSwiftPackageReference "Packages/DesignSystem" */,
 				32102DCD9C4B1159C027E14A /* XCLocalSwiftPackageReference "Packages/DomainLayer" */,
+				C5954D3C5D48B05343950D39 /* XCLocalSwiftPackageReference "Packages/SystemDesign" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 225EEE7FD5C901AD44124FCA /* Products */;
@@ -907,9 +907,9 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Core;
 		};
-		B0EBCF6B6784D6BEC451AA06 /* XCLocalSwiftPackageReference "Packages/DesignSystem" */ = {
+		C5954D3C5D48B05343950D39 /* XCLocalSwiftPackageReference "Packages/SystemDesign" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/DesignSystem;
+			relativePath = Packages/SystemDesign;
 		};
 		CEE7F7CBD41A7CB244539A02 /* XCLocalSwiftPackageReference "Packages/DataLayer" */ = {
 			isa = XCLocalSwiftPackageReference;
@@ -949,6 +949,10 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Core;
 		};
+		7C1543F31CFAFC7AC4DDB889 /* SystemDesign */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SystemDesign;
+		};
 		7E104F64322B1E451963CD1C /* Core */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Core;
@@ -957,10 +961,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4D9A05831059FB193279D1F4 /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
-		};
-		925462D85DDB19476E667759 /* DesignSystem */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = DesignSystem;
 		};
 		DA7B20D021BED4DD4241486F /* FactoryKit */ = {
 			isa = XCSwiftPackageProductDependency;

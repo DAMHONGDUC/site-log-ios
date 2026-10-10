@@ -1,6 +1,6 @@
 // S1 · Settings
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -11,41 +11,41 @@ struct SettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 NavigationLink {
                     AccountView()
                 } label: {
-                    DSListRow(title: FakeData.inspector, subtitle: "Synced 2 minutes ago · iPhone and iPad", showsChevron: true) {
+                    SDListRow(title: FakeData.inspector, subtitle: "Synced 2 minutes ago · iPhone and iPad", showsChevron: true) {
                         avatar
                     }
                 }
                 .buttonStyle(.plain)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "On site")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "On site")
                     link("Laser meter", value: "DISTO D2") { DevicesView() }
-                    DSDivider()
+                    SDDivider()
                     link("Quick phrases", value: "18") { QuickPhrasesPlaceholder() }
-                    DSDivider()
+                    SDDivider()
                     link("Report letterhead", value: nil) { BrandingView() }
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Privacy")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Privacy")
                     link("App lock", value: "Face ID · 5 min") { AppLockView() }
                 }
 
                 VStack(spacing: 0) {
                     link("Diagnostics", value: nil) { DiagnosticExportView() }
-                    DSDivider()
+                    SDDivider()
                     Button {
                         isDeleteAlertShown = true
                     } label: {
                         Text("Delete account")
-                            .font(DSFont.body)
-                            .foregroundStyle(DSColor.critical)
-                            .frame(maxWidth: .infinity, minHeight: DSSize.rowMinHeight, alignment: .leading)
-                            .padding(.horizontal, DSSpacing.regular)
+                            .font(SDFont.body)
+                            .foregroundStyle(SDColor.critical)
+                            .frame(maxWidth: .infinity, minHeight: SDSize.rowMinHeight, alignment: .leading)
+                            .padding(.horizontal, SDSpacing.regular)
                     }
                 }
 
@@ -53,9 +53,9 @@ struct SettingsView: View {
                 DevMenuSection()
                 #endif
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Settings")
         .alert("Delete your account?", isPresented: $isDeleteAlertShown) {
             Button("Delete Account", role: .destructive) {}
@@ -68,8 +68,8 @@ struct SettingsView: View {
 
     private var avatar: some View {
         Image(systemName: "person.crop.circle.fill")
-            .font(DSFont.largeTitle)
-            .foregroundStyle(DSColor.textTertiary)
+            .font(SDFont.largeTitle)
+            .foregroundStyle(SDColor.textTertiary)
     }
 
     private func link<Destination: View>(
@@ -80,7 +80,7 @@ struct SettingsView: View {
         NavigationLink {
             destination()
         } label: {
-            DSListRow(title: title, value: value, showsChevron: true)
+            SDListRow(title: title, value: value, showsChevron: true)
         }
         .buttonStyle(.plain)
     }
@@ -92,8 +92,8 @@ private struct QuickPhrasesPlaceholder: View {
         ScrollView {
             VStack(spacing: 0) {
                 ForEach(FakeData.quickPhrases, id: \.self) { phrase in
-                    DSListRow(title: phrase)
-                    DSDivider()
+                    SDListRow(title: phrase)
+                    SDDivider()
                 }
             }
         }

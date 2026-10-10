@@ -1,6 +1,6 @@
 // C1 · Camera
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -47,7 +47,7 @@ struct CameraView: View {
         SitePhoto(variant: 0, showsCrack: true)
             .overlay(alignment: .topLeading) {
                 laserReading
-                    .padding(DSSpacing.regular)
+                    .padding(SDSpacing.regular)
             }
             .clipped()
     }
@@ -55,7 +55,7 @@ struct CameraView: View {
     private var laserReading: some View {
         Text("3.42 m · DISTO")
             .foregroundStyle(Color.white)
-            .padding(DSSpacing.small)
+            .padding(SDSpacing.small)
             .background(Color.black)
     }
 }

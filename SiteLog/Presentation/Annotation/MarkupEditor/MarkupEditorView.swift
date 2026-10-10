@@ -1,6 +1,6 @@
 // M1 · Markup editor
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -14,7 +14,7 @@ struct MarkupEditorView: View {
     @State private var currentStroke: [CGPoint] = []
 
     private let tools = ["pencil", "arrow.up.right", "square", "textformat", "ruler"]
-    private let colors: [Color] = [.red, DSColor.hiVis, .white, .black]
+    private let colors: [Color] = [.red, SDColor.hiVis, .white, .black]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -74,7 +74,7 @@ struct MarkupEditorView: View {
                     tool = item
                 } label: {
                     Image(systemName: item)
-                        .foregroundStyle(tool == item ? DSColor.hiVis : Color.white)
+                        .foregroundStyle(tool == item ? SDColor.hiVis : Color.white)
                 }
                 Spacer()
             }
@@ -92,7 +92,7 @@ struct MarkupEditorView: View {
     }
 
     private var colorRow: some View {
-        HStack(spacing: DSSpacing.regular) {
+        HStack(spacing: SDSpacing.regular) {
             ForEach(colors.indices, id: \.self) { index in
                 Button {
                     color = colors[index]

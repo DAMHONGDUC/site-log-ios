@@ -1,7 +1,7 @@
 import SwiftUI
 
-// Usage: .buttonStyle(.ds(.primary)) or .ds(.secondary, small: true)
-public struct DSButtonStyle: ButtonStyle {
+// Usage: .buttonStyle(.sd(.primary)) or .sd(.secondary, small: true)
+public struct SDButtonStyle: ButtonStyle {
     public enum Kind: CaseIterable, Sendable {
         case primary
         // Capture button only
@@ -22,18 +22,18 @@ public struct DSButtonStyle: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         // Separate view: only a View can read isEnabled
-        DSButtonBody(kind: kind, small: small, label: configuration.label, isPressed: configuration.isPressed)
+        SDButtonBody(kind: kind, small: small, label: configuration.label, isPressed: configuration.isPressed)
     }
 }
 
-extension ButtonStyle where Self == DSButtonStyle {
-    public static func ds(_ kind: DSButtonStyle.Kind, small: Bool = false) -> DSButtonStyle {
-        return DSButtonStyle(kind: kind, small: small)
+extension ButtonStyle where Self == SDButtonStyle {
+    public static func sd(_ kind: SDButtonStyle.Kind, small: Bool = false) -> SDButtonStyle {
+        return SDButtonStyle(kind: kind, small: small)
     }
 }
 
-private struct DSButtonBody: View {
-    let kind: DSButtonStyle.Kind
+private struct SDButtonBody: View {
+    let kind: SDButtonStyle.Kind
     let small: Bool
     let label: ButtonStyleConfiguration.Label
     let isPressed: Bool
@@ -43,10 +43,10 @@ private struct DSButtonBody: View {
     var body: some View {
         if small {
             label
-                .font(DSFont.subhead.weight(.semibold))
+                .font(SDFont.subhead.weight(.semibold))
                 .foregroundStyle(textColor)
                 .padding(.horizontal, 14)
-                .frame(height: DSSize.smallButtonHeight)
+                .frame(height: SDSize.smallButtonHeight)
                 .background(background, in: Capsule())
                 .opacity(opacity)
         } else {
@@ -54,18 +54,18 @@ private struct DSButtonBody: View {
                 .font(font)
                 .foregroundStyle(textColor)
                 .frame(maxWidth: .infinity)
-                .frame(height: DSSize.buttonHeight)
-                .background(background, in: RoundedRectangle(cornerRadius: DSRadius.button))
-                .contentShape(RoundedRectangle(cornerRadius: DSRadius.button))
+                .frame(height: SDSize.buttonHeight)
+                .background(background, in: RoundedRectangle(cornerRadius: SDRadius.button))
+                .contentShape(RoundedRectangle(cornerRadius: SDRadius.button))
                 .opacity(opacity)
         }
     }
 
     private var font: Font {
         if kind == .ghost {
-            return DSFont.body.weight(.medium)
+            return SDFont.body.weight(.medium)
         }
-        return DSFont.headline
+        return SDFont.headline
     }
 
     private var opacity: Double {
@@ -81,24 +81,24 @@ private struct DSButtonBody: View {
     private var textColor: Color {
         switch kind {
         case .primary:
-            return DSColor.onPrimary
+            return SDColor.onPrimary
         case .hiVis:
-            return DSColor.onHiVis
+            return SDColor.onHiVis
         case .secondary, .ghost:
-            return DSColor.textPrimary
+            return SDColor.textPrimary
         case .danger:
-            return DSColor.critical
+            return SDColor.critical
         }
     }
 
     private var background: Color {
         switch kind {
         case .primary:
-            return DSColor.textPrimary
+            return SDColor.textPrimary
         case .hiVis:
-            return DSColor.hiVis
+            return SDColor.hiVis
         case .secondary:
-            return DSColor.fill
+            return SDColor.fill
         case .ghost, .danger:
             return Color.clear
         }
@@ -106,22 +106,22 @@ private struct DSButtonBody: View {
 }
 
 #Preview {
-    VStack(spacing: DSSpacing.medium) {
+    VStack(spacing: SDSpacing.medium) {
         Button("Create project") {}
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
         Button("Capture") {}
-            .buttonStyle(.ds(.hiVis))
+            .buttonStyle(.sd(.hiVis))
         Button("Continue with email") {}
-            .buttonStyle(.ds(.secondary))
+            .buttonStyle(.sd(.secondary))
         Button("Continue offline") {}
-            .buttonStyle(.ds(.ghost))
+            .buttonStyle(.sd(.ghost))
         Button("Delete project") {}
-            .buttonStyle(.ds(.danger))
+            .buttonStyle(.sd(.danger))
         Button("Retry") {}
-            .buttonStyle(.ds(.secondary, small: true))
+            .buttonStyle(.sd(.secondary, small: true))
         Button("Disabled") {}
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
             .disabled(true)
     }
-    .padding(DSSpacing.regular)
+    .padding(SDSpacing.regular)
 }

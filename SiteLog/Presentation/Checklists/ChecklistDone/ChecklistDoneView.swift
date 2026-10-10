@@ -1,6 +1,6 @@
 // K4 · Checklist done
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -10,58 +10,58 @@ struct ChecklistDoneView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
+                VStack(alignment: .leading, spacing: SDSpacing.small) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(DSColor.success)
+                        .foregroundStyle(SDColor.success)
 
                     Text("Living room is done.")
-                        .font(DSFont.title)
+                        .font(SDFont.title)
 
                     Text("19 passed, 2 failed and 1 didn’t apply. It took you 6 minutes.")
-                        .font(DSFont.body)
-                        .foregroundStyle(DSColor.textSecondary)
+                        .font(SDFont.body)
+                        .foregroundStyle(SDColor.textSecondary)
                 }
                 .padding(.top)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Sent to the issue list")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Sent to the issue list")
 
                     NavigationLink {
                         IssueDetailView(issue: FakeData.issues[1])
                     } label: {
-                        DSListRow(title: "Crack by the skirting", subtitle: "Tuan’s masonry crew", showsChevron: true) {
-                            DSStatusMarker(kind: .major)
+                        SDListRow(title: "Crack by the skirting", subtitle: "Tuan’s masonry crew", showsChevron: true) {
+                            SDStatusMarker(kind: .major)
                         }
                     }
                     .buttonStyle(.plain)
 
-                    DSDivider()
+                    SDDivider()
 
                     NavigationLink {
                         IssueDetailView(issue: FakeData.issues[4])
                     } label: {
-                        DSListRow(title: "Socket cover not level", subtitle: "Phuc Electric", showsChevron: true) {
-                            DSStatusMarker(kind: .minor)
+                        SDListRow(title: "Socket cover not level", subtitle: "Phuc Electric", showsChevron: true) {
+                            SDStatusMarker(kind: .minor)
                         }
                     }
                     .buttonStyle(.plain)
                 }
             }
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
             Button("Next: Bedroom 1") {
                 dismiss()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
 
             Button("Back to Level 7") {
                 dismiss()
             }
-            .buttonStyle(.ds(.ghost))
+            .buttonStyle(.sd(.ghost))
         }
         .enableInjection()
     }

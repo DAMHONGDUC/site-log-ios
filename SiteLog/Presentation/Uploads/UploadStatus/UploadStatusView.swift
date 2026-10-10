@@ -1,6 +1,6 @@
 // U1 · Sync
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -9,66 +9,66 @@ struct UploadStatusView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 progressBlock
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Waiting")
-                    DSListRow(title: "3 videos", subtitle: "Over 100 MB, so they wait for Wi-Fi") {
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Waiting")
+                    SDListRow(title: "3 videos", subtitle: "Over 100 MB, so they wait for Wi-Fi") {
                         EmptyView()
                     } trailing: {
-                        DSStatusMarker(kind: .waiting)
+                        SDStatusMarker(kind: .waiting)
                     }
-                    DSDivider()
-                    DSListRow(title: "1 photo", subtitle: "Getting a fresh upload link") {
+                    SDDivider()
+                    SDListRow(title: "1 photo", subtitle: "Getting a fresh upload link") {
                         EmptyView()
                     } trailing: {
-                        DSStatusMarker(kind: .waiting)
+                        SDStatusMarker(kind: .waiting)
                     }
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Didn’t upload")
-                    DSListRow(title: "IMG_0922, IMG_0925", subtitle: "The server rejected the checksum") {
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Didn’t upload")
+                    SDListRow(title: "IMG_0922, IMG_0925", subtitle: "The server rejected the checksum") {
                         EmptyView()
                     } trailing: {
                         Button("Retry") {}
-                            .buttonStyle(.ds(.secondary, small: true))
+                            .buttonStyle(.sd(.secondary, small: true))
                     }
                 }
 
                 NavigationLink {
                     UploadFilesView()
                 } label: {
-                    DSListRow(title: "Today’s files", value: "243", showsChevron: true)
+                    SDListRow(title: "Today’s files", value: "243", showsChevron: true)
                 }
                 .buttonStyle(.plain)
 
                 Text("Some files finish while the iPhone is idle. You can close the app.")
-                    .font(DSFont.footnote)
-                    .foregroundStyle(DSColor.textTertiary)
+                    .font(SDFont.footnote)
+                    .foregroundStyle(SDColor.textTertiary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, SDSpacing.regular)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Sync")
         .enableInjection()
     }
 
     private var progressBlock: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.small) {
-            Text("187 \(Text("of 243 files").foregroundStyle(DSColor.textTertiary))")
-                .font(DSFont.figure)
+        VStack(alignment: .leading, spacing: SDSpacing.small) {
+            Text("187 \(Text("of 243 files").foregroundStyle(SDColor.textTertiary))")
+                .font(SDFont.figure)
 
-            DSProgressBar(value: 187.0 / 243.0)
+            SDProgressBar(value: 187.0 / 243.0)
 
             Text("Riverside, today · about 6 minutes left on this Wi-Fi")
-                .font(DSFont.subhead)
-                .foregroundStyle(DSColor.textSecondary)
+                .font(SDFont.subhead)
+                .foregroundStyle(SDColor.textSecondary)
         }
     }
 }

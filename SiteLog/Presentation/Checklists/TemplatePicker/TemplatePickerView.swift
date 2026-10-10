@@ -1,6 +1,6 @@
 // K1 · Pick a checklist
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -11,16 +11,16 @@ struct TemplatePickerView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 NavigationLink {
                     ChecklistRunView()
                 } label: {
-                    DSListRow(
+                    SDListRow(
                         title: "Finishing handover",
                         subtitle: "You stopped at item 15 of 22 this morning",
                         showsChevron: true
                     ) {
-                        DSLiveDot()
+                        SDLiveDot()
                     }
                 }
                 .buttonStyle(.plain)
@@ -33,9 +33,9 @@ struct TemplatePickerView: View {
                     trailing: String(FakeData.allChecklists.count)
                 )
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .searchable(text: $searchText)
         .navigationTitle("Checklist")
         .navigationBarTitleDisplayMode(.inline)
@@ -43,18 +43,18 @@ struct TemplatePickerView: View {
     }
 
     private func checklistSection(title: String, items: [FakeChecklist], trailing: String?) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-            DSSectionHeader(title: title, trailing: trailing)
+        VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+            SDSectionHeader(title: title, trailing: trailing)
 
             ForEach(items) { item in
                 NavigationLink {
                     ChecklistRunView(title: item.title)
                 } label: {
-                    DSListRow(title: item.title, subtitle: "\(item.itemCount) items", showsChevron: true)
+                    SDListRow(title: item.title, subtitle: "\(item.itemCount) items", showsChevron: true)
                 }
                 .buttonStyle(.plain)
 
-                DSDivider()
+                SDDivider()
             }
         }
     }

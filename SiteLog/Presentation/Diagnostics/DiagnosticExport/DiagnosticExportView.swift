@@ -1,6 +1,6 @@
 // U3 · Diagnostics
 
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -11,42 +11,42 @@ struct DiagnosticExportView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    HStack(spacing: DSSpacing.small) {
-                        DSStatusMarker(kind: .resolved)
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    HStack(spacing: SDSpacing.small) {
+                        SDStatusMarker(kind: .resolved)
                         Text("All 1,284 photos check out")
-                            .font(DSFont.headline)
+                            .font(SDFont.headline)
                     }
                     Text("Fingerprints match, nothing changed since capture. Checked 9:02.")
-                        .font(DSFont.subhead)
-                        .foregroundStyle(DSColor.textSecondary)
+                        .font(SDFont.subhead)
+                        .foregroundStyle(SDColor.textSecondary)
                         .padding(.leading)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
+                VStack(alignment: .leading, spacing: SDSpacing.small) {
                     Text("Storage")
-                        .font(DSFont.section)
+                        .font(SDFont.section)
                     storageBar
                     Text("4.1 GB waiting to upload · 1.6 GB already backed up · 12 GB free")
-                        .font(DSFont.footnote)
-                        .foregroundStyle(DSColor.textSecondary)
+                        .font(SDFont.footnote)
+                        .foregroundStyle(SDColor.textSecondary)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "This iPhone")
-                    DSListRow(title: "Background uploads", value: "On")
-                    DSDivider()
-                    DSListRow(title: "Low Power Mode", value: "Off")
-                    DSDivider()
-                    DSListRow(title: "Live progress", value: "Polling")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "This iPhone")
+                    SDListRow(title: "Background uploads", value: "On")
+                    SDDivider()
+                    SDListRow(title: "Low Power Mode", value: "Off")
+                    SDDivider()
+                    SDListRow(title: "Live progress", value: "Polling")
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Diagnostics")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
@@ -54,12 +54,12 @@ struct DiagnosticExportView: View {
             Button("Free up 1.6 GB") {
                 isCleanupShown = true
             }
-            .buttonStyle(.ds(.secondary))
+            .buttonStyle(.sd(.secondary))
 
             ShareLink(item: "sitelog-diagnostics.zip") {
                 Text("Send diagnostics to support")
             }
-            .buttonStyle(.ds(.ghost))
+            .buttonStyle(.sd(.ghost))
         }
         .navigationDestination(isPresented: $isCleanupShown) {
             StorageCleanupView()
@@ -68,7 +68,7 @@ struct DiagnosticExportView: View {
     }
 
     private var storageBar: some View {
-        DSProgressBar(value: 0.57)
+        SDProgressBar(value: 0.57)
     }
 }
 

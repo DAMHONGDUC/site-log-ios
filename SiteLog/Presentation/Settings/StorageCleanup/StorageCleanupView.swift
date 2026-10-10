@@ -1,4 +1,4 @@
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -8,30 +8,30 @@ struct StorageCleanupView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: SDSpacing.large) {
                 Text("Only files already backed up are removed from this iPhone. They stay in the cloud and in your reports.")
-                    .font(DSFont.subhead)
-                    .foregroundStyle(DSColor.textSecondary)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .font(SDFont.subhead)
+                    .foregroundStyle(SDColor.textSecondary)
+                    .padding(.horizontal, SDSpacing.regular)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Backed up", trailing: "1.6 GB")
+                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    SDSectionHeader(title: "Backed up", trailing: "1.6 GB")
                     ForEach(FakeData.sessions.dropFirst()) { session in
-                        DSListRow(title: "Riverside · \(session.title)", subtitle: session.summary, value: "540 MB")
-                        DSDivider()
+                        SDListRow(title: "Riverside · \(session.title)", subtitle: session.summary, value: "540 MB")
+                        SDDivider()
                     }
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, SDSpacing.small)
         }
-        .background(DSColor.canvas)
+        .background(SDColor.canvas)
         .navigationTitle("Free up space")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
             Button("Remove 1.6 GB from this iPhone") {
                 dismiss()
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
         }
         .enableInjection()
     }

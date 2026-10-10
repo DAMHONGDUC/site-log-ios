@@ -1,4 +1,4 @@
-import DesignSystem
+import SystemDesign
 import Inject
 import SwiftUI
 
@@ -14,28 +14,28 @@ struct CaptureReviewView: View {
                 .clipped()
                 .overlay(alignment: .bottomLeading) {
                     Text("10:42:18 · SHA-256 7f3a…c91e")
-                        .font(DSFont.code)
+                        .font(SDFont.code)
                         .foregroundStyle(Color.white)
                         .padding()
                 }
 
-            HStack(spacing: DSSpacing.small) {
+            HStack(spacing: SDSpacing.small) {
                 Button("Retake") {
                     dismiss()
                 }
-                .buttonStyle(.ds(.secondary))
+                .buttonStyle(.sd(.secondary))
 
                 Button("Mark up") {
                     isMarkupShown = true
                 }
-                .buttonStyle(.ds(.secondary))
+                .buttonStyle(.sd(.secondary))
 
                 Button("Use photo") {
                     dismiss()
                 }
-                .buttonStyle(.ds(.primary))
+                .buttonStyle(.sd(.primary))
             }
-            .padding(DSSpacing.regular)
+            .padding(SDSpacing.regular)
         }
         .background(Color.black)
         .preferredColorScheme(.dark)
