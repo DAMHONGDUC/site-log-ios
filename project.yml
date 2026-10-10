@@ -59,6 +59,7 @@ fileGroups:
   - Gemfile
   - .vscode
   - .github
+  - Tools
 targets:
   SiteLog:
     type: application

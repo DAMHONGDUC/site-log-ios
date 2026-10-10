@@ -10,6 +10,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # gitleaks scans the whole history
+      - name: No print(
+        run: Tools/CI/check-no-print.sh
+      - name: Layer imports
+        run: Tools/CI/check-imports.sh
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   lint:
     runs-on: ubuntu-latest
     container: ghcr.io/realm/swiftlint:0.65.1
@@ -17,13 +32,22 @@ jobs:
       - uses: actions/checkout@v4
       - name: SwiftLint (warnings fail)
         run: swiftlint --strict
+  
+  build:
+    runs-on: [self-hosted, macOS]
+    needs: [guards, lint]
+    steps:
+      - uses: actions/checkout@v4
+      - name: App builds, warnings as errors
+        run: Tools/CI/build-strict.sh
 
   test:
-    runs-on: self-hosted
-    needs: [lint]
+    runs-on: [self-hosted, macOS]
+    needs: [build]
     steps:
       - uses: actions/checkout@v4
       - name: Install gems
         run: bundle install
       - name: Fastlane test
         run: bundle exec fastlane test
+
