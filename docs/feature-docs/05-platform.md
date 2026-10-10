@@ -90,7 +90,7 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local packages (`DesignSystem`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
+| Local packages (`SystemDesign`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
 | App target, bundle id, iOS 18.6 | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
@@ -413,7 +413,7 @@ enum DiagnosticsConstants {
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
 | Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
 | Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Local|Remote>/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
-| DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding); components via snapshots |
+| SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding); components via snapshots |
 | Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Each screen: light, dark, `accessibility3` Dynamic Type |
 | Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
@@ -439,7 +439,7 @@ enum DiagnosticsConstants {
 
 - CI reports coverage per folder; a PR that lowers a target fails.
 - Examples: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`),
-  `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift` (snapshots) — full code in [F00 guide](../feature-guide/00-foundation.md).
+  `SiteLogTests/Snapshots/SystemDesignSnapshotTests.swift` (snapshots) — full code in [F00 guide](../feature-guide/00-foundation.md).
 
 ---
 
@@ -459,7 +459,7 @@ enum DiagnosticsConstants {
 
 | Lane | Does |
 |---|---|
-| `test` | `xcodegen`, `DesignSystem` package tests, app unit + snapshot tests on the simulator, coverage per folder |
+| `test` | `xcodegen`, `SystemDesign` package tests, app unit + snapshot tests on the simulator, coverage per folder |
 | `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
 | `release` | Same, waits for processing |
 

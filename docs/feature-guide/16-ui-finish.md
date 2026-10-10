@@ -67,9 +67,9 @@
 <dl><dd>
 
 ```text
-Packages/DesignSystem/Sources/DesignSystem/
+Packages/SystemDesign/Sources/SystemDesign/
 ├── Tokens/                      # 1: tokens checked against Figma variables
-└── Components/                  # 1: DSSeverityPicker, DSAnswerRow, DSToggleRow… finished to Figma
+└── Components/                  # 1: SDSeverityPicker, SDAnswerRow, SDToggleRow… finished to Figma
 SiteLog/
 ├── App/Resources/Assets.xcassets/    # 2, 8: app mark, real imagery
 └── Presentation/
@@ -89,7 +89,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | Step | Do |
 |---|---|
 | 1 | Open the Figma frame and the running screen side by side |
-| 2 | Fix spacing, sizes, fonts with tokens only (`DSSpacing`, `DSFont`…); add a token if Figma needs a new value |
+| 2 | Fix spacing, sizes, fonts with tokens only (`SDSpacing`, `SDFont`…); add a token if Figma needs a new value |
 | 3 | Swap placeholders and native controls for the designed ones |
 | 4 | Check light + dark, small (SE) and large (Pro Max) iPhone, largest Dynamic Type |
 | 5 | Record or update the snapshot test, commit per screen |
@@ -107,7 +107,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>1.1 Done when</strong></summary>
 <dl><dd>
 
-- `DSGallery` matches the components page; snapshot references re-recorded (light + dark)
+- `SDGallery` matches the components page; snapshot references re-recorded (light + dark)
 
 </dd></dl>
 </details>

@@ -73,7 +73,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Area | Choice |
 |---|---|
 | UI | SwiftUI, iOS 18.6 deployment target; Swift 6 strict concurrency, `MainActor` default isolation |
-| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM; `DomainLayer`, `DataLayer`, `Core`, `DesignSystem` are local Swift packages, Presentation lives in the app target ([D09](#d09--layers-as-local-swift-packages)) |
+| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM; `DomainLayer`, `DataLayer`, `Core`, `SystemDesign` are local Swift packages, Presentation lives in the app target ([D09](#d09--layers-as-local-swift-packages)) |
 | Dependency injection | [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`) ([D01](#d01--factory-for-dependency-injection)) |
 | Concurrency | Swift Concurrency — `actor` for upload, `@MainActor` for view models |
 | Local store | SwiftData (`#Unique`, `#Index` need iOS 18) |
@@ -249,7 +249,7 @@ site-log-ios/
 │   │       ├── Local/                # Persistence/ (SwiftData) Capture/ Reporting/ Plans/ DeviceLink/
 │   │       └── Remote/               # Networking/ (backend HTTP client) UploadKit/ Realtime/
 │   ├── Core/                         # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
-│   └── DesignSystem/                 # Tokens/ Components/ (UI only)
+│   └── SystemDesign/                 # Tokens/ Components/ (UI only)
 ├── SiteLogTests/                     # app tests: Presentation/ Snapshots/ (package tests live in each package)
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
@@ -274,11 +274,11 @@ site-log-ios/
 
 | Layer | Where | May use |
 |---|---|---|
-| Presentation | `SiteLog/Presentation/` (app target) | `DomainLayer`, `Core`, `DesignSystem`, `FactoryKit` (`@Injected` only); never `DataLayer` |
+| Presentation | `SiteLog/Presentation/` (app target) | `DomainLayer`, `Core`, `SystemDesign`, `FactoryKit` (`@Injected` only); never `DataLayer` |
 | Domain | `Packages/DomainLayer` | `Foundation` only |
 | Data | `Packages/DataLayer` (`Repositories/`, `DTOs/`, `Mappers/`, `Fakes/`) | `DomainLayer`, `Core` and data sources |
 | Data sources | `Packages/DataLayer/…/DataSources/Local/<Name>/` (on the device), `…/Remote/<Name>/` (server) | Frameworks; `Domain` for shared value types; never repositories or each other |
-| DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI only; never `Domain` or app code |
+| SystemDesign | `Packages/SystemDesign` (Swift package) | SwiftUI only; never `Domain` or app code |
 | Core | `Packages/Core` (`Logger/`, `Clock/`) | `Foundation`, `os`; used by every layer except `Domain` |
 | Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`, `Config/`, `Fakes/`, `Resources/`) | Everything, plus `FactoryKit` |
 
@@ -292,7 +292,7 @@ site-log-ios/
 | Repository protocols in `Domain`, implementations in `Data` | Review |
 | DTOs and `@Model` types never cross into `Domain` or Presentation | CI `check-imports.sh` + review |
 | `UploadKit` and `Realtime` use nothing from the rest of the app, and not each other | Review |
-| `DesignSystem` uses nothing from the app | Compiler (separate package, no dependencies) |
+| `SystemDesign` uses nothing from the app | Compiler (separate package, no dependencies) |
 | Package types the app uses are `public` (with a `public init`); package code is `nonisolated` by default | Compiler |
 
 </dd></dl>
@@ -454,7 +454,7 @@ final class ProjectListViewModel {
 |---|---|
 | Layers | Dependencies point inward; `Domain` imports no frameworks |
 | Dependencies | Only well-known packages SwiftUI developers commonly use: mature, widely adopted, actively maintained, listed on [Swift Package Index](https://swiftpackageindex.com); prefer Apple frameworks; add via `project.yml`; record the choice in [§9 Decisions](#9-decisions) |
-| Constants | In dedicated `enum`s; spacing/color/type via `DesignSystem` |
+| Constants | In dedicated `enum`s; spacing/color/type via `SystemDesign` |
 | Logging | Every action logs with data, successes included: `"Upload failed — {captureId, part: 3/12, status: 503}"` |
 | Errors | Log `String(reflecting:)`; catch broad; **no `print`** |
 | Startup | Each step guarded; crash reporting first |
@@ -731,7 +731,7 @@ final class ProjectListViewModel {
 
 - **Context:** Clean Architecture needs layer boundaries. As folders in one target, only a CI script
   could stop a wrong reference; the compiler could not.
-- **Decision:** `DomainLayer`, `DataLayer` (with `DataSources/Local` and `Remote`), `Core` and `DesignSystem`
+- **Decision:** `DomainLayer`, `DataLayer` (with `DataSources/Local` and `Remote`), `Core` and `SystemDesign`
   are local Swift packages in `Packages/`; the app target keeps `App/` (composition root) and `Presentation/`.
   - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
   - `DataLayer`, not `Data`: a module named `Data` would clash with `Foundation.Data`.

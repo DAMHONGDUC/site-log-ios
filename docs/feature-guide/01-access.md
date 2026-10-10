@@ -1224,7 +1224,7 @@ final class SignInViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `Task { await … }`, `.buttonStyle(.ds(…))`.
+- `Task { await … }`, `.buttonStyle(.sd(…))`.
 
 </details>
 
@@ -1238,21 +1238,21 @@ final class SignInViewModel {
             } label: {
                 Label("Sign in with Apple", systemImage: "apple.logo")
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
 
             Button {
                 viewModel.continueWithEmailTapped()
             } label: {
                 Label("Continue with email", systemImage: "envelope")
             }
-            .buttonStyle(.ds(.secondary))
+            .buttonStyle(.sd(.secondary))
 
             Button("Continue offline") {
                 Task {
                     await viewModel.continueOfflineTapped()
                 }
             }
-            .buttonStyle(.ds(.ghost))
+            .buttonStyle(.sd(.ghost))
         }
 ```
 
@@ -1451,13 +1451,13 @@ final class FaceIDLockViewModel {
             } label: {
                 Label("Unlock with Face ID", systemImage: "faceid")
             }
-            .buttonStyle(.ds(.primary))
+            .buttonStyle(.sd(.primary))
             .disabled(viewModel.isChecking)
 
             Button("Enter passcode") {
                 viewModel.usePasscodeTapped()
             }
-            .buttonStyle(.ds(.ghost))
+            .buttonStyle(.sd(.ghost))
         }
         .task {
             await viewModel.onAppear()

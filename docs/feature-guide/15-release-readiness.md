@@ -75,7 +75,7 @@ SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 <dl><dd>
 
 1. VoiceOver walk: unlock → projects → capture → report.
-2. Severity readable without colour (shapes already in `DSStatusMarker`).
+2. Severity readable without colour (shapes already in `SDStatusMarker`).
 3. Minimum 44 pt targets.
 
 </dd></dl>

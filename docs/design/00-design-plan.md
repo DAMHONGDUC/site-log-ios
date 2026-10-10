@@ -3,7 +3,7 @@
 <dl><dd>
 
 - Screen inventory and Figma file structure for the whole app, derived from `docs/feature-docs/`.
-- Tokens in code: `Packages/DesignSystem` (`DSColor`, `DSFont`, `DSSpacing`, `DSRadius`, `DSSize`).
+- Tokens in code: `Packages/SystemDesign` (`SDColor`, `SDFont`, `SDSpacing`, `SDRadius`, `SDSize`).
 
 </dd></dl>
 
@@ -82,7 +82,7 @@
 
 - Every primary action lives in a bottom dock or toolbar above the safe area; sheets carry their own dock.
 - **Tokens:** `COLOR_TOKENS` (17 colours, light + dark) and `TYPE_TOKENS` (10 text styles with SwiftUI
-  mapping) at the top of [mockups/index.html](mockups/index.html) are the single source; `DesignSystem`
+  mapping) at the top of [mockups/index.html](mockups/index.html) are the single source; `SystemDesign`
   mirrors them in Swift.
 - **Mockups:** [mockups/index.html](mockups/index.html) — 38 screens; import into Figma with the
   html.to.design plugin.

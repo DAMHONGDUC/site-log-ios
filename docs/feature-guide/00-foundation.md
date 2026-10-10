@@ -16,7 +16,7 @@
 4. [1. Layer packages, Factory DI, AppClock](#1-layer-packages-factory-di-appclock)
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
-7. [4. DesignSystem tests](#4-designsystem-tests)
+7. [4. SystemDesign tests](#4-designsystem-tests)
 8. [Feature done](#feature-done)
 
 </dd></dl>
@@ -25,10 +25,10 @@
 
 <dl><dd>
 
-- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem.
-- **Demo:** the app builds with zero warnings, CI is green, the DesignSystem gallery snapshot passes.
+- **Goal:** what every feature builds on — layer packages, DI, CI, SystemDesign.
+- **Demo:** the app builds with zero warnings, CI is green, the SystemDesign gallery snapshot passes.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
-- **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
+- **Already done:** entry point and tooling; SystemDesign tokens and components (built with the UI skeleton, 2026-10-08).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
@@ -39,7 +39,7 @@
 | [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | not start | Layer packages, Factory DI, `AppClock`, test libraries |
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
-| [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `DSGallery`, snapshot test |
+| [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `SDGallery`, snapshot test |
 
 - Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–4 any time.
 
@@ -60,11 +60,11 @@ site-log-ios/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
 │   ├── DataLayer/                            # 1: empty layer folders + DataSources/Local, Remote
-│   └── DesignSystem/                         # done: Tokens/, Components/; 4: DSGallery + tests
+│   └── SystemDesign/                         # done: Tokens/, Components/; 4: SDGallery + tests
 ├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
 └── SiteLogTests/
     ├── SiteLogTests.swift                    # 1: FixedClock + Factory test
-    └── Snapshots/DesignSystemSnapshotTests.swift  # 4
+    └── Snapshots/SystemDesignSnapshotTests.swift  # 4
 ```
 
 <details open>
@@ -112,7 +112,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `packages:` *(add under `Inject`)*
 
-<b>Explain</b> · Adds the four local packages (DesignSystem, Core, DomainLayer, DataLayer) and two libraries: Factory (DI) and swift-snapshot-testing.
+<b>Explain</b> · Adds the four local packages (SystemDesign, Core, DomainLayer, DataLayer) and two libraries: Factory (DI) and swift-snapshot-testing.
 
 <b>Think</b>
 
@@ -138,7 +138,7 @@ site-log-ios/
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```yaml
-  DesignSystem:
+  SystemDesign:
     path: # folder of the local package
   Core:
     path:
@@ -160,8 +160,8 @@ site-log-ios/
 <summary><b>Code</b></summary>
 
 ```yaml
-  DesignSystem:
-    path: Packages/DesignSystem
+  SystemDesign:
+    path: Packages/SystemDesign
   Core:
     path: Packages/Core
   DomainLayer:
@@ -210,7 +210,7 @@ site-log-ios/
 <summary><b>Code</b></summary>
 
 ```yaml
-      - package: DesignSystem
+      - package: SystemDesign
       - package: Core
       - package: DomainLayer
       - package: DataLayer
@@ -286,7 +286,7 @@ site-log-ios/
 
 - Each layer is a local Swift package in `Packages/` ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
 - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
-- `Packages/DesignSystem/Sources/DesignSystem/DesignSystem.swift` (Xcode template): replace its content with `public enum DesignSystem {}` so the package still builds without `print`; delete it once the tokens exist (already done).
+- `Packages/SystemDesign/Sources/SystemDesign/SystemDesign.swift` (Xcode template): replace its content with `public enum SystemDesign {}` so the package still builds without `print`; delete it once the tokens exist (already done).
 
 | Rule | Why |
 |---|---|
@@ -297,14 +297,14 @@ site-log-ios/
 | `.gitkeep` in package folders is fine | SwiftPM ignores hidden files |
 | `Tools/CI/check-imports.sh` (step 3) still checks two rules | Domain imports Foundation only; Presentation never imports `DataLayer` |
 
-<b>File</b> · <b class="tag-check">Check</b> · `Packages/DesignSystem/Package.swift`
+<b>File</b> · <b class="tag-check">Check</b> · `Packages/SystemDesign/Package.swift`
 
-<b>Explain</b> · Manifest of the DesignSystem package: one library and its test target.
+<b>Explain</b> · Manifest of the SystemDesign package: one library and its test target.
 
 <b>Think</b>
 
 - In a package, what is the difference between a *target* and a *product*?
-- Why can `DesignSystem` never import anything from the app?
+- Why can `SystemDesign` never import anything from the app?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -330,7 +330,7 @@ site-log-ios/
 import PackageDescription
 
 let package = Package(
-    name: "DesignSystem",
+    name: "SystemDesign",
     platforms: [ /* iOS 18 */ ],
     products: [ /* one library */ ],
     targets: [
@@ -351,27 +351,27 @@ let package = Package(
 import PackageDescription
 
 let package = Package(
-    name: "DesignSystem",
+    name: "SystemDesign",
     platforms: [
         .iOS(.v18),
     ],
     products: [
         .library(
-            name: "DesignSystem",
-            targets: ["DesignSystem"]
+            name: "SystemDesign",
+            targets: ["SystemDesign"]
         ),
     ],
     targets: [
         // Tokens and components only; knows nothing about Domain or features
         .target(
-            name: "DesignSystem",
+            name: "SystemDesign",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ],
         ),
         .testTarget(
-            name: "DesignSystemTests",
-            dependencies: ["DesignSystem"],
+            name: "SystemDesignTests",
+            dependencies: ["SystemDesign"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ],
@@ -384,7 +384,7 @@ let package = Package(
 
 <b>Try</b>
 
-- Add `import FactoryKit` to any DesignSystem file and build. The app has Factory, so why does the package fail? Remove it after.
+- Add `import FactoryKit` to any SystemDesign file and build. The app has Factory, so why does the package fail? Remove it after.
 
 ---
 
@@ -399,7 +399,7 @@ let package = Package(
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Same shape as DesignSystem: one library, one target, one test target.
+- Same shape as SystemDesign: one library, one target, one test target.
 
 </details>
 
@@ -974,7 +974,7 @@ struct AppDependenciesTests {
 
 <dl><dd>
 
-- **Goal:** one command (`bundle exec fastlane test`) runs the `DesignSystem` package tests and the app tests; GitHub runs it on every PR.
+- **Goal:** one command (`bundle exec fastlane test`) runs the `SystemDesign` package tests and the app tests; GitHub runs it on every PR.
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
 ![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
@@ -1069,7 +1069,7 @@ app_identifier("app.dd.site.log")
 
 <b>Think</b>
 
-- Why test the `DesignSystem` package on its own instead of only through the app?
+- Why test the `SystemDesign` package on its own instead of only through the app?
 - Snapshot tests compare pixels. Why pin one simulator name and OS?
 
 <details open>
@@ -1127,7 +1127,7 @@ SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
 
 # Local packages with a test target, tested one by one so a package never leans on the app
-PACKAGES = ["DesignSystem", "Core"]
+PACKAGES = ["SystemDesign", "Core"]
 
 # Fastlane runs inside fastlane/, so the repo root is one level up
 ROOT = File.expand_path("..", __dir__)
@@ -1718,16 +1718,16 @@ jobs:
 
 </dd></dl>
 
-## 4. DesignSystem tests
+## 4. SystemDesign tests
 
 <dl><dd>
 
-- Tokens and components are already in `Packages/DesignSystem` (built with the UI skeleton).
+- Tokens and components are already in `Packages/SystemDesign` (built with the UI skeleton).
 - The feature is done, so its tests come now.
 
-<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/DesignSystem/Tests/DesignSystemTests/DesignSystemTests.swift`
+<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/SystemDesign/Tests/SystemDesignTests/SystemDesignTests.swift`
 
-<b>Explain</b> · Unit test for the hex colour helper behind `DSColor`.
+<b>Explain</b> · Unit test for the hex colour helper behind `SDColor`.
 
 <b>Think</b>
 
@@ -1744,7 +1744,7 @@ jobs:
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@testable import DesignSystem`, `getRed(_:green:blue:alpha:)` with `&` (inout), `#expect`.
+- `@testable import SystemDesign`, `getRed(_:green:blue:alpha:)` with `&` (inout), `#expect`.
 
 </details>
 
@@ -1754,9 +1754,9 @@ jobs:
 ```swift
 import Testing
 import UIKit
-@testable import DesignSystem
+@testable import SystemDesign
 
-struct DesignSystemTests {
+struct SystemDesignTests {
     @Test func hexColourIsDecoded() {
         // 1. UIColor(hex: 0xFFD400)
         // 2. four CGFloat vars, getRed(&...)
@@ -1773,9 +1773,9 @@ struct DesignSystemTests {
 ```swift
 import Testing
 import UIKit
-@testable import DesignSystem
+@testable import SystemDesign
 
-struct DesignSystemTests {
+struct SystemDesignTests {
     @Test func hexColourIsDecoded() {
         let color = UIColor(hex: 0xFFD400)
 
@@ -1800,9 +1800,9 @@ struct DesignSystemTests {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `Packages/DesignSystem/Sources/DesignSystem/Components/DSGallery.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/SystemDesign/Sources/SystemDesign/Components/SDGallery.swift`
 
-<b>Explain</b> · Every DesignSystem component on one screen, for previews and the snapshot test.
+<b>Explain</b> · Every SystemDesign component on one screen, for previews and the snapshot test.
 
 <b>Think</b>
 
@@ -1819,8 +1819,8 @@ struct DesignSystemTests {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `public struct … : View`, `public init() {}`, `DSSpacing`, `DSColor.canvas.ignoresSafeArea()`.
-- `.buttonStyle(.ds(.primary))`, `#Preview("Dark") { … .preferredColorScheme(.dark) }`.
+- `public struct … : View`, `public init() {}`, `SDSpacing`, `SDColor.canvas.ignoresSafeArea()`.
+- `.buttonStyle(.sd(.primary))`, `#Preview("Dark") { … .preferredColorScheme(.dark) }`.
 
 </details>
 
@@ -1830,11 +1830,11 @@ struct DesignSystemTests {
 ```swift
 import SwiftUI
 
-public struct DSGallery: View {
+public struct SDGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+        VStack(alignment: .leading, spacing: SDSpacing.regular) {
             // section header
             // two list rows
             // chips + count badge
@@ -1842,7 +1842,7 @@ public struct DSGallery: View {
             // the five button styles
             // empty state
         }
-        // fill the screen with DSColor.canvas
+        // fill the screen with SDColor.canvas
     }
 }
 
@@ -1858,62 +1858,62 @@ public struct DSGallery: View {
 import SwiftUI
 
 // Every component on one screen: used by previews and by the snapshot test.
-public struct DSGallery: View {
+public struct SDGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
-            DSSectionHeader(title: "Level 7", trailing: "3 open")
+        VStack(alignment: .leading, spacing: SDSpacing.regular) {
+            SDSectionHeader(title: "Level 7", trailing: "3 open")
 
             VStack(spacing: 0) {
-                DSListRow(title: "Riverside Tower B", subtitle: "District 7 · 14 open issues", showsChevron: true)
-                DSListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
+                SDListRow(title: "Riverside Tower B", subtitle: "District 7 · 14 open issues", showsChevron: true)
+                SDListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
             }
 
-            HStack(spacing: DSSpacing.small) {
-                DSChip(title: "All", isSelected: true, action: {})
-                DSChip(title: "Has issues", isSelected: false, action: {})
-                DSCountBadge(count: 2)
+            HStack(spacing: SDSpacing.small) {
+                SDChip(title: "All", isSelected: true, action: {})
+                SDChip(title: "Has issues", isSelected: false, action: {})
+                SDCountBadge(count: 2)
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, SDSpacing.regular)
 
-            HStack(spacing: DSSpacing.regular) {
-                ForEach(DSStatusMarker.Kind.allCases, id: \.self) { kind in
-                    DSStatusMarker(kind: kind, text: String(describing: kind).capitalized)
+            HStack(spacing: SDSpacing.regular) {
+                ForEach(SDStatusMarker.Kind.allCases, id: \.self) { kind in
+                    SDStatusMarker(kind: kind, text: String(describing: kind).capitalized)
                 }
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, SDSpacing.regular)
 
-            VStack(spacing: DSSpacing.small) {
+            VStack(spacing: SDSpacing.small) {
                 Button("Primary") {}
-                    .buttonStyle(.ds(.primary))
+                    .buttonStyle(.sd(.primary))
                 Button("Capture") {}
-                    .buttonStyle(.ds(.hiVis))
+                    .buttonStyle(.sd(.hiVis))
                 Button("Secondary") {}
-                    .buttonStyle(.ds(.secondary))
+                    .buttonStyle(.sd(.secondary))
                 Button("Ghost") {}
-                    .buttonStyle(.ds(.ghost))
+                    .buttonStyle(.sd(.ghost))
                 Button("Danger") {}
-                    .buttonStyle(.ds(.danger))
+                    .buttonStyle(.sd(.danger))
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, SDSpacing.regular)
 
-            DSEmptyState(systemImage: "folder", title: "No projects yet", message: "Create a project to start.")
+            SDEmptyState(systemImage: "folder", title: "No projects yet", message: "Create a project to start.")
                 .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, DSSpacing.regular)
+        .padding(.vertical, SDSpacing.regular)
         // Fill the whole screen, including behind the status bar
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(DSColor.canvas.ignoresSafeArea())
+        .background(SDColor.canvas.ignoresSafeArea())
     }
 }
 
 #Preview("Light") {
-    DSGallery()
+    SDGallery()
 }
 
 #Preview("Dark") {
-    DSGallery()
+    SDGallery()
         .preferredColorScheme(.dark)
 }
 ```
@@ -1922,13 +1922,13 @@ public struct DSGallery: View {
 
 <b>Try</b>
 
-- Delete `public init() {}` and use `DSGallery()` from the app target: read the error, then put it back.
+- Delete `public init() {}` and use `SDGallery()` from the app target: read the error, then put it back.
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Snapshots/DesignSystemSnapshotTests.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Snapshots/SystemDesignSnapshotTests.swift`
 
-<b>Explain</b> · Snapshots `DSGallery` in light and dark; fails when a component’s look changes.
+<b>Explain</b> · Snapshots `SDGallery` in light and dark; fails when a component’s look changes.
 
 <b>Think</b>
 
@@ -1953,16 +1953,16 @@ public struct DSGallery: View {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
-import DesignSystem
+import SystemDesign
 import SnapshotTesting
 import SwiftUI
 import Testing
 
 @MainActor
-struct DesignSystemSnapshotTests {
+struct SystemDesignSnapshotTests {
     @Test(arguments: [/* light, dark */])
     func gallery(scheme: ColorScheme) {
-        // 1. DSGallery with that colour scheme
+        // 1. SDGallery with that colour scheme
         // 2. wrap it in a UIHostingController
         // 3. assertSnapshot(..., named: "\(scheme)")
     }
@@ -1975,7 +1975,7 @@ struct DesignSystemSnapshotTests {
 <summary><b>Code</b></summary>
 
 ```swift
-import DesignSystem
+import SystemDesign
 import SnapshotTesting
 import SwiftUI
 import Testing
@@ -1983,10 +1983,10 @@ import Testing
 // First run records the reference images and fails; run again and it passes.
 // References live next to this file in __Snapshots__/ and are committed.
 @MainActor
-struct DesignSystemSnapshotTests {
+struct SystemDesignSnapshotTests {
     @Test(arguments: [ColorScheme.light, ColorScheme.dark])
     func gallery(scheme: ColorScheme) {
-        let view = DSGallery()
+        let view = SDGallery()
             .environment(\.colorScheme, scheme)
         let controller = UIHostingController(rootView: view)
 
@@ -1999,7 +1999,7 @@ struct DesignSystemSnapshotTests {
 
 <b>Try</b>
 
-- After the references exist, change one `DSSpacing` value and run ⌘U: open the failure diff image. Undo the change.
+- After the references exist, change one `SDSpacing` value and run ⌘U: open the failure diff image. Undo the change.
 
 <details open>
 <summary><strong>4.1 Check</strong></summary>
@@ -2007,7 +2007,7 @@ struct DesignSystemSnapshotTests {
 
 | Step | Expect |
 |---|---|
-| Scheme `DesignSystem` → ⌘U | `hexColourIsDecoded` passes |
+| Scheme `SystemDesign` → ⌘U | `hexColourIsDecoded` passes |
 | ⌘U the first time | Snapshot test fails and records `__Snapshots__/…light.png`, `…dark.png` |
 | ⌘U again | Passes; commit the two PNGs |
 

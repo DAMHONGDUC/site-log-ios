@@ -88,7 +88,7 @@ Session → SessionSnapshot (one fetch) → ReportLayoutEngine (pure, no UIKit) 
   confidence when below `.serverVerified`.
 - Unsynced captures print "not yet verified".
 - Final page: SHA-256 over the `captureID`-sorted hash list.
-- Spacing, color and type come from `DesignSystem` tokens, inside the PDF too.
+- Spacing, color and type come from `SystemDesign` tokens, inside the PDF too.
 
 **Spreadsheet**
 

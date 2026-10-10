@@ -55,7 +55,7 @@
 
 <dl><dd>
 
-- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `DesignSystem` are local Swift packages; the app target holds `App/` and `Presentation/`.
+- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `SystemDesign` are local Swift packages; the app target holds `App/` and `Presentation/`.
 - Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
 
 ```
@@ -112,11 +112,11 @@ site-log-ios/
 │   │               ├── UploadKit/        # background URLSession engine (standalone)
 │   │               └── Realtime/         # WebSocket channel (standalone)
 │   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
-│   └── DesignSystem/                     # UI only: never imports Domain or app code
-│       ├── Sources/DesignSystem/
-│       │   ├── Tokens/                   # DSColor, DSFont, DSSpacing, DSRadius, DSSize
-│       │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
-│       └── Tests/DesignSystemTests/
+│   └── SystemDesign/                     # UI only: never imports Domain or app code
+│       ├── Sources/SystemDesign/
+│       │   ├── Tokens/                   # SDColor, SDFont, SDSpacing, SDRadius, SDSize
+│       │   └── Components/               # SDButtonStyle, SDListRow, SDChip, SDEmptyState…
+│       └── Tests/SystemDesignTests/
 ├── SiteLogTests/                         # app tests; package tests live in each package
 │   ├── Presentation/
 │   └── Snapshots/
@@ -132,7 +132,7 @@ site-log-ios/
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
 ```
 
-- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `DesignSystem`; `DataLayer` → `DomainLayer` + `Core`; inside `DataLayer`, repositories → `DataSources/Local` and `DataSources/Remote`.
+- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `SystemDesign`; `DataLayer` → `DomainLayer` + `Core`; inside `DataLayer`, repositories → `DataSources/Local` and `DataSources/Remote`.
 - Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
 
 </dd></dl>
