@@ -16,7 +16,7 @@
 4. [1. Layer packages, Factory DI, AppClock](#1-layer-packages-factory-di-appclock)
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
-7. [4. SystemDesign tests](#4-designsystem-tests)
+7. [4. SystemDesign tests](#4-systemdesign-tests)
 8. [Feature done](#feature-done)
 
 </dd></dl>
@@ -39,7 +39,7 @@
 | [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | not start | Layer packages, Factory DI, `AppClock`, test libraries |
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
-| [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `SDGallery`, snapshot test |
+| [4](#4-systemdesign-tests) | Tests | 3h | not start | Hex test, `SDGallery`, snapshot test |
 
 - Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–4 any time.
 
@@ -286,7 +286,6 @@ site-log-ios/
 
 - Each layer is a local Swift package in `Packages/` ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
 - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
-- `Packages/SystemDesign/Sources/SystemDesign/SystemDesign.swift` (Xcode template): replace its content with `public enum SystemDesign {}` so the package still builds without `print`; delete it once the tokens exist (already done).
 
 | Rule | Why |
 |---|---|
@@ -974,7 +973,7 @@ struct AppDependenciesTests {
 
 <dl><dd>
 
-- **Goal:** one command (`bundle exec fastlane test`) runs the `SystemDesign` package tests and the app tests; GitHub runs it on every PR.
+- **Goal:** one command (`bundle exec fastlane test`) runs the package tests (`SystemDesign`, `Core`) and the app tests; GitHub runs it on every PR.
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
 ![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)

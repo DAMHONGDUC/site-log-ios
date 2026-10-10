@@ -40,9 +40,9 @@
 
 ```mermaid
 flowchart LR
-    D["Domain<br/>entities, protocols, use cases"] --> F["Fake data<br/>Data/Fakes, in memory"]
+    D["Domain<br/>entities, protocols, use cases"] --> F["Fake data<br/>DataLayer/Fakes, in memory"]
     F --> V["View models<br/>wired into the skeleton screens"]
-    V --> R["Real data<br/>DataSources + Data, swap the registration"]
+    V --> R["Real data<br/>DataLayer + its DataSources, swap the registration"]
     R --> T["Tests<br/>after the feature works"]
 ```
 
@@ -102,7 +102,7 @@ flowchart TD
 - Guide: [docs/feature-guide/00-foundation.md](docs/feature-guide/00-foundation.md)
 
 - [x] **F00.0** - [Tooling] - [8h] - Xcode project, XcodeGen, SwiftLint, hot reload, entry point
-- [ ] **F00.1** - [Architecture] - [6h] - Layer folders, Factory DI, injected `AppClock`, test libraries
+- [ ] **F00.1** - [Architecture] - [6h] - Layer packages, Factory DI, injected `AppClock`, test libraries
 - [ ] **F00.2** - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
 - [ ] **F00.4** - [Tests] - [3h] - SystemDesign: hex test, `SDGallery`, snapshot test (tokens + components already built)

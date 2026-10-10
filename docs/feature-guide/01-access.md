@@ -229,7 +229,7 @@ public enum PasscodeCheck: Sendable {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- A protocol listing what the access flow needs from storage; the implementations live in `Data/`.
+- A protocol listing what the access flow needs from storage; the implementations live in `DataLayer`.
 
 </details>
 

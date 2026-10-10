@@ -38,7 +38,7 @@ reboot and presigned-URL expiry.
 
 <dl><dd>
 
-- In: a file URL, metadata, an endpoint, an injected store. Does not import `Domain`.
+- In: a file URL, metadata, an endpoint, an injected store. Does not import `DomainLayer`.
 
 ```swift
 public protocol UploadStore: Sendable {
@@ -208,7 +208,7 @@ public enum UploadConstants {
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Sync`, `Data` (sync engine), `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
+- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
 
 **Goal:** sign in once, work fully offline, sync all metadata across devices over a hand-written
 delta protocol.

@@ -148,7 +148,7 @@ enum ReportConstants {
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Access/` (`FaceIDLock`, `PasscodeUnlock`, `PrivacyOverlay`), `SiteLog/Presentation/Settings/AppLock`, `Domain`
+- Modules: `SiteLog/Presentation/Access/` (`FaceIDLock`, `PasscodeUnlock`, `PrivacyOverlay`), `SiteLog/Presentation/Settings/AppLock`, `DomainLayer`
 
 **Goal:** media and reports are unreadable if the device is lost, unmodifiable without a trace, and
 never leaked into logs or analytics.

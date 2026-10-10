@@ -119,7 +119,7 @@ flowchart LR
 
 | `.swiftlint.yml` | Values |
 |---|---|
-| `excluded` | `.build`, `DerivedData`, `build` |
+| `excluded` | `.build`, `DerivedData`, `build`, each `Packages/<Name>/.build` |
 | `disabled_rules` | `trailing_whitespace`, `line_length`, `trailing_comma` (owned by `swift-format`) |
 | `opt_in_rules` | `empty_count`, `explicit_init`, `redundant_type_annotation`, `unneeded_parentheses_in_closure_argument` |
 
@@ -421,7 +421,7 @@ enum DiagnosticsConstants {
 
 **Rules**
 
-1. Scoped: a change runs the tests of the folder it touched plus `Domain` (`-only-testing:`), not the full suite.
+1. Scoped: a change runs the tests of the folder it touched plus `DomainLayer` (`-only-testing:`), not the full suite.
 2. No real network, clock, camera or Bluetooth in unit tests; inject `AppClock`, `UploadTransport`,
    `CaptureSessionControlling`, `RandomNumberGenerator`.
 3. Every Factory override happens inside `@Suite(.container)`, so tests never leak registrations.
@@ -431,9 +431,9 @@ enum DiagnosticsConstants {
 
 | Coverage scope | Line coverage |
 |---|---|
-| `Domain` | ≥ 90% |
+| `DomainLayer` | ≥ 90% |
 | `UploadKit`, sync engine | ≥ 85% |
-| `Data` | ≥ 70% |
+| `DataLayer` | ≥ 70% |
 | View models | ≥ 70% |
 | Views | Snapshot per screen, no line target |
 
@@ -459,7 +459,7 @@ enum DiagnosticsConstants {
 
 | Lane | Does |
 |---|---|
-| `test` | `xcodegen`, `SystemDesign` package tests, app unit + snapshot tests on the simulator, coverage per folder |
+| `test` | `xcodegen`, tests of every package that has them (`SystemDesign`, `Core`), app unit + snapshot tests on the simulator, coverage per folder |
 | `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
 | `release` | Same, waits for processing |
 
@@ -474,7 +474,7 @@ enum DiagnosticsConstants {
 
 | Runner | When | Jobs |
 |---|---|---|
-| Ubuntu (hosted) | Every push | `Domain` purity, Presentation imports, `UploadKit`/`Realtime` boundary, `print(` grep, `gitleaks`, SwiftLint; backend `vitest` + `tsc` + ESLint + migrations on a throwaway Postgres |
+| Ubuntu (hosted) | Every push | `DomainLayer` purity, Presentation imports, `UploadKit`/`Realtime` boundary, `print(` grep, `gitleaks`, SwiftLint; backend `vitest` + `tsc` + ESLint + migrations on a throwaway Postgres |
 | Self-hosted dev Mac | Every PR | App build, zero warnings (`build-strict.sh`); lane `test` |
 | Self-hosted dev Mac | Nightly | App without `Realtime`; full suite |
 | Hosted macOS | Disabled | Fallback only |

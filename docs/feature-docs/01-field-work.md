@@ -30,7 +30,7 @@
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Projects`, `Domain`, `Data`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence`
+- Modules: `SiteLog/Presentation/Projects`, `DomainLayer`, `DataLayer`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence`
 
 **Goal:** build the `Project → Session → Location` tree faster than paper, fully offline,
 one-handed.
@@ -220,7 +220,7 @@ enum HashConstants { static let streamingChunkBytes: Int = 1_048_576 }
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Issues`, `Domain`, `Data`
+- Modules: `SiteLog/Presentation/Issues`, `DomainLayer`, `DataLayer`
 
 - Core business feature: prove "broken last week, fixed now" with two photos of the same spot.
 
@@ -279,7 +279,7 @@ enum IssueDefaults {
 }
 ```
 
-- `PairIssuesUseCase` lives in `Domain`, imports no frameworks — the most error-prone logic in the app.
+- `PairIssuesUseCase` lives in `DomainLayer`, imports no frameworks — the most error-prone logic in the app.
 - Upload priority: critical 100 · major 50 · minor 10 · no issue 5 · video −20 (video blocks dozens
   of photos behind it).
 
@@ -462,7 +462,7 @@ enum PlanConstants {
 
 <dl><dd>
 
-- Modules: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture` (rendering), `Domain` (models)
+- Modules: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture` (rendering), `DomainLayer` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 
@@ -484,7 +484,7 @@ enum AnnotationShape: Codable, Sendable, Equatable {
 ```
 
 - `Annotation { id, capture, shapes: [AnnotationShape] (JSON), createdAt, updatedAt }`, 1:1 with a
-  capture. Normalized so phone markup renders correctly on A4. `Normalized*` exist because `Domain`
+  capture. Normalized so phone markup renders correctly on A4. `Normalized*` exist because `DomainLayer`
   may not import CoreGraphics; `AnnotationStyle` avoids clashing with `SwiftUI.ShapeStyle`.
 - Keeps the hash valid, stays editable, prints annotated or clean, syncs as a few KB.
 - Editor: Arrow (default), Box, Circle, Pen, Text; stroke scales with image size; undo capped at
@@ -593,7 +593,7 @@ enum TrustedTimeConstants {
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Checklists`, `Domain`, `Data`
+- Modules: `SiteLog/Presentation/Checklists`, `DomainLayer`, `DataLayer`
 
 **Goal:** walk a location against a template, tick items, turn a failed item into an issue without
 retyping.
