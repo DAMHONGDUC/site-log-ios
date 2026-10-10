@@ -19,8 +19,8 @@ jobs:
         run: swiftlint --strict
 
   test:
-    runS-on: self-hosted
-    needS: [lint]
+    runs-on: self-hosted
+    needs: [lint]
     steps:
       - uses: actions/checkout@v4
       - name: Install gems
