@@ -19,7 +19,7 @@ jobs:
         run: swiftlint --strict
 
   test:
-    run-on: [self-hosted, macOS]
+    run-on: self-hosted
     need: [lint]
     steps:
       - uses: action/checkout@v4
