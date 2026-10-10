@@ -26,3 +26,25 @@ body.vscode-dark .tag-new { color: #3fb950; }
 body.vscode-dark .tag-edit { color: #d29922; }
 body.vscode-dark .tag-replace { color: #f85149; }
 body.vscode-dark .tag-check { color: #8b949e; }
+
+/* Task headings in guides: "## 3. …" and the collapsible "3.1 …" rows stand out from the content. */
+h2 {
+    padding: 6px 12px !important;
+    border-left: 5px solid #2f81f7;
+    border-bottom: none !important;
+    border-radius: 0 6px 6px 0;
+    background: rgba(47, 129, 247, 0.12);
+}
+
+details > summary:has(> strong) {
+    margin: 14px 0 8px;
+    padding: 5px 10px;
+    border-left: 3px solid #2f81f7;
+    border-radius: 0 6px 6px 0;
+    background: rgba(47, 129, 247, 0.07);
+    cursor: pointer;
+}
+
+details > summary > strong {
+    font-size: 1.1em;
+}
