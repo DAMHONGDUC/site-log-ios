@@ -60,14 +60,14 @@
 
 ```text
 Backend/                          # 4: Node 22 + TypeScript + Fastify, Postgres, migrations/
-Packages/DataLayer/Sources/DataLayer/DataSources/
-├── Remote/UploadKit/             # 1–4: uses nothing from the rest of the app
+Packages/Infrastructure/Sources/Infrastructure/
+├── UploadKit/                    # 1–4: uses nothing from the rest of the app
 │   ├── UploadStore.swift, InMemoryUploadStore.swift
 │   ├── UploadStateMachine.swift, ChunkPlanner.swift
 │   ├── UploadCoordinator.swift (actor), BackgroundSessionDelegate.swift
 │   └── PresignedURLProvider.swift
-├── Remote/Networking/            # 4: backend HTTP client
-└── Local/Persistence/            # 4: SwiftData UploadStore
+├── Networking/                   # 4: backend HTTP client
+└── Persistence/                  # 4: SwiftData UploadStore
 SiteLog/
 ├── App/AppDelegate.swift         # 4: handleEventsForBackgroundURLSession
 └── Presentation/Uploads/         # 3: UploadStatus (Sync tab), UploadFiles
@@ -92,7 +92,7 @@ SiteLog/
 
 <dl><dd>
 
-1. New folder `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/UploadKit/`; mark what the app uses `public`.
+1. New folder `Packages/Infrastructure/Sources/Infrastructure/UploadKit/`; mark what the app uses `public`.
 2. Check nothing in `UploadKit/` uses a type from another folder (review).
 
 </dd></dl>

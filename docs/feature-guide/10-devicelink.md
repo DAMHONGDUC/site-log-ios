@@ -58,13 +58,14 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/DeviceLink/                          # 1: DeviceReading, DeviceLink protocol
-├── DataLayer/Sources/DataLayer/Fakes/                         # 2: FakeDeviceLink (scripted readings)
-└── DataLayer/Sources/DataLayer/DataSources/Local/DeviceLink/  # 4: DeviceLinkManager (actor), Profiles/
+├── DomainLayer/Sources/DomainLayer/DeviceLink/                   # 1: DeviceReading, DeviceLink protocol
+├── DataLayer/Sources/DataLayer/Fakes/                            # 2: FakeDeviceLink (scripted readings)
+├── DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift  # 4: Domain DeviceLink over DeviceLinkManager
+└── Infrastructure/Sources/Infrastructure/DeviceLink/             # 4: DeviceLinkManager (actor), Profiles/
 SiteLog/Presentation/
-├── Settings/Devices/                                          # 3: S2 pairing
-└── Capture/Camera/                                            # 3: measurement overlay, status dot
-Tools/MockPeripheral/                                          # 4: macOS BLE simulator
+├── Settings/Devices/                                             # 3: S2 pairing
+└── Capture/Camera/                                               # 3: measurement overlay, status dot
+Tools/MockPeripheral/                                             # 4: macOS BLE simulator
 ```
 
 </dd></dl>
@@ -121,15 +122,17 @@ Tools/MockPeripheral/                                          # 4: macOS BLE si
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `DeviceLink/DeviceLinkManager.swift` | Actor around `CBCentralManager` |
-| <b class="tag-new">New</b> | `DeviceLink/Profiles/` | One file per vendor; pure `parse` |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/DeviceLink/DeviceLinkManager.swift` | Actor around `CBCentralManager`; own reading records |
+| <b class="tag-new">New</b> | `Infrastructure/DeviceLink/Profiles/` | One file per vendor; pure `parse` |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift` | Implements Domain `DeviceLink` over `DeviceLinkManager`; maps records to `DeviceReading` |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `BLEDeviceLink` in place of the fake |
 | <b class="tag-new">New</b> | `Tools/MockPeripheral/` | Scripts values, disconnects, garbage bytes |
 
 #### Steps
 
 <dl><dd>
 
-1. Split when you start (manager · profiles · mock).
+1. Split when you start (manager · profiles · adapter · mock).
 2. Never blocks capture.
 
 </dd></dl>

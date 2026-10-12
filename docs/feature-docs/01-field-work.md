@@ -30,7 +30,7 @@
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Projects`, `DomainLayer`, `DataLayer`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence`
+- Modules: `SiteLog/Presentation/Projects`, `DomainLayer`, `DataLayer`, `Packages/Infrastructure/Sources/Infrastructure/Persistence`
 
 **Goal:** build the `Project → Session → Location` tree faster than paper, fully offline,
 one-handed.
@@ -100,7 +100,7 @@ enum LocationTemplateLimits {
 
 <dl><dd>
 
-- Module: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture`
+- Module: `Packages/Infrastructure/Sources/Infrastructure/Capture`
 
 **Goal:** one `AVCaptureSession` for photo, video and audio without teardown; every file hashed
 before it reaches the DB.
@@ -314,7 +314,7 @@ enum IssueDefaults {
 
 <dl><dd>
 
-- Module: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/DeviceLink` · mock: `Tools/MockPeripheral/`
+- Module: `Packages/Infrastructure/Sources/Infrastructure/DeviceLink` · mock: `Tools/MockPeripheral/`
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
 the reading to a `Capture`.
@@ -387,7 +387,7 @@ enum DeviceLinkConstants {
 
 <dl><dd>
 
-- Modules: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Plans`, `SiteLog/Presentation/Plans`
+- Modules: `Packages/Infrastructure/Sources/Infrastructure/Plans`, `SiteLog/Presentation/Plans`
 
 **Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet.
 
@@ -462,7 +462,7 @@ enum PlanConstants {
 
 <dl><dd>
 
-- Modules: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture` (rendering), `DomainLayer` (models)
+- Modules: `Packages/Infrastructure/Sources/Infrastructure/Capture` (rendering), `DomainLayer` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 

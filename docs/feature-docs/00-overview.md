@@ -20,7 +20,7 @@
 6. [Infrastructure](#6-infrastructure)
 7. [Conventions](#7-conventions)
 8. [Feature specs](#8-feature-specs)
-9. [Decisions](#9-decisions) — D01–D08, why each library or hand-written engine
+9. [Decisions](#9-decisions) — D01–D10, why each library, engine and package split
 
 </dd></dl>
 
@@ -211,17 +211,20 @@ Project
 - Clean Architecture: dependencies point inward to `DomainLayer`.
 - Layers are local Swift packages in `Packages/`; the app target holds `App/` and `Presentation/`.
 - `SiteLog/App/` is the only place that wires layers together.
+- Framework code lives in `Infrastructure`, which knows nothing about Domain; Data calls it like an outside library.
 - Presentation uses MVVM.
 
 ```mermaid
 flowchart LR
     App["SiteLog/App: composition root<br/>Factory Container"] --> P["Presentation (app target)<br/>View + ViewModel"]
     App --> Data["DataLayer package<br/>repository impls, DTOs, mappers, fakes"]
+    App --> I
     P --> D["DomainLayer package<br/>entities, use cases, repository protocols"]
     Data --> D
-    Data --> DS["DataSources (inside DataLayer)<br/>Local: Persistence · Capture · Reporting · Plans · DeviceLink<br/>Remote: Networking · UploadKit · Realtime"]
+    Data --> I["Infrastructure package (like an outside library)<br/>Persistence · FileStorage · Security · Capture · Reporting · Plans · DeviceLink<br/>Networking · UploadKit · Realtime · Auth"]
     P --> C["Core package<br/>logger, clock"]
     Data --> C
+    I --> C
 ```
 
 ### 4.1 Repo layout
@@ -246,10 +249,11 @@ site-log-ios/
 │       └── <Feature>/                # 2+ screens → one subfolder per screen
 ├── Packages/                         # local Swift packages; each has Sources/<Name>/ and Tests/<Name>Tests/
 │   ├── DomainLayer/                  # Entities/ UseCases/ Repositories/ — Foundation only
-│   ├── DataLayer/                    # Repositories/ DTOs/ Mappers/ Fakes/ — uses DomainLayer + Core
-│   │   └── DataSources/              # framework code
-│   │       ├── Local/                # Persistence/ (SwiftData) Capture/ Reporting/ Plans/ DeviceLink/
-│   │       └── Remote/               # Networking/ (backend HTTP client) UploadKit/ Realtime/
+│   ├── DataLayer/                    # Repositories/ DTOs/ Mappers/ Fakes/ — uses DomainLayer + Infrastructure + Core
+│   ├── Infrastructure/               # framework code, like an outside library — uses Core only
+│   │                                 #   on device: Persistence/ (SwiftData) FileStorage/ Security/ (Keychain, CryptoKit)
+│   │                                 #              Capture/ Reporting/ Plans/ DeviceLink/
+│   │                                 #   server:    Networking/ (backend HTTP client) UploadKit/ Realtime/ Auth/
 │   ├── Core/                         # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
 │   └── SystemDesign/                 # Tokens/ Components/ (UI only)
 ├── SiteLogTests/                     # app tests: Presentation/ (package tests live in each package)
@@ -266,7 +270,7 @@ site-log-ios/
 ```
 
 - The folder skeleton exists from the start; empty folders hold a `.gitkeep` (excluded from the app build in `project.yml`; SwiftPM ignores hidden files).
-- Why packages: [D09](#d09--layers-as-local-swift-packages).
+- Why packages: [D09](#d09--layers-as-local-swift-packages); why a separate Infrastructure: [D10](#d10--infrastructure-as-a-library-package).
 
 </dd></dl>
 
@@ -276,23 +280,27 @@ site-log-ios/
 
 | Layer | Where | May use |
 |---|---|---|
-| Presentation | `SiteLog/Presentation/` (app target) | `DomainLayer`, `Core`, `SystemDesign`, `FactoryKit` (`@Injected` only); never `DataLayer` |
+| Presentation | `SiteLog/Presentation/` (app target) | `DomainLayer`, `Core`, `SystemDesign`, `FactoryKit` (`@Injected` only); never `DataLayer` or `Infrastructure` |
 | Domain | `Packages/DomainLayer` | `Foundation` only |
-| Data | `Packages/DataLayer` (`Repositories/`, `DTOs/`, `Mappers/`, `Fakes/`) | `DomainLayer`, `Core` and data sources |
-| Data sources | `Packages/DataLayer/…/DataSources/Local/<Name>/` (on the device), `…/Remote/<Name>/` (server) | Frameworks; `DomainLayer` for shared value types; never repositories or each other |
+| Data | `Packages/DataLayer` (`Repositories/`, `DTOs/`, `Mappers/`, `Fakes/`) | `DomainLayer`, `Infrastructure`, `Core` |
+| Infrastructure | `Packages/Infrastructure` (`Sources/Infrastructure/<Name>/`) | `Core`, Apple frameworks, SDKs; never `DomainLayer`, `DataLayer` or app code |
 | SystemDesign | `Packages/SystemDesign` (Swift package) | SwiftUI only; never `DomainLayer` or app code |
-| Core | `Packages/Core` (`Logger/`, `Clock/`) | `Foundation`, `os`; used by every layer except `DomainLayer` |
+| Core | `Packages/Core` (`Logger/`, `Clock/`) | `Foundation`, `os`; used by every layer except `DomainLayer` and `SystemDesign` |
 | Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`, `Config/`, `Fakes/`, `Resources/`) | Everything, plus `FactoryKit` |
 
 | Rule | Enforcement |
 |---|---|
 | `DomainLayer` imports nothing beyond `Foundation` | CI `check-imports.sh` (a package may still import Apple frameworks) |
-| `DomainLayer` never uses `DataLayer` or `Core`; `Core` uses no other layer | Compiler (package dependencies) |
-| Presentation never imports `DataLayer` (the app links it for `App/` only) | CI `check-imports.sh` |
+| `DomainLayer` never uses `DataLayer`, `Infrastructure` or `Core`; `Infrastructure` uses only `Core`; `Core` uses no other layer | Compiler (package dependencies) |
+| Presentation never imports `DataLayer` or `Infrastructure` (the app links them for `App/` only) | CI `check-imports.sh` |
 | Presentation never uses SwiftData, `ModelContext` or `URLSession` | CI `check-imports.sh` |
 | View models call use cases only — never a repository | Review |
 | Repository protocols in `DomainLayer`, implementations in `DataLayer` | Review |
-| DTOs and `@Model` types never cross into `DomainLayer` or Presentation | Compiler (DomainLayer cannot import DataLayer) + CI `check-imports.sh` (Presentation never imports DataLayer) |
+| DTOs and `@Model` types never cross into `DomainLayer` or Presentation | Compiler (DomainLayer cannot import DataLayer or Infrastructure) + CI `check-imports.sh` (Presentation imports neither) |
+| Infrastructure returns its own records and errors; repositories map them to entities | Compiler (Infrastructure cannot import DomainLayer) |
+| Each Infrastructure folder ships a protocol next to its real type; repositories hold the protocol | Review |
+| Infrastructure takes its configuration (base URL, bucket) through `init`; it never reads `AppConfig` | Review |
+| Infrastructure folders never use each other, except a store that implements another folder's protocol (`Persistence` → `UploadKit`) | Review |
 | `UploadKit` and `Realtime` use nothing from the rest of the app, and not each other | Review |
 | `SystemDesign` uses nothing from the app | Compiler (separate package, no dependencies) |
 | Package types the app uses are `public` (with a `public init`); package code is `nonisolated` by default | Compiler |
@@ -318,7 +326,7 @@ site-log-ios/
 <dl><dd>
 
 - All registrations live in `SiteLog/App/AppDependencies.swift`.
-- `DomainLayer` and `DataLayer` never import `FactoryKit` (their packages do not depend on it).
+- `DomainLayer`, `DataLayer` and `Infrastructure` never import `FactoryKit` (their packages do not depend on it).
 
 ```swift
 extension Container {
@@ -338,7 +346,7 @@ final class ProjectListViewModel {
 
 | Rule | Detail |
 |---|---|
-| Scope | Data sources and stateful services `.singleton`; use cases unscoped |
+| Scope | Infrastructure services and stateful services `.singleton`; use cases unscoped |
 | Resolution | View models `@Injected` use cases only |
 | Previews | `Container.shared.projectRepository { InMemoryProjectRepository() }` |
 | Tests | `@Suite(.container)` from `FactoryTesting` |
@@ -470,7 +478,7 @@ final class ProjectListViewModel {
 | Use case | `<Verb><Noun>UseCase` | `CreateProjectUseCase` |
 | Repository protocol / impl | `<Noun>Repository` / `<Source><Noun>Repository` | `SwiftDataProjectRepository` |
 | DTO / mapper | `<Noun>DTO` / `<Noun>Mapper` | `ProjectDTO` |
-| Data source protocol | `<Noun>ing` / `<Noun>Providing` | `PlanRendering` |
+| Infrastructure protocol | `<Noun>ing` / `<Noun>Providing` | `PlanRendering` |
 | Actor | `<Noun>Coordinator` / `<Noun>Manager` | `UploadCoordinator` |
 | Constants | `enum <Area>Constants` | `UploadConstants` |
 | Factory registration | lowerCamel noun on `Container` | `projectRepository` |
@@ -487,7 +495,7 @@ final class ProjectListViewModel {
 1. Domain: entity, repository protocol, use cases.
 2. Fake data: in-memory repository in `Packages/DataLayer/Sources/DataLayer/Fakes/` (the only place fakes live), registered in `AppDependencies`.
 3. View models wired into the screens, running on the fake.
-4. Real data (Data impl, DTO, mapper; framework code in a data source); the Factory registration swaps the fake for it.
+4. Real data (Data impl, DTO, mapper; framework code in `Infrastructure`); the Factory registration swaps the fake for it.
 5. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
 
 </dd></dl>
@@ -526,8 +534,9 @@ final class ProjectListViewModel {
 | [D07](#d07--firebase-crashlytics) | Firebase Crashlytics for crash reporting | Accepted |
 | [D08](#d08--xcodegen-owns-the-xcode-project) | XcodeGen owns the Xcode project | Accepted |
 | [D09](#d09--layers-as-local-swift-packages) | Layers as local Swift packages | Accepted |
+| [D10](#d10--infrastructure-as-a-library-package) | Infrastructure as a library package | Accepted |
 
-- D01–D08 accepted 2026-09-30, D09 2026-10-04. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
@@ -539,9 +548,9 @@ final class ProjectListViewModel {
   and tests swap them; a hand-written `make…()` per use case grows with every feature.
 - **Decision:** [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`).
   - All registrations: `extension Container` in `SiteLog/App/AppDependencies.swift`.
-  - Data sources and stateful services `.singleton`; use cases unscoped.
+  - Infrastructure services and stateful services `.singleton`; use cases unscoped.
   - View models resolve **use cases only**: `@ObservationIgnored @Injected(\.useCase)`.
-  - `DomainLayer` and `DataLayer` never import `FactoryKit`.
+  - `DomainLayer`, `DataLayer` and `Infrastructure` never import `FactoryKit`.
 
 | Rejected | Why not |
 |---|---|
@@ -616,7 +625,7 @@ final class ProjectListViewModel {
 
 - **Context:** the server learns about assembly, checksum results and hash mismatches before the app,
   especially after a kill mid-upload.
-- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime`: connect,
+- **Decision:** observation-only channel on `URLSessionWebSocketTask` in `Packages/Infrastructure/Sources/Infrastructure/Realtime`: connect,
   auth with the Firebase ID token, ping, reconnect with backoff, events reconciled into the upload
   store. Never controls `UploadKit`.
 
@@ -734,11 +743,11 @@ final class ProjectListViewModel {
 
 - **Context:** Clean Architecture needs layer boundaries. As folders in one target, only a CI script
   could stop a wrong reference; the compiler could not.
-- **Decision:** `DomainLayer`, `DataLayer` (with `DataSources/Local` and `Remote`), `Core` and `SystemDesign`
+- **Decision:** `DomainLayer`, `DataLayer`, `Infrastructure` ([D10](#d10--infrastructure-as-a-library-package)), `Core` and `SystemDesign`
   are local Swift packages in `Packages/`; the app target keeps `App/` (composition root) and `Presentation/`.
-  - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
+  - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Infrastructure` + `Core`; `Infrastructure` → `Core`; `DomainLayer` and `Core` depend on nothing.
   - `DataLayer`, not `Data`: a module named `Data` would clash with `Foundation.Data`.
-  - Left to `Tools/CI/check-imports.sh`: Domain imports Foundation only; Presentation never imports `DataLayer`.
+  - Left to `Tools/CI/check-imports.sh`: Domain imports Foundation only; Presentation never imports `DataLayer` or `Infrastructure`.
 
 | Rejected | Why not |
 |---|---|
@@ -749,6 +758,33 @@ final class ProjectListViewModel {
   - Every type another layer uses is `public`, with a `public init` for structs.
   - Package code is `nonisolated` by default; only the app target defaults to `MainActor`.
   - A package with no tests yet has no test target; `fastlane test` lists only packages with tests.
+
+</dd></dl>
+
+### D10 — Infrastructure as a library package
+
+<dl><dd>
+
+- **Context:** framework code (SwiftData, files, Keychain, camera, PDF, Bluetooth, HTTP, upload, WebSocket,
+  Firebase Auth) sat in `DataLayer/DataSources/`, next to repositories, and could import `DomainLayer`.
+  Nothing kept business rules out of it, and repositories and framework code shared one module.
+- **Decision:** a separate local package `Packages/Infrastructure`, built like an outside library.
+  - Depends on `Core` and frameworks only; never `DomainLayer`, `DataLayer` or app code.
+  - Public API is a protocol plus its real type per folder; own records and errors; configuration through `init`.
+  - `DataLayer` calls it and maps its records to entities; `SiteLog/App/` sets it up and registers it.
+  - Direction stays `DataLayer` → `Infrastructure` (pragmatic), not inverted.
+
+| Rejected | Why not |
+|---|---|
+| Keep `DataLayer/DataSources/` | Framework code could use Domain types; one module for adapters and drivers |
+| Strict inversion (`DataLayer` declares protocols, `Infrastructure` implements them) | Infrastructure would import `DataLayer` and see Domain through it; a protocol per data source doubled |
+| One package per Infrastructure folder | About 11 more packages; every new file reloads the Xcode navigator per package |
+
+- **Consequences:**
+  - The compiler stops framework code from touching Domain; Domain stays Foundation only.
+  - Repositories are testable with a fake of the Infrastructure protocol.
+  - One more local package in `project.yml`; adding a file there reloads the Xcode navigator, as in every package.
+  - A Domain protocol with a device behind it (`CaptureSource`, `DeviceLink`) gets a Data adapter over the Infrastructure type.
 
 </dd></dl>
 

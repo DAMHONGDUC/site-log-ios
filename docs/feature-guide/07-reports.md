@@ -59,10 +59,10 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Reporting/, Security/AuditEntry.swift  # 1
-├── DataLayer/Sources/DataLayer/Fakes/                           # 2: InMemoryReportRepository
-└── DataLayer/Sources/DataLayer/DataSources/Local/Reporting/     # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
+├── DataLayer/Sources/DataLayer/Fakes/                                     # 2: InMemoryReportRepository
+└── Infrastructure/Sources/Infrastructure/Reporting/                       # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
 SiteLog/
-└── Presentation/Reports/                                        # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
+└── Presentation/Reports/                                                  # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
 ```
 
 </dd></dl>

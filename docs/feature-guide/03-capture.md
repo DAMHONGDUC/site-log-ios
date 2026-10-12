@@ -58,11 +58,12 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Capture/                             # 1: RecordCaptureUseCase, CaptureSource protocol
-├── DataLayer/Sources/DataLayer/Fakes/FakeCaptureSource.swift  # 2: returns a bundled image
-└── DataLayer/Sources/DataLayer/DataSources/Local/Capture/     # 4: CaptureSessionControlling, AVCaptureSessionController, FileHasher, MediaStore
+├── DomainLayer/Sources/DomainLayer/Capture/                            # 1: RecordCaptureUseCase, CaptureSource protocol
+├── DataLayer/Sources/DataLayer/Fakes/FakeCaptureSource.swift           # 2: returns a bundled image
+├── DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift  # 4: Domain CaptureSource over Infrastructure Capture
+└── Infrastructure/Sources/Infrastructure/Capture/                      # 4: CaptureSessionControlling, AVCaptureSessionController, FileHasher, MediaStore
 SiteLog/
-└── Presentation/Capture/                                      # 3: Camera, CaptureReview
+└── Presentation/Capture/                                               # 3: Camera, CaptureReview
 ```
 
 </dd></dl>
@@ -125,7 +126,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
 | <b class="tag-new">New</b> | `Capture/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
 | <b class="tag-new">New</b> | `Capture/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
 
@@ -172,7 +173,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `SwiftData*Repository`, `AVCaptureSessionController` |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift` | Implements Domain `CaptureSource` over `CaptureSessionControlling`, `MediaStore`, `FileHasher`; maps to Domain types |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `SwiftData*Repository`, `AVCaptureSessionController`, `CameraCaptureSource` |
 
 </dd></dl>
 

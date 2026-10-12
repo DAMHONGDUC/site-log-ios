@@ -29,7 +29,7 @@
 - **Demo:** the app builds with zero warnings, CI is green, the SystemDesign tests pass.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
 - **Already done:** entry point and tooling; SystemDesign tokens and components (built with the UI skeleton, 2026-10-08).
-- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
+- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes. Not yet built: the `Infrastructure` package (added 2026-10-12, [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package)).
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
 
@@ -59,7 +59,8 @@ site-log-ios/
 ├── Packages/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
-│   ├── DataLayer/                            # 1: empty layer folders + DataSources/Local, Remote
+│   ├── DataLayer/                            # 1: empty layer folders (Repositories, DTOs, Mappers, Fakes)
+│   ├── Infrastructure/                       # 1: empty framework folders (Persistence, Networking, …)
 │   └── SystemDesign/                         # done: Tokens/, Components/; 4: SDGallery + tests
 ├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
 └── SiteLogTests/
@@ -101,8 +102,8 @@ site-log-ios/
 
 <dl><dd>
 
-- **Goal:** `DomainLayer`, `DataLayer` and `Core` as local packages, one composition root (Factory), an injectable clock, test libraries ready.
-- **Why packages:** [D09](../feature-docs/00-overview.md#d09--layers-as-local-swift-packages).
+- **Goal:** `DomainLayer`, `DataLayer`, `Infrastructure` and `Core` as local packages, one composition root (Factory), an injectable clock, test libraries ready.
+- **Why packages:** [D09](../feature-docs/00-overview.md#d09--layers-as-local-swift-packages), [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package).
 - **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
 
 <details open>
@@ -111,7 +112,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `packages:` *(add under `Inject`)*
 
-<b>Explain</b> · Adds the four local packages (SystemDesign, Core, DomainLayer, DataLayer) and one library: Factory (DI).
+<b>Explain</b> · Adds the five local packages (SystemDesign, Core, DomainLayer, DataLayer, Infrastructure) and one library: Factory (DI).
 
 <b>Think</b>
 
@@ -145,6 +146,8 @@ site-log-ios/
     path:
   DataLayer:
     path:
+  Infrastructure:
+    path:
   Factory:
     url: # git URL
     from: # lowest version you accept
@@ -164,6 +167,8 @@ site-log-ios/
     path: Packages/DomainLayer
   DataLayer:
     path: Packages/DataLayer
+  Infrastructure:
+    path: Packages/Infrastructure
   Factory:
     url: https://github.com/hmlongco/Factory
     from: 3.4.1
@@ -179,7 +184,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLog.dependencies` *(add at the end)*
 
-<b>Explain</b> · Lets the app target use the four local packages and FactoryKit.
+<b>Explain</b> · Lets the app target use the five local packages and FactoryKit; `Infrastructure` is for `App/` only (setup and registrations).
 
 <b>Think</b>
 
@@ -207,6 +212,7 @@ site-log-ios/
       - package: Core
       - package: DomainLayer
       - package: DataLayer
+      - package: Infrastructure
       - package: Factory
         product: FactoryKit
 ```
@@ -277,7 +283,7 @@ site-log-ios/
 <dl><dd>
 
 - Each layer is a local Swift package in `Packages/` ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
-- The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Core`; `DomainLayer` and `Core` depend on nothing.
+- The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Infrastructure` + `Core`; `Infrastructure` → `Core`; `DomainLayer` and `Core` depend on nothing.
 
 | Rule | Why |
 |---|---|
@@ -286,7 +292,7 @@ site-log-ios/
 | No `nonisolated` in packages | Package code is nonisolated by default; only the app target defaults to `MainActor` |
 | A package needs one `.swift` file to build | Until the first real type lands, a `Placeholder.swift` keeps it compiling |
 | `.gitkeep` in package folders is fine | SwiftPM ignores hidden files |
-| `Tools/CI/check-imports.sh` (step 3) still checks two rules | Domain imports Foundation only; Presentation never imports `DataLayer` |
+| `Tools/CI/check-imports.sh` (step 3) still checks the rest | Domain imports Foundation only; Presentation never imports `DataLayer` or `Infrastructure` |
 
 <b>File</b> · <b class="tag-check">Check</b> · `Packages/SystemDesign/Package.swift`
 
@@ -500,9 +506,82 @@ enum DomainLayerPlaceholder {}
 
 ---
 
+<b>File</b> · <b class="tag-new">New</b> · `Packages/Infrastructure/Package.swift` + `Sources/Infrastructure/Placeholder.swift`
+
+<b>Explain</b> · Infrastructure package: framework code (SwiftData, files, Keychain, camera, PDF, Bluetooth, HTTP, upload, WebSocket, Firebase Auth), built like an outside library. Uses Core only.
+
+<b>Think</b>
+
+- Infrastructure never imports `DomainLayer`. Who turns its records into Domain entities, then?
+- Why does each folder ship a protocol next to its real implementation?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Same shape as Core plus one dependency; folders `Persistence/`, `FileStorage/`, `Security/`, `Capture/`, `Reporting/`, `Plans/`, `DeviceLink/`, `Networking/`, `UploadKit/`, `Realtime/`, `Auth/` with a `.gitkeep` each.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `dependencies: [.package(path: "../Core")]` at the package level; `dependencies: ["Core"]` on the target.
+- No test target until the first Infrastructure test.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// swift-tools-version: 6.4
+
+import PackageDescription
+
+let package = Package(
+    name: "Infrastructure",
+    platforms: [
+        .iOS(.v18)
+    ],
+    products: [
+        .library(
+            name: "Infrastructure",
+            targets: ["Infrastructure"]
+        )
+    ],
+    dependencies: [
+        .package(path: "../Core"),
+    ],
+    targets: [
+        // Framework code: storage, network, devices. No business logic, never DomainLayer
+        .target(
+            name: "Infrastructure",
+            dependencies: ["Core"],
+            swiftSettings: [
+                .enableUpcomingFeature("ApproachableConcurrency")
+            ],
+        ),
+    ]
+)
+```
+
+```swift
+// Placeholder.swift
+// A package needs one source file to build; delete this when the first Infrastructure type lands.
+enum InfrastructurePlaceholder {}
+```
+
+</details>
+
+<b>Try</b>
+
+- Add `import DomainLayer` to `Placeholder.swift` and build the **Infrastructure** scheme: read the error. Remove it.
+
+---
+
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Package.swift` + `Sources/DataLayer/Placeholder.swift`
 
-<b>Explain</b> · DataLayer package: repositories, DTOs, mappers, fakes and `DataSources/Local`, `DataSources/Remote`. Uses Domain and Core.
+<b>Explain</b> · DataLayer package: repositories, DTOs, mappers, fakes. Uses Domain, Infrastructure and Core; repositories call Infrastructure and map its records to entities.
 
 <b>Think</b>
 
@@ -518,7 +597,7 @@ enum DomainLayerPlaceholder {}
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `dependencies: [.package(path: "../DomainLayer"), …]` at the package level; `dependencies: ["DomainLayer", "Core"]` on the target.
+- `dependencies: [.package(path: "../DomainLayer"), …]` at the package level; `dependencies: ["DomainLayer", "Infrastructure", "Core"]` on the target.
 
 </details>
 
@@ -543,13 +622,14 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../DomainLayer"),
+        .package(path: "../Infrastructure"),
         .package(path: "../Core"),
     ],
     targets: [
-        // Repositories, DTOs, mappers, fakes and data sources (Local, Remote)
+        // Repositories, DTOs, mappers, fakes; framework code lives in Infrastructure
         .target(
             name: "DataLayer",
-            dependencies: ["DomainLayer", "Core"],
+            dependencies: ["DomainLayer", "Infrastructure", "Core"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],
@@ -579,7 +659,7 @@ enum DataLayerPlaceholder {}
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/Core/Sources/Core/Clock/AppClock.swift`
 
-<b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, DataSources and Presentation need time.
+<b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, Infrastructure and Presentation need time.
 
 <b>Think</b>
 
@@ -1412,12 +1492,12 @@ echo "OK: no print( calls"
 
 <b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-imports.sh`
 
-<b>Explain</b> · Fails CI on the two layer rules the package graph cannot enforce: Domain imports Foundation only; Presentation never imports `DataLayer`.
+<b>Explain</b> · Fails CI on the layer rules the package graph cannot enforce: Domain imports Foundation only; Presentation never imports `DataLayer` or `Infrastructure`, nor touches storage or the network.
 
 <b>Think</b>
 
 - DomainLayer has no package dependencies, so it cannot `import Core`. Why can it still `import UIKit`?
-- The app links `DataLayer` so `App/AppDependencies.swift` can register it. What stops a view in the same target from importing it too?
+- The app links `DataLayer` and `Infrastructure` so `App/` can register and set them up. What stops a view in the same target from importing them too?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -1430,7 +1510,7 @@ echo "OK: no print( calls"
 <summary><b>Hint 2 · APIs</b></summary>
 
 - `grep -rhE '^[[:space:]]*import '`, `sed -E 's/^[[:space:]]*//'`, `sort -u`, `grep -vE '^import Foundation$'`.
-- `grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import DataLayer$'`.
+- `grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|Infrastructure)$'`.
 
 </details>
 
@@ -1443,7 +1523,7 @@ set -euo pipefail
 failed=0
 
 # Rule 1: every import in Packages/DomainLayer/Sources is "import Foundation"
-# Rule 2: nothing in SiteLog/Presentation imports DataLayer
+# Rule 2: nothing in SiteLog/Presentation imports DataLayer or Infrastructure
 # Rule 3: Presentation never imports SwiftData/CoreData, never uses ModelContext/URLSession
 
 if [ "$failed" -ne 0 ]; then
@@ -1473,10 +1553,10 @@ if [ -n "$domain_imports" ]; then
   failed=1
 fi
 
-# Rule 2: Presentation never imports DataLayer (the app links it only for App/AppDependencies.swift)
-data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import DataLayer$' SiteLog/Presentation --include='*.swift' || true)
+# Rule 2: Presentation never imports DataLayer or Infrastructure (the app links them only for App/)
+data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|Infrastructure)$' SiteLog/Presentation --include='*.swift' || true)
 if [ -n "$data_imports" ]; then
-  echo "Presentation may not import DataLayer; use Domain use cases. Found:"
+  echo "Presentation may not import DataLayer or Infrastructure; use Domain use cases. Found:"
   echo "$data_imports"
   failed=1
 fi
@@ -1500,7 +1580,7 @@ echo "OK: layer rules"
 
 <b>Try</b>
 
-- Add `import DataLayer` to any view, run the script, read the output. Remove it.
+- Add `import DataLayer`, then `import Infrastructure`, to any view, run the script, read the output. Remove it.
 
 ---
 
@@ -1701,7 +1781,7 @@ jobs:
 | Run each script from the repo root | `OK: …` |
 | Add `print("x")` to any Swift file, run `check-no-print.sh` | Exit 1 with the file and line; then remove it |
 | Add `import UIKit` to `Packages/DomainLayer/Sources/DomainLayer/Placeholder.swift`, run `check-imports.sh` | Exit 1; then remove it |
-| Add `import DataLayer` to any view, run `check-imports.sh` | Exit 1; then remove it |
+| Add `import DataLayer` or `import Infrastructure` to any view, run `check-imports.sh` | Exit 1; then remove it |
 | Add `import Core` to DomainLayer’s `Placeholder.swift`, build | Compiler error: DomainLayer does not depend on Core; then remove it |
 
 </dd></dl>

@@ -55,10 +55,10 @@
 <dl><dd>
 
 ```text
-Backend/src/ws.ts, workers/verify.ts     # 3
+Backend/src/ws.ts, workers/verify.ts                             # 3
 Packages/
 ├── DataLayer/Sources/DataLayer/Fakes/FakeRealtimeChannel.swift  # 1: scripted events
-└── DataLayer/Sources/DataLayer/DataSources/Remote/Realtime/     # 3: RealtimeChannel (actor), messages
+└── Infrastructure/Sources/Infrastructure/Realtime/              # 3: RealtimeChannel (actor), messages
 SiteLog/
 ├── App/RealtimeBridge.swift                                     # 3
 └── Presentation/Uploads/UploadStatus/                           # 2: live state
@@ -106,8 +106,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
 | <b class="tag-new">New</b> | `Backend/src/ws.ts` | Server side per 14 §9 |
 
 #### Steps

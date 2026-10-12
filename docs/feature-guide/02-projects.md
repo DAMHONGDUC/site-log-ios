@@ -58,12 +58,12 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Projects/                             # 1: Project, Session, Location, Capture, protocols, use cases
-├── DataLayer/Sources/DataLayer/Fakes/                          # 2: InMemoryProjectRepository (+ session, location)
-├── DataLayer/Sources/DataLayer/Repositories/                   # 4: SwiftData*Repository, mappers
-└── DataLayer/Sources/DataLayer/DataSources/Local/Persistence/  # 4: @Model types, SchemaV1, migration plan
+├── DomainLayer/Sources/DomainLayer/Projects/           # 1: Project, Session, Location, Capture, protocols, use cases
+├── DataLayer/Sources/DataLayer/Fakes/                  # 2: InMemoryProjectRepository (+ session, location)
+├── DataLayer/Sources/DataLayer/Repositories/           # 4: SwiftData*Repository, mappers
+└── Infrastructure/Sources/Infrastructure/Persistence/  # 4: @Model types, SchemaV1, migration plan
 SiteLog/
-└── Presentation/Projects/                                      # 3: ProjectList, NewProject, ProjectDetail, StartSession,
+└── Presentation/Projects/                              # 3: ProjectList, NewProject, ProjectDetail, StartSession,
                                                                 #    Survey, Room, BulkLocations, CloneTree, EndSession
 ```
 
@@ -153,19 +153,19 @@ SiteLog/
 <summary><strong>4.1 SwiftData schema and repositories</strong></summary>
 <dl><dd>
 
-- **Goal:** SwiftData models in `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/` and repository implementations in `Packages/DataLayer/Sources/DataLayer/Repositories/`.
+- **Goal:** SwiftData models in `Packages/Infrastructure/Sources/Infrastructure/Persistence/` and repository implementations in `Packages/DataLayer/Sources/DataLayer/Repositories/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
 | <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftData*Repository.swift` | Implements the step 1 protocols; mappers model ↔ entity |
 
 #### Steps
 
 <dl><dd>
 
-1. Create the folder `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/`; mark what the app uses `public`.
+1. Create the folder `Packages/Infrastructure/Sources/Infrastructure/Persistence/`; mark what the app uses `public`.
 2. Write models mirroring the entities; store relative file paths.
 3. Write repositories with a `@ModelActor` for writes.
 4. Cascade delete project → sessions, locations, plans.

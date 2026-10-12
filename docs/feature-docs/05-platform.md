@@ -412,7 +412,7 @@ enum DiagnosticsConstants {
 | Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
 | Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
-| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Local|Remote>/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
+| Infrastructure | `Packages/Infrastructure/Tests/InfrastructureTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
 | SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding) |
 | Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |

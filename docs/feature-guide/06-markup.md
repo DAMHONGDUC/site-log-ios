@@ -58,11 +58,11 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Annotation/                                                # 1: AnnotationShape, NormalizedPoint
-├── DataLayer/Sources/DataLayer/Fakes/                                               # 2: InMemoryAnnotationRepository, FixedTrustedClock
-└── DataLayer/Sources/DataLayer/DataSources/Local/Capture/Annotation/, TrustedTime/  # 4
+├── DomainLayer/Sources/DomainLayer/Annotation/                              # 1: AnnotationShape, NormalizedPoint
+├── DataLayer/Sources/DataLayer/Fakes/                                       # 2: InMemoryAnnotationRepository, FixedTrustedClock
+└── Infrastructure/Sources/Infrastructure/Capture/Annotation/, TrustedTime/  # 4
 SiteLog/
-└── Presentation/Annotation/                                                         # 3: MarkupEditor, StampPreview
+└── Presentation/Annotation/                                                 # 3: MarkupEditor, StampPreview
 ```
 
 </dd></dl>

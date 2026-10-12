@@ -95,22 +95,25 @@ site-log-ios/
 │   │       │                             # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
 │   │       ├── UseCases/                 # <Verb><Noun>UseCase
 │   │       └── Repositories/             # protocols
-│   ├── DataLayer/                        # implements Domain; uses Domain + Core
+│   ├── DataLayer/                        # implements Domain; uses Domain + Infrastructure + Core
 │   │   └── Sources/DataLayer/
 │   │       ├── Repositories/             # SwiftData<X>Repository, Keychain…, MetadataSyncEngine
 │   │       ├── DTOs/
 │   │       ├── Mappers/
-│   │       └── DataSources/              # framework code
-│   │           ├── Local/                # on the device
-│   │           │   ├── Persistence/      # SwiftData @Model, SchemaV1…n, migration plan
-│   │           │   ├── Capture/          # AVFoundation, hashing, stamping
-│   │           │   ├── Reporting/        # PDF + CSV export
-│   │           │   ├── Plans/            # PDFKit + CATiledLayer
-│   │           │   └── DeviceLink/       # CoreBluetooth
-│   │           └── Remote/               # talks to the server
-│   │               ├── Networking/       # backend HTTP client
-│   │               ├── UploadKit/        # background URLSession engine (standalone)
-│   │               └── Realtime/         # WebSocket channel (standalone)
+│   │       └── Fakes/                    # in-memory repositories
+│   ├── Infrastructure/                   # framework code, like an outside library; uses Core only
+│   │   └── Sources/Infrastructure/
+│   │       ├── Persistence/              # SwiftData @Model, SchemaV1…n, migration plan
+│   │       ├── FileStorage/              # media files, Data Protection
+│   │       ├── Security/                 # Keychain, CryptoKit
+│   │       ├── Capture/                  # AVFoundation, hashing, stamping
+│   │       ├── Reporting/                # PDF + CSV export
+│   │       ├── Plans/                    # PDFKit + CATiledLayer
+│   │       ├── DeviceLink/               # CoreBluetooth
+│   │       ├── Networking/               # backend HTTP client
+│   │       ├── UploadKit/                # background URLSession engine (standalone)
+│   │       ├── Realtime/                 # WebSocket channel (standalone)
+│   │       └── Auth/                     # Firebase Auth
 │   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
 │   └── SystemDesign/                     # UI only: never imports Domain or app code
 │       ├── Sources/SystemDesign/
@@ -131,7 +134,7 @@ site-log-ios/
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
 ```
 
-- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `SystemDesign`; `DataLayer` → `DomainLayer` + `Core`; inside `DataLayer`, repositories → `DataSources/Local` and `DataSources/Remote`.
+- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `SystemDesign`; `DataLayer` → `DomainLayer` + `Infrastructure` + `Core`; `Infrastructure` → `Core` only, never `DomainLayer`.
 - Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
 
 </dd></dl>

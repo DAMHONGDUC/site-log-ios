@@ -58,11 +58,11 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Plans/                          # 1: PlanSheet, pin as NormalizedPoint
-├── DataLayer/Sources/DataLayer/Fakes/                    # 2: InMemoryPlanRepository
-└── DataLayer/Sources/DataLayer/DataSources/Local/Plans/  # 4: PDFKit + CATiledLayer, tile cache
+├── DomainLayer/Sources/DomainLayer/Plans/        # 1: PlanSheet, pin as NormalizedPoint
+├── DataLayer/Sources/DataLayer/Fakes/            # 2: InMemoryPlanRepository
+└── Infrastructure/Sources/Infrastructure/Plans/  # 4: PDFKit + CATiledLayer, tile cache
 SiteLog/
-└── Presentation/Plans/                                   # 3: PlanList, PlanViewer, PinPreview, PlanImport
+└── Presentation/Plans/                           # 3: PlanList, PlanViewer, PinPreview, PlanImport
 ```
 
 </dd></dl>
