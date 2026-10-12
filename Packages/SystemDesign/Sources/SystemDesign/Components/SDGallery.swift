@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Every component on one screen: used by previews and by the snapshot test.
+// Every component on one screen: used by previews.
 public struct SDGallery: View {
     public init() {}
 

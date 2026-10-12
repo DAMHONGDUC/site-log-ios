@@ -3,7 +3,7 @@
 
 default_platform(:ios)
 
-# One pinned simulator, so snapshot tests compare the same pixels everywhere
+# One pinned simulator, so local runs and CI test on the same device and OS
 SIMULATOR_NAME = "iPhone 17 Pro"
 SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
@@ -33,7 +33,7 @@ platform :ios do
       )
     end
 
-    # 3. App unit + snapshot tests (UI tests run nightly, not per PR)
+    # 3. App unit tests (UI tests run nightly, not per PR)
     run_tests(
       project: File.join(ROOT, "SiteLog.xcodeproj"),
       scheme: "SiteLog",

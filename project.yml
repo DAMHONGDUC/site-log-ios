@@ -43,9 +43,6 @@ packages:
   Factory:
     url: https://github.com/hmlongco/Factory
     from: 3.4.1
-  SnapshotTesting:
-    url: https://github.com/pointfreeco/swift-snapshot-testing
-    from: 1.19.6
 fileGroups:
   - docs
   - fastlane
@@ -133,7 +130,6 @@ targets:
       - package: Core
       - package: Factory
         product: FactoryTesting
-      - package: SnapshotTesting
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogTests
