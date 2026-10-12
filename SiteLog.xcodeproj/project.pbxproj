@@ -55,6 +55,7 @@
 		481F629DD7508CE23DFEB031 /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
 		52D8C9A9922BF0B22698203A /* SystemDesign */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SystemDesign; path = Packages/SystemDesign; sourceTree = SOURCE_ROOT; };
+		555954D2F238291E86205491 /* build-strict.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-strict.sh"; sourceTree = "<group>"; };
 		57AF6868C430FD5F5D09492E /* 01-access.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-access.md"; sourceTree = "<group>"; };
 		57E76234BE1FF431FD5D99C5 /* 09-checklists.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "09-checklists.md"; sourceTree = "<group>"; };
 		59ECE5A3CA31A110540197E5 /* init.lua */ = {isa = PBXFileReference; path = init.lua; sourceTree = "<group>"; };
@@ -117,7 +118,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Presentation/.gitkeep,
-				Snapshots/.gitkeep,
 			);
 			target = 565A3171034401B592E74C34 /* SiteLogTests */;
 		};
@@ -291,6 +291,7 @@
 		5EC6C9482F994B57FB41C724 /* CI */ = {
 			isa = PBXGroup;
 			children = (
+				555954D2F238291E86205491 /* build-strict.sh */,
 				3FBD90C31B8BFC41DF60AED8 /* check-imports.sh */,
 				5F3C8FAC582D03345DF63C0F /* check-no-print.sh */,
 			);
