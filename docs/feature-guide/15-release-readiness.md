@@ -54,7 +54,6 @@
 
 ```text
 SiteLog/PrivacyInfo.xcprivacy    # 2
-SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 ```
 
 </dd></dl>
@@ -68,7 +67,6 @@ SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-edit">Edit</b> | Every screen | Labels, traits, grouping, focus order |
-| <b class="tag-new">New</b> | `SiteLogTests/Snapshots/` | `accessibility3` snapshot per screen |
 
 #### Steps
 
@@ -119,7 +117,7 @@ SiteLogTests/Snapshots/          # 1: accessibility3 per screen
 
 **1. Polish — Accessibility pass**
 
-- Snapshots at `accessibility3`
+- Every screen usable at `accessibility3` Dynamic Type
 - Xcode Accessibility Inspector audit clean
 
 </dd></dl>

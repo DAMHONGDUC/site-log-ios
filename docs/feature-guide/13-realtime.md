@@ -180,7 +180,6 @@ SiteLog/
 **2. View models — Live state on the Sync tab**
 
 - View model with a fake event stream
-- Snapshot
 
 **3. Real data — Channel, bridge, verification worker**
 

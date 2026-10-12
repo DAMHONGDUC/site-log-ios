@@ -182,7 +182,7 @@ SiteLog/
 - Same render at two sizes
 - Original never mutated
 - Confidence for fresh / stale offset, clock jump, relaunch
-- Stamp snapshot in three orientations
+- Stamp position correct in three orientations
 
 </dd></dl>
 

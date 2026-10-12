@@ -154,7 +154,6 @@ SiteLog/
 **2. View models — Notification permission and settings**
 
 - View model
-- Snapshot
 
 **3. Real data — Push and routing**
 

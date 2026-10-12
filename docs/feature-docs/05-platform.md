@@ -90,7 +90,7 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local packages (`SystemDesign`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, `swift-snapshot-testing`, later `Kingfisher`, `Firebase`) | `packages` |
+| Local packages (`SystemDesign`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, later `Kingfisher`, `Firebase`, optional `swift-snapshot-testing` in F16) | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
 | App target, bundle id, iOS 18.6 | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
@@ -389,7 +389,7 @@ enum DiagnosticsConstants {
 
 - Detectors on a fake filesystem
 - Cleanup never touches `pending`/`failed`
-- Redaction snapshot
+- Redacted bundle equals the expected text
 - Estimates never `NaN` or negative
 - Flags at 7 boundaries
 - `uploading` without task resets
@@ -413,9 +413,9 @@ enum DiagnosticsConstants {
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
 | Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
 | Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Local|Remote>/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
-| SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding); components via snapshots |
+| SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding) |
 | Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
-| Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Each screen: light, dark, `accessibility3` Dynamic Type |
+| Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |
 | Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
 | Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
 
@@ -426,8 +426,8 @@ enum DiagnosticsConstants {
    `CaptureSessionControlling`, `RandomNumberGenerator`.
 3. Every Factory override happens inside `@Suite(.container)`, so tests never leak registrations.
 4. A bug fix lands with the test that would have caught it.
-5. Snapshot references are recorded on one pinned simulator (iPhone 17 Pro, iOS 26.4); re-record only
-   in a commit that says why. First run records and fails; the second run passes.
+5. Snapshot tests are optional and come last (F16 step 10). If added, references are recorded on one
+   pinned simulator (iPhone 17 Pro, iOS 26.4) and re-recorded only in a commit that says why.
 
 | Coverage scope | Line coverage |
 |---|---|
@@ -435,11 +435,11 @@ enum DiagnosticsConstants {
 | `UploadKit`, sync engine | ≥ 85% |
 | `DataLayer` | ≥ 70% |
 | View models | ≥ 70% |
-| Views | Snapshot per screen, no line target |
+| Views | No line target |
 
 - CI reports coverage per folder; a PR that lowers a target fails.
-- Examples: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`),
-  `SiteLogTests/Snapshots/SystemDesignSnapshotTests.swift` (snapshots) — full code in [F00 guide](../feature-guide/00-foundation.md).
+- Example: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`)
+  — full code in [F00 guide](../feature-guide/00-foundation.md).
 
 ---
 
@@ -453,13 +453,13 @@ enum DiagnosticsConstants {
 
 **Goal**
 
-- Every PR proves lint, builds, unit and snapshot tests, coverage ([Testing](#testing-strategy)).
+- Every PR proves lint, builds, unit tests, coverage ([Testing](#testing-strategy)).
 - A tag becomes a TestFlight build with no manual Xcode step.
 - No certificates or keys stored in CI; App Store review submission stays manual.
 
 | Lane | Does |
 |---|---|
-| `test` | `xcodegen`, tests of every package that has them (`SystemDesign`, `Core`), app unit + snapshot tests on the simulator, coverage per folder |
+| `test` | `xcodegen`, tests of every package that has them (`SystemDesign`, `Core`), app unit tests on the simulator, coverage per folder |
 | `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
 | `release` | Same, waits for processing |
 

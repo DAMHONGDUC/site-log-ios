@@ -97,7 +97,7 @@ flowchart TD
 
 <dl><dd>
 
-- Demo: builds with zero warnings, CI green, SystemDesign snapshot passes.
+- Demo: builds with zero warnings, CI green, SystemDesign tests pass.
 - Spec: [00](docs/feature-docs/00-overview.md), [05](docs/feature-docs/05-platform.md)
 - Guide: [docs/feature-guide/00-foundation.md](docs/feature-guide/00-foundation.md)
 
@@ -105,7 +105,7 @@ flowchart TD
 - [ ] **F00.1** - [Architecture] - [6h] - Layer packages, Factory DI, injected `AppClock`, test libraries
 - [ ] **F00.2** - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
-- [ ] **F00.4** - [Tests] - [3h] - SystemDesign: hex test, `SDGallery`, snapshot test (tokens + components already built)
+- [ ] **F00.4** - [Tests] - [3h] - SystemDesign: hex test, `SDGallery` (tokens + components already built)
 
 </dd></dl>
 
@@ -354,7 +354,7 @@ flowchart TD
 - Spec: [Design plan](docs/design/00-design-plan.md)
 - Guide: [docs/feature-guide/16-ui-finish.md](docs/feature-guide/16-ui-finish.md)
 
-- [ ] **F16.1** - [UI] - [6h] - Components to Figma; snapshot references re-recorded
+- [ ] **F16.1** - [UI] - [6h] - Components to Figma
 - [ ] **F16.2** - [UI] - [3h] - S1 access screens
 - [ ] **F16.3** - [UI] - [6h] - S2–S3 projects, sessions, rooms
 - [ ] **F16.4** - [UI] - [6h] - S4–S5 camera, capture review, issues
@@ -363,6 +363,7 @@ flowchart TD
 - [ ] **F16.7** - [UI] - [5h] - S10–S11 sync, diagnostics, settings
 - [ ] **F16.8** - [UI] - [5h] - Dark mode; empty, error, offline states; real imagery
 - [ ] **F16.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
+- [ ] **F16.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing) for `SDGallery` and every screen; not counted in the 48h
 
 </dd></dl>
 

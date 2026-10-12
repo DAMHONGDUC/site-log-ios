@@ -26,7 +26,7 @@
 <dl><dd>
 
 - **Goal:** what every feature builds on — layer packages, DI, CI, SystemDesign.
-- **Demo:** the app builds with zero warnings, CI is green, the SystemDesign gallery snapshot passes.
+- **Demo:** the app builds with zero warnings, CI is green, the SystemDesign tests pass.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
 - **Already done:** entry point and tooling; SystemDesign tokens and components (built with the UI skeleton, 2026-10-08).
 - **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes.
@@ -39,7 +39,7 @@
 | [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | not start | Layer packages, Factory DI, `AppClock`, test libraries |
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
-| [4](#4-systemdesign-tests) | Tests | 3h | not start | Hex test, `SDGallery`, snapshot test |
+| [4](#4-systemdesign-tests) | Tests | 3h | not start | Hex test, `SDGallery` |
 
 - Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–4 any time.
 
@@ -55,7 +55,7 @@ site-log-ios/
 ├── fastlane/Appfile, Fastfile                # 2
 ├── .github/workflows/pr-checks.yml           # 2 + 3
 ├── Tools/CI/                                 # 3: check-no-print, check-imports, build-strict
-├── project.yml                               # 1: local packages, Factory, SnapshotTesting
+├── project.yml                               # 1: local packages, Factory
 ├── Packages/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
@@ -63,8 +63,7 @@ site-log-ios/
 │   └── SystemDesign/                         # done: Tokens/, Components/; 4: SDGallery + tests
 ├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
 └── SiteLogTests/
-    ├── SiteLogTests.swift                    # 1: FixedClock + Factory test
-    └── Snapshots/SystemDesignSnapshotTests.swift  # 4
+    └── SiteLogTests.swift                    # 1: FixedClock + Factory test
 ```
 
 <details open>
@@ -112,7 +111,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `packages:` *(add under `Inject`)*
 
-<b>Explain</b> · Adds the four local packages (SystemDesign, Core, DomainLayer, DataLayer) and two libraries: Factory (DI) and swift-snapshot-testing.
+<b>Explain</b> · Adds the four local packages (SystemDesign, Core, DomainLayer, DataLayer) and one library: Factory (DI).
 
 <b>Think</b>
 
@@ -149,9 +148,6 @@ site-log-ios/
   Factory:
     url: # git URL
     from: # lowest version you accept
-  SnapshotTesting:
-    url:
-    from:
 ```
 
 </details>
@@ -171,9 +167,6 @@ site-log-ios/
   Factory:
     url: https://github.com/hmlongco/Factory
     from: 3.4.1
-  SnapshotTesting:
-    url: https://github.com/pointfreeco/swift-snapshot-testing
-    from: 1.19.6
 ```
 
 </details>
@@ -228,7 +221,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLogTests` *(replace its `dependencies` and `settings`)*
 
-<b>Explain</b> · Lets the tests use the app, Core (for `AppClock`), FactoryTesting and SnapshotTesting.
+<b>Explain</b> · Lets the tests use the app, Core (for `AppClock`) and FactoryTesting.
 
 <b>Think</b>
 
@@ -245,7 +238,7 @@ site-log-ios/
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `- target: SiteLog`, `- package: Core`, `- package: Factory` + `product: FactoryTesting`, `- package: SnapshotTesting`.
+- `- target: SiteLog`, `- package: Core`, `- package: Factory` + `product: FactoryTesting`.
 - `settings.base.SWIFT_VERSION`.
 
 </details>
@@ -259,7 +252,6 @@ site-log-ios/
       - package: Core
       - package: Factory
         product: FactoryTesting
-      - package: SnapshotTesting
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogTests
@@ -1064,12 +1056,12 @@ app_identifier("app.dd.site.log")
 
 <b>File</b> · <b class="tag-new">New</b> · `fastlane/Fastfile`
 
-<b>Explain</b> · fastlane lanes; `test` runs the unit and snapshot tests exactly like CI.
+<b>Explain</b> · fastlane lanes; `test` runs the package and app unit tests exactly like CI.
 
 <b>Think</b>
 
 - Why test the `SystemDesign` package on its own instead of only through the app?
-- Snapshot tests compare pixels. Why pin one simulator name and OS?
+- Why pin one simulator name and OS instead of whatever simulator is booted?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -1120,7 +1112,7 @@ end
 
 default_platform(:ios)
 
-# One pinned simulator, so snapshot tests compare the same pixels everywhere
+# One pinned simulator, so local runs and CI test on the same device and OS
 SIMULATOR_NAME = "iPhone 17 Pro"
 SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
@@ -1150,7 +1142,7 @@ platform :ios do
       )
     end
 
-    # 3. App unit + snapshot tests (UI tests run nightly, not per PR)
+    # 3. App unit tests (UI tests run nightly, not per PR)
     run_tests(
       project: File.join(ROOT, "SiteLog.xcodeproj"),
       scheme: "SiteLog",
@@ -1801,11 +1793,11 @@ struct SystemDesignTests {
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/SystemDesign/Sources/SystemDesign/Components/SDGallery.swift`
 
-<b>Explain</b> · Every SystemDesign component on one screen, for previews and the snapshot test.
+<b>Explain</b> · Every SystemDesign component on one screen, for previews.
 
 <b>Think</b>
 
-- Why one screen with every component instead of one snapshot per component?
+- Why one screen with every component instead of one preview per component?
 - Why must it be `public`, with a `public init`?
 
 <details open>
@@ -1856,7 +1848,7 @@ public struct SDGallery: View {
 ```swift
 import SwiftUI
 
-// Every component on one screen: used by previews and by the snapshot test.
+// Every component on one screen: used by previews.
 public struct SDGallery: View {
     public init() {}
 
@@ -1923,83 +1915,6 @@ public struct SDGallery: View {
 
 - Delete `public init() {}` and use `SDGallery()` from the app target: read the error, then put it back.
 
----
-
-<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Snapshots/SystemDesignSnapshotTests.swift`
-
-<b>Explain</b> · Snapshots `SDGallery` in light and dark; fails when a component’s look changes.
-
-<b>Think</b>
-
-- A snapshot test has no `#expect` that you write. What does it compare against, and where does that come from the first time?
-
-<details open>
-<summary><b>Hint 1 · Idea</b></summary>
-
-- One test run twice (light, dark): host the SwiftUI view in UIKit and compare it as an image on a fixed device.
-
-</details>
-
-<details open>
-<summary><b>Hint 2 · APIs</b></summary>
-
-- `@MainActor`, `@Test(arguments:)`, `.environment(\.colorScheme, scheme)`.
-- `UIHostingController(rootView:)`, `assertSnapshot(of:as:named:)`, `.image(on: .iPhone13Pro)`.
-
-</details>
-
-<details open>
-<summary><b>Hint 3 · Skeleton</b></summary>
-
-```swift
-import SystemDesign
-import SnapshotTesting
-import SwiftUI
-import Testing
-
-@MainActor
-struct SystemDesignSnapshotTests {
-    @Test(arguments: [/* light, dark */])
-    func gallery(scheme: ColorScheme) {
-        // 1. SDGallery with that colour scheme
-        // 2. wrap it in a UIHostingController
-        // 3. assertSnapshot(..., named: "\(scheme)")
-    }
-}
-```
-
-</details>
-
-<details>
-<summary><b>Code</b></summary>
-
-```swift
-import SystemDesign
-import SnapshotTesting
-import SwiftUI
-import Testing
-
-// First run records the reference images and fails; run again and it passes.
-// References live next to this file in __Snapshots__/ and are committed.
-@MainActor
-struct SystemDesignSnapshotTests {
-    @Test(arguments: [ColorScheme.light, ColorScheme.dark])
-    func gallery(scheme: ColorScheme) {
-        let view = SDGallery()
-            .environment(\.colorScheme, scheme)
-        let controller = UIHostingController(rootView: view)
-
-        assertSnapshot(of: controller, as: .image(on: .iPhone13Pro), named: "\(scheme)")
-    }
-}
-```
-
-</details>
-
-<b>Try</b>
-
-- After the references exist, change one `SDSpacing` value and run ⌘U: open the failure diff image. Undo the change.
-
 <details open>
 <summary><strong>4.1 Check</strong></summary>
 <dl><dd>
@@ -2007,8 +1922,7 @@ struct SystemDesignSnapshotTests {
 | Step | Expect |
 |---|---|
 | Scheme `SystemDesign` → ⌘U | `hexColourIsDecoded` passes |
-| ⌘U the first time | Snapshot test fails and records `__Snapshots__/…light.png`, `…dark.png` |
-| ⌘U again | Passes; commit the two PNGs |
+| `SDGallery` preview, Light and Dark | Every component renders in both |
 
 </dd></dl>
 </details>

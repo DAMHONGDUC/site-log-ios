@@ -191,7 +191,7 @@ SiteLog/
 **3. Real data — Storage, bundle, Crashlytics**
 
 - Cleanup never touches pending / failed
-- Redaction snapshot
+- Redacted bundle equals the expected text
 
 </dd></dl>
 

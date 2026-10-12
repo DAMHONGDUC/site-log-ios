@@ -118,8 +118,7 @@ site-log-ios/
 │       │   └── Components/               # SDButtonStyle, SDListRow, SDChip, SDEmptyState…
 │       └── Tests/SystemDesignTests/
 ├── SiteLogTests/                         # app tests; package tests live in each package
-│   ├── Presentation/
-│   └── Snapshots/
+│   └── Presentation/
 ├── SiteLogUITests/
 ├── Backend/                              # Node + Postgres → 03-backend.md
 ├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/

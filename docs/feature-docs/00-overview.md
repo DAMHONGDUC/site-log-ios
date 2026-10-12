@@ -86,7 +86,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Realtime | Hand-written `URLSessionWebSocketTask` channel ([D04](#d04--websocket-realtime-channel)) |
 | Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([D05](#d05--kingfisher-for-remote-images)) |
 | Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([D07](#d07--firebase-crashlytics)) |
-| Tests | Swift Testing, swift-snapshot-testing, `FactoryTesting` ([testing](05-platform.md#testing-strategy)) |
+| Tests | Swift Testing, `FactoryTesting`; swift-snapshot-testing optional, last (F16) ([testing](05-platform.md#testing-strategy)) |
 | Tooling | XcodeGen, SwiftLint, swift-format, Fastlane, GitHub Actions |
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
 | Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
@@ -252,7 +252,7 @@ site-log-ios/
 │   │       └── Remote/               # Networking/ (backend HTTP client) UploadKit/ Realtime/
 │   ├── Core/                         # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
 │   └── SystemDesign/                 # Tokens/ Components/ (UI only)
-├── SiteLogTests/                     # app tests: Presentation/ Snapshots/ (package tests live in each package)
+├── SiteLogTests/                     # app tests: Presentation/ (package tests live in each package)
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
 ├── Tools/Hammerspoon/                # format-on-save config for Xcode
@@ -522,7 +522,7 @@ final class ProjectListViewModel {
 | [D03](#d03--node--postgresql-backend-hand-written-sync) | Node + PostgreSQL backend, hand-written sync | Accepted |
 | [D04](#d04--websocket-realtime-channel) | WebSocket realtime channel | Accepted |
 | [D05](#d05--kingfisher-for-remote-images) | Kingfisher for remote images | Accepted |
-| [D06](#d06--test-libraries) | Swift Testing + swift-snapshot-testing + FactoryTesting | Accepted |
+| [D06](#d06--test-libraries) | Swift Testing + FactoryTesting; snapshots optional, last | Accepted |
 | [D07](#d07--firebase-crashlytics) | Firebase Crashlytics for crash reporting | Accepted |
 | [D08](#d08--xcodegen-owns-the-xcode-project) | XcodeGen owns the Xcode project | Accepted |
 | [D09](#d09--layers-as-local-swift-packages) | Layers as local Swift packages | Accepted |
@@ -661,13 +661,13 @@ final class ProjectListViewModel {
 
 - Strategy: [05 § Testing](05-platform.md#testing-strategy)
 
-- **Context:** domain logic, view models and screens need fast tests on CI without a device; screens
-  need a guard against visual regressions in light, dark and large Dynamic Type.
+- **Context:** domain logic and view models need fast tests on CI without a device; a guard against
+  visual regressions on screens is useful but optional, so it waits for the last feature (F16).
 
 | Need | Library |
 |---|---|
 | Unit tests | Swift Testing (`@Test`, `#expect`) |
-| View snapshots | [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) 1.x |
+| View snapshots (optional, F16) | [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) 1.x |
 | DI isolation | `FactoryTesting` — `@Suite(.container)` |
 | UI flows | XCUITest, smoke paths only |
 
@@ -677,7 +677,8 @@ final class ProjectListViewModel {
 | ViewInspector | Tests view internals; breaks on SwiftUI changes |
 | Quick/Nimble | Extra DSL on top of Swift Testing |
 
-- **Consequences:** snapshot references committed; recorded on one pinned simulator model and OS.
+- **Consequences:** no snapshot library until F16 step 10; if added, references are committed and
+  recorded on one pinned simulator model and OS.
 
 </dd></dl>
 

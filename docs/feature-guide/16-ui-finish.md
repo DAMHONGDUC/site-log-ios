@@ -22,7 +22,8 @@
 10. [7. Sync and settings to Figma](#7-sync-and-settings-to-figma)
 11. [8. Dark mode, states, imagery](#8-dark-mode-states-imagery)
 12. [9. Accessibility re-check and submission](#9-accessibility-re-check-and-submission)
-13. [Feature done](#feature-done)
+13. [10. Optional — Snapshot tests](#10-optional--snapshot-tests)
+14. [Feature done](#feature-done)
 
 </dd></dl>
 
@@ -48,6 +49,7 @@
 | [7](#7-sync-and-settings-to-figma) | UI | 5h | not start | S10–S11 sync, diagnostics, settings |
 | [8](#8-dark-mode-states-imagery) | UI | 5h | not start | Dark mode, empty/error/offline states, imagery |
 | [9](#9-accessibility-re-check-and-submission) | Release | 6h | not start | Accessibility re-check, listing, submission |
+| [10](#10-optional--snapshot-tests) | Tests | 6h | optional | Snapshot tests for `SDGallery` and every screen |
 
 <details open>
 <summary><strong>Order</strong></summary>
@@ -56,6 +58,7 @@
 - F16 changes how screens look, never what they do.
 - Step 1 first: every screen step uses the finished components.
 - Steps 2–7 in any order; 8 after them; 9 closes the roadmap.
+- Step 10 is optional: any time after 8; submission does not wait for it.
 
 </dd></dl>
 </details>
@@ -76,7 +79,7 @@ SiteLog/
     ├── Components/              # 4–5: SitePhoto, PlanDrawing, CameraControls, CaptureToolbar finished
     ├── Access/ Projects/ Capture/ Issues/ Annotation/ Plans/
     ├── Checklists/ Reports/ Uploads/ Diagnostics/ Settings/   # 2–7: one screen folder at a time
-SiteLogTests/Snapshots/          # 1–8: one snapshot per screen, light + dark
+SiteLogTests/Snapshots/          # 10 (optional): one snapshot per screen
 fastlane/Fastfile                # 9: release lane waits for processing
 ```
 
@@ -92,7 +95,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | 2 | Fix spacing, sizes, fonts with tokens only (`SDSpacing`, `SDFont`…); add a token if Figma needs a new value |
 | 3 | Swap placeholders and native controls for the designed ones |
 | 4 | Check light + dark, small (SE) and large (Pro Max) iPhone, largest Dynamic Type |
-| 5 | Record or update the snapshot test, commit per screen |
+| 5 | Commit per screen |
 
 </dd></dl>
 
@@ -107,7 +110,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>1.1 Done when</strong></summary>
 <dl><dd>
 
-- `SDGallery` matches the components page; snapshot references re-recorded (light + dark)
+- `SDGallery` matches the components page (light + dark)
 
 </dd></dl>
 </details>
@@ -125,7 +128,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>2.1 Done when</strong></summary>
 <dl><dd>
 
-- 4 screens match Figma; snapshots added
+- 4 screens match Figma
 
 </dd></dl>
 </details>
@@ -142,7 +145,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>3.1 Done when</strong></summary>
 <dl><dd>
 
-- Every Projects screen matches Figma; snapshots added
+- Every Projects screen matches Figma
 
 </dd></dl>
 </details>
@@ -159,7 +162,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>4.1 Done when</strong></summary>
 <dl><dd>
 
-- Camera screens checked on device (real viewfinder); snapshots for the non-camera screens
+- Camera screens checked on device (real viewfinder)
 
 </dd></dl>
 </details>
@@ -176,7 +179,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>5.1 Done when</strong></summary>
 <dl><dd>
 
-- Every Annotation and Plans screen matches Figma; snapshots added
+- Every Annotation and Plans screen matches Figma
 
 </dd></dl>
 </details>
@@ -193,7 +196,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>6.1 Done when</strong></summary>
 <dl><dd>
 
-- Every Checklists and Reports screen matches Figma; snapshots added
+- Every Checklists and Reports screen matches Figma
 
 </dd></dl>
 </details>
@@ -210,7 +213,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>7.1 Done when</strong></summary>
 <dl><dd>
 
-- Every Uploads, Diagnostics and Settings screen matches Figma; snapshots added
+- Every Uploads, Diagnostics and Settings screen matches Figma
 
 </dd></dl>
 </details>
@@ -227,7 +230,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>8.1 Done when</strong></summary>
 <dl><dd>
 
-- No screen shows a placeholder; every list has its empty and error state; dark snapshots pass
+- No screen shows a placeholder; every list has its empty and error state; every screen checked in dark mode
 
 </dd></dl>
 </details>
@@ -260,6 +263,41 @@ fastlane/Fastfile                # 9: release lane waits for processing
 
 - Accessibility checks pass on the finished UI
 - Build submitted for review
+
+</dd></dl>
+</details>
+
+</dd></dl>
+
+## 10. Optional — Snapshot tests
+
+<dl><dd>
+
+- **Goal:** guard the finished UI against visual regressions; optional, last.
+- **Library:** [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) 1.x ([D06](../feature-docs/00-overview.md#d06--test-libraries)).
+
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-edit">Edit</b> | `project.yml` | `SnapshotTesting` package, linked to `SiteLogTests` |
+| <b class="tag-new">New</b> | `SiteLogTests/Snapshots/` | `SDGallery` + one test per screen: light, dark, `accessibility3` |
+| <b class="tag-edit">Edit</b> | `fastlane/Fastfile` | `test` lane comment: app unit + snapshot tests |
+
+<details open>
+<summary><strong>10.1 Steps</strong></summary>
+<dl><dd>
+
+1. Add the package in `project.yml`, run `xcodegen generate`.
+2. Record on the pinned simulator (iPhone 17 Pro, iOS 26.4): first run records and fails, second run passes.
+3. Commit the `__Snapshots__/` references.
+
+</dd></dl>
+</details>
+
+<details open>
+<summary><strong>10.2 Done when</strong></summary>
+<dl><dd>
+
+- Every screen has light, dark and `accessibility3` references; `fastlane test` green
 
 </dd></dl>
 </details>

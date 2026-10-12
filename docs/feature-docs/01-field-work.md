@@ -581,7 +581,7 @@ enum TrustedTimeConstants {
 - Confidence for fresh/stale offset, clock jump, relaunch
 - Oversized offset rejected
 - "not yet verified" wording
-- Stamp snapshot in three orientations
+- Stamp position correct in three orientations
 
 ---
 

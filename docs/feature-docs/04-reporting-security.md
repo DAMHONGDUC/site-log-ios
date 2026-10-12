@@ -279,7 +279,7 @@ enum SecurityConstants {
 - Wrong key throws
 - New files carry the expected protection
 - `.biometryCurrentSet` unreadable before auth
-- Redaction snapshot
+- Redacted bundle equals the expected text
 - Passcode hash round-trip and wrong passcode rejected
 - Lockout steps survive relaunch
 - Lock after boundary (just under / at the value)
