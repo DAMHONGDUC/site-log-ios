@@ -1,7 +1,11 @@
 excluded:
   - .build
+  - Packages/SystemDesign/.build
   - Packages/Core/.build
+  - Packages/DomainLayer/.build
+  - Packages/DataLayer/.build
   - DerivedData
+  - build
 
 # Formatting is owned by swift-format (.swift-format); keep SwiftLint scoped to
 # correctness/style rules that don't fight the formatter.

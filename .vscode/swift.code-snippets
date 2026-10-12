@@ -1,8 +1,8 @@
 {
   "SwiftUI View": {
     "scope": "swift",
-    "prefix": "swiftview",
-    "description": "SwiftUI view with Inject hot reload and a preview",
+    "prefix": "view",
+    "description": "SwiftUI view with Inject hot reload (same as the Xcode `view` snippet)",
     "body": [
       "import Inject",
       "import SwiftUI",
@@ -14,36 +14,24 @@
       "        ${0:Text(\"${1}\")}",
       "            .enableInjection()",
       "    }",
-      "}",
-      "",
-      "#Preview {",
-      "    ${1}()",
       "}"
     ]
   },
-  "Model struct": {
+  "SwiftUI ViewModel": {
     "scope": "swift",
-    "prefix": "swiftmodel",
-    "description": "Identifiable value model",
-    "body": [
-      "import Foundation",
-      "",
-      "struct ${1:${TM_FILENAME_BASE}}: Identifiable, Hashable {",
-      "    let id: UUID",
-      "    $0",
-      "}"
-    ]
-  },
-  "Observable class": {
-    "scope": "swift",
-    "prefix": "swiftobservable",
-    "description": "@Observable class for view state",
+    "prefix": "viewvm",
+    "description": "Observable view model with a State enum (same as the Xcode `viewvm` snippet)",
     "body": [
       "import Observation",
       "",
-      "@Observable",
+      "@MainActor @Observable",
       "final class ${1:${TM_FILENAME_BASE}} {",
-      "    $0",
+      "    enum State { case idle, loading, loaded, failed(String) }",
+      "    private(set) var state: State = .idle",
+      "",
+      "    func onAppear() async {",
+      "        $0",
+      "    }",
       "}"
     ]
   }

@@ -1,7 +1,6 @@
 # Source of truth for SiteLog.xcodeproj. Edit this file, then run `xcodegen`.
-# See docs/dev-docs/xcodegen.md.
+# See docs/feature-docs/05-platform.md (Dev setup › XcodeGen).
 name: SiteLog
-
 options:
   bundleIdPrefix: app.dd
   createIntermediateGroups: true
@@ -10,7 +9,6 @@ options:
   xcodeVersion: "26.4"
   deploymentTarget:
     iOS: "26.4"
-
 settings:
   base:
     DEVELOPMENT_TEAM: WNG5UWNJ6H
@@ -30,33 +28,54 @@ settings:
   configs:
     Release:
       VALIDATE_PRODUCT: YES
-
 packages:
+  SystemDesign:
+    path: Packages/SystemDesign
   Core:
     path: Packages/Core
+  DomainLayer:
+    path: Packages/DomainLayer
+  DataLayer:
+    path: Packages/DataLayer
   Inject:
     url: https://github.com/krzysztofzablocki/Inject
     from: 1.6.0
-
+  Factory:
+    url: https://github.com/hmlongco/Factory
+    from: 3.4.1
 fileGroups:
   - docs
+  - fastlane
   - README.md
+  - ROADMAP.md
   - .gitignore
   - .gitattributes
   - .swift-format
   - .swiftlint.yml
   - project.yml
-
+  - Gemfile
+  - .vscode
+  - .github
+  - Tools
 targets:
   SiteLog:
     type: application
     platform: iOS
     deploymentTarget: "18.6"
     sources:
-      - SiteLog
+      - path: SiteLog
+        type: syncedFolder
+        # .gitkeep only keeps empty folders in git; never part of the build
+        excludes:
+          - "**/.gitkeep"
     dependencies:
+      - package: SystemDesign
       - package: Core
+      - package: DomainLayer
+      - package: DataLayer
       - package: Inject
+      - package: Factory
+        product: FactoryKit
     postBuildScripts:
       - name: Run SwiftLint
         basedOnDependencyAnalysis: false
@@ -87,46 +106,50 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: >-
-          UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
-          UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+          UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: >-
-          UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft
-          UIInterfaceOrientationLandscapeRight
+          UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        INFOPLIST_KEY_UIApplicationSupportsMultipleScenes: NO
         LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks"]
       configs:
         # Hot reload (Inject + InjectionNext), Debug only.
         Debug:
           EMIT_FRONTEND_COMMAND_LINES: YES
           OTHER_LDFLAGS: ["-Xlinker", "-interposable"]
-
   SiteLogTests:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - SiteLogTests
+      - path: SiteLogTests
+        type: syncedFolder
+        # .gitkeep only keeps empty folders in git; never part of the build
+        excludes:
+          - "**/.gitkeep"
     dependencies:
       - target: SiteLog
+      - package: Core
+      - package: Factory
+        product: FactoryTesting
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogTests
-        SWIFT_VERSION: "5.0"
+        SWIFT_VERSION: "6.0"
         SWIFT_EMIT_LOC_STRINGS: NO
         STRING_CATALOG_GENERATE_SYMBOLS: NO
-
   SiteLogUITests:
     type: bundle.ui-testing
     platform: iOS
     sources:
-      - SiteLogUITests
+      - path: SiteLogUITests
+        type: syncedFolder
     dependencies:
       - target: SiteLog
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.dd.SiteLogUITests
-        SWIFT_VERSION: "5.0"
+        SWIFT_VERSION: "6.0"
         SWIFT_EMIT_LOC_STRINGS: NO
         STRING_CATALOG_GENERATE_SYMBOLS: NO
-
 schemes:
   SiteLog:
     build:

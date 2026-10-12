@@ -13,7 +13,6 @@ DerivedData/
 *.ipa
 *.dSYM.zip
 *.dSYM
-Packages/*/.build/
 .swiftpm/
 timeline.xctimeline
 playground.xcworkspace
@@ -22,7 +21,7 @@ playground.xcworkspace
 .build/
 Package.resolved.bak
 
-# ---- Secrets: see docs/feature-docs/07-security.md §6 ----
+# ---- Secrets: see docs/feature-docs/04-reporting-security.md §07.4 ----
 GoogleService-Info.plist
 *.xcconfig
 !*.example.xcconfig
@@ -53,3 +52,7 @@ fastlane/screenshots/**/*.png
 buildServer.json
 # sourcekit-lsp index store written under a mis-parsed "-Xcc" path
 *.xcodeproj/-Xcc/
+# LLDB imports .vscode/sitelog_sim.py and caches its bytecode
+__pycache__/
+# Per-machine F5 simulator choice, see docs/feature-docs/05-platform.md (Dev setup)
+.vscode/sitelog.local.json

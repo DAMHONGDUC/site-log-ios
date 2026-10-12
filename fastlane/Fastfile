@@ -1,0 +1,47 @@
+# Lanes for SiteLog. Run from the repo root: bundle exec fastlane <lane>
+# Spec: docs/feature-docs/05-platform.md, section 17.
+
+default_platform(:ios)
+
+# One pinned simulator, so local runs and CI test on the same device and OS
+SIMULATOR_NAME = "iPhone 17 Pro"
+SIMULATOR_OS = "26.4"
+DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
+
+# Local packages with a test target, tested one by one so a package never leans on the app
+PACKAGES = ["SystemDesign", "Core"]
+
+# Fastlane runs inside fastlane/, so the repo root is one level up
+ROOT = File.expand_path("..", __dir__)
+
+# Build output stays in build/ (git-ignored and excluded from SwiftLint)
+DERIVED_DATA = File.join(ROOT, "build", "DerivedData")
+
+platform :ios do
+  desc "Generate the project, test every package, then test the app"
+  lane :test do
+    # 1. The .xcodeproj must match project.yml
+    sh("cd '#{ROOT}' && xcodegen generate")
+
+    # 2. Each package on its own, with code coverage
+    PACKAGES.each do |package|
+      package_dir = File.join(ROOT, "Packages", package)
+      sh(
+        "cd '#{package_dir}' && " \
+        "xcodebuild test -scheme #{package} -destination '#{DESTINATION}' " \
+        "-derivedDataPath '#{DERIVED_DATA}' -enableCodeCoverage YES -quiet"
+      )
+    end
+
+    # 3. App unit tests (UI tests run nightly, not per PR)
+    run_tests(
+      project: File.join(ROOT, "SiteLog.xcodeproj"),
+      scheme: "SiteLog",
+      device: "#{SIMULATOR_NAME} (#{SIMULATOR_OS})",
+      only_testing: ["SiteLogTests"],
+      derived_data_path: DERIVED_DATA,
+      code_coverage: true,
+      output_directory: File.join(ROOT, "build", "test-output")
+    )
+  end
+end

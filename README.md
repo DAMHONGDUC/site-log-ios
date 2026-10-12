@@ -1,138 +1,137 @@
 # SiteLog
 
-| | |
+<dl><dd>
+
+- Offline-first iOS app for site supervisors: record construction site conditions, export a signed
+  PDF inspection report.
+- Author: Dam Hong Duc · bundle ID `app.dd.site.log` · App Store: not published.
+
+</dd></dl>
+
+## Contents
+
+<dl><dd>
+
+1. [Getting started](#1-getting-started)
+2. [Docs map](#2-docs-map)
+3. [Repo layout](#3-repo-layout)
+
+</dd></dl>
+
+## 1. Getting started
+
+<dl><dd>
+
+| Step | Action |
 |---|---|
-| Overview | Offline-first iOS app for site supervisors to record construction site conditions and export a signed PDF inspection report |
-| Last edit | 2026-09-30 |
-| Author | Dam Hong Duc |
-| Docs | [docs/index.md](docs/index.md) · build order in [ROADMAP.md](ROADMAP.md) |
+| 1 | `brew install xcodegen swiftlint` |
+| 2 | `xcodegen generate` |
+| 3 | Open `SiteLog.xcodeproj`, run the `SiteLog` scheme (⌘R) on an iOS 18.6+ simulator; tests ⌘U |
+| 4 | Full tooling (VS Code, hot reload, format on save): [05-platform § Dev setup](docs/feature-docs/05-platform.md#dev-setup) |
 
-## Store links
+</dd></dl>
 
-| Platform | Link |
+## 2. Docs map
+
+<dl><dd>
+
+| Doc | Contents |
 |---|---|
-| App Store | Not published |
+| [ROADMAP.md](ROADMAP.md) | Features F00–F16 in order, steps per layer, hour estimates |
+| [feature-guide/](docs/feature-guide/) | One guide per feature (F00–F16): Domain → fake data → view models → real data → tests |
+| [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D08 |
+| [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
+| [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
+| [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend: Node, Postgres, sync, WebSocket |
+| [04-reporting-security.md](docs/feature-docs/04-reporting-security.md) | 05 PDF and CSV export · 07 Security and audit log |
+| [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
+| [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; [mockups](docs/design/mockups/index.html) |
 
-## App IDs
+- Docs rule: content sits indented under its title. After editing any `.md`, run `python3 Tools/Docs/indent-md.py` (wraps sections in `<dl><dd>`; safe to re-run).
 
-| ID | Value |
-|---|---|
-| iOS bundle ID | `app.dd.site.log` |
+</dd></dl>
 
-## Tech stack
+## 3. Repo layout
 
-| Category | Technology | Version |
-|---|---|---|
-| Framework | SwiftUI | iOS 18.6 deployment target |
-| Language | Swift | 6 (strict concurrency) |
-| State management | Observation (`@Observable` view models, planned); `@State` in current code | iOS 17+ API |
-| Backend | Node.js, TypeScript, Fastify, PostgreSQL (planned, not in repo yet) | Node 22, PostgreSQL 16 |
-| Local DB | SwiftData (planned, not in repo yet) | iOS 18 |
-| Special libraries | Inject (hot reload, Debug only) | 1.6.0 |
+<dl><dd>
 
-## Project architecture
+- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `SystemDesign` are local Swift packages; the app target holds `App/` and `Presentation/`.
+- Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
 
-| | |
-|---|---|
-| Architecture | Clean Architecture (Presentation · Domain · Data), MVVM in Presentation, SPM packages per layer |
-| Encryption | Planned: Data Protection `.completeUnlessOpen` for media, AES-GCM for export bundles, HMAC-SHA256 audit chain, Keychain for keys and tokens |
-
-Only `Packages/Core` exists today; the rest is specified in [00-project-info.md](docs/feature-docs/00-project-info.md) §4.
-
-```mermaid
-flowchart TD
-  subgraph Presentation
-    View["Views (SwiftUI)"] --> VM["ViewModels (@Observable)"]
-  end
-  subgraph Domain["Domain · Packages/Core"]
-    UC["Use cases"] --> RP["Repository protocols"]
-    UC --> ENT["Entities"]
-  end
-  subgraph Data["Data · Packages/Data"]
-    RI["Repository impls, DTOs, mappers"]
-  end
-  subgraph Sources["Data sources"]
-    SD["Persistence (SwiftData)"]
-    NET["Networking"]
-    FW["Capture · UploadKit · Reporting · Plans · DeviceLink · Realtime"]
-  end
-  VM --> UC
-  RI -. implements .-> RP
-  RI --> SD
-  RI --> NET
-  RI --> FW
-  NET --> BE["Backend (Fastify + PostgreSQL)"]
-  FW --> R2[("Cloudflare R2")]
+```
+site-log-ios/
+├── SiteLog/                              # app target: composition root + Presentation
+│   ├── App/                              # composition root: may use every layer
+│   │   ├── SiteLogApp.swift              # @main
+│   │   ├── AppDelegate.swift
+│   │   ├── AppDependencies.swift         # Factory registrations
+│   │   ├── Startup/
+│   │   │   ├── StartupSequence.swift
+│   │   │   └── Steps/                    # Crashlytics, Keychain, ModelContainer, UploadReconcile,
+│   │   │                                 # AuditVerify, OrphanSweep
+│   │   ├── Config/                       # *.xcconfig, entitlements, GoogleService-Info.plist (CI)
+│   │   ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
+│   │   └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
+│   └── Presentation/                     # MVVM: View + ViewModel; 2+ screens → 1 folder / screen
+│       ├── Root/  MainTab/  Components/
+│       ├── Access/                       # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
+│       ├── Projects/                     # ProjectList/ NewProject/ ProjectDetail/ StartSession/
+│       │                                 # Survey/ BulkLocations/ CloneTree/ EndSession/
+│       ├── Capture/                      # Camera/ CaptureReview/
+│       ├── Issues/                       # IssueSheet/ IssueList/ VerificationCamera/ OutcomePicker/
+│       ├── Annotation/                   # MarkupEditor/ StampPreview/
+│       ├── Plans/                        # PlanList/ PlanViewer/ PinPreview/ PlanImport/
+│       ├── Checklists/                   # TemplatePicker/ ChecklistRun/
+│       ├── Reports/                      # ReportBuilder/ Branding/ SignaturePad/ PDFPreview/
+│       ├── Uploads/                      # UploadStatus/
+│       ├── Diagnostics/                  # DiagnosticExport/
+│       ├── Settings/                     # Account/ Devices/ AppLock/ SetPasscode/ StorageCleanup/
+│       ├── Notifications/
+│       └── DeepLinks/
+├── Packages/                             # local Swift packages: Sources/<Name>/ + Tests/<Name>Tests/
+│   ├── DomainLayer/                      # Foundation only
+│   │   └── Sources/DomainLayer/
+│   │       ├── Entities/                 # Project, Session, Location, Capture, Issue, Annotation,
+│   │       │                             # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
+│   │       ├── UseCases/                 # <Verb><Noun>UseCase
+│   │       └── Repositories/             # protocols
+│   ├── DataLayer/                        # implements Domain; uses Domain + Core
+│   │   └── Sources/DataLayer/
+│   │       ├── Repositories/             # SwiftData<X>Repository, Keychain…, MetadataSyncEngine
+│   │       ├── DTOs/
+│   │       ├── Mappers/
+│   │       └── DataSources/              # framework code
+│   │           ├── Local/                # on the device
+│   │           │   ├── Persistence/      # SwiftData @Model, SchemaV1…n, migration plan
+│   │           │   ├── Capture/          # AVFoundation, hashing, stamping
+│   │           │   ├── Reporting/        # PDF + CSV export
+│   │           │   ├── Plans/            # PDFKit + CATiledLayer
+│   │           │   └── DeviceLink/       # CoreBluetooth
+│   │           └── Remote/               # talks to the server
+│   │               ├── Networking/       # backend HTTP client
+│   │               ├── UploadKit/        # background URLSession engine (standalone)
+│   │               └── Realtime/         # WebSocket channel (standalone)
+│   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
+│   └── SystemDesign/                     # UI only: never imports Domain or app code
+│       ├── Sources/SystemDesign/
+│       │   ├── Tokens/                   # SDColor, SDFont, SDSpacing, SDRadius, SDSize
+│       │   └── Components/               # SDButtonStyle, SDListRow, SDChip, SDEmptyState…
+│       └── Tests/SystemDesignTests/
+├── SiteLogTests/                         # app tests; package tests live in each package
+│   └── Presentation/
+├── SiteLogUITests/
+├── Backend/                              # Node + Postgres → 03-backend.md
+├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/
+├── fastlane/  .github/workflows/  Gemfile
+├── docs/
+│   ├── feature-docs/                     # project specs
+│   ├── feature-guide/                    # .md guide per feature (F00–F16)
+│   └── design/                           # design plan, mockups, app icon
+├── ROADMAP.md
+└── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
 ```
 
-## Local database
+- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `SystemDesign`; `DataLayer` → `DomainLayer` + `Core`; inside `DataLayer`, repositories → `DataSources/Local` and `DataSources/Remote`.
+- Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
 
-Planned SwiftData schema from [00-project-info.md](docs/feature-docs/00-project-info.md) §3.
-
-```mermaid
-erDiagram
-  Project ||--o{ Session : has
-  Project ||--o{ Location : has
-  Project ||--o{ PlanSheet : has
-  Project ||--o{ ChecklistTemplate : has
-  Location ||--o{ Location : parent
-  Location ||--o{ Capture : has
-  Location ||--o{ Issue : anchors
-  Location ||--o{ ChecklistRun : has
-  Session ||--o{ Capture : contains
-  Capture ||--o{ Annotation : has
-  Issue }o--o{ Capture : evidence
-  Issue ||--o| PlanPin : pinned
-  PlanSheet ||--o{ PlanPin : has
-  ChecklistTemplate ||--o{ ChecklistRun : instantiates
-  ChecklistRun ||--o{ ChecklistResult : has
-
-  Project {
-    uuid id
-    string name
-  }
-  Session {
-    uuid id
-    string state
-  }
-  Location {
-    uuid id
-    string code
-    string kind
-  }
-  Capture {
-    uuid id
-    string sha256
-    string uploadState
-  }
-  Annotation {
-    uuid id
-    json shapes
-  }
-  Issue {
-    uuid id
-    string severity
-    string status
-  }
-  PlanSheet {
-    uuid id
-    string sha256
-  }
-  PlanPin {
-    uuid id
-    float x
-    float y
-  }
-  ChecklistTemplate {
-    uuid id
-    string name
-  }
-  ChecklistRun {
-    uuid id
-    date startedAt
-  }
-  ChecklistResult {
-    uuid id
-    string outcome
-  }
-```
+</dd></dl>

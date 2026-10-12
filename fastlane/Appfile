@@ -1,0 +1,2 @@
+# Bundle id of the app; signing comes from the App Store Connect API key (F04)
+app_identifier("app.dd.site.log")

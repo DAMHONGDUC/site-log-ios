@@ -1,14 +1,11 @@
 {
-  "files.associations": {
-    "*.swift": "swift"
-  },
   "files.exclude": {
-    "**/DerivedData/**": true,
     "**/.build/**": true
   },
   "search.exclude": {
     "**/DerivedData/**": true,
-    "**/.build/**": true
+    "**/.build/**": true,
+    "**/*.xcodeproj/**": true
   },
   "editor.rulers": [100],
   "[swift]": {
@@ -17,11 +14,15 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": true
   },
-  "sweetpad.xcodegen.autogenerate": true,
+  "debug.internalConsoleOptions": "openOnSessionStart",
+  "debug.console.closeOnEnd": false,
+  // CodeLLDB: Debug Console evaluates expressions directly (no '?' prefix, no mode banner).
+  // LLDB commands still work with a '/cmd ' prefix, e.g. `/cmd bt`.
+  "lldb.consoleMode": "evaluate",
+  // Sources are synced folders: adding a file never needs xcodegen.
+  "sweetpad.xcodegen.autogenerate": false,
   "sweetpad.build.xcodeWorkspacePath": "SiteLog.xcodeproj",
   "sweetpad.build.scheme": "SiteLog",
-  "sweetpad.build.destination": {
-    "id": "A1435826-B732-4BE8-A6BC-E360A720E0D5",
-    "type": "iOSSimulator"
-  }
+  // Guide preview: same 16 px indent for sub-sections as GitHub.
+  "markdown.styles": [".vscode/markdown-preview.css"]
 }
