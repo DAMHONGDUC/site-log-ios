@@ -6,6 +6,7 @@ excluded:
   - Packages/DataLayer/.build
   - DerivedData
   - build
+  - Tools/Xcode/Templates
 
 # Formatting is owned by swift-format (.swift-format); keep SwiftLint scoped to
 # correctness/style rules that don't fight the formatter.

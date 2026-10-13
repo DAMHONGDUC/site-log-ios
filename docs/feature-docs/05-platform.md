@@ -204,12 +204,19 @@ flowchart LR
 |---|---|---|
 | `view` | SwiftUI view with Inject hot reload | `<Screen>View.swift` |
 | `viewvm` | `@Observable` view model (`State` enum, `onAppear()`) | `<Screen>ViewModel.swift` |
+| `struct` / `class` / `enum` / `protocol` | Type named after the file (`final class`) | Any |
 
 - VS Code: [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets), in the repo.
 - Xcode: user snippets live in `~/Library/Developer/Xcode/UserData/CodeSnippets/`, per machine.
   New machine: Library (⇧⌘L) → `{}` → select the code → right-click → **Create Code Snippet**,
   completion `view` / `viewvm`, availability Top Level.
 - Use: new empty file → type the shortcut → Return → Tab between placeholders; ⌃⌘E renames all uses.
+- Type named after the file:
+  - VS Code: type `struct` (or `public struct`) → first suggestion → name = file name.
+  - Xcode: snippets cannot read the file name, so use the file templates in
+    [`Tools/Xcode/Templates/SiteLog/`](../../Tools/Xcode/Templates/SiteLog/).
+    Install once: `cp -R Tools/Xcode/Templates/SiteLog ~/Library/Developer/Xcode/Templates/File\ Templates/`, restart Xcode.
+    Use: ⌘N → section **SiteLog** → Struct / Class / Enum / Protocol → type the file name.
 
 </dd></dl>
 
@@ -219,11 +226,11 @@ flowchart LR
 
 | File | Purpose |
 |---|---|
-| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save, 100-column ruler, SweetPad scheme, `xcodegen` autogenerate off (synced folders), Debug Console in expression mode |
+| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save, snippets first in suggestions, 100-column ruler, SweetPad scheme, `xcodegen` autogenerate off (synced folders), Debug Console in expression mode |
 | [`.vscode/launch.json`](../../.vscode/launch.json) | **Run SiteLog (simulator)** (CodeLLDB): build, run, Restart rebuilds, Stop kills the app |
 | [`.vscode/sitelog_sim.py`](../../.vscode/sitelog_sim.py) | In LLDB: build, install, `simctl launch --wait-for-debugger`, attach by pid, stream app logs |
 | [`.vscode/tasks.json`](../../.vscode/tasks.json) | `sitelog: build`: manual build with full output (F5 does not use it) |
-| [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets) | `view` / `viewvm` |
+| [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets) | `view` / `viewvm` / `struct` / `class` / `enum` / `protocol` |
 
 | Task | How |
 |---|---|

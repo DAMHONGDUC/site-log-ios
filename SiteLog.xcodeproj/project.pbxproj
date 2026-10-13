@@ -39,6 +39,7 @@
 		09C58688EC31008C6CA8960C /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
 		12C0AF578305E1CBD421BB22 /* .gitattributes */ = {isa = PBXFileReference; path = .gitattributes; sourceTree = "<group>"; };
 		1444C4B5FD30F0549FACA607 /* sitelog_sim.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = sitelog_sim.py; sourceTree = "<group>"; };
+		17647D70BA8719DBFB01C9A7 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		1CDFEC27E00908FC5A1BB97A /* app-icon.svg */ = {isa = PBXFileReference; path = "app-icon.svg"; sourceTree = "<group>"; };
 		1D1AA3F75AB2314973F8F28D /* app-icon-tinted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-tinted.png"; sourceTree = "<group>"; };
 		1F862FB843DC870F1785A6AE /* 04-upload.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-upload.md"; sourceTree = "<group>"; };
@@ -47,10 +48,12 @@
 		23A7E10F89F06DEB35BF53A5 /* 16-ui-finish.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "16-ui-finish.md"; sourceTree = "<group>"; };
 		23F8B2AE9C0EA29929223AB8 /* 01-field-work.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-field-work.md"; sourceTree = "<group>"; };
 		24D6EFF1B1A9C85C36AD47EE /* 15-release-readiness.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "15-release-readiness.md"; sourceTree = "<group>"; };
+		28845DE08569E1C0F4D9B331 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		33C1E91E8132908B17CC58F9 /* .swift-format */ = {isa = PBXFileReference; path = ".swift-format"; sourceTree = "<group>"; };
 		34FB39010F292720B1ADF77D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3E6A8A5E14B8E52C29D69082 /* 03-backend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "03-backend.md"; sourceTree = "<group>"; };
 		3FBD90C31B8BFC41DF60AED8 /* check-imports.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "check-imports.sh"; sourceTree = "<group>"; };
+		47A98ACE570C4E3B3E6F3848 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		481F629DD7508CE23DFEB031 /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
 		52D8C9A9922BF0B22698203A /* SystemDesign */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SystemDesign; path = Packages/SystemDesign; sourceTree = SOURCE_ROOT; };
@@ -75,17 +78,20 @@
 		79D599393E75D7F338195092 /* SiteLog.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SiteLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C43A7B9A4334020C0CED811 /* launch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = launch.json; sourceTree = "<group>"; };
 		7D85615B3CCCDE3B45720CD8 /* Gemfile */ = {isa = PBXFileReference; path = Gemfile; sourceTree = "<group>"; };
+		84A6FC6108D0A6EFBF2C320B /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		865263E117E47137607DDB7A /* Appfile */ = {isa = PBXFileReference; path = Appfile; sourceTree = "<group>"; };
 		883E24529528E1C13EBB70C2 /* extensions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = extensions.json; sourceTree = "<group>"; };
 		89D75BFA0F72DEBBF78C55A7 /* 00-foundation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-foundation.md"; sourceTree = "<group>"; };
 		8C184E60DCF34F70C368F392 /* indent-md.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "indent-md.py"; sourceTree = "<group>"; };
 		96E947E3E7E3788126FE3A80 /* 04-reporting-security.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-reporting-security.md"; sourceTree = "<group>"; };
+		996ACABF2736DF00709F85D2 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		9ABA5F700E63DEDD5E72D9DA /* app-icon-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-dark.png"; sourceTree = "<group>"; };
 		9C9399899DC008948D02DC07 /* 11-diagnostics.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "11-diagnostics.md"; sourceTree = "<group>"; };
 		9DF89B6367A1EC4737159A31 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A77DAC4C93B350F0CC123820 /* 13-realtime.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "13-realtime.md"; sourceTree = "<group>"; };
 		AB841D0C22E49593F1D62522 /* preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = preview.png; sourceTree = "<group>"; };
 		AD386344CF81DAFEEBB07CFB /* app-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon.png"; sourceTree = "<group>"; };
+		AE12B7DA7CCD9688C1F33993 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		B04D2E48A85F68D39946F1B6 /* 14-push-deeplinks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "14-push-deeplinks.md"; sourceTree = "<group>"; };
 		B16EC63A2BA655E4224D459A /* ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ROADMAP.md; sourceTree = "<group>"; };
 		B484643F314F6403FF3538E0 /* app-icon-tinted.svg */ = {isa = PBXFileReference; path = "app-icon-tinted.svg"; sourceTree = "<group>"; };
@@ -95,7 +101,9 @@
 		D24E6D0BC5DA541E04645B7F /* 10-devicelink.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "10-devicelink.md"; sourceTree = "<group>"; };
 		D7254EABD7BC3EE96BF70F4D /* 07-reports.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "07-reports.md"; sourceTree = "<group>"; };
 		DCA4470BC33DB6BD64190F2E /* DomainLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DomainLayer; path = Packages/DomainLayer; sourceTree = SOURCE_ROOT; };
+		E10A9D779D18D7198F3C22E5 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		E17E082E4731B0114159562B /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
+		E501A03FD345691A0A48AC76 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
 		F312F03E20FBC9CEE2FF7848 /* pr-checks.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "pr-checks.yml"; sourceTree = "<group>"; };
 		FAF69F5B98D8BF7D4E07E3C7 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -184,12 +192,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03D5F1249946BE9AF5CDA6D7 /* Xcode */ = {
+			isa = PBXGroup;
+			children = (
+				FC7637DF678009864FD60581 /* Templates */,
+			);
+			path = Xcode;
+			sourceTree = "<group>";
+		};
 		05622653328B6A994483E4C1 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
 				5EC6C9482F994B57FB41C724 /* CI */,
 				C7490876276321BE0F03A5CC /* Docs */,
 				55D14D01F3F87F75F5E946FC /* Hammerspoon */,
+				03D5F1249946BE9AF5CDA6D7 /* Xcode */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -200,6 +217,15 @@
 				F312F03E20FBC9CEE2FF7848 /* pr-checks.yml */,
 			);
 			path = workflows;
+			sourceTree = "<group>";
+		};
+		0C1CC48640DD22DA79ADCDC1 /* Protocol.xctemplate */ = {
+			isa = PBXGroup;
+			children = (
+				E501A03FD345691A0A48AC76 /* ___FILEBASENAME___.swift */,
+				47A98ACE570C4E3B3E6F3848 /* TemplateInfo.plist */,
+			);
+			path = Protocol.xctemplate;
 			sourceTree = "<group>";
 		};
 		188C18BC51FFD63DACD62D9D /* feature-guide */ = {
@@ -317,6 +343,24 @@
 			path = design;
 			sourceTree = "<group>";
 		};
+		8F936DFC137ED1965E4908DB /* Class.xctemplate */ = {
+			isa = PBXGroup;
+			children = (
+				17647D70BA8719DBFB01C9A7 /* ___FILEBASENAME___.swift */,
+				E10A9D779D18D7198F3C22E5 /* TemplateInfo.plist */,
+			);
+			path = Class.xctemplate;
+			sourceTree = "<group>";
+		};
+		913CAAEA51985961554F481A /* Enum.xctemplate */ = {
+			isa = PBXGroup;
+			children = (
+				84A6FC6108D0A6EFBF2C320B /* ___FILEBASENAME___.swift */,
+				AE12B7DA7CCD9688C1F33993 /* TemplateInfo.plist */,
+			);
+			path = Enum.xctemplate;
+			sourceTree = "<group>";
+		};
 		9869EAC28512CA6EC45B9FA9 = {
 			isa = PBXGroup;
 			children = (
@@ -339,6 +383,17 @@
 				B16EC63A2BA655E4224D459A /* ROADMAP.md */,
 				225EEE7FD5C901AD44124FCA /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		A82754E769A04AA0A40942BB /* SiteLog */ = {
+			isa = PBXGroup;
+			children = (
+				8F936DFC137ED1965E4908DB /* Class.xctemplate */,
+				913CAAEA51985961554F481A /* Enum.xctemplate */,
+				0C1CC48640DD22DA79ADCDC1 /* Protocol.xctemplate */,
+				DFF05906E49F66F8E3D49ECE /* Struct.xctemplate */,
+			);
+			path = SiteLog;
 			sourceTree = "<group>";
 		};
 		B0ABEC84536EDC7A7C384A45 /* mockups */ = {
@@ -384,6 +439,15 @@
 			path = Docs;
 			sourceTree = "<group>";
 		};
+		DFF05906E49F66F8E3D49ECE /* Struct.xctemplate */ = {
+			isa = PBXGroup;
+			children = (
+				996ACABF2736DF00709F85D2 /* ___FILEBASENAME___.swift */,
+				28845DE08569E1C0F4D9B331 /* TemplateInfo.plist */,
+			);
+			path = Struct.xctemplate;
+			sourceTree = "<group>";
+		};
 		EDF0C034344B86A2D15FCF08 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -393,6 +457,14 @@
 				52D8C9A9922BF0B22698203A /* SystemDesign */,
 			);
 			path = Packages;
+			sourceTree = "<group>";
+		};
+		FC7637DF678009864FD60581 /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				A82754E769A04AA0A40942BB /* SiteLog */,
+			);
+			path = Templates;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

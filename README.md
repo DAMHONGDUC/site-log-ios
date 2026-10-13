@@ -124,7 +124,7 @@ site-log-ios/
 │   └── Presentation/
 ├── SiteLogUITests/
 ├── Backend/                              # Node + Postgres → 03-backend.md
-├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/
+├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/ Xcode/
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/
 │   ├── feature-docs/                     # project specs

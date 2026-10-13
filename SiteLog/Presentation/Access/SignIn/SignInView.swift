@@ -1,8 +1,8 @@
 // A2 · Sign in
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct SignInView: View {
     @ObserveInjection var inject
@@ -18,9 +18,11 @@ struct SignInView: View {
             Text("Your site log,\non every device.")
                 .font(SDFont.largeTitle)
 
-            Text("Sign in to back up projects and hand off between iPhone and iPad. Everything still works offline without an account.")
-                .font(SDFont.subhead)
-                .foregroundStyle(SDColor.textSecondary)
+            Text(
+                "Sign in to back up projects and hand off between iPhone and iPad. Everything still works offline without an account."
+            )
+            .font(SDFont.subhead)
+            .foregroundStyle(SDColor.textSecondary)
 
             Spacer()
 

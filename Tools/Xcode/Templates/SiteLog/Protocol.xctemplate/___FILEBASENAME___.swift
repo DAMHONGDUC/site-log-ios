@@ -1,0 +1,2 @@
+protocol ___FILEBASENAMEASIDENTIFIER___ {
+}
