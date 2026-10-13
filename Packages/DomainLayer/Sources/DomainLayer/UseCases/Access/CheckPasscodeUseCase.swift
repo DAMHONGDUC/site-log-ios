@@ -5,7 +5,7 @@ public struct CheckPasscodeUseCase {
         self.repository = repository
     }
 
-    public func execute(passcode: String) async -> PasscodeCheck {
+    public func execute(passcode: String) async -> Result<PasscodeCheck, AccessError> {
         return await repository.checkPasscode(passcode: passcode)
     }
 }

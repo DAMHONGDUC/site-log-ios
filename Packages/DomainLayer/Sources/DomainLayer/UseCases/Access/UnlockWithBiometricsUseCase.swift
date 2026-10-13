@@ -5,7 +5,7 @@ public struct UnlockWithBiometricsUseCase {
         self.repository = repository
     }
 
-    public func execute() async -> Bool {
+    public func execute() async -> Result<Bool, AccessError> {
         return await repository.unlockWithBiometrics()
     }
 }

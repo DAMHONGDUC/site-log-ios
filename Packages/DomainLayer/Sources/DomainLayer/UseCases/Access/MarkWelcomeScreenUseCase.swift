@@ -5,7 +5,7 @@ public struct MarkWelcomeScreenUseCase {
         self.repository = repository
     }
 
-    public func execute() async -> Bool {
+    public func execute() async -> Result<Void, AccessError> {
         return await repository.markWelcomeScreen()
     }
 }

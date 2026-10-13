@@ -37,6 +37,8 @@ packages:
     path: Packages/DomainLayer
   DataLayer:
     path: Packages/DataLayer
+  Infrastructure:
+    path: Packages/Infrastructure
   Inject:
     url: https://github.com/krzysztofzablocki/Inject
     from: 1.6.0
@@ -73,6 +75,7 @@ targets:
       - package: Core
       - package: DomainLayer
       - package: DataLayer
+      - package: Infrastructure
       - package: Inject
       - package: Factory
         product: FactoryKit

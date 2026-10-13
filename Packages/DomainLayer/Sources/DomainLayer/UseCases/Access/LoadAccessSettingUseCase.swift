@@ -5,7 +5,7 @@ public struct LoadAccessSettingUseCase {
         self.repository = repository
     }
 
-    public func execute() async -> AccessSetting {
+    public func execute() async -> Result<AccessSetting, AccessError> {
         return await repository.loadAccessSetting()
     }
 }

@@ -15,13 +15,14 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../DomainLayer"),
+        .package(path: "../Infrastructure"),
         .package(path: "../Core"),
     ],
     targets: [
-        // Repositories, DTOs, mappers, fakes and data sources (Local, Remote)
+        // Repositories, data sources (Local, Remote), models (Local, Remote), mappers
         .target(
             name: "DataLayer",
-            dependencies: ["DomainLayer", "Core"],
+            dependencies: ["DomainLayer", "Infrastructure", "Core"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],
