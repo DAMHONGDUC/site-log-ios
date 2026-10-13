@@ -61,7 +61,7 @@ Packages/
 ├── DomainLayer/Sources/DomainLayer/              # 1: Entities/Plans/ PlanSheet, Pin · UseCases/Plans/
 ├── DataLayer/Sources/DataLayer/Repositories/     # 2: PlanRepositoryImpl in memory
 ├── DataLayer/Sources/DataLayer/DataSources/Local/FileStorage/  # 4: plan files, hashed
-└── Infrastructure/Sources/Infrastructure/Rendering/Plans/      # 4: PDFKit + CATiledLayer, tile cache
+└── PlatformKit/Sources/PlatformKit/Rendering/Tiles/      # 4: PDFKit + CATiledLayer, tile cache (generic: any PDF or image)
 SiteLog/
 └── Presentation/Plans/                           # 3: PlanList, PlanViewer, PinPreview, PlanImport
 ```
@@ -116,9 +116,9 @@ SiteLog/
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>

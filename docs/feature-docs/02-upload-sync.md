@@ -29,7 +29,7 @@
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
+- Module: `Packages/PlatformKit/Sources/PlatformKit/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
 
 **Goal:** move 150–250 files and several GB to R2, surviving network loss, suspension, termination,
 reboot and presigned-URL expiry.
@@ -208,7 +208,7 @@ public enum UploadConstants {
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Packages/Infrastructure/Sources/Infrastructure/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
+- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Packages/PlatformKit/Sources/PlatformKit/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
 
 **Goal:** sign in once, work fully offline, sync all metadata across devices over a hand-written
 delta protocol.
@@ -333,7 +333,7 @@ enum SyncConstants {
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
+- Module: `Packages/PlatformKit/Sources/PlatformKit/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
 
 **Goal:** learn what the server knows first — assembly done, hash checked, mismatch — without
 polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; never controls `UploadKit`.

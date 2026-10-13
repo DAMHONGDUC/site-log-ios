@@ -73,7 +73,7 @@ SiteLog/PrivacyInfo.xcprivacy    # 2
 <dl><dd>
 
 1. VoiceOver walk: unlock → projects → capture → report.
-2. Severity readable without colour (shapes already in `SDStatusMarker`).
+2. Severity readable without colour (shapes already in `DSStatusMarker`).
 3. Minimum 44 pt targets.
 
 </dd></dl>

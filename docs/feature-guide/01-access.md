@@ -70,7 +70,7 @@ Packages/
 │   └── UseCases/Access/                                                   # 1: one file per use case
 ├── DataLayer/Sources/DataLayer/Repositories/AccessRepositoryImpl.swift      # 2: in memory · 4: real storage
 ├── DataLayer/Sources/DataLayer/DataSources/Local/Keychain/                  # 4: AccessLocalDataSource, AccessLocalDataSourceImpl
-├── Infrastructure/Sources/Infrastructure/Biometrics/                        # 4: BiometricAuthenticating, BiometricAuthenticator
+├── PlatformKit/Sources/PlatformKit/Biometrics/                        # 4: BiometricAuthenticating, BiometricAuthenticator
 ├── Core/Sources/Core/Crypto/PasscodeHasher.swift                            # 4: PBKDF2-SHA256
 └── Core/Sources/Core/Logger/AppLogger.swift                                 # 2: access category
 SiteLog/
@@ -965,7 +965,7 @@ struct AppDevDataActions: DevDataActions {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@MainActor @Observable`, `private(set) var`, `@ObservationIgnored @Injected(\.loadAccessSettings)`.
+- `@MainActor @Observable`, `private(set) var`, `private let loadSettings: LoadAccessSettingsUseCase` and `private let clock: any AppClock` set in `init`.
 - `ContinuousClock.Instant`; `clock.uptime - leftAt` gives a `Duration`.
 
 </details>
@@ -976,7 +976,6 @@ struct AppDevDataActions: DevDataActions {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -987,7 +986,7 @@ final class RootViewModel {
     private(set) var phase: Phase = .loading
     private(set) var showsPrivacyOverlay = false
 
-    // injected: loadAccessSettings, clock
+    // init(loadSettings:clock:): passed in, never looked up
     // remembered: settings, wentToBackgroundAt
 
     func load() async { /* settings → welcome, or lockOrOpen() */ }
@@ -1011,7 +1010,6 @@ final class RootViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -1030,11 +1028,17 @@ final class RootViewModel {
     // true while the app is leaving the screen and the lock is on (hides content in the app switcher)
     private(set) var showsPrivacyOverlay = false
 
-    @ObservationIgnored @Injected(\.loadAccessSettings) private var loadSettings
-    @ObservationIgnored private var settings: AccessSettings?
+    @ObservationIgnored private let loadSettings: LoadAccessSettingsUseCase
     // uptime keeps counting while the phone sleeps and ignores clock changes (spec 07.2)
-    @ObservationIgnored @Injected(\.clock) private var clock
+    @ObservationIgnored private let clock: any AppClock
+    @ObservationIgnored private var settings: AccessSettings?
     @ObservationIgnored private var wentToBackgroundAt: ContinuousClock.Instant?
+
+    // RootView passes these in from the container; tests pass stubs
+    init(loadSettings: LoadAccessSettingsUseCase, clock: any AppClock) {
+        self.loadSettings = loadSettings
+        self.clock = clock
+    }
 
     // Also called by the dev menu's Reset the app
     func load() async {
@@ -1171,7 +1175,7 @@ final class RootViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@ObservationIgnored @Injected(\.finishWelcome)`, `@ObservationIgnored private let onFinished: () -> Void`, `init(onFinished: @escaping () -> Void)`.
+- `@ObservationIgnored private let finishWelcome: FinishWelcomeUseCase`, `@ObservationIgnored private let onFinished: () -> Void`, `init(finishWelcome:onFinished:)`.
 
 </details>
 
@@ -1181,16 +1185,14 @@ final class RootViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
 @MainActor @Observable
 final class SignInViewModel {
-    // injected finishWelcome
-    // onFinished closure
+    // finishWelcome use case, onFinished closure: both passed in
 
-    init(onFinished: @escaping () -> Void) { }
+    init(finishWelcome: FinishWelcomeUseCase, onFinished: @escaping () -> Void) { }
 
     func signInWithAppleTapped() { /* log only, F12 */ }
     func continueWithEmailTapped() { /* log only */ }
@@ -1206,17 +1208,17 @@ final class SignInViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
 @MainActor @Observable
 final class SignInViewModel {
-    @ObservationIgnored @Injected(\.finishWelcome) private var finishWelcome
+    @ObservationIgnored private let finishWelcome: FinishWelcomeUseCase
     // Called when the user leaves this screen; RootView decides what comes next
     @ObservationIgnored private let onFinished: () -> Void
 
-    init(onFinished: @escaping () -> Void) {
+    init(finishWelcome: FinishWelcomeUseCase, onFinished: @escaping () -> Void) {
+        self.finishWelcome = finishWelcome
         self.onFinished = onFinished
     }
 
@@ -1255,7 +1257,7 @@ final class SignInViewModel {
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift`
 
-<b>Explain</b> · Owns a `SignInViewModel` instead of two closures.
+<b>Explain</b> · Owns a `SignInViewModel` instead of two closures; add `import FactoryKit` at the top: the view, not the view model, reads the container.
 
 <b>Think</b>
 
@@ -1271,7 +1273,7 @@ final class SignInViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@State private var viewModel: SignInViewModel`, `_viewModel = State(initialValue: …)`.
+- `@State private var viewModel: SignInViewModel`, `_viewModel = State(initialValue: …)`, `Container.shared.finishWelcome()`.
 
 </details>
 
@@ -1283,8 +1285,13 @@ final class SignInViewModel {
     @State private var viewModel: SignInViewModel
 
     init(onFinished: @escaping () -> Void) {
+        // The view hands the use case in; the view model never touches the container
+        let model = SignInViewModel(
+            finishWelcome: Container.shared.finishWelcome(),
+            onFinished: onFinished
+        )
         // _viewModel is the @State box itself; SwiftUI keeps this view model for the view's lifetime
-        _viewModel = State(initialValue: SignInViewModel(onFinished: onFinished))
+        _viewModel = State(initialValue: model)
     }
 ```
 
@@ -1379,7 +1386,7 @@ final class SignInViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `private(set) var isChecking`, `@Injected(\.unlockWithBiometrics)`, two closures.
+- `private(set) var isChecking`, `private let unlockWithBiometrics: UnlockWithBiometricsUseCase`, two closures; all three through `init`.
 
 </details>
 
@@ -1389,16 +1396,19 @@ final class SignInViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
 @MainActor @Observable
 final class FaceIDLockViewModel {
     private(set) var isChecking = false
-    // injected unlockWithBiometrics; onUnlocked, onUsePasscode
+    // unlockWithBiometrics, onUnlocked, onUsePasscode: passed in
 
-    init(onUnlocked: @escaping () -> Void, onUsePasscode: @escaping () -> Void) { }
+    init(
+        unlockWithBiometrics: UnlockWithBiometricsUseCase,
+        onUnlocked: @escaping () -> Void,
+        onUsePasscode: @escaping () -> Void
+    ) { }
 
     func onAppear() async { /* ask right away */ }
     func unlockTapped() async { /* checking on → ask → checking off → unlock or log */ }
@@ -1414,7 +1424,6 @@ final class FaceIDLockViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -1423,11 +1432,16 @@ final class FaceIDLockViewModel {
     // true while Face ID is checking; the button is disabled meanwhile
     private(set) var isChecking = false
 
-    @ObservationIgnored @Injected(\.unlockWithBiometrics) private var unlockWithBiometrics
+    @ObservationIgnored private let unlockWithBiometrics: UnlockWithBiometricsUseCase
     @ObservationIgnored private let onUnlocked: () -> Void
     @ObservationIgnored private let onUsePasscode: () -> Void
 
-    init(onUnlocked: @escaping () -> Void, onUsePasscode: @escaping () -> Void) {
+    init(
+        unlockWithBiometrics: UnlockWithBiometricsUseCase,
+        onUnlocked: @escaping () -> Void,
+        onUsePasscode: @escaping () -> Void
+    ) {
+        self.unlockWithBiometrics = unlockWithBiometrics
         self.onUnlocked = onUnlocked
         self.onUsePasscode = onUsePasscode
     }
@@ -1478,7 +1492,7 @@ final class FaceIDLockViewModel {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- The view owns the view model in `@State`, created in `init` from the two closures.
+- The view owns the view model in `@State`, created in `init` from the container’s use case and the two closures; add `import FactoryKit`.
 
 </details>
 
@@ -1497,7 +1511,11 @@ final class FaceIDLockViewModel {
     @State private var viewModel: FaceIDLockViewModel
 
     init(onUnlocked: @escaping () -> Void, onUsePasscode: @escaping () -> Void) {
-        let model = FaceIDLockViewModel(onUnlocked: onUnlocked, onUsePasscode: onUsePasscode)
+        let model = FaceIDLockViewModel(
+            unlockWithBiometrics: Container.shared.unlockWithBiometrics(),
+            onUnlocked: onUnlocked,
+            onUsePasscode: onUsePasscode
+        )
         _viewModel = State(initialValue: model)
     }
 ```
@@ -1588,7 +1606,7 @@ final class FaceIDLockViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `switch result { case .wrong(let triesLeft): … }`, `wait.components.seconds`, string interpolation, `AppLogger.access.info`.
+- `switch result { case .success(.wrong(let triesLeft)): … }`, `wait.components.seconds`, string interpolation, `AppLogger.access.info`.
 
 </details>
 
@@ -1598,7 +1616,6 @@ final class FaceIDLockViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -1607,9 +1624,9 @@ final class PasscodeUnlockViewModel {
     let passcodeLength = 6
     private(set) var message = ""
     private(set) var isLockedOut = false
-    // injected checkPasscode; onUnlocked
+    // checkPasscode use case, onUnlocked closure: passed in
 
-    init(onUnlocked: @escaping () -> Void) { }
+    init(checkPasscode: CheckPasscodeUseCase, onUnlocked: @escaping () -> Void) { }
 
     func passcodeEntered(_ passcode: String) async {
         switch await checkPasscode.execute(passcode: passcode) {
@@ -1632,7 +1649,6 @@ final class PasscodeUnlockViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -1644,10 +1660,11 @@ final class PasscodeUnlockViewModel {
     // true after too many wrong tries; the keypad is disabled
     private(set) var isLockedOut = false
 
-    @ObservationIgnored @Injected(\.checkPasscode) private var checkPasscode
+    @ObservationIgnored private let checkPasscode: CheckPasscodeUseCase
     @ObservationIgnored private let onUnlocked: () -> Void
 
-    init(onUnlocked: @escaping () -> Void) {
+    init(checkPasscode: CheckPasscodeUseCase, onUnlocked: @escaping () -> Void) {
+        self.checkPasscode = checkPasscode
         self.onUnlocked = onUnlocked
     }
 
@@ -1707,7 +1724,7 @@ final class PasscodeUnlockViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@State private var viewModel`, `@State private var code`, `init(onUnlocked:)`.
+- `@State private var viewModel`, `@State private var code`, `init(onUnlocked:)`, `Container.shared.checkPasscode()`; add `import FactoryKit`.
 
 </details>
 
@@ -1720,7 +1737,11 @@ final class PasscodeUnlockViewModel {
     @State private var code = ""
 
     init(onUnlocked: @escaping () -> Void) {
-        _viewModel = State(initialValue: PasscodeUnlockViewModel(onUnlocked: onUnlocked))
+        let model = PasscodeUnlockViewModel(
+            checkPasscode: Container.shared.checkPasscode(),
+            onUnlocked: onUnlocked
+        )
+        _viewModel = State(initialValue: model)
     }
 ```
 
@@ -1815,6 +1836,7 @@ final class PasscodeUnlockViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
+import FactoryKit
 import Inject
 import SwiftUI
 
@@ -1822,7 +1844,7 @@ struct RootView: View {
     @ObserveInjection var inject
     @Environment(\.scenePhase) private var scenePhase
     @State private var startupVM = /* … */
-    @State private var rootVM = RootViewModel()
+    @State private var rootVM = RootViewModel(/* use case + clock from Container.shared */)
 
     var body: some View {
         ZStack {
@@ -1847,6 +1869,7 @@ struct RootView: View {
 <summary><b>Code</b></summary>
 
 ```swift
+import FactoryKit
 import Inject
 import SwiftUI
 
@@ -1858,7 +1881,10 @@ struct RootView: View {
     @State private var startupVM = StartupViewModel(
         sequence: StartupSequence(steps: [])
     )
-    @State private var rootVM = RootViewModel()
+    @State private var rootVM = RootViewModel(
+        loadSettings: Container.shared.loadAccessSettings(),
+        clock: Container.shared.clock()
+    )
 
     var body: some View {
         // ZStack so the privacy overlay sits on top of whatever screen is showing
@@ -1979,7 +2005,6 @@ struct RootView: View {
 
 ```swift
 import DomainLayer
-import FactoryKit
 import Observation
 
 @MainActor @Observable
@@ -2006,7 +2031,6 @@ final class AppLockViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -2034,9 +2058,14 @@ final class AppLockViewModel {
         LockAfterOption(title: "1 hour", value: .seconds(3600)),
     ]
 
-    @ObservationIgnored @Injected(\.loadAccessSettings) private var loadSettings
-    @ObservationIgnored @Injected(\.saveAccessSettings) private var saveSettings
+    @ObservationIgnored private let loadSettings: LoadAccessSettingsUseCase
+    @ObservationIgnored private let saveSettings: SaveAccessSettingsUseCase
     @ObservationIgnored private var settings: AccessSettings?
+
+    init(loadSettings: LoadAccessSettingsUseCase, saveSettings: SaveAccessSettingsUseCase) {
+        self.loadSettings = loadSettings
+        self.saveSettings = saveSettings
+    }
 
     func load() async {
         switch await loadSettings.execute() {
@@ -2087,7 +2116,8 @@ final class AppLockViewModel {
 
 | In `AppLockView` | Change to |
 |---|---|
-| `@State isLockOn / isFaceIDOn / lockAfter` and `lockAfterOptions` | `@State private var viewModel = AppLockViewModel()` |
+| top of the file | `import FactoryKit` |
+| `@State isLockOn / isFaceIDOn / lockAfter` and `lockAfterOptions` | `@State private var viewModel = AppLockViewModel(loadSettings: Container.shared.loadAccessSettings(), saveSettings: Container.shared.saveAccessSettings())` |
 | `toggleRow("Lock app", isOn: $isLockOn)` | `toggleRow("Lock app", isOn: $viewModel.isLockOn)` (same for Face ID) |
 | `ForEach(lockAfterOptions, id: \.self)` | `ForEach(viewModel.lockAfterOptions)`; radio on `viewModel.lockAfter == option.value`; tap sets `viewModel.lockAfter = option.value` |
 | end of `body` | `.task { await viewModel.load() }` and `.onDisappear { Task { await viewModel.save() } }` |
@@ -2121,7 +2151,7 @@ final class AppLockViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `enum Stage`, a computed `var title: String`, `@Injected(\.setPasscode)`.
+- `enum Stage`, a computed `var title: String`, `private let setPasscode: SetPasscodeUseCase` through `init`.
 
 </details>
 
@@ -2130,7 +2160,6 @@ final class AppLockViewModel {
 
 ```swift
 import DomainLayer
-import FactoryKit
 import Observation
 
 @MainActor @Observable
@@ -2140,7 +2169,7 @@ final class SetPasscodeViewModel {
     private(set) var message = ""
     // injected setPasscode; firstEntry; onDone
 
-    init(onDone: @escaping () -> Void) { }
+    init(setPasscode: SetPasscodeUseCase, onDone: @escaping () -> Void) { }
 
     var title: String { /* one text per stage */ }
 
@@ -2159,7 +2188,6 @@ final class SetPasscodeViewModel {
 ```swift
 import Core
 import DomainLayer
-import FactoryKit
 import Observation
 import os
 
@@ -2174,11 +2202,12 @@ final class SetPasscodeViewModel {
     private(set) var stage: Stage = .enter
     private(set) var message = ""
 
-    @ObservationIgnored @Injected(\.setPasscode) private var setPasscode
+    @ObservationIgnored private let setPasscode: SetPasscodeUseCase
     @ObservationIgnored private var firstEntry = ""
     @ObservationIgnored private let onDone: () -> Void
 
-    init(onDone: @escaping () -> Void) {
+    init(setPasscode: SetPasscodeUseCase, onDone: @escaping () -> Void) {
+        self.setPasscode = setPasscode
         self.onDone = onDone
     }
 
@@ -2236,7 +2265,7 @@ final class SetPasscodeViewModel {
 
 | In `SetPasscodeView` | Change to |
 |---|---|
-| top of the struct | `@State private var viewModel: SetPasscodeViewModel` + `init(onDone:)` like A3 |
+| top of the struct | `import FactoryKit`; `@State private var viewModel: SetPasscodeViewModel` + `init(onDone:)` like A3, with `Container.shared.setPasscode()` |
 | `Text("Enter a 6-digit passcode")` | `Text(viewModel.title)`; add `Text(viewModel.message)` under the dots |
 | `.onChange(of: code)` | at 6 digits: `Task { await viewModel.passcodeEntered(newValue); code = "" }` |
 | `AppLockView` | `SetPasscodeView(onDone: { isSetPasscodeShown = false })` |
@@ -2277,7 +2306,7 @@ final class SetPasscodeViewModel {
 | <b class="tag-new">New</b> | `DataLayer/DataSources/Local/Keychain/AccessLocalDataSource.swift` | Protocol: read / write settings, passcode hash, lockout counter; returns records, never entities |
 | <b class="tag-new">New</b> | `DataLayer/DataSources/Local/Keychain/AccessLocalDataSourceImpl.swift` | Settings in `UserDefaults`; passcode hash and lockout counter in Keychain, `.whenUnlockedThisDeviceOnly` |
 | <b class="tag-new">New</b> | `Core/Crypto/PasscodeHasher.swift` | `public`: PBKDF2-SHA256 with a 16-byte random salt; compare without storing the passcode |
-| <b class="tag-new">New</b> | `Infrastructure/Biometrics/BiometricAuthenticator.swift` | `BiometricAuthenticating` protocol + `LAContext` type, biometry-change detection |
+| <b class="tag-new">New</b> | `PlatformKit/Biometrics/BiometricAuthenticator.swift` | `BiometricAuthenticating` protocol + `LAContext` type, biometry-change detection |
 | <b class="tag-replace">Replace</b> | `DataLayer/Repositories/AccessRepositoryImpl.swift` | Same type and methods: calls `AccessLocalDataSource` and `BiometricAuthenticating`, maps records to entities, catches their errors → `.failure(AccessError)`; `reset()` clears them |
 | <b class="tag-edit">Edit</b> | `App/AppDependencies.swift` | Registers the data source and the authenticator, passes them to `AccessRepositoryImpl(…)` |
 
@@ -2367,19 +2396,19 @@ actor StubAccessRepository: AccessRepository {
 
 <b>Think</b>
 
-- The view model test must not touch Keychain. What can stand in for `AccessRepository`, and where may that type live?
+- The view model test must not touch Keychain or the container. What can stand in for `AccessRepository`, and where may that type live?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- A small test double in the test target (`StubAccessRepository`) answers `checkPasscode` with a fixed result; fresh container per test, register the stub, one `passcodeEntered` call; check the closure and the message.
+- A small test double in the test target (`StubAccessRepository`) answers `checkPasscode` with a fixed result; build the use case on it, pass it to the view model’s `init`, one `passcodeEntered` call; check the closure and the message.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@MainActor @Suite(.container)`, `Container.shared.accessRepository.register { … }`, a `var didUnlock` set by the closure, `#expect`.
+- `@MainActor @Suite`, `CheckPasscodeUseCase(repository: StubAccessRepository(check: …))`, a `var didUnlock` set by the closure, `#expect`. No container, no `FactoryTesting`.
 
 </details>
 
@@ -2388,16 +2417,14 @@ actor StubAccessRepository: AccessRepository {
 
 ```swift
 import DomainLayer
-import FactoryKit
-import FactoryTesting
 import Testing
 @testable import SiteLog
 
 @MainActor
-@Suite(.container)
+@Suite
 struct PasscodeUnlockViewModelTests {
     @Test func correctPasscodeUnlocks() async {
-        // 1. register a stub that answers .correct
+        // 1. use case on a stub that answers .correct
         // 2. view model whose onUnlocked sets a flag
         // 3. enter "123456", #expect the flag
     }
@@ -2415,18 +2442,16 @@ struct PasscodeUnlockViewModelTests {
 
 ```swift
 import DomainLayer
-import FactoryKit
-import FactoryTesting
 import Testing
 @testable import SiteLog
 
 @MainActor
-@Suite(.container)
+@Suite
 struct PasscodeUnlockViewModelTests {
     @Test func correctPasscodeUnlocks() async {
-        Container.shared.accessRepository.register { StubAccessRepository(check: .correct) }
+        let checkPasscode = CheckPasscodeUseCase(repository: StubAccessRepository(check: .correct))
         var didUnlock = false
-        let viewModel = PasscodeUnlockViewModel(onUnlocked: { didUnlock = true })
+        let viewModel = PasscodeUnlockViewModel(checkPasscode: checkPasscode, onUnlocked: { didUnlock = true })
 
         await viewModel.passcodeEntered("123456")
 
@@ -2434,9 +2459,9 @@ struct PasscodeUnlockViewModelTests {
     }
 
     @Test func wrongPasscodeShowsTriesLeft() async {
-        Container.shared.accessRepository.register { StubAccessRepository(check: .wrong(triesLeft: 4)) }
+        let checkPasscode = CheckPasscodeUseCase(repository: StubAccessRepository(check: .wrong(triesLeft: 4)))
         var didUnlock = false
-        let viewModel = PasscodeUnlockViewModel(onUnlocked: { didUnlock = true })
+        let viewModel = PasscodeUnlockViewModel(checkPasscode: checkPasscode, onUnlocked: { didUnlock = true })
 
         await viewModel.passcodeEntered("000000")
 

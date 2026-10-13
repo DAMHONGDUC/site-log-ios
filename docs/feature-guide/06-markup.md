@@ -60,7 +60,7 @@
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Entities/Annotation/                     # 1: AnnotationShape, NormalizedPoint
 ├── DataLayer/Sources/DataLayer/Repositories/                                # 2: AnnotationRepositoryImpl in memory, fixed trusted time
-└── Infrastructure/Sources/Infrastructure/Rendering/Annotation/, Device/TrustedTime/  # 4
+└── PlatformKit/Sources/PlatformKit/Rendering/Annotation/, Device/TrustedTime/  # 4
 SiteLog/
 └── Presentation/Annotation/                                                 # 3: MarkupEditor, StampPreview
 ```
@@ -112,9 +112,9 @@ SiteLog/
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>

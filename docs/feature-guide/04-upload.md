@@ -60,7 +60,7 @@
 
 ```text
 Backend/                          # 4: Node 22 + TypeScript + Fastify, Postgres, migrations/
-Packages/Infrastructure/Sources/Infrastructure/
+Packages/PlatformKit/Sources/PlatformKit/
 ├── UploadKit/                    # 1–4: uses nothing from the rest of the app
 │   ├── UploadStore.swift
 │   ├── UploadStateMachine.swift, ChunkPlanner.swift
@@ -88,13 +88,13 @@ SiteLog/
 | <b class="tag-new">New</b> | `UploadKit/UploadStore.swift` | Protocol from spec 04.1 |
 | <b class="tag-new">New</b> | `UploadKit/UploadJobRecord.swift` | Job, part, state enums |
 | <b class="tag-new">New</b> | `Persistence/UploadStoreImpl.swift` | The real store, values in memory until step 4 |
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Tests/InfrastructureTests/Doubles/InMemoryUploadStore.swift` | Test double for the state machine tests; test target only |
+| <b class="tag-new">New</b> | `Packages/PlatformKit/Tests/PlatformKitTests/Doubles/InMemoryUploadStore.swift` | Test double for the state machine tests; test target only |
 
 #### Steps
 
 <dl><dd>
 
-1. New folder `Packages/Infrastructure/Sources/Infrastructure/UploadKit/`; mark what the app uses `public`.
+1. New folder `Packages/PlatformKit/Sources/PlatformKit/UploadKit/`; mark what the app uses `public`.
 2. Check nothing in `UploadKit/` uses a type from another folder (review).
 
 </dd></dl>
@@ -114,11 +114,11 @@ SiteLog/
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
-5. “Waiting” uses `SDStatusMarker(.waiting)` — never red; reasons in plain language.
+5. “Waiting” uses `DSStatusMarker(.waiting)` — never red; reasons in plain language.
 
 </dd></dl>
 
@@ -348,7 +348,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and PlatformKit services to the repositories; the registered types stay |
 
 </dd></dl>
 

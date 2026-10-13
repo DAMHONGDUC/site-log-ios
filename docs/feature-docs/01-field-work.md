@@ -100,7 +100,7 @@ enum LocationTemplateLimits {
 
 <dl><dd>
 
-- Modules: `Packages/Infrastructure/Sources/Infrastructure/Camera`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage`
+- Modules: `Packages/PlatformKit/Sources/PlatformKit/Camera`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage`
 
 **Goal:** one `AVCaptureSession` for photo, video and audio without teardown; every file hashed
 before it reaches the DB.
@@ -314,7 +314,7 @@ enum IssueDefaults {
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/Bluetooth` · mock: `Tools/MockPeripheral/`
+- Module: `Packages/PlatformKit/Sources/PlatformKit/Bluetooth` · mock: `Tools/MockPeripheral/`
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
 the reading to a `Capture`.
@@ -387,7 +387,7 @@ enum DeviceLinkConstants {
 
 <dl><dd>
 
-- Modules: `Packages/Infrastructure/Sources/Infrastructure/Rendering` (tiles), `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage` (plan files), `SiteLog/Presentation/Plans`
+- Modules: `Packages/PlatformKit/Sources/PlatformKit/Rendering` (tiles), `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage` (plan files), `SiteLog/Presentation/Plans`
 
 **Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet.
 
@@ -462,7 +462,7 @@ enum PlanConstants {
 
 <dl><dd>
 
-- Modules: `Packages/Infrastructure/Sources/Infrastructure/Rendering` (stamped copies), `DomainLayer` (models)
+- Modules: `Packages/PlatformKit/Sources/PlatformKit/Rendering` (stamped copies), `DomainLayer` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 

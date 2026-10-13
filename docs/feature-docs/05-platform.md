@@ -90,7 +90,7 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local packages (`SystemDesign`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, later `Kingfisher`, `Firebase`, optional `swift-snapshot-testing` in F16) | `packages` |
+| Local packages (`DesignSystem`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, later `Kingfisher`, `Firebase`, optional `swift-snapshot-testing` in F16) | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
 | App target, bundle id, iOS 18.6 | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
@@ -421,9 +421,9 @@ enum DiagnosticsConstants {
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
 | Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (model / DTO ↔ entity), repository impls over in-memory SwiftData |
 | Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Name>` | Swift Testing | SwiftData stores, Keychain data source |
-| Infrastructure | `Packages/Infrastructure/Tests/InfrastructureTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Rendering` report layout, Bluetooth profile parsing |
-| SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding) |
-| Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against test doubles in `SiteLogTests/Doubles/` |
+| PlatformKit | `Packages/PlatformKit/Tests/PlatformKitTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Rendering` report layout, Bluetooth profile parsing |
+| DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding) |
+| Presentation | `SiteLogTests/Presentation` | Swift Testing | View models built on test doubles in `SiteLogTests/Doubles/` through `init`, no container |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |
 | Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
 | Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
@@ -433,7 +433,7 @@ enum DiagnosticsConstants {
 1. Scoped: a change runs the tests of the folder it touched plus `DomainLayer` (`-only-testing:`), not the full suite.
 2. No real network, clock, camera or Bluetooth in unit tests; inject `AppClock`, `UploadTransport`,
    `CaptureSessionControlling`, `RandomNumberGenerator`.
-3. Every Factory override happens inside `@Suite(.container)`, so tests never leak registrations.
+3. View model tests pass test doubles through `init`; a test that overrides a Factory registration runs inside `@Suite(.container)`, so it never leaks.
 4. A bug fix lands with the test that would have caught it.
 5. Snapshot tests are optional and come last (F16 step 10). If added, references are recorded on one
    pinned simulator (iPhone 17 Pro, iOS 26.4) and re-recorded only in a commit that says why.
@@ -447,8 +447,8 @@ enum DiagnosticsConstants {
 | Views | No line target |
 
 - CI reports coverage per folder; a PR that lowers a target fails.
-- Example: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`)
-  — full code in [F00 guide](../feature-guide/00-foundation.md).
+- Example: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model on a stub, no container)
+  — full code in [F01 guide](../feature-guide/01-access.md#tests-after-the-feature-works).
 
 ---
 
@@ -468,7 +468,7 @@ enum DiagnosticsConstants {
 
 | Lane | Does |
 |---|---|
-| `test` | `xcodegen`, tests of every package that has them (`SystemDesign`, `Core`), app unit tests on the simulator, coverage per folder |
+| `test` | `xcodegen`, tests of every package that has them (`DesignSystem`, `Core`), app unit tests on the simulator, coverage per folder |
 | `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
 | `release` | Same, waits for processing |
 

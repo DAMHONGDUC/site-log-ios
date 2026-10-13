@@ -58,9 +58,10 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Entities/Reports/                     # 1: report types, AuditEntry
-├── DataLayer/Sources/DataLayer/Repositories/                              # 2: ReportRepositoryImpl in memory
-└── Infrastructure/Sources/Infrastructure/Rendering/Reports/               # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
+├── DomainLayer/Sources/DomainLayer/Entities/Reports/                     # 1: report types, ReportPage, AuditEntry
+├── DomainLayer/Sources/DomainLayer/UseCases/Reports/                      # 4: LayOutReportUseCase (pure pagination)
+├── DataLayer/Sources/DataLayer/Repositories/                              # 2: ReportRepositoryImpl in memory · 4: ReportPage → PDFPageLayout
+└── PlatformKit/Sources/PlatformKit/Rendering/PDF/                   # 4: PDFPageRenderer, CSVWriter (generic, no report types)
 SiteLog/
 └── Presentation/Reports/                                                  # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
 ```
@@ -115,9 +116,9 @@ SiteLog/
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
@@ -153,8 +154,9 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Rendering/Reports/ReportLayoutEngine.swift` | Pure; counts images |
-| <b class="tag-new">New</b> | `Rendering/Reports/PDFPageRenderer.swift` | `UIGraphicsPDFRenderer`, one autoreleasepool per page |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/UseCases/Reports/LayOutReportUseCase.swift` | Pure: `SessionSnapshot` → `[ReportPage]`; counts images (a business rule, so Domain) |
+| <b class="tag-new">New</b> | `PlatformKit/Rendering/PDF/PDFPageRenderer.swift` | Generic: draws `PDFPageLayout` records (text, image at a frame) with `UIGraphicsPDFRenderer`, one autoreleasepool per page |
+| <b class="tag-edit">Edit</b> | `DataLayer/Repositories/ReportRepositoryImpl.swift` | Maps `ReportPage` → `PDFPageLayout`, calls the renderer, maps its errors |
 
 </dd></dl>
 
@@ -195,7 +197,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and PlatformKit services to the repositories; the registered types stay |
 
 </dd></dl>
 

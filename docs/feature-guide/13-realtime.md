@@ -57,7 +57,7 @@
 ```text
 Backend/src/ws.ts, workers/verify.ts                             # 3
 Packages/
-└── Infrastructure/Sources/Infrastructure/Realtime/              # 1: RealtimeChannel on scripted events · 3: WebSocket, messages
+└── PlatformKit/Sources/PlatformKit/Realtime/              # 1: RealtimeChannel on scripted events · 3: WebSocket, messages
 SiteLog/
 ├── App/RealtimeBridge.swift                                     # 3
 └── Presentation/Uploads/UploadStatus/                           # 2: live state
@@ -71,7 +71,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/RealtimeChannel.swift` | The real channel type; emits `jobCompleted` / `jobFailed` on a timer until step 3 |
+| <b class="tag-new">New</b> | `Packages/PlatformKit/Sources/PlatformKit/Realtime/RealtimeChannel.swift` | The real channel type; emits `jobCompleted` / `jobFailed` on a timer until step 3 |
 
 </dd></dl>
 
@@ -105,8 +105,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-replace">Replace</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/RealtimeChannel.swift` | Same type, now an actor around `URLSessionWebSocketTask` |
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
+| <b class="tag-replace">Replace</b> | `Packages/PlatformKit/Sources/PlatformKit/Realtime/RealtimeChannel.swift` | Same type, now an actor around `URLSessionWebSocketTask` |
+| <b class="tag-new">New</b> | `Packages/PlatformKit/Sources/PlatformKit/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
 | <b class="tag-new">New</b> | `Backend/src/ws.ts` | Server side per 14 §9 |
 
 #### Steps

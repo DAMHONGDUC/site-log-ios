@@ -49,7 +49,7 @@
 | [7](#7-sync-and-settings-to-figma) | UI | 5h | not start | S10–S11 sync, diagnostics, settings |
 | [8](#8-dark-mode-states-imagery) | UI | 5h | not start | Dark mode, empty/error/offline states, imagery |
 | [9](#9-accessibility-re-check-and-submission) | Release | 6h | not start | Accessibility re-check, listing, submission |
-| [10](#10-optional--snapshot-tests) | Tests | 6h | optional | Snapshot tests for `SDGallery` and every screen |
+| [10](#10-optional--snapshot-tests) | Tests | 6h | optional | Snapshot tests for `DSGallery` and every screen |
 
 <details open>
 <summary><strong>Order</strong></summary>
@@ -70,9 +70,9 @@
 <dl><dd>
 
 ```text
-Packages/SystemDesign/Sources/SystemDesign/
+Packages/DesignSystem/Sources/DesignSystem/
 ├── Tokens/                      # 1: tokens checked against Figma variables
-└── Components/                  # 1: SDSeverityPicker, SDAnswerRow, SDToggleRow… finished to Figma
+└── Components/                  # 1: DSSeverityPicker, DSAnswerRow, DSToggleRow… finished to Figma
 SiteLog/
 ├── App/Resources/Assets.xcassets/    # 2, 8: app mark, real imagery
 └── Presentation/
@@ -92,7 +92,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | Step | Do |
 |---|---|
 | 1 | Open the Figma frame and the running screen side by side |
-| 2 | Fix spacing, sizes, fonts with tokens only (`SDSpacing`, `SDFont`…); add a token if Figma needs a new value |
+| 2 | Fix spacing, sizes, fonts with tokens only (`DSSpacing`, `DSFont`…); add a token if Figma needs a new value |
 | 3 | Swap placeholders and native controls for the designed ones |
 | 4 | Check light + dark, small (SE) and large (Pro Max) iPhone, largest Dynamic Type |
 | 5 | Commit per screen |
@@ -110,7 +110,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 <summary><strong>1.1 Done when</strong></summary>
 <dl><dd>
 
-- `SDGallery` matches the components page (light + dark)
+- `DSGallery` matches the components page (light + dark)
 
 </dd></dl>
 </details>
@@ -279,7 +279,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-edit">Edit</b> | `project.yml` | `SnapshotTesting` package, linked to `SiteLogTests` |
-| <b class="tag-new">New</b> | `SiteLogTests/Snapshots/` | `SDGallery` + one test per screen: light, dark, `accessibility3` |
+| <b class="tag-new">New</b> | `SiteLogTests/Snapshots/` | `DSGallery` + one test per screen: light, dark, `accessibility3` |
 | <b class="tag-edit">Edit</b> | `fastlane/Fastfile` | `test` lane comment: app unit + snapshot tests |
 
 <details open>

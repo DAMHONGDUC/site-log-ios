@@ -21,7 +21,7 @@
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/Rendering`
+- Modules: `Packages/DomainLayer/Sources/DomainLayer/UseCases/Reports` (pagination), `Packages/PlatformKit/Sources/PlatformKit/Rendering/PDF` (drawing)
 
 **Goal:** turn a `Session` into a branded, signed PDF plus CSV/XLSX, shareable on the spot with no
 network — never truncated, never missing images, never crashing on page 38 of 40.
@@ -70,8 +70,9 @@ struct ReportBranding: Codable, Sendable {
   gives blank pages).
 
 ```
-Session → SessionSnapshot (one fetch) → ReportLayoutEngine (pure, no UIKit) → [ReportPage]
-        → PDFPageRenderer (UIKit, one autoreleasepool per page) → temp file → atomic move → share
+Session → SessionSnapshot (one fetch) → LayOutReportUseCase (Domain, pure) → [ReportPage]
+        → ReportRepositoryImpl maps to [PDFPageLayout]
+        → PDFPageRenderer (PlatformKit, UIKit, one autoreleasepool per page) → temp file → atomic move → share
 ```
 
 | Rule | Reason |
@@ -88,7 +89,7 @@ Session → SessionSnapshot (one fetch) → ReportLayoutEngine (pure, no UIKit) 
   confidence when below `.serverVerified`.
 - Unsynced captures print "not yet verified".
 - Final page: SHA-256 over the `captureID`-sorted hash list.
-- Spacing, color and type come from `SystemDesign` tokens, inside the PDF too.
+- Spacing, color and type come from `DesignSystem` tokens, inside the PDF too.
 
 **Spreadsheet**
 

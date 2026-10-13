@@ -61,7 +61,7 @@ Packages/
 ├── DomainLayer/Sources/DomainLayer/                              # 1: Entities/DeviceLink/DeviceReading, Repositories/DeviceLink
 ├── DataLayer/Sources/DataLayer/Repositories/DeviceLinkImpl.swift  # 2: scripted readings · 4: Bluetooth
 ├── DataLayer/Sources/DataLayer/Repositories/DeviceLinkImpl.swift  # 4: Domain DeviceLink over DeviceLinkManager
-└── Infrastructure/Sources/Infrastructure/Bluetooth/              # 4: DeviceLinkManager (actor), Profiles/
+└── PlatformKit/Sources/PlatformKit/Bluetooth/              # 4: DeviceLinkManager (actor), Profiles/
 SiteLog/Presentation/
 ├── Settings/Devices/                                             # 3: S2 pairing
 └── Capture/Camera/                                               # 3: measurement overlay, status dot
@@ -105,9 +105,9 @@ Tools/MockPeripheral/                                             # 4: macOS BLE
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
@@ -123,8 +123,8 @@ Tools/MockPeripheral/                                             # 4: macOS BLE
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Bluetooth/DeviceLinkManager.swift` | Actor around `CBCentralManager`; own reading records |
-| <b class="tag-new">New</b> | `Infrastructure/Bluetooth/Profiles/` | One file per vendor; pure `parse` |
+| <b class="tag-new">New</b> | `Packages/PlatformKit/Sources/PlatformKit/Bluetooth/DeviceLinkManager.swift` | Actor around `CBCentralManager`; own reading records |
+| <b class="tag-new">New</b> | `PlatformKit/Bluetooth/Profiles/` | One file per vendor; pure `parse` |
 | <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/DeviceLinkImpl.swift` | Same type, now implements Domain `DeviceLink` over `DeviceLinkManager`; maps records to `DeviceReading` |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `DeviceLinkManager` and pass it to `DeviceLinkImpl` |
 | <b class="tag-new">New</b> | `Tools/MockPeripheral/` | Scripts values, disconnects, garbage bytes |

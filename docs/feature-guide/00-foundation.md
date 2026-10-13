@@ -16,7 +16,7 @@
 4. [1. Layer packages, Factory DI, AppClock](#1-layer-packages-factory-di-appclock)
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
-7. [4. SystemDesign tests](#4-systemdesign-tests)
+7. [4. DesignSystem tests](#4-designsystem-tests)
 8. [Feature done](#feature-done)
 
 </dd></dl>
@@ -25,11 +25,11 @@
 
 <dl><dd>
 
-- **Goal:** what every feature builds on — layer packages, DI, CI, SystemDesign.
-- **Demo:** the app builds with zero warnings, CI is green, the SystemDesign tests pass.
+- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem.
+- **Demo:** the app builds with zero warnings, CI is green, the DesignSystem tests pass.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
-- **Already done:** entry point and tooling; SystemDesign tokens and components (built with the UI skeleton, 2026-10-08).
-- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes. Not yet built: the `Infrastructure` package (added 2026-10-12, [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package); system services only since [D11](../feature-docs/00-overview.md#d11--data-sources-in-datalayer-infrastructure-for-system-services)).
+- **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
+- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes. Not yet built: the `PlatformKit` package (added 2026-10-12, [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package); system services only since [D11](../feature-docs/00-overview.md#d11--data-sources-in-datalayer-platformkit-for-system-services)).
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
 
@@ -39,7 +39,7 @@
 | [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | not start | Layer packages, Factory DI, `AppClock`, test libraries |
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
-| [4](#4-systemdesign-tests) | Tests | 3h | not start | Hex test, `SDGallery` |
+| [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `DSGallery` |
 
 - Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–4 any time.
 
@@ -60,8 +60,8 @@ site-log-ios/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
 │   ├── DataLayer/                            # 1: empty layer folders (Repositories, DataSources/Local, DataSources/Remote, Models/Local, Models/Remote, Mappers)
-│   ├── Infrastructure/                       # 1: empty folders (Permissions, Camera, Bluetooth, …, Networking, UploadKit, Realtime)
-│   └── SystemDesign/                         # done: Tokens/, Components/; 4: SDGallery + tests
+│   ├── PlatformKit/                       # 1: empty folders (Permissions, Camera, Bluetooth, …, Networking, UploadKit, Realtime)
+│   └── DesignSystem/                         # done: Tokens/, Components/; 4: DSGallery + tests
 ├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
 └── SiteLogTests/
     └── SiteLogTests.swift                    # 1: FixedClock + Factory test
@@ -102,7 +102,7 @@ site-log-ios/
 
 <dl><dd>
 
-- **Goal:** `DomainLayer`, `DataLayer`, `Infrastructure` and `Core` as local packages, one composition root (Factory), an injectable clock, test libraries ready.
+- **Goal:** `DomainLayer`, `DataLayer`, `PlatformKit` and `Core` as local packages, one composition root (Factory), an injectable clock, test libraries ready.
 - **Why packages:** [D09](../feature-docs/00-overview.md#d09--layers-as-local-swift-packages), [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package).
 - **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
 
@@ -112,7 +112,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `packages:` *(add under `Inject`)*
 
-<b>Explain</b> · Adds the five local packages (SystemDesign, Core, DomainLayer, DataLayer, Infrastructure) and one library: Factory (DI).
+<b>Explain</b> · Adds the five local packages (DesignSystem, Core, DomainLayer, DataLayer, PlatformKit) and one library: Factory (DI).
 
 <b>Think</b>
 
@@ -138,7 +138,7 @@ site-log-ios/
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```yaml
-  SystemDesign:
+  DesignSystem:
     path: # folder of the local package
   Core:
     path:
@@ -146,7 +146,7 @@ site-log-ios/
     path:
   DataLayer:
     path:
-  Infrastructure:
+  PlatformKit:
     path:
   Factory:
     url: # git URL
@@ -159,16 +159,16 @@ site-log-ios/
 <summary><b>Code</b></summary>
 
 ```yaml
-  SystemDesign:
-    path: Packages/SystemDesign
+  DesignSystem:
+    path: Packages/DesignSystem
   Core:
     path: Packages/Core
   DomainLayer:
     path: Packages/DomainLayer
   DataLayer:
     path: Packages/DataLayer
-  Infrastructure:
-    path: Packages/Infrastructure
+  PlatformKit:
+    path: Packages/PlatformKit
   Factory:
     url: https://github.com/hmlongco/Factory
     from: 3.4.1
@@ -184,7 +184,7 @@ site-log-ios/
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `project.yml` → `targets.SiteLog.dependencies` *(add at the end)*
 
-<b>Explain</b> · Lets the app target use the five local packages and FactoryKit; `Infrastructure` is for `App/` only (setup and registrations).
+<b>Explain</b> · Lets the app target use the five local packages and FactoryKit; `PlatformKit` is for `App/` only (setup and registrations).
 
 <b>Think</b>
 
@@ -208,11 +208,11 @@ site-log-ios/
 <summary><b>Code</b></summary>
 
 ```yaml
-      - package: SystemDesign
+      - package: DesignSystem
       - package: Core
       - package: DomainLayer
       - package: DataLayer
-      - package: Infrastructure
+      - package: PlatformKit
       - package: Factory
         product: FactoryKit
 ```
@@ -283,7 +283,7 @@ site-log-ios/
 <dl><dd>
 
 - Each layer is a local Swift package in `Packages/` ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
-- The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `Infrastructure` + `Core`; `Infrastructure` → `Core`; `DomainLayer` and `Core` depend on nothing.
+- The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `PlatformKit` + `Core`; `PlatformKit` → `Core`; `DomainLayer` and `Core` depend on nothing.
 
 | Rule | Why |
 |---|---|
@@ -292,16 +292,16 @@ site-log-ios/
 | No `nonisolated` in packages | Package code is nonisolated by default; only the app target defaults to `MainActor` |
 | A package needs one `.swift` file to build | Until the first real type lands, a `Placeholder.swift` keeps it compiling |
 | `.gitkeep` in package folders is fine | SwiftPM ignores hidden files |
-| `Tools/CI/check-imports.sh` (step 3) still checks the rest | Domain imports Foundation only; Presentation never imports `DataLayer` or `Infrastructure` |
+| `Tools/CI/check-imports.sh` (step 3) still checks the rest | Domain imports Foundation only; Presentation never imports `DataLayer` or `PlatformKit` |
 
-<b>File</b> · <b class="tag-check">Check</b> · `Packages/SystemDesign/Package.swift`
+<b>File</b> · <b class="tag-check">Check</b> · `Packages/DesignSystem/Package.swift`
 
-<b>Explain</b> · Manifest of the SystemDesign package: one library and its test target.
+<b>Explain</b> · Manifest of the DesignSystem package: one library and its test target.
 
 <b>Think</b>
 
 - In a package, what is the difference between a *target* and a *product*?
-- Why can `SystemDesign` never import anything from the app?
+- Why can `DesignSystem` never import anything from the app?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -327,7 +327,7 @@ site-log-ios/
 import PackageDescription
 
 let package = Package(
-    name: "SystemDesign",
+    name: "DesignSystem",
     platforms: [ /* iOS 18 */ ],
     products: [ /* one library */ ],
     targets: [
@@ -348,29 +348,29 @@ let package = Package(
 import PackageDescription
 
 let package = Package(
-    name: "SystemDesign",
+    name: "DesignSystem",
     platforms: [
-        .iOS(.v18),
+        .iOS(.v18)
     ],
     products: [
         .library(
-            name: "SystemDesign",
-            targets: ["SystemDesign"]
-        ),
+            name: "DesignSystem",
+            targets: ["DesignSystem"]
+        )
     ],
     targets: [
         // Tokens and components only; knows nothing about Domain or features
         .target(
-            name: "SystemDesign",
+            name: "DesignSystem",
             swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
+                .enableUpcomingFeature("ApproachableConcurrency")
             ],
         ),
         .testTarget(
-            name: "SystemDesignTests",
-            dependencies: ["SystemDesign"],
+            name: "DesignSystemTests",
+            dependencies: ["DesignSystem"],
             swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
+                .enableUpcomingFeature("ApproachableConcurrency")
             ],
         ),
     ]
@@ -381,7 +381,7 @@ let package = Package(
 
 <b>Try</b>
 
-- Add `import FactoryKit` to any SystemDesign file and build. The app has Factory, so why does the package fail? Remove it after.
+- Add `import FactoryKit` to any DesignSystem file and build. The app has Factory, so why does the package fail? Remove it after.
 
 ---
 
@@ -396,7 +396,7 @@ let package = Package(
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Same shape as SystemDesign: one library, one target, one test target.
+- Same shape as DesignSystem: one library, one target, one test target.
 
 </details>
 
@@ -506,13 +506,13 @@ enum DomainLayerPlaceholder {}
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `Packages/Infrastructure/Package.swift` + `Sources/Infrastructure/Placeholder.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/PlatformKit/Package.swift` + `Sources/PlatformKit/Placeholder.swift`
 
-<b>Explain</b> · Infrastructure package: system services (permissions, camera, Bluetooth, Face ID, speech, rendering, device, push, crash reporting), built like an outside library. Uses Core only. Data sources live in DataLayer.
+<b>Explain</b> · PlatformKit package: system services (permissions, camera, Bluetooth, Face ID, speech, rendering, device, push, crash reporting), built like an outside library. Uses Core only. Data sources live in DataLayer.
 
 <b>Think</b>
 
-- Infrastructure never imports `DomainLayer`. Who turns its records into Domain entities, then?
+- PlatformKit never imports `DomainLayer`. Who turns its records into Domain entities, then?
 - Why does each folder ship a protocol next to its real implementation?
 
 <details open>
@@ -526,7 +526,7 @@ enum DomainLayerPlaceholder {}
 <summary><b>Hint 2 · APIs</b></summary>
 
 - `dependencies: [.package(path: "../Core")]` at the package level; `dependencies: ["Core"]` on the target.
-- No test target until the first Infrastructure test.
+- No test target until the first PlatformKit test.
 
 </details>
 
@@ -539,14 +539,14 @@ enum DomainLayerPlaceholder {}
 import PackageDescription
 
 let package = Package(
-    name: "Infrastructure",
+    name: "PlatformKit",
     platforms: [
         .iOS(.v18)
     ],
     products: [
         .library(
-            name: "Infrastructure",
-            targets: ["Infrastructure"]
+            name: "PlatformKit",
+            targets: ["PlatformKit"]
         )
     ],
     dependencies: [
@@ -555,7 +555,7 @@ let package = Package(
     targets: [
         // System services: permissions, camera, Bluetooth, Face ID… Never DomainLayer
         .target(
-            name: "Infrastructure",
+            name: "PlatformKit",
             dependencies: ["Core"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
@@ -567,21 +567,21 @@ let package = Package(
 
 ```swift
 // Placeholder.swift
-// A package needs one source file to build; delete this when the first Infrastructure type lands.
-enum InfrastructurePlaceholder {}
+// A package needs one source file to build; delete this when the first PlatformKit type lands.
+enum PlatformKitPlaceholder {}
 ```
 
 </details>
 
 <b>Try</b>
 
-- Add `import DomainLayer` to `Placeholder.swift` and build the **Infrastructure** scheme: read the error. Remove it.
+- Add `import DomainLayer` to `Placeholder.swift` and build the **PlatformKit** scheme: read the error. Remove it.
 
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Package.swift` + `Sources/DataLayer/Placeholder.swift`
 
-<b>Explain</b> · DataLayer package: repositories, data sources (`DataSources/Local/`, `Remote/`), models (`Models/Local/` SwiftData, `Models/Remote/` DTOs), mappers. Uses Domain, Infrastructure and Core; repositories call data sources and Infrastructure and map their records to entities.
+<b>Explain</b> · DataLayer package: repositories, data sources (`DataSources/Local/`, `Remote/`), models (`Models/Local/` SwiftData, `Models/Remote/` DTOs), mappers. Uses Domain, PlatformKit and Core; repositories call data sources and PlatformKit and map their records to entities.
 
 <b>Think</b>
 
@@ -597,7 +597,7 @@ enum InfrastructurePlaceholder {}
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `dependencies: [.package(path: "../DomainLayer"), …]` at the package level; `dependencies: ["DomainLayer", "Infrastructure", "Core"]` on the target.
+- `dependencies: [.package(path: "../DomainLayer"), …]` at the package level; `dependencies: ["DomainLayer", "PlatformKit", "Core"]` on the target.
 
 </details>
 
@@ -622,14 +622,14 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../DomainLayer"),
-        .package(path: "../Infrastructure"),
+        .package(path: "../PlatformKit"),
         .package(path: "../Core"),
     ],
     targets: [
-        // Repositories, data sources, models, mappers; system services live in Infrastructure
+        // Repositories, data sources, models, mappers; system services live in PlatformKit
         .target(
             name: "DataLayer",
-            dependencies: ["DomainLayer", "Infrastructure", "Core"],
+            dependencies: ["DomainLayer", "PlatformKit", "Core"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],
@@ -659,7 +659,7 @@ enum DataLayerPlaceholder {}
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/Core/Sources/Core/Clock/AppClock.swift`
 
-<b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, Infrastructure and Presentation need time.
+<b>Explain</b> · The app’s clock as a protocol: `now` for timestamps, `uptime` for durations; tests swap in a fixed clock. In Core, not Domain: only Data, PlatformKit and Presentation need time.
 
 <b>Think</b>
 
@@ -1045,7 +1045,7 @@ struct AppDependenciesTests {
 
 <dl><dd>
 
-- **Goal:** one command (`bundle exec fastlane test`) runs the package tests (`SystemDesign`, `Core`) and the app tests; GitHub runs it on every PR.
+- **Goal:** one command (`bundle exec fastlane test`) runs the package tests (`DesignSystem`, `Core`) and the app tests; GitHub runs it on every PR.
 - **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
 
 ![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
@@ -1140,7 +1140,7 @@ app_identifier("app.dd.site.log")
 
 <b>Think</b>
 
-- Why test the `SystemDesign` package on its own instead of only through the app?
+- Why test the `DesignSystem` package on its own instead of only through the app?
 - Why pin one simulator name and OS instead of whatever simulator is booted?
 
 <details open>
@@ -1198,7 +1198,7 @@ SIMULATOR_OS = "26.4"
 DESTINATION = "platform=iOS Simulator,name=#{SIMULATOR_NAME},OS=#{SIMULATOR_OS}"
 
 # Local packages with a test target, tested one by one so a package never leans on the app
-PACKAGES = ["SystemDesign", "Core"]
+PACKAGES = ["DesignSystem", "Core"]
 
 # Fastlane runs inside fastlane/, so the repo root is one level up
 ROOT = File.expand_path("..", __dir__)
@@ -1492,12 +1492,12 @@ echo "OK: no print( calls"
 
 <b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-imports.sh`
 
-<b>Explain</b> · Fails CI on the layer rules the package graph cannot enforce: Domain imports Foundation only; Presentation never imports `DataLayer` or `Infrastructure`, nor touches storage or the network.
+<b>Explain</b> · Fails CI on the layer rules the package graph cannot enforce: Domain imports Foundation only; Presentation never imports `DataLayer` or `PlatformKit`, nor touches storage or the network; PlatformKit, a library, never imports `DomainLayer` or `DataLayer`.
 
 <b>Think</b>
 
 - DomainLayer has no package dependencies, so it cannot `import Core`. Why can it still `import UIKit`?
-- The app links `DataLayer` and `Infrastructure` so `App/` can register and set them up. What stops a view in the same target from importing them too?
+- The app links `DataLayer` and `PlatformKit` so `App/` can register and set them up. What stops a view in the same target from importing them too?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -1510,7 +1510,7 @@ echo "OK: no print( calls"
 <summary><b>Hint 2 · APIs</b></summary>
 
 - `grep -rhE '^[[:space:]]*import '`, `sed -E 's/^[[:space:]]*//'`, `sort -u`, `grep -vE '^import Foundation$'`.
-- `grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|Infrastructure)$'`.
+- `grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|PlatformKit)$'`.
 
 </details>
 
@@ -1523,8 +1523,9 @@ set -euo pipefail
 failed=0
 
 # Rule 1: every import in Packages/DomainLayer/Sources is "import Foundation"
-# Rule 2: nothing in SiteLog/Presentation imports DataLayer or Infrastructure
+# Rule 2: nothing in SiteLog/Presentation imports DataLayer or PlatformKit
 # Rule 3: Presentation never imports SwiftData/CoreData, never uses ModelContext/URLSession
+# Rule 4: nothing in Packages/PlatformKit/Sources imports DomainLayer or DataLayer
 
 if [ "$failed" -ne 0 ]; then
   exit 1
@@ -1553,10 +1554,10 @@ if [ -n "$domain_imports" ]; then
   failed=1
 fi
 
-# Rule 2: Presentation never imports DataLayer or Infrastructure (the app links them only for App/)
-data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|Infrastructure)$' SiteLog/Presentation --include='*.swift' || true)
+# Rule 2: Presentation never imports DataLayer or PlatformKit (the app links them only for App/)
+data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|PlatformKit)$' SiteLog/Presentation --include='*.swift' || true)
 if [ -n "$data_imports" ]; then
-  echo "Presentation may not import DataLayer or Infrastructure; use Domain use cases. Found:"
+  echo "Presentation may not import DataLayer or PlatformKit; use Domain use cases. Found:"
   echo "$data_imports"
   failed=1
 fi
@@ -1566,6 +1567,14 @@ direct_access=$(grep -rnE '^[[:space:]]*import (SwiftData|CoreData)$|ModelContex
 if [ -n "$direct_access" ]; then
   echo "Presentation may not use SwiftData, ModelContext or URLSession. Found:"
   echo "$direct_access"
+  failed=1
+fi
+
+# Rule 4: PlatformKit is a library: it never imports DomainLayer or DataLayer (D16)
+infra_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DomainLayer|DataLayer)$' Packages/PlatformKit/Sources --include='*.swift' || true)
+if [ -n "$infra_imports" ]; then
+  echo "PlatformKit is a library and may not import DomainLayer or DataLayer. Found:"
+  echo "$infra_imports"
   failed=1
 fi
 
@@ -1580,7 +1589,7 @@ echo "OK: layer rules"
 
 <b>Try</b>
 
-- Add `import DataLayer`, then `import Infrastructure`, to any view, run the script, read the output. Remove it.
+- Add `import DataLayer`, then `import PlatformKit`, to any view, run the script, read the output. Remove it.
 
 ---
 
@@ -1781,7 +1790,7 @@ jobs:
 | Run each script from the repo root | `OK: …` |
 | Add `print("x")` to any Swift file, run `check-no-print.sh` | Exit 1 with the file and line; then remove it |
 | Add `import UIKit` to `Packages/DomainLayer/Sources/DomainLayer/Placeholder.swift`, run `check-imports.sh` | Exit 1; then remove it |
-| Add `import DataLayer` or `import Infrastructure` to any view, run `check-imports.sh` | Exit 1; then remove it |
+| Add `import DataLayer` or `import PlatformKit` to any view, run `check-imports.sh` | Exit 1; then remove it |
 | Add `import Core` to DomainLayer’s `Placeholder.swift`, build | Compiler error: DomainLayer does not depend on Core; then remove it |
 
 </dd></dl>
@@ -1789,16 +1798,16 @@ jobs:
 
 </dd></dl>
 
-## 4. SystemDesign tests
+## 4. DesignSystem tests
 
 <dl><dd>
 
-- Tokens and components are already in `Packages/SystemDesign` (built with the UI skeleton).
+- Tokens and components are already in `Packages/DesignSystem` (built with the UI skeleton).
 - The feature is done, so its tests come now.
 
-<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/SystemDesign/Tests/SystemDesignTests/SystemDesignTests.swift`
+<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/DesignSystem/Tests/DesignSystemTests/DesignSystemTests.swift`
 
-<b>Explain</b> · Unit test for the hex colour helper behind `SDColor`.
+<b>Explain</b> · Unit test for the hex colour helper behind `DSColor`.
 
 <b>Think</b>
 
@@ -1815,7 +1824,7 @@ jobs:
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@testable import SystemDesign`, `getRed(_:green:blue:alpha:)` with `&` (inout), `#expect`.
+- `@testable import DesignSystem`, `getRed(_:green:blue:alpha:)` with `&` (inout), `#expect`.
 
 </details>
 
@@ -1825,9 +1834,9 @@ jobs:
 ```swift
 import Testing
 import UIKit
-@testable import SystemDesign
+@testable import DesignSystem
 
-struct SystemDesignTests {
+struct DesignSystemTests {
     @Test func hexColourIsDecoded() {
         // 1. UIColor(hex: 0xFFD400)
         // 2. four CGFloat vars, getRed(&...)
@@ -1844,9 +1853,9 @@ struct SystemDesignTests {
 ```swift
 import Testing
 import UIKit
-@testable import SystemDesign
+@testable import DesignSystem
 
-struct SystemDesignTests {
+struct DesignSystemTests {
     @Test func hexColourIsDecoded() {
         let color = UIColor(hex: 0xFFD400)
 
@@ -1871,9 +1880,9 @@ struct SystemDesignTests {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `Packages/SystemDesign/Sources/SystemDesign/Components/SDGallery.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DesignSystem/Sources/DesignSystem/Components/DSGallery.swift`
 
-<b>Explain</b> · Every SystemDesign component on one screen, for previews.
+<b>Explain</b> · Every DesignSystem component on one screen, for previews.
 
 <b>Think</b>
 
@@ -1890,7 +1899,7 @@ struct SystemDesignTests {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `public struct … : View`, `public init() {}`, `SDSpacing`, `SDColor.canvas.ignoresSafeArea()`.
+- `public struct … : View`, `public init() {}`, `DSSpacing`, `DSColor.canvas.ignoresSafeArea()`.
 - `.buttonStyle(.sd(.primary))`, `#Preview("Dark") { … .preferredColorScheme(.dark) }`.
 
 </details>
@@ -1901,11 +1910,11 @@ struct SystemDesignTests {
 ```swift
 import SwiftUI
 
-public struct SDGallery: View {
+public struct DSGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.regular) {
+        VStack(alignment: .leading, spacing: DSSpacing.regular) {
             // section header
             // two list rows
             // chips + count badge
@@ -1913,7 +1922,7 @@ public struct SDGallery: View {
             // the five button styles
             // empty state
         }
-        // fill the screen with SDColor.canvas
+        // fill the screen with DSColor.canvas
     }
 }
 
@@ -1929,33 +1938,33 @@ public struct SDGallery: View {
 import SwiftUI
 
 // Every component on one screen: used by previews.
-public struct SDGallery: View {
+public struct DSGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.regular) {
-            SDSectionHeader(title: "Level 7", trailing: "3 open")
+        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+            DSSectionHeader(title: "Level 7", trailing: "3 open")
 
             VStack(spacing: 0) {
-                SDListRow(title: "Riverside Tower B", subtitle: "District 7 · 14 open issues", showsChevron: true)
-                SDListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
+                DSListRow(title: "Riverside Tower B", subtitle: "District 7 · 14 open issues", showsChevron: true)
+                DSListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
             }
 
-            HStack(spacing: SDSpacing.small) {
-                SDChip(title: "All", isSelected: true, action: {})
-                SDChip(title: "Has issues", isSelected: false, action: {})
-                SDCountBadge(count: 2)
+            HStack(spacing: DSSpacing.small) {
+                DSChip(title: "All", isSelected: true, action: {})
+                DSChip(title: "Has issues", isSelected: false, action: {})
+                DSCountBadge(count: 2)
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
 
-            HStack(spacing: SDSpacing.regular) {
-                ForEach(SDStatusMarker.Kind.allCases, id: \.self) { kind in
-                    SDStatusMarker(kind: kind, text: String(describing: kind).capitalized)
+            HStack(spacing: DSSpacing.regular) {
+                ForEach(DSStatusMarker.Kind.allCases, id: \.self) { kind in
+                    DSStatusMarker(kind: kind, text: String(describing: kind).capitalized)
                 }
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
 
-            VStack(spacing: SDSpacing.small) {
+            VStack(spacing: DSSpacing.small) {
                 Button("Primary") {}
                     .buttonStyle(.sd(.primary))
                 Button("Capture") {}
@@ -1967,24 +1976,24 @@ public struct SDGallery: View {
                 Button("Danger") {}
                     .buttonStyle(.sd(.danger))
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
 
-            SDEmptyState(systemImage: "folder", title: "No projects yet", message: "Create a project to start.")
+            DSEmptyState(systemImage: "folder", title: "No projects yet", message: "Create a project to start.")
                 .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, SDSpacing.regular)
+        .padding(.vertical, DSSpacing.regular)
         // Fill the whole screen, including behind the status bar
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(SDColor.canvas.ignoresSafeArea())
+        .background(DSColor.canvas.ignoresSafeArea())
     }
 }
 
 #Preview("Light") {
-    SDGallery()
+    DSGallery()
 }
 
 #Preview("Dark") {
-    SDGallery()
+    DSGallery()
         .preferredColorScheme(.dark)
 }
 ```
@@ -1993,7 +2002,7 @@ public struct SDGallery: View {
 
 <b>Try</b>
 
-- Delete `public init() {}` and use `SDGallery()` from the app target: read the error, then put it back.
+- Delete `public init() {}` and use `DSGallery()` from the app target: read the error, then put it back.
 
 <details open>
 <summary><strong>4.1 Check</strong></summary>
@@ -2001,8 +2010,8 @@ public struct SDGallery: View {
 
 | Step | Expect |
 |---|---|
-| Scheme `SystemDesign` → ⌘U | `hexColourIsDecoded` passes |
-| `SDGallery` preview, Light and Dark | Every component renders in both |
+| Scheme `DesignSystem` → ⌘U | `hexColourIsDecoded` passes |
+| `DSGallery` preview, Light and Dark | Every component renders in both |
 
 </dd></dl>
 </details>

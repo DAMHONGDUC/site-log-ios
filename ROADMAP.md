@@ -98,15 +98,15 @@ flowchart TD
 
 <dl><dd>
 
-- Demo: builds with zero warnings, CI green, SystemDesign tests pass.
+- Demo: builds with zero warnings, CI green, DesignSystem tests pass.
 - Spec: [00](docs/feature-docs/00-overview.md), [05](docs/feature-docs/05-platform.md)
 - Guide: [docs/feature-guide/00-foundation.md](docs/feature-guide/00-foundation.md)
 
 - [x] **F00.0** - [Tooling] - [8h] - Xcode project, XcodeGen, SwiftLint, hot reload, entry point
-- [ ] **F00.1** - [Architecture] - [6h] - Layer packages (incl. `Infrastructure`), Factory DI, injected `AppClock`, test libraries
+- [ ] **F00.1** - [Architecture] - [6h] - Layer packages (incl. `PlatformKit`), Factory DI, injected `AppClock`, test libraries
 - [ ] **F00.2** - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
-- [ ] **F00.4** - [Tests] - [3h] - SystemDesign: hex test, `SDGallery` (tokens + components already built)
+- [ ] **F00.4** - [Tests] - [3h] - DesignSystem: hex test, `DSGallery` (tokens + components already built)
 
 </dd></dl>
 
@@ -364,7 +364,7 @@ flowchart TD
 - [ ] **F16.7** - [UI] - [5h] - S10–S11 sync, diagnostics, settings
 - [ ] **F16.8** - [UI] - [5h] - Dark mode; empty, error, offline states; real imagery
 - [ ] **F16.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
-- [ ] **F16.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing) for `SDGallery` and every screen; not counted in the 48h
+- [ ] **F16.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing) for `DSGallery` and every screen; not counted in the 48h
 
 </dd></dl>
 

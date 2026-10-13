@@ -92,9 +92,9 @@ SiteLog/
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 
 </dd></dl>
@@ -136,7 +136,7 @@ SiteLog/
 <dl><dd>
 
 1. Add Firebase via `project.yml`; `GoogleService-Info.plist` written by CI, not committed.
-2. Wrap it in `Infrastructure/CrashReporting/` (protocol + real type); call it on the first line of `didFinishLaunching`.
+2. Wrap it in `PlatformKit/CrashReporting/` (protocol + real type); call it on the first line of `didFinishLaunching`.
 
 </dd></dl>
 
@@ -161,7 +161,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and PlatformKit services to the repositories; the registered types stay |
 
 #### Steps
 

@@ -63,7 +63,7 @@ Packages/
 ├── DataLayer/Sources/DataLayer/Repositories/CaptureSourceImpl.swift  # 4: Domain CaptureSource over Camera + FileStorage
 ├── DataLayer/Sources/DataLayer/DataSources/Local/FileStorage/          # 4: MediaLocalDataSource, MediaLocalDataSourceImpl
 ├── Core/Sources/Core/Crypto/FileHasher.swift                           # 4: SHA-256, 1 MB chunks
-└── Infrastructure/Sources/Infrastructure/Camera/                       # 4: CaptureSessionControlling, AVCaptureSessionController
+└── PlatformKit/Sources/PlatformKit/Camera/                       # 4: CaptureSessionControlling, AVCaptureSessionController
 SiteLog/
 └── Presentation/Capture/                                               # 3: Camera, CaptureReview
 ```
@@ -105,9 +105,9 @@ SiteLog/
 
 <dl><dd>
 
-1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `@Injected`.
+1. Add `<Screen>ViewModel.swift` next to the view: `@MainActor @Observable`, use cases through `init`; the view builds it with `Container.shared.<useCase>()`.
 2. In the view, replace `FakeData…` with view-model state; keep the layout (visual finish is F16).
-3. Loading, empty (`SDEmptyState`) and error states; previews for each.
+3. Loading, empty (`DSEmptyState`) and error states; previews for each.
 4. Delete this feature's `Fake*` types from `App/Fakes/FakeData.swift` once nothing uses them.
 5. Hi-vis yellow only on the shutter; never blocks on upload state.
 
@@ -128,7 +128,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Camera/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
+| <b class="tag-new">New</b> | `Packages/PlatformKit/Sources/PlatformKit/Camera/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
 | <b class="tag-new">New</b> | `Camera/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
 | <b class="tag-new">New</b> | `Camera/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
 

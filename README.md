@@ -55,7 +55,7 @@
 
 <dl><dd>
 
-- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `SystemDesign` are local Swift packages; the app target holds `App/` and `Presentation/`.
+- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `DesignSystem` are local Swift packages; the app target holds `App/` and `Presentation/`.
 - Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
 
 ```
@@ -95,7 +95,7 @@ site-log-ios/
 │   │       │                             # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
 │   │       ├── UseCases/<Feature>/       # <Verb><Noun>UseCase, one per file
 │   │       └── Repositories/             # protocols
-│   ├── DataLayer/                        # implements Domain; uses Domain + Infrastructure + Core
+│   ├── DataLayer/                        # implements Domain; uses Domain + PlatformKit + Core
 │   │   └── Sources/DataLayer/
 │   │       ├── Repositories/             # <Noun>RepositoryImpl, SyncEngineImpl
 │   │       ├── DataSources/              # protocol + impl each; return models / DTOs, never entities
@@ -105,14 +105,14 @@ site-log-ios/
 │   │       │   ├── Local/                # SwiftData @Model: <Noun>Model; Schema/ (SchemaV1…n, migration plan)
 │   │       │   └── Remote/               # backend JSON: <Noun>DTO
 │   │       └── Mappers/
-│   ├── Infrastructure/                   # system services, like an outside library; uses Core only
-│   │   └── Sources/Infrastructure/
+│   ├── PlatformKit/                   # system services, like an outside library; uses Core only
+│   │   └── Sources/PlatformKit/
 │   │       ├── Permissions/              # camera, photos, Bluetooth, mic, notifications
 │   │       ├── Camera/                   # AVFoundation capture session
 │   │       ├── Bluetooth/                # CoreBluetooth (DeviceLink meters)
 │   │       ├── Biometrics/               # Face ID (LocalAuthentication)
 │   │       ├── Speech/                   # on-device dictation
-│   │       ├── Rendering/                # PDF + CSV, plan tiles, stamped copies
+│   │       ├── Rendering/                # PDF + CSV, PDF / image tiles, stamped copies
 │   │       ├── Device/                   # disk, battery, thermal
 │   │       ├── Push/                     # APNs registration
 │   │       ├── CrashReporting/           # Crashlytics
@@ -120,11 +120,11 @@ site-log-ios/
 │   │       ├── UploadKit/                # background URLSession engine (standalone)
 │   │       └── Realtime/                 # WebSocket channel (standalone)
 │   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock, Crypto/ (PasscodeHasher, FileHasher); no business logic
-│   └── SystemDesign/                     # UI only: never imports Domain or app code
-│       ├── Sources/SystemDesign/
-│       │   ├── Tokens/                   # SDColor, SDFont, SDSpacing, SDRadius, SDSize
-│       │   └── Components/               # SDButtonStyle, SDListRow, SDChip, SDEmptyState…
-│       └── Tests/SystemDesignTests/
+│   └── DesignSystem/                     # UI only: never imports Domain or app code
+│       ├── Sources/DesignSystem/
+│       │   ├── Tokens/                   # DSColor, DSFont, DSSpacing, DSRadius, DSSize
+│       │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
+│       └── Tests/DesignSystemTests/
 ├── SiteLogTests/                         # app tests; package tests live in each package
 │   └── Presentation/
 ├── SiteLogUITests/
@@ -139,7 +139,7 @@ site-log-ios/
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
 ```
 
-- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `SystemDesign`; `DataLayer` → `DomainLayer` + `Infrastructure` + `Core`; `Infrastructure` → `Core` only, never `DomainLayer`.
+- Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `DesignSystem`; `DataLayer` → `DomainLayer` + `PlatformKit` + `Core`; `PlatformKit` → `Core` only, never `DomainLayer`.
 - Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
 
 </dd></dl>
