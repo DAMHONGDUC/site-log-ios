@@ -1,8 +1,8 @@
 // U1 · Sync
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct UploadStatusView: View {
     @ObserveInjection var inject
@@ -30,7 +30,10 @@ struct UploadStatusView: View {
 
                 VStack(alignment: .leading, spacing: SDSpacing.tiny) {
                     SDSectionHeader(title: "Didn’t upload")
-                    SDListRow(title: "IMG_0922, IMG_0925", subtitle: "The server rejected the checksum") {
+                    SDListRow(
+                        title: "IMG_0922, IMG_0925",
+                        subtitle: "The server rejected the checksum"
+                    ) {
                         EmptyView()
                     } trailing: {
                         Button("Retry") {}

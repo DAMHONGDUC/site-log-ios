@@ -1,8 +1,8 @@
 // P5 · Walkthrough
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct SurveyView: View {
     @ObserveInjection var inject

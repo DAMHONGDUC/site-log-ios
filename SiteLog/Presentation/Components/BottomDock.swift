@@ -1,5 +1,5 @@
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 private struct BottomDockModifier<Dock: View>: ViewModifier {
     let showsBackground: Bool
@@ -23,7 +23,10 @@ private struct BottomDockModifier<Dock: View>: ViewModifier {
 }
 
 extension View {
-    func bottomDock<Dock: View>(showsBackground: Bool = true, @ViewBuilder _ dock: () -> Dock) -> some View {
+    func bottomDock<Dock: View>(
+        showsBackground: Bool = true,
+        @ViewBuilder _ dock: () -> Dock
+    ) -> some View {
         modifier(BottomDockModifier(showsBackground: showsBackground, dock: dock()))
     }
 }

@@ -1,8 +1,8 @@
 // R5 · PDF preview
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct PDFPreviewView: View {
     @ObserveInjection var inject

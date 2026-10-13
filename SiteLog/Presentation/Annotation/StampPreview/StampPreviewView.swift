@@ -1,8 +1,8 @@
 // M2 · Share stamped photo
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct StampPreviewView: View {
     @ObserveInjection var inject
@@ -20,10 +20,12 @@ struct StampPreviewView: View {
                         stampStrip
                     }
 
-                Text("Time checked against the network (within 2 s) and GPS (±6 m), so the stamp can be trusted.")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
-                    .padding(.horizontal, SDSpacing.regular)
+                Text(
+                    "Time checked against the network (within 2 s) and GPS (±6 m), so the stamp can be trusted."
+                )
+                .font(SDFont.footnote)
+                .foregroundStyle(SDColor.textSecondary)
+                .padding(.horizontal, SDSpacing.regular)
 
                 VStack(alignment: .leading, spacing: SDSpacing.tiny) {
                     SDSectionHeader(title: "Stamp shows")

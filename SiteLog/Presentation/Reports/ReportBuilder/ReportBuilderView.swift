@@ -1,8 +1,8 @@
 // R2 · Report options
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct ReportBuilderView: View {
     @ObserveInjection var inject

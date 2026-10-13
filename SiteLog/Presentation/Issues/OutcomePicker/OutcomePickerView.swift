@@ -1,8 +1,8 @@
 // C4 · Re-check outcome
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct OutcomePickerView: View {
     @ObserveInjection var inject

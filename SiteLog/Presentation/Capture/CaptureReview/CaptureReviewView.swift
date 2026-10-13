@@ -1,6 +1,6 @@
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct CaptureReviewView: View {
     @ObserveInjection var inject

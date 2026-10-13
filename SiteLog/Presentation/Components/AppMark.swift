@@ -1,7 +1,7 @@
 // Placeholder until the app icon asset is added
 
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 struct AppMark: View {
     var size: CGFloat = 72

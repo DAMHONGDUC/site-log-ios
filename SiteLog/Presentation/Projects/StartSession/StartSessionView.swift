@@ -1,8 +1,8 @@
 // P4 · New walkthrough
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct StartSessionView: View {
     @ObserveInjection var inject
@@ -30,7 +30,11 @@ struct StartSessionView: View {
                             .foregroundStyle(SDColor.textSecondary)
                         HStack(spacing: SDSpacing.small) {
                             ForEach(weatherOptions, id: \.title) { option in
-                                SDChip(title: option.title, systemImage: option.icon, isSelected: weather == option.title) {
+                                SDChip(
+                                    title: option.title,
+                                    systemImage: option.icon,
+                                    isSelected: weather == option.title
+                                ) {
                                     weather = option.title
                                 }
                             }
@@ -46,8 +50,10 @@ struct StartSessionView: View {
 
                     HStack(alignment: .top, spacing: SDSpacing.small) {
                         SDStatusMarker(kind: .major)
-                        Text("14 issues from 12 Aug will be waiting in their rooms for you to re-check.")
-                            .font(SDFont.subhead)
+                        Text(
+                            "14 issues from 12 Aug will be waiting in their rooms for you to re-check."
+                        )
+                        .font(SDFont.subhead)
                     }
                 }
                 .padding(SDSpacing.regular)

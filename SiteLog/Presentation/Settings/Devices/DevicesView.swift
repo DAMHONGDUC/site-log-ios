@@ -1,8 +1,8 @@
 // S2 · Laser meter
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct DevicesView: View {
     @ObserveInjection var inject
@@ -37,10 +37,12 @@ struct DevicesView: View {
                     }
                 }
 
-                Text("The camera never waits for the meter. If it disconnects, you keep shooting and we reconnect quietly.")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
-                    .padding(.horizontal, SDSpacing.regular)
+                Text(
+                    "The camera never waits for the meter. If it disconnects, you keep shooting and we reconnect quietly."
+                )
+                .font(SDFont.footnote)
+                .foregroundStyle(SDColor.textSecondary)
+                .padding(.horizontal, SDSpacing.regular)
             }
             .padding(.vertical, SDSpacing.small)
         }

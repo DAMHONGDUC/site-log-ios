@@ -1,8 +1,8 @@
 // P2 · New project
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct NewProjectView: View {
     @ObserveInjection var inject

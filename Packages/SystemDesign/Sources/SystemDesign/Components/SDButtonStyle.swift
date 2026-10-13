@@ -22,7 +22,12 @@ public struct SDButtonStyle: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         // Separate view: only a View can read isEnabled
-        SDButtonBody(kind: kind, small: small, label: configuration.label, isPressed: configuration.isPressed)
+        SDButtonBody(
+            kind: kind,
+            small: small,
+            label: configuration.label,
+            isPressed: configuration.isPressed
+        )
     }
 }
 

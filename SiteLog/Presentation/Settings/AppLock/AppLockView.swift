@@ -1,8 +1,8 @@
 // S4 · App lock
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct AppLockView: View {
     @ObserveInjection var inject
@@ -49,7 +49,9 @@ struct AppLockView: View {
                             SDDivider()
                         }
                     }
-                    footnote("Counted from when you leave SiteLog. Uploads keep running while it’s locked.")
+                    footnote(
+                        "Counted from when you leave SiteLog. Uploads keep running while it’s locked."
+                    )
                 }
             }
             .padding(.vertical, SDSpacing.small)

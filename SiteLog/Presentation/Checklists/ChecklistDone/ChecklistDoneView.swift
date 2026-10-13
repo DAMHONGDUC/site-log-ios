@@ -1,8 +1,8 @@
 // K4 · Checklist done
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct ChecklistDoneView: View {
     @ObserveInjection var inject
@@ -31,7 +31,11 @@ struct ChecklistDoneView: View {
                     NavigationLink {
                         IssueDetailView(issue: FakeData.issues[1])
                     } label: {
-                        SDListRow(title: "Crack by the skirting", subtitle: "Tuan’s masonry crew", showsChevron: true) {
+                        SDListRow(
+                            title: "Crack by the skirting",
+                            subtitle: "Tuan’s masonry crew",
+                            showsChevron: true
+                        ) {
                             SDStatusMarker(kind: .major)
                         }
                     }
@@ -42,7 +46,11 @@ struct ChecklistDoneView: View {
                     NavigationLink {
                         IssueDetailView(issue: FakeData.issues[4])
                     } label: {
-                        SDListRow(title: "Socket cover not level", subtitle: "Phuc Electric", showsChevron: true) {
+                        SDListRow(
+                            title: "Socket cover not level",
+                            subtitle: "Phuc Electric",
+                            showsChevron: true
+                        ) {
                             SDStatusMarker(kind: .minor)
                         }
                     }

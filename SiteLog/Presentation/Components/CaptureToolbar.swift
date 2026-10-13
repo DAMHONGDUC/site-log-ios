@@ -1,5 +1,5 @@
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 struct CaptureToolbar<Left: View, Right: View>: View {
     let onCapture: () -> Void
@@ -46,7 +46,8 @@ struct ToolbarSideLabel: View {
 #Preview {
     VStack {
         Spacer()
-        CaptureToolbar {} left: {
+        CaptureToolbar {
+        } left: {
             Text("End")
         } right: {
             ToolbarSideLabel(systemImage: "map", title: "Plan")

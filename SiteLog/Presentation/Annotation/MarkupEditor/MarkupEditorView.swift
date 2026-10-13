@@ -1,8 +1,8 @@
 // M1 · Markup editor
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct MarkupEditorView: View {
     @ObserveInjection var inject
@@ -50,7 +50,11 @@ struct MarkupEditorView: View {
                     for stroke in strokes + [currentStroke] {
                         var path = Path()
                         path.addLines(stroke)
-                        context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                        context.stroke(
+                            path,
+                            with: .color(color),
+                            style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round)
+                        )
                     }
                 }
             }

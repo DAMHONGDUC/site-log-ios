@@ -1,13 +1,6 @@
-//
-//  AppDelegate.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 1/10/26.
-//
-
 import Core
-import os
 import UIKit
+import os
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(

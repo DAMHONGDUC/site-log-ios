@@ -1,8 +1,8 @@
 // C1 · Camera
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct CameraView: View {
     @ObserveInjection var inject

@@ -1,8 +1,8 @@
 // P6 · Add rooms in bulk
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct BulkLocationsView: View {
     @ObserveInjection var inject

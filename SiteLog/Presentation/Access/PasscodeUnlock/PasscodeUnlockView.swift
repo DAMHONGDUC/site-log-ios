@@ -1,8 +1,8 @@
 // A3 · Enter passcode
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct PasscodeUnlockView: View {
     @ObserveInjection var inject

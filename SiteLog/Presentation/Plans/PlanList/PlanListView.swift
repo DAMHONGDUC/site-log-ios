@@ -1,8 +1,8 @@
 // M3 · Plans
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct PlanListView: View {
     @ObserveInjection var inject

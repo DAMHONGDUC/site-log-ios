@@ -1,8 +1,8 @@
 // P1 · Projects
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct ProjectListView: View {
     @ObserveInjection var inject
@@ -82,7 +82,11 @@ struct ProjectListView: View {
                     NavigationLink {
                         ProjectDetailView(project: project)
                     } label: {
-                        SDListRow(title: project.name, subtitle: project.summary, showsChevron: true) {
+                        SDListRow(
+                            title: project.name,
+                            subtitle: project.summary,
+                            showsChevron: true
+                        ) {
                             SitePhotoThumb(variant: project.photoVariant, size: 44)
                         }
                     }

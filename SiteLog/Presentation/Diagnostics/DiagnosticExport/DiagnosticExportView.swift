@@ -1,8 +1,8 @@
 // U3 · Diagnostics
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct DiagnosticExportView: View {
     @ObserveInjection var inject

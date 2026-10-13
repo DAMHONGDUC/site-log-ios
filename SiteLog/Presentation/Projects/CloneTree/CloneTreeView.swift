@@ -1,6 +1,6 @@
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct CloneTreeView: View {
     @ObserveInjection var inject
@@ -11,11 +11,13 @@ struct CloneTreeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                Text("Pick a project. Its levels, units and rooms are copied; photos and issues are not.")
-                    .font(SDFont.subhead)
-                    .foregroundStyle(SDColor.textSecondary)
-                    .padding(.horizontal, SDSpacing.regular)
-                    .padding(.bottom, SDSpacing.regular)
+                Text(
+                    "Pick a project. Its levels, units and rooms are copied; photos and issues are not."
+                )
+                .font(SDFont.subhead)
+                .foregroundStyle(SDColor.textSecondary)
+                .padding(.horizontal, SDSpacing.regular)
+                .padding(.bottom, SDSpacing.regular)
 
                 SDSectionHeader(title: "Copy rooms from")
 

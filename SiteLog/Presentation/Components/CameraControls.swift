@@ -1,5 +1,5 @@
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 struct CameraTopBar: View {
     let title: String

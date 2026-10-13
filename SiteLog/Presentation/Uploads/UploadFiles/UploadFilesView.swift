@@ -1,8 +1,8 @@
 // U2 · Today's files
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct UploadFilesView: View {
     @ObserveInjection var inject

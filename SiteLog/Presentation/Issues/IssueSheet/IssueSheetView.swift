@@ -1,8 +1,8 @@
 // C2 · New issue
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct IssueSheetView: View {
     @ObserveInjection var inject
@@ -64,7 +64,8 @@ struct IssueSheetView: View {
             }
             .bottomDock {
                 HStack(spacing: SDSpacing.small) {
-                    Button {} label: {
+                    Button {
+                    } label: {
                         Image(systemName: "mappin.and.ellipse")
                     }
                     .buttonStyle(.sd(.secondary))

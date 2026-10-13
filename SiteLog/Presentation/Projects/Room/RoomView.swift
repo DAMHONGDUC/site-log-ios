@@ -1,8 +1,8 @@
 // P7 · Room
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct RoomView: View {
     @ObserveInjection var inject
@@ -33,7 +33,12 @@ struct RoomView: View {
                 NavigationLink {
                     ChecklistRunView()
                 } label: {
-                    SDListRow(title: "Finishing checklist", subtitle: "14 of 22 answered", value: "64%", showsChevron: true)
+                    SDListRow(
+                        title: "Finishing checklist",
+                        subtitle: "14 of 22 answered",
+                        value: "64%",
+                        showsChevron: true
+                    )
                 }
                 .buttonStyle(.plain)
             }
@@ -74,7 +79,9 @@ struct RoomView: View {
             IssueSheetView()
         }
         .fullScreenCover(isPresented: $isCameraShown) {
-            CameraView(roomName: "\(unitName.replacingOccurrences(of: "Unit ", with: "")) · \(room.name)")
+            CameraView(
+                roomName: "\(unitName.replacingOccurrences(of: "Unit ", with: "")) · \(room.name)"
+            )
         }
         .enableInjection()
     }

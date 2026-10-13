@@ -1,8 +1,8 @@
 // P3 · Project overview
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct ProjectDetailView: View {
     @ObserveInjection var inject
@@ -107,10 +107,12 @@ struct ProjectDetailView: View {
 
     private var sessionsContent: some View {
         VStack(alignment: .leading, spacing: SDSpacing.large) {
-            Text("\(Text("14 open issues").bold()), 2 of them overdue. Last full walkthrough on 12 Aug with Hanh.")
-                .font(SDFont.body)
-                .foregroundStyle(SDColor.textSecondary)
-                .padding(.horizontal, SDSpacing.regular)
+            Text(
+                "\(Text("14 open issues").bold()), 2 of them overdue. Last full walkthrough on 12 Aug with Hanh."
+            )
+            .font(SDFont.body)
+            .foregroundStyle(SDColor.textSecondary)
+            .padding(.horizontal, SDSpacing.regular)
 
             VStack(alignment: .leading, spacing: SDSpacing.tiny) {
                 SDSectionHeader(title: "Sessions", trailing: String(FakeData.sessions.count))

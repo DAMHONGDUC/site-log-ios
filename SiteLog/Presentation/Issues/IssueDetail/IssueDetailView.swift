@@ -1,8 +1,8 @@
 // C6 · Issue detail
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct IssueDetailView: View {
     @ObserveInjection var inject

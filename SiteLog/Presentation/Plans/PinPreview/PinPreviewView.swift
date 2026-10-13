@@ -1,8 +1,8 @@
 // M5 · Pin preview
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct PinPreviewView: View {
     @ObserveInjection var inject

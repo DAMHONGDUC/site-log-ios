@@ -1,8 +1,8 @@
 // S5 · Set passcode
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct SetPasscodeView: View {
     @ObserveInjection var inject
@@ -20,11 +20,13 @@ struct SetPasscodeView: View {
 
                 PasscodeDots(filled: code.count)
 
-                Text("You’ll use it when Face ID can’t see you. It stays on this iPhone and is never uploaded.")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 280)
+                Text(
+                    "You’ll use it when Face ID can’t see you. It stays on this iPhone and is never uploaded."
+                )
+                .font(SDFont.footnote)
+                .foregroundStyle(SDColor.textSecondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 280)
 
                 Spacer()
 

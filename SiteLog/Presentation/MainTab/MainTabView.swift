@@ -1,13 +1,6 @@
-//
-//  MainTabView.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 1/10/26.
-//
-
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct MainTabView: View {
     @ObserveInjection var inject

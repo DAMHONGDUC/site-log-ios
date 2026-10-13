@@ -1,8 +1,8 @@
 // A1 · Face ID lock
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct FaceIDLockView: View {
     @ObserveInjection var inject

@@ -55,7 +55,12 @@ public struct SDListRow<Leading: View, Trailing: View>: View {
 }
 
 extension SDListRow where Leading == EmptyView, Trailing == SDRowValue {
-    public init(title: String, subtitle: String? = nil, value: String? = nil, showsChevron: Bool = false) {
+    public init(
+        title: String,
+        subtitle: String? = nil,
+        value: String? = nil,
+        showsChevron: Bool = false
+    ) {
         self.init(
             title: title,
             subtitle: subtitle,
@@ -117,7 +122,11 @@ public struct SDDivider: View {
 
 #Preview {
     VStack(spacing: 0) {
-        SDListRow(title: "Riverside Tower B", subtitle: "District 7 · 14 open issues", showsChevron: true)
+        SDListRow(
+            title: "Riverside Tower B",
+            subtitle: "District 7 · 14 open issues",
+            showsChevron: true
+        )
         SDDivider()
         SDListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
         SDDivider()

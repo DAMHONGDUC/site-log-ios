@@ -1,8 +1,8 @@
 // R4 · Signatures
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct SignaturePadView: View {
     @ObserveInjection var inject
@@ -26,9 +26,11 @@ struct SignaturePadView: View {
 
                 signatureBox
 
-                Text("This is a handwritten signature for internal sign-off, not a certified digital signature.")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
+                Text(
+                    "This is a handwritten signature for internal sign-off, not a certified digital signature."
+                )
+                .font(SDFont.footnote)
+                .foregroundStyle(SDColor.textSecondary)
             }
             .padding(SDSpacing.regular)
         }
@@ -61,7 +63,11 @@ struct SignaturePadView: View {
                     for stroke in strokes + [currentStroke] {
                         var path = Path()
                         path.addLines(stroke)
-                        context.stroke(path, with: .color(SDColor.textPrimary), style: StrokeStyle(lineWidth: 2.4, lineCap: .round))
+                        context.stroke(
+                            path,
+                            with: .color(SDColor.textPrimary),
+                            style: StrokeStyle(lineWidth: 2.4, lineCap: .round)
+                        )
                     }
                 }
             }

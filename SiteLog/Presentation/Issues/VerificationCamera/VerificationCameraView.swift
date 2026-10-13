@@ -1,8 +1,8 @@
 // C3 · Re-check camera
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct VerificationCameraView: View {
     @ObserveInjection var inject

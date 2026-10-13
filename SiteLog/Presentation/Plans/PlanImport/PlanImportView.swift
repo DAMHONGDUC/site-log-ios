@@ -1,6 +1,6 @@
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct PlanImportView: View {
     @ObserveInjection var inject
@@ -10,7 +10,10 @@ struct PlanImportView: View {
         NavigationStack {
             VStack(spacing: SDSpacing.medium) {
                 RoundedRectangle(cornerRadius: SDRadius.large)
-                    .strokeBorder(SDColor.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+                    .strokeBorder(
+                        SDColor.lineStrong,
+                        style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                    )
                     .frame(height: 140)
                     .overlay {
                         VStack(spacing: SDSpacing.small) {

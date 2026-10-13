@@ -1,7 +1,7 @@
 // UI skeleton sample data; each feature moves its part to Data/Fakes and deletes it here
 
-import SystemDesign
 import Foundation
+import SystemDesign
 
 struct FakeProject: Identifiable {
     let id = UUID()
@@ -97,6 +97,8 @@ struct FakeDevice: Identifiable {
     let isConnected: Bool
 }
 
+// Skeleton sample data, shrinks as each feature lands
+// swiftlint:disable:next type_body_length
 enum FakeData {
     static let inspector = "Hanh Nguyen"
 
@@ -125,54 +127,168 @@ enum FakeData {
     ]
 
     static let sessions: [FakeSession] = [
-        FakeSession(title: "Today", summary: "In progress · 37 of 82 rooms", isLive: true, hasPDF: false),
-        FakeSession(title: "Tue 12 Aug", summary: "112 photos · 14 issues · Hanh", isLive: false, hasPDF: true),
-        FakeSession(title: "Mon 28 Jul", summary: "87 photos · 9 issues · Hanh", isLive: false, hasPDF: true),
-        FakeSession(title: "Thu 10 Jul", summary: "64 photos · 5 issues · Minh", isLive: false, hasPDF: false),
+        FakeSession(
+            title: "Today",
+            summary: "In progress · 37 of 82 rooms",
+            isLive: true,
+            hasPDF: false
+        ),
+        FakeSession(
+            title: "Tue 12 Aug",
+            summary: "112 photos · 14 issues · Hanh",
+            isLive: false,
+            hasPDF: true
+        ),
+        FakeSession(
+            title: "Mon 28 Jul",
+            summary: "87 photos · 9 issues · Hanh",
+            isLive: false,
+            hasPDF: true
+        ),
+        FakeSession(
+            title: "Thu 10 Jul",
+            summary: "64 photos · 5 issues · Minh",
+            isLive: false,
+            hasPDF: false
+        ),
     ]
 
     static let units: [FakeUnit] = [
-        FakeUnit(name: "Unit 7A", rooms: [
-            FakeRoom(name: "Living room", isChecked: true, photoCount: 4, criticalCount: 2, note: nil),
-            FakeRoom(name: "Bedroom 1", isChecked: true, photoCount: 3, criticalCount: 0, note: nil),
-            FakeRoom(
-                name: "Bathroom",
-                isChecked: false,
-                photoCount: 0,
-                criticalCount: 0,
-                note: "1 issue from 12 Aug to re-check"
-            ),
-            FakeRoom(name: "Kitchen", isChecked: false, photoCount: 0, criticalCount: 0, note: nil),
-        ]),
-        FakeUnit(name: "Unit 7B", rooms: [
-            FakeRoom(name: "Living room", isChecked: false, photoCount: 0, criticalCount: 0, note: nil),
-            FakeRoom(name: "Bedroom 1", isChecked: false, photoCount: 0, criticalCount: 0, note: nil),
-            FakeRoom(name: "Bedroom 2", isChecked: false, photoCount: 0, criticalCount: 0, note: nil),
-            FakeRoom(name: "Bathroom", isChecked: false, photoCount: 0, criticalCount: 0, note: nil),
-            FakeRoom(name: "Kitchen", isChecked: false, photoCount: 0, criticalCount: 0, note: nil),
-        ]),
+        FakeUnit(
+            name: "Unit 7A",
+            rooms: [
+                FakeRoom(
+                    name: "Living room",
+                    isChecked: true,
+                    photoCount: 4,
+                    criticalCount: 2,
+                    note: nil
+                ),
+                FakeRoom(
+                    name: "Bedroom 1",
+                    isChecked: true,
+                    photoCount: 3,
+                    criticalCount: 0,
+                    note: nil
+                ),
+                FakeRoom(
+                    name: "Bathroom",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: "1 issue from 12 Aug to re-check"
+                ),
+                FakeRoom(
+                    name: "Kitchen",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: nil
+                ),
+            ]
+        ),
+        FakeUnit(
+            name: "Unit 7B",
+            rooms: [
+                FakeRoom(
+                    name: "Living room",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: nil
+                ),
+                FakeRoom(
+                    name: "Bedroom 1",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: nil
+                ),
+                FakeRoom(
+                    name: "Bedroom 2",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: nil
+                ),
+                FakeRoom(
+                    name: "Bathroom",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: nil
+                ),
+                FakeRoom(
+                    name: "Kitchen",
+                    isChecked: false,
+                    photoCount: 0,
+                    criticalCount: 0,
+                    note: nil
+                ),
+            ]
+        ),
     ]
 
     static let issues: [FakeIssue] = [
         FakeIssue(
-            number: 1, title: "Exposed wiring at socket", room: "7A Kitchen", assignee: "Phuc Electric",
-            severity: .critical, due: "2 days late", isLate: true, level: "Level 7", photoVariant: 3, isOpen: true
+            number: 1,
+            title: "Exposed wiring at socket",
+            room: "7A Kitchen",
+            assignee: "Phuc Electric",
+            severity: .critical,
+            due: "2 days late",
+            isLate: true,
+            level: "Level 7",
+            photoVariant: 3,
+            isOpen: true
         ),
         FakeIssue(
-            number: 3, title: "Hairline crack by the skirting", room: "7A Living room", assignee: "Tuan’s masonry crew",
-            severity: .major, due: "Fri", isLate: false, level: "Level 7", photoVariant: 0, isOpen: true
+            number: 3,
+            title: "Hairline crack by the skirting",
+            room: "7A Living room",
+            assignee: "Tuan’s masonry crew",
+            severity: .major,
+            due: "Fri",
+            isLate: false,
+            level: "Level 7",
+            photoVariant: 0,
+            isOpen: true
         ),
         FakeIssue(
-            number: 4, title: "Door paint scratched", room: "7B Bedroom 1", assignee: "Painters",
-            severity: .minor, due: "", isLate: false, level: "Level 7", photoVariant: 2, isOpen: true
+            number: 4,
+            title: "Door paint scratched",
+            room: "7B Bedroom 1",
+            assignee: "Painters",
+            severity: .minor,
+            due: "",
+            isLate: false,
+            level: "Level 7",
+            photoVariant: 2,
+            isOpen: true
         ),
         FakeIssue(
-            number: 9, title: "Stain on bathroom ceiling", room: "8C Bathroom", assignee: "AquaSeal",
-            severity: .major, due: "Wed 8 Oct", isLate: false, level: "Level 8", photoVariant: 1, isOpen: true
+            number: 9,
+            title: "Stain on bathroom ceiling",
+            room: "8C Bathroom",
+            assignee: "AquaSeal",
+            severity: .major,
+            due: "Wed 8 Oct",
+            isLate: false,
+            level: "Level 8",
+            photoVariant: 1,
+            isOpen: true
         ),
         FakeIssue(
-            number: 2, title: "Loose socket cover", room: "7A Living room", assignee: "Phuc Electric",
-            severity: .minor, due: "", isLate: false, level: "Level 7", photoVariant: 2, isOpen: false
+            number: 2,
+            title: "Loose socket cover",
+            room: "7A Living room",
+            assignee: "Phuc Electric",
+            severity: .minor,
+            due: "",
+            isLate: false,
+            level: "Level 7",
+            photoVariant: 2,
+            isOpen: false
         ),
     ]
 
@@ -214,16 +330,56 @@ enum FakeData {
     ]
 
     static let uploadFiles: [FakeUploadFile] = [
-        FakeUploadFile(name: "IMG_0931.heic", detail: "7A Living · 3.1 MB", status: "Uploading", kind: .waiting, photoVariant: 0),
-        FakeUploadFile(name: "VID_0012.mov", detail: "7A Kitchen · 412 MB", status: "Needs Wi-Fi", kind: .waiting, photoVariant: 3),
-        FakeUploadFile(name: "VID_0013.mov", detail: "8C Bath · 288 MB", status: "Needs Wi-Fi", kind: .waiting, photoVariant: 1),
-        FakeUploadFile(name: "IMG_0922.heic", detail: "7A Bedroom 1 · 2.8 MB", status: "Failed", kind: .critical, photoVariant: 2),
-        FakeUploadFile(name: "IMG_0921.heic", detail: "7A Bedroom 1 · 2.9 MB", status: "Done", kind: .resolved, photoVariant: 0),
-        FakeUploadFile(name: "IMG_0920.heic", detail: "7A Bedroom 1 · 3.0 MB", status: "Done", kind: .resolved, photoVariant: 2),
+        FakeUploadFile(
+            name: "IMG_0931.heic",
+            detail: "7A Living · 3.1 MB",
+            status: "Uploading",
+            kind: .waiting,
+            photoVariant: 0
+        ),
+        FakeUploadFile(
+            name: "VID_0012.mov",
+            detail: "7A Kitchen · 412 MB",
+            status: "Needs Wi-Fi",
+            kind: .waiting,
+            photoVariant: 3
+        ),
+        FakeUploadFile(
+            name: "VID_0013.mov",
+            detail: "8C Bath · 288 MB",
+            status: "Needs Wi-Fi",
+            kind: .waiting,
+            photoVariant: 1
+        ),
+        FakeUploadFile(
+            name: "IMG_0922.heic",
+            detail: "7A Bedroom 1 · 2.8 MB",
+            status: "Failed",
+            kind: .critical,
+            photoVariant: 2
+        ),
+        FakeUploadFile(
+            name: "IMG_0921.heic",
+            detail: "7A Bedroom 1 · 2.9 MB",
+            status: "Done",
+            kind: .resolved,
+            photoVariant: 0
+        ),
+        FakeUploadFile(
+            name: "IMG_0920.heic",
+            detail: "7A Bedroom 1 · 3.0 MB",
+            status: "Done",
+            kind: .resolved,
+            photoVariant: 2
+        ),
     ]
 
     static let myDevices: [FakeDevice] = [
-        FakeDevice(name: "Leica DISTO D2", detail: "Connected · last reading 3.42 m", isConnected: true),
+        FakeDevice(
+            name: "Leica DISTO D2",
+            detail: "Connected · last reading 3.42 m",
+            isConnected: true
+        ),
         FakeDevice(name: "Bosch GLM 50C", detail: "Not nearby", isConnected: false),
     ]
 

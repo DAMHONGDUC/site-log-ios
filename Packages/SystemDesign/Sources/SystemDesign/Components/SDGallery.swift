@@ -10,8 +10,10 @@ public struct SDGallery: View {
 
             VStack(spacing: 0) {
                 SDListRow(
-                    title: "Riverside Tower B", subtitle: "District 7 · 14 open issues",
-                    showsChevron: true)
+                    title: "Riverside Tower B",
+                    subtitle: "District 7 · 14 open issues",
+                    showsChevron: true
+                )
                 SDListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
             }
 
@@ -44,7 +46,8 @@ public struct SDGallery: View {
             .padding(.horizontal, SDSpacing.regular)
 
             SDEmptyState(
-                systemImage: "folder", title: "No projects yet",
+                systemImage: "folder",
+                title: "No projects yet",
                 message: "Create a project to start."
             )
             .frame(maxWidth: .infinity)

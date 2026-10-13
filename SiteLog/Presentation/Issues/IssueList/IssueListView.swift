@@ -1,8 +1,8 @@
 // C5 · Issues
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct IssueListView: View {
     @ObserveInjection var inject

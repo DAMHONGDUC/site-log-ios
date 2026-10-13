@@ -1,8 +1,8 @@
 // S1 · Settings
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct SettingsView: View {
     @ObserveInjection var inject
@@ -15,7 +15,11 @@ struct SettingsView: View {
                 NavigationLink {
                     AccountView()
                 } label: {
-                    SDListRow(title: FakeData.inspector, subtitle: "Synced 2 minutes ago · iPhone and iPad", showsChevron: true) {
+                    SDListRow(
+                        title: FakeData.inspector,
+                        subtitle: "Synced 2 minutes ago · iPhone and iPad",
+                        showsChevron: true
+                    ) {
                         avatar
                     }
                 }
@@ -44,13 +48,17 @@ struct SettingsView: View {
                         Text("Delete account")
                             .font(SDFont.body)
                             .foregroundStyle(SDColor.critical)
-                            .frame(maxWidth: .infinity, minHeight: SDSize.rowMinHeight, alignment: .leading)
+                            .frame(
+                                maxWidth: .infinity,
+                                minHeight: SDSize.rowMinHeight,
+                                alignment: .leading
+                            )
                             .padding(.horizontal, SDSpacing.regular)
                     }
                 }
 
                 #if DEBUG
-                DevMenuSection()
+                    DevMenuSection()
                 #endif
             }
             .padding(.vertical, SDSpacing.small)
@@ -61,7 +69,9 @@ struct SettingsView: View {
             Button("Delete Account", role: .destructive) {}
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("We’ll remove the cloud copies of 3 projects and 1,284 photos within 30 days. What’s on this iPhone stays until you delete the app.")
+            Text(
+                "We’ll remove the cloud copies of 3 projects and 1,284 photos within 30 days. What’s on this iPhone stays until you delete the app."
+            )
         }
         .enableInjection()
     }

@@ -6,7 +6,12 @@ public struct SDChip: View {
     let isSelected: Bool
     let action: () -> Void
 
-    public init(title: String, systemImage: String? = nil, isSelected: Bool, action: @escaping () -> Void) {
+    public init(
+        title: String,
+        systemImage: String? = nil,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) {
         self.title = title
         self.systemImage = systemImage
         self.isSelected = isSelected

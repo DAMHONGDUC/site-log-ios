@@ -1,10 +1,3 @@
-//
-//  StartupViewModel.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 1/10/26.
-//
-
 import Observation
 
 @MainActor @Observable

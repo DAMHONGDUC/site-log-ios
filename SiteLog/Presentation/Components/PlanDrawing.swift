@@ -1,7 +1,7 @@
 // Placeholder plan; the PDFKit viewer replaces it in F08
 
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 struct PlanDrawing: View {
     let pins: [FakePin]
@@ -18,7 +18,10 @@ struct PlanDrawing: View {
 
                 ForEach(pins) { pin in
                     PlanPinView(pin: pin)
-                        .position(x: proxy.size.width * pin.positionX, y: proxy.size.height * pin.positionY)
+                        .position(
+                            x: proxy.size.width * pin.positionX,
+                            y: proxy.size.height * pin.positionY
+                        )
                         .onTapGesture {
                             onPinTap(pin)
                         }

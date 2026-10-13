@@ -1,7 +1,7 @@
 // Placeholder until real photos are loaded
 
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 struct SitePhoto: View {
     // Unused by the placeholder

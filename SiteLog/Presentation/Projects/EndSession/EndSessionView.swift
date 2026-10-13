@@ -1,8 +1,8 @@
 // R1 · Walkthrough finished
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct EndSessionView: View {
     @ObserveInjection var inject
@@ -21,12 +21,17 @@ struct EndSessionView: View {
                 .padding(.top)
                 .padding(.horizontal, SDSpacing.regular)
 
-                Text("You took \(Text("112 photos").bold()), logged \(Text("7 new issues").bold()) and closed \(Text("9").bold()) from last time.")
-                    .font(SDFont.body)
-                    .padding(.horizontal, SDSpacing.regular)
+                Text(
+                    "You took \(Text("112 photos").bold()), logged \(Text("7 new issues").bold()) and closed \(Text("9").bold()) from last time."
+                )
+                .font(SDFont.body)
+                .padding(.horizontal, SDSpacing.regular)
 
                 VStack(spacing: 0) {
-                    SDListRow(title: "Every photo is fingerprinted", subtitle: "Nothing was edited after capture") {
+                    SDListRow(
+                        title: "Every photo is fingerprinted",
+                        subtitle: "Nothing was edited after capture"
+                    ) {
                         Image(systemName: "checkmark.shield")
                             .foregroundStyle(SDColor.success)
                     }
@@ -34,7 +39,10 @@ struct EndSessionView: View {
                     NavigationLink {
                         UploadStatusView()
                     } label: {
-                        SDListRow(title: "Uploading 87 of 112", subtitle: "Keeps going if you close the app") {
+                        SDListRow(
+                            title: "Uploading 87 of 112",
+                            subtitle: "Keeps going if you close the app"
+                        ) {
                             Image(systemName: "arrow.triangle.2.circlepath")
                                 .foregroundStyle(SDColor.textSecondary)
                         }

@@ -1,5 +1,5 @@
-import SystemDesign
 import SwiftUI
+import SystemDesign
 
 struct PasscodeDots: View {
     let filled: Int

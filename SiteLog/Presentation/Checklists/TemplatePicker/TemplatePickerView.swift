@@ -1,8 +1,8 @@
 // K1 · Pick a checklist
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct TemplatePickerView: View {
     @ObserveInjection var inject
@@ -25,7 +25,11 @@ struct TemplatePickerView: View {
                 }
                 .buttonStyle(.plain)
 
-                checklistSection(title: "Used recently", items: FakeData.recentChecklists, trailing: nil)
+                checklistSection(
+                    title: "Used recently",
+                    items: FakeData.recentChecklists,
+                    trailing: nil
+                )
 
                 checklistSection(
                     title: "All checklists",
@@ -42,7 +46,11 @@ struct TemplatePickerView: View {
         .enableInjection()
     }
 
-    private func checklistSection(title: String, items: [FakeChecklist], trailing: String?) -> some View {
+    private func checklistSection(
+        title: String,
+        items: [FakeChecklist],
+        trailing: String?
+    ) -> some View {
         VStack(alignment: .leading, spacing: SDSpacing.tiny) {
             SDSectionHeader(title: title, trailing: trailing)
 
@@ -50,7 +58,11 @@ struct TemplatePickerView: View {
                 NavigationLink {
                     ChecklistRunView(title: item.title)
                 } label: {
-                    SDListRow(title: item.title, subtitle: "\(item.itemCount) items", showsChevron: true)
+                    SDListRow(
+                        title: item.title,
+                        subtitle: "\(item.itemCount) items",
+                        showsChevron: true
+                    )
                 }
                 .buttonStyle(.plain)
 

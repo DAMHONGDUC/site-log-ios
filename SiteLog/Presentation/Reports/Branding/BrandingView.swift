@@ -1,8 +1,8 @@
 // R3 · Letterhead
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct BrandingView: View {
     @ObserveInjection var inject
@@ -20,7 +20,10 @@ struct BrandingView: View {
                         .font(.title3.bold())
                         .foregroundStyle(SDColor.onPrimary)
                         .frame(width: 64, height: 64)
-                        .background(SDColor.textPrimary, in: RoundedRectangle(cornerRadius: SDSpacing.medium))
+                        .background(
+                            SDColor.textPrimary,
+                            in: RoundedRectangle(cornerRadius: SDSpacing.medium)
+                        )
 
                     VStack(alignment: .leading) {
                         Text("Eastline logo.png")

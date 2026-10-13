@@ -1,8 +1,8 @@
 // M4 · Plan viewer
 
-import SystemDesign
 import Inject
 import SwiftUI
+import SystemDesign
 
 struct PlanViewerView: View {
     @ObserveInjection var inject

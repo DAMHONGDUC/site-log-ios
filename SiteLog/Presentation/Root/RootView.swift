@@ -1,10 +1,3 @@
-//
-//  RootView.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 30/9/26.
-//
-
 import Inject
 import SwiftUI
 
@@ -61,13 +54,16 @@ struct RootView: View {
             }
         case .unlocked:
             #if DEBUG
-            MainTabView()
-                // Dev menu reset
-                .environment(\.resetApp, ResetAppAction {
-                    accessStep = .signIn
-                })
+                MainTabView()
+                    // Dev menu reset
+                    .environment(
+                        \.resetApp,
+                        ResetAppAction {
+                            accessStep = .signIn
+                        }
+                    )
             #else
-            MainTabView()
+                MainTabView()
             #endif
         }
     }
