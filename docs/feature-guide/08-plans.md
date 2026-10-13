@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--plan-types) | Domain | 1h | not start | Plan types |
-| [2](#2-fake-data--plans-in-memory) | Fake data | 1h | not start | `SwiftDataPlanRepository` in memory |
+| [2](#2-fake-data--plans-in-memory) | Fake data | 1h | not start | `PlanRepositoryImpl` in memory |
 | [3](#3-view-models--wire-the-plans-screens) | View models | 5h | not start | Wire the Plans screens |
 | [4](#4-real-data--import-and-pins) | Real data | 9h | not start | Import and pins |
 
@@ -58,9 +58,10 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Plans/        # 1: PlanSheet, pin as NormalizedPoint
-├── DataLayer/Sources/DataLayer/Repositories/     # 2: SwiftDataPlanRepository in memory
-└── Infrastructure/Sources/Infrastructure/Plans/  # 4: PDFKit + CATiledLayer, tile cache
+├── DomainLayer/Sources/DomainLayer/              # 1: Entities/Plans/ PlanSheet, Pin · UseCases/Plans/
+├── DataLayer/Sources/DataLayer/Repositories/     # 2: PlanRepositoryImpl in memory
+├── DataLayer/Sources/DataLayer/DataSources/Local/FileStorage/  # 4: plan files, hashed
+└── Infrastructure/Sources/Infrastructure/Rendering/Plans/      # 4: PDFKit + CATiledLayer, tile cache
 SiteLog/
 └── Presentation/Plans/                           # 3: PlanList, PlanViewer, PinPreview, PlanImport
 ```
@@ -73,8 +74,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`) |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Plans/UseCases/` | One file per use case: import / pin / move |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/UseCases/Plans/` | One file per use case: import / pin / move |
 
 </dd></dl>
 
@@ -84,7 +85,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataPlanRepository.swift` | Plan sheets and pins; in memory until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/PlanRepositoryImpl.swift` | Plan sheets and pins; in memory until the real-data step |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps

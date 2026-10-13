@@ -118,10 +118,10 @@ flowchart TD
 - Spec: [07.2](docs/feature-docs/04-reporting-security.md#072-app-lock)
 - Guide: [docs/feature-guide/01-access.md](docs/feature-guide/01-access.md)
 
-- [ ] **F01.1** - [Domain] - [1h] - `AccessSettings`, `PasscodeCheck`, `AccessRepository`, use cases
-- [ ] **F01.2** - [Fake data] - [1h] - `KeychainAccessRepository` on in-memory values, registrations, dev menu seed / delete
+- [ ] **F01.1** - [Domain] - [1h] - `AccessSettings`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases
+- [ ] **F01.2** - [Fake data] - [1h] - `AccessRepositoryImpl` on in-memory values, registrations, dev menu seed / delete
 - [ ] **F01.3** - [View models] - [5h] - `RootViewModel`, A1–A3, S4, S5 view models wired into the skeleton
-- [ ] **F01.4** - [Real data] - [8h] - Keychain + Face ID repository
+- [ ] **F01.4** - [Real data] - [8h] - Keychain data source + Face ID inside `AccessRepositoryImpl`
 - [ ] Tests written and green (after the feature works)
 
 </dd></dl>
@@ -135,7 +135,7 @@ flowchart TD
 - Guide: [docs/feature-guide/02-projects.md](docs/feature-guide/02-projects.md)
 
 - [ ] **F02.1** - [Domain] - [4h] - Entities, protocols, use cases
-- [ ] **F02.2** - [Fake data] - [2h] - `SwiftData*Repository` in memory
+- [ ] **F02.2** - [Fake data] - [2h] - `*RepositoryImpl` in memory
 - [ ] **F02.3** - [View models] - [10h] - Wire the Projects screens
 - [ ] **F02.4** - [Real data] - [15h] - SwiftData
 - [ ] Tests written and green (after the feature works)
@@ -151,7 +151,7 @@ flowchart TD
 - Guide: [docs/feature-guide/03-capture.md](docs/feature-guide/03-capture.md)
 
 - [ ] **F03.1** - [Domain] - [1h] - Record a capture
-- [ ] **F03.2** - [Fake data] - [2h] - `CameraCaptureSource` on a bundled photo
+- [ ] **F03.2** - [Fake data] - [2h] - `CaptureSourceImpl` on a bundled photo
 - [ ] **F03.3** - [View models] - [3h] - Wire the camera
 - [ ] **F03.4** - [Real data] - [14h] - Camera, disk, SHA-256
 - [ ] Tests written and green (after the feature works)
@@ -166,7 +166,7 @@ flowchart TD
 - Spec: [04 Upload engine](docs/feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](docs/feature-docs/03-backend.md#1-role), [17 CI/CD](docs/feature-docs/05-platform.md#17-cicd-and-testflight)
 - Guide: [docs/feature-guide/04-upload.md](docs/feature-guide/04-upload.md)
 
-- [ ] **F04.1** - [Domain + fake data] - [3h] - UploadKit API, `SwiftDataUploadStore` in memory
+- [ ] **F04.1** - [Domain + fake data] - [3h] - UploadKit API, `UploadStoreImpl` in memory
 - [ ] **F04.2** - [View models] - [6h] - Wire the Sync tab
 - [ ] **F04.3** - [Backend] - [15h] - Backend endpoints
 - [ ] **F04.4** - [Real data] - [55h] - UploadKit
@@ -184,7 +184,7 @@ flowchart TD
 - Guide: [docs/feature-guide/05-issues.md](docs/feature-guide/05-issues.md)
 
 - [ ] **F05.1** - [Domain] - [2h] - Issue entities and use cases
-- [ ] **F05.2** - [Fake data] - [1h] - `SwiftDataIssueRepository` in memory
+- [ ] **F05.2** - [Fake data] - [1h] - `IssueRepositoryImpl` in memory
 - [ ] **F05.3** - [View models] - [7h] - Wire the Issues screens
 - [ ] **F05.4** - [Real data] - [11h] - Issue logic and dictation
 - [ ] Tests written and green (after the feature works)
@@ -200,7 +200,7 @@ flowchart TD
 - Guide: [docs/feature-guide/06-markup.md](docs/feature-guide/06-markup.md)
 
 - [ ] **F06.1** - [Domain] - [1h] - Annotation types
-- [ ] **F06.2** - [Fake data] - [1h] - `SwiftDataAnnotationRepository` in memory
+- [ ] **F06.2** - [Fake data] - [1h] - `AnnotationRepositoryImpl` in memory
 - [ ] **F06.3** - [View models] - [4h] - Wire markup and stamp
 - [ ] **F06.4** - [Real data] - [13h] - Rendering and trusted time
 - [ ] Tests written and green (after the feature works)
@@ -216,7 +216,7 @@ flowchart TD
 - Guide: [docs/feature-guide/07-reports.md](docs/feature-guide/07-reports.md)
 
 - [ ] **F07.1** - [Domain] - [1h] - Report types
-- [ ] **F07.2** - [Fake data] - [1h] - `SwiftDataReportRepository` in memory
+- [ ] **F07.2** - [Fake data] - [1h] - `ReportRepositoryImpl` in memory
 - [ ] **F07.3** - [View models] - [4h] - Wire the report flow
 - [ ] **F07.4** - [Real data] - [25h] - CSV, PDF, audit chain
 - [ ] Tests written and green (after the feature works)
@@ -232,7 +232,7 @@ flowchart TD
 - Guide: [docs/feature-guide/08-plans.md](docs/feature-guide/08-plans.md)
 
 - [ ] **F08.1** - [Domain] - [1h] - Plan types
-- [ ] **F08.2** - [Fake data] - [1h] - `SwiftDataPlanRepository` in memory
+- [ ] **F08.2** - [Fake data] - [1h] - `PlanRepositoryImpl` in memory
 - [ ] **F08.3** - [View models] - [5h] - Wire the Plans screens
 - [ ] **F08.4** - [Real data] - [9h] - Import and pins
 - [ ] Tests written and green (after the feature works)
@@ -248,7 +248,7 @@ flowchart TD
 - Guide: [docs/feature-guide/09-checklists.md](docs/feature-guide/09-checklists.md)
 
 - [ ] **F09.1** - [Domain] - [1h] - Checklist types
-- [ ] **F09.2** - [Fake data] - [1h] - `SwiftDataChecklistRepository` in memory
+- [ ] **F09.2** - [Fake data] - [1h] - `ChecklistRepositoryImpl` in memory
 - [ ] **F09.3** - [View models] - [4h] - Wire the Checklists screens
 - [ ] **F09.4** - [Real data] - [4h] - Templates and results
 - [ ] Tests written and green (after the feature works)
@@ -264,7 +264,7 @@ flowchart TD
 - Guide: [docs/feature-guide/10-devicelink.md](docs/feature-guide/10-devicelink.md)
 
 - [ ] **F10.1** - [Domain] - [1h] - DeviceLink types
-- [ ] **F10.2** - [Fake data] - [1h] - `BLEDeviceLink` on scripted readings
+- [ ] **F10.2** - [Fake data] - [1h] - `DeviceLinkImpl` on scripted readings
 - [ ] **F10.3** - [View models] - [3h] - Wire pairing and overlay
 - [ ] **F10.4** - [Real data] - [13h] - BLE and mock peripheral
 - [ ] Tests written and green (after the feature works)
@@ -279,7 +279,7 @@ flowchart TD
 - Spec: [09](docs/feature-docs/05-platform.md#09-diagnostics-and-observability), [19 Instruments](docs/feature-docs/05-platform.md#19-performance-profiling-with-instruments)
 - Guide: [docs/feature-guide/11-diagnostics.md](docs/feature-guide/11-diagnostics.md)
 
-- [ ] **F11.1** - [Domain + fake data] - [1h] - Diagnostics snapshot, `DeviceDiagnosticsRepository` in memory
+- [ ] **F11.1** - [Domain + fake data] - [1h] - Diagnostics snapshot, `DiagnosticsRepositoryImpl` in memory
 - [ ] **F11.2** - [View models] - [2h] - Wire diagnostics and cleanup
 - [ ] **F11.3** - [Real data] - [8h] - Storage, bundle, Crashlytics
 - [ ] **F11.4** - [Release] - [6h] - Instruments pass and TestFlight #2
@@ -296,7 +296,7 @@ flowchart TD
 - Guide: [docs/feature-guide/12-auth-sync.md](docs/feature-guide/12-auth-sync.md)
 
 - [ ] **F12.1** - [Domain] - [1h] - Auth and sync protocols
-- [ ] **F12.2** - [Fake data] - [1h] - `FirebaseAuthService`, `MetadataSyncEngine` in memory
+- [ ] **F12.2** - [Fake data] - [1h] - `AuthServiceImpl`, `SyncEngineImpl` in memory
 - [ ] **F12.3** - [View models] - [8h] - Wire sign-in, account, sync status
 - [ ] **F12.4** - [Backend] - [6h] - Pull and push endpoints
 - [ ] **F12.5** - [Real data] - [44h] - Firebase Auth and sync engine

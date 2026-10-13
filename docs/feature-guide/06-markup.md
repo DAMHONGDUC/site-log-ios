@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--annotation-types) | Domain | 1h | not start | Annotation types |
-| [2](#2-fake-data--annotations-in-memory) | Fake data | 1h | not start | `SwiftDataAnnotationRepository` in memory |
+| [2](#2-fake-data--annotations-in-memory) | Fake data | 1h | not start | `AnnotationRepositoryImpl` in memory |
 | [3](#3-view-models--wire-markup-and-stamp) | View models | 4h | not start | Wire markup and stamp |
 | [4](#4-real-data--rendering-and-trusted-time) | Real data | 13h | not start | Rendering and trusted time |
 
@@ -58,9 +58,9 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Annotation/                              # 1: AnnotationShape, NormalizedPoint
-├── DataLayer/Sources/DataLayer/Repositories/                                # 2: SwiftDataAnnotationRepository in memory, fixed trusted time
-└── Infrastructure/Sources/Infrastructure/Capture/Annotation/, TrustedTime/  # 4
+├── DomainLayer/Sources/DomainLayer/Entities/Annotation/                     # 1: AnnotationShape, NormalizedPoint
+├── DataLayer/Sources/DataLayer/Repositories/                                # 2: AnnotationRepositoryImpl in memory, fixed trusted time
+└── Infrastructure/Sources/Infrastructure/Rendering/Annotation/, Device/TrustedTime/  # 4
 SiteLog/
 └── Presentation/Annotation/                                                 # 3: MarkupEditor, StampPreview
 ```
@@ -73,7 +73,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Annotation/` | `AnnotationShape`, `NormalizedPoint` (0…1), `TrustedTimestamp` |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Annotation/` | `AnnotationShape`, `NormalizedPoint` (0…1), `TrustedTimestamp` |
 
 </dd></dl>
 
@@ -83,7 +83,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/AnnotationRepositoryImpl.swift` | Annotation layers per capture; a fixed trusted time until the real-data step |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps

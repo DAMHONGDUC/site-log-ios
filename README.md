@@ -91,29 +91,35 @@ site-log-ios/
 ├── Packages/                             # local Swift packages: Sources/<Name>/ + Tests/<Name>Tests/
 │   ├── DomainLayer/                      # Foundation only
 │   │   └── Sources/DomainLayer/
-│   │       ├── Entities/                 # Project, Session, Location, Capture, Issue, Annotation,
+│   │       ├── Entities/<Feature>/       # Project, Session, Location, Capture, Issue, Annotation,
 │   │       │                             # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
-│   │       ├── UseCases/                 # <Verb><Noun>UseCase
+│   │       ├── UseCases/<Feature>/       # <Verb><Noun>UseCase, one per file
 │   │       └── Repositories/             # protocols
 │   ├── DataLayer/                        # implements Domain; uses Domain + Infrastructure + Core
 │   │   └── Sources/DataLayer/
-│   │       ├── Repositories/             # SwiftData<X>Repository, Keychain…, MetadataSyncEngine
-│   │       ├── DTOs/
+│   │       ├── Repositories/             # <Noun>RepositoryImpl, SyncEngineImpl
+│   │       ├── DataSources/              # protocol + impl each; return models / DTOs, never entities
+│   │       │   ├── Local/                # Persistence/ (SwiftData) Keychain/ FileStorage/
+│   │       │   └── Remote/               # <Noun>RemoteDataSource + Impl over Infra engines; Auth/ (Firebase)
+│   │       ├── Models/
+│   │       │   ├── Local/                # SwiftData @Model: <Noun>Model; Schema/ (SchemaV1…n, migration plan)
+│   │       │   └── Remote/               # backend JSON: <Noun>DTO
 │   │       └── Mappers/
-│   ├── Infrastructure/                   # framework code, like an outside library; uses Core only
+│   ├── Infrastructure/                   # system services, like an outside library; uses Core only
 │   │   └── Sources/Infrastructure/
-│   │       ├── Persistence/              # SwiftData @Model, SchemaV1…n, migration plan
-│   │       ├── FileStorage/              # media files, Data Protection
-│   │       ├── Security/                 # Keychain, CryptoKit
-│   │       ├── Capture/                  # AVFoundation, hashing, stamping
-│   │       ├── Reporting/                # PDF + CSV export
-│   │       ├── Plans/                    # PDFKit + CATiledLayer
-│   │       ├── DeviceLink/               # CoreBluetooth
+│   │       ├── Permissions/              # camera, photos, Bluetooth, mic, notifications
+│   │       ├── Camera/                   # AVFoundation capture session
+│   │       ├── Bluetooth/                # CoreBluetooth (DeviceLink meters)
+│   │       ├── Biometrics/               # Face ID (LocalAuthentication)
+│   │       ├── Speech/                   # on-device dictation
+│   │       ├── Rendering/                # PDF + CSV, plan tiles, stamped copies
+│   │       ├── Device/                   # disk, battery, thermal
+│   │       ├── Push/                     # APNs registration
+│   │       ├── CrashReporting/           # Crashlytics
 │   │       ├── Networking/               # backend HTTP client
 │   │       ├── UploadKit/                # background URLSession engine (standalone)
-│   │       ├── Realtime/                 # WebSocket channel (standalone)
-│   │       └── Auth/                     # Firebase Auth
-│   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock; no business logic
+│   │       └── Realtime/                 # WebSocket channel (standalone)
+│   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock, Crypto/ (PasscodeHasher, FileHasher); no business logic
 │   └── SystemDesign/                     # UI only: never imports Domain or app code
 │       ├── Sources/SystemDesign/
 │       │   ├── Tokens/                   # SDColor, SDFont, SDSpacing, SDRadius, SDSize

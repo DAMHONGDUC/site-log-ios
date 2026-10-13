@@ -21,7 +21,7 @@
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/Reporting`
+- Module: `Packages/Infrastructure/Sources/Infrastructure/Rendering`
 
 **Goal:** turn a `Session` into a branded, signed PDF plus CSV/XLSX, shareable on the spot with no
 network — never truncated, never missing images, never crashing on page 38 of 40.

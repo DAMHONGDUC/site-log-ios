@@ -34,7 +34,7 @@
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-domain--fake-data--diagnostics-snapshot-in-memory) | Domain + fake data | 1h | not start | Diagnostics snapshot, `DeviceDiagnosticsRepository` in memory |
+| [1](#1-domain--fake-data--diagnostics-snapshot-in-memory) | Domain + fake data | 1h | not start | Diagnostics snapshot, `DiagnosticsRepositoryImpl` in memory |
 | [2](#2-view-models--wire-diagnostics-and-cleanup) | View models | 2h | not start | Wire diagnostics and cleanup |
 | [3](#3-real-data--storage-bundle-crashlytics) | Real data | 8h | not start | Storage, bundle, Crashlytics |
 | [4](#4-release--instruments-pass-and-testflight-2) | Release | 6h | not start | Instruments pass and TestFlight #2 |
@@ -58,8 +58,8 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Diagnostics/   # 1: integrity + storage snapshot
-└── DataLayer/Sources/DataLayer/Repositories/DeviceDiagnosticsRepository.swift  # 1: fixed values · 3: real checks
+├── DomainLayer/Sources/DomainLayer/Entities/Diagnostics/  # 1: integrity + storage snapshot
+└── DataLayer/Sources/DataLayer/Repositories/DiagnosticsRepositoryImpl.swift  # 1: fixed values · 3: real checks
 SiteLog/
 └── Presentation/
     ├── Diagnostics/DiagnosticExport/   # 2: U3
@@ -74,8 +74,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Diagnostics/` | Integrity result, storage breakdown, device flags |
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/DeviceDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Diagnostics/` | Integrity result, storage breakdown, device flags |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/DiagnosticsRepositoryImpl.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB until the real-data step |
 
 </dd></dl>
 
@@ -136,7 +136,7 @@ SiteLog/
 <dl><dd>
 
 1. Add Firebase via `project.yml`; `GoogleService-Info.plist` written by CI, not committed.
-2. First line of `didFinishLaunching`.
+2. Wrap it in `Infrastructure/CrashReporting/` (protocol + real type); call it on the first line of `didFinishLaunching`.
 
 </dd></dl>
 
@@ -161,7 +161,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
 
 #### Steps
 

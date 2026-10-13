@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--report-types) | Domain | 1h | not start | Report types |
-| [2](#2-fake-data--reports-in-memory) | Fake data | 1h | not start | `SwiftDataReportRepository` in memory |
+| [2](#2-fake-data--reports-in-memory) | Fake data | 1h | not start | `ReportRepositoryImpl` in memory |
 | [3](#3-view-models--wire-the-report-flow) | View models | 4h | not start | Wire the report flow |
 | [4](#4-real-data--csv-pdf-audit-chain) | Real data | 25h | not start | CSV, PDF, audit chain |
 
@@ -58,9 +58,9 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Reporting/, Security/AuditEntry.swift  # 1
-├── DataLayer/Sources/DataLayer/Repositories/                              # 2: SwiftDataReportRepository in memory
-└── Infrastructure/Sources/Infrastructure/Reporting/                       # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
+├── DomainLayer/Sources/DomainLayer/Entities/Reports/                     # 1: report types, AuditEntry
+├── DataLayer/Sources/DataLayer/Repositories/                              # 2: ReportRepositoryImpl in memory
+└── Infrastructure/Sources/Infrastructure/Rendering/Reports/               # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
 SiteLog/
 └── Presentation/Reports/                                                  # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
 ```
@@ -73,8 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Reporting/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Security/AuditEntry.swift` | Audit entry |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Reports/` | `SessionSnapshot`, `ReportOptions`, `ReportBranding`, `Signature` |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Reports/AuditEntry.swift` | Audit entry |
 
 </dd></dl>
 
@@ -84,7 +84,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/ReportRepositoryImpl.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF until the real-data step |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
@@ -153,8 +153,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Reporting/ReportLayoutEngine.swift` | Pure; counts images |
-| <b class="tag-new">New</b> | `Reporting/PDFPageRenderer.swift` | `UIGraphicsPDFRenderer`, one autoreleasepool per page |
+| <b class="tag-new">New</b> | `Rendering/Reports/ReportLayoutEngine.swift` | Pure; counts images |
+| <b class="tag-new">New</b> | `Rendering/Reports/PDFPageRenderer.swift` | `UIGraphicsPDFRenderer`, one autoreleasepool per page |
 
 </dd></dl>
 
@@ -195,7 +195,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
 
 </dd></dl>
 

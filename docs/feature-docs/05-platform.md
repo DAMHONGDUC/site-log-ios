@@ -128,7 +128,8 @@ flowchart LR
 | `lineLength` | `100` | Shared limit; SwiftLint's `line_length` is off |
 | `indentation.spaces` | `4` | Xcode default |
 | `respectsExistingLineBreaks` | `true` | SwiftUI modifier chains stay multi-line |
-| `lineBreakBeforeEachArgument` | `false` | Arguments stay on one line when they fit |
+| `lineBreakBeforeEachArgument` | `true` | Fits on one line → one line; otherwise one argument per line, `)` on its own line |
+| `prioritizeKeepingFunctionOutputTogether` | `true` | Wraps the arguments, keeps `) -> T {` on one line (SwiftLint `opening_brace`) |
 | `multiElementCollectionTrailingCommas` | `true` | Cleaner diffs |
 | `OrderedImports` | on | Imports sorted |
 
@@ -418,8 +419,9 @@ enum DiagnosticsConstants {
 |---|---|---|---|
 | Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
-| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
-| Infrastructure | `Packages/Infrastructure/Tests/InfrastructureTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
+| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (model / DTO ↔ entity), repository impls over in-memory SwiftData |
+| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Name>` | Swift Testing | SwiftData stores, Keychain data source |
+| Infrastructure | `Packages/Infrastructure/Tests/InfrastructureTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Rendering` report layout, Bluetooth profile parsing |
 | SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding) |
 | Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against test doubles in `SiteLogTests/Doubles/` |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |

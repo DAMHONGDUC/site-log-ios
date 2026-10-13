@@ -29,7 +29,7 @@
 - **Demo:** the app builds with zero warnings, CI is green, the SystemDesign tests pass.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
 - **Already done:** entry point and tooling; SystemDesign tokens and components (built with the UI skeleton, 2026-10-08).
-- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes. Not yet built: the `Infrastructure` package (added 2026-10-12, [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package)).
+- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes. Not yet built: the `Infrastructure` package (added 2026-10-12, [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package); system services only since [D11](../feature-docs/00-overview.md#d11--data-sources-in-datalayer-infrastructure-for-system-services)).
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
 
@@ -59,8 +59,8 @@ site-log-ios/
 ├── Packages/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
-│   ├── DataLayer/                            # 1: empty layer folders (Repositories, DTOs, Mappers)
-│   ├── Infrastructure/                       # 1: empty framework folders (Persistence, Networking, …)
+│   ├── DataLayer/                            # 1: empty layer folders (Repositories, DataSources/Local, DataSources/Remote, Models/Local, Models/Remote, Mappers)
+│   ├── Infrastructure/                       # 1: empty folders (Permissions, Camera, Bluetooth, …, Networking, UploadKit, Realtime)
 │   └── SystemDesign/                         # done: Tokens/, Components/; 4: SDGallery + tests
 ├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
 └── SiteLogTests/
@@ -508,7 +508,7 @@ enum DomainLayerPlaceholder {}
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/Infrastructure/Package.swift` + `Sources/Infrastructure/Placeholder.swift`
 
-<b>Explain</b> · Infrastructure package: framework code (SwiftData, files, Keychain, camera, PDF, Bluetooth, HTTP, upload, WebSocket, Firebase Auth), built like an outside library. Uses Core only.
+<b>Explain</b> · Infrastructure package: system services (permissions, camera, Bluetooth, Face ID, speech, rendering, device, push, crash reporting), built like an outside library. Uses Core only. Data sources live in DataLayer.
 
 <b>Think</b>
 
@@ -518,7 +518,7 @@ enum DomainLayerPlaceholder {}
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Same shape as Core plus one dependency; folders `Persistence/`, `FileStorage/`, `Security/`, `Capture/`, `Reporting/`, `Plans/`, `DeviceLink/`, `Networking/`, `UploadKit/`, `Realtime/`, `Auth/` with a `.gitkeep` each.
+- Same shape as Core plus one dependency; folders `Permissions/`, `Camera/`, `Bluetooth/`, `Biometrics/`, `Speech/`, `Rendering/`, `Device/`, `Push/`, `CrashReporting/`, `Networking/`, `UploadKit/`, `Realtime/` with a `.gitkeep` each.
 
 </details>
 
@@ -553,7 +553,7 @@ let package = Package(
         .package(path: "../Core"),
     ],
     targets: [
-        // Framework code: storage, network, devices. No business logic, never DomainLayer
+        // System services: permissions, camera, Bluetooth, Face ID… Never DomainLayer
         .target(
             name: "Infrastructure",
             dependencies: ["Core"],
@@ -581,7 +581,7 @@ enum InfrastructurePlaceholder {}
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Package.swift` + `Sources/DataLayer/Placeholder.swift`
 
-<b>Explain</b> · DataLayer package: repositories, DTOs, mappers. Uses Domain, Infrastructure and Core; repositories call Infrastructure and map its records to entities.
+<b>Explain</b> · DataLayer package: repositories, data sources (`DataSources/Local/`, `Remote/`), models (`Models/Local/` SwiftData, `Models/Remote/` DTOs), mappers. Uses Domain, Infrastructure and Core; repositories call data sources and Infrastructure and map their records to entities.
 
 <b>Think</b>
 
@@ -626,7 +626,7 @@ let package = Package(
         .package(path: "../Core"),
     ],
     targets: [
-        // Repositories, DTOs, mappers; framework code lives in Infrastructure
+        // Repositories, data sources, models, mappers; system services live in Infrastructure
         .target(
             name: "DataLayer",
             dependencies: ["DomainLayer", "Infrastructure", "Core"],

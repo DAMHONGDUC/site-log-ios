@@ -36,7 +36,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--auth-and-sync-protocols) | Domain | 1h | not start | Auth and sync protocols |
-| [2](#2-fake-data--auth-and-sync-in-memory) | Fake data | 1h | not start | `FirebaseAuthService`, `MetadataSyncEngine` in memory |
+| [2](#2-fake-data--auth-and-sync-in-memory) | Fake data | 1h | not start | `AuthServiceImpl`, `SyncEngineImpl` in memory |
 | [3](#3-view-models--wire-sign-in-account-sync-status) | View models | 8h | not start | Wire sign-in, account, sync status |
 | [4](#4-backend--pull-and-push-endpoints) | Backend | 6h | not start | Pull and push endpoints |
 | [5](#5-real-data--firebase-auth-and-sync-engine) | Real data | 44h | not start | Firebase Auth and sync engine |
@@ -62,9 +62,9 @@
 Backend/migrations/0002_sync_core.sql, 0003_metadata.sql   # 4
 Backend/src/routes/sync.ts                                 # 4
 Packages/
-├── DomainLayer/Sources/DomainLayer/Auth/, Sync/                                                # 1: AuthService, SyncEngine protocols
-├── DataLayer/Sources/DataLayer/Auth/FirebaseAuthService.swift                       # 2: in memory · 4: Firebase
-└── DataLayer/Sources/DataLayer/Sync/MetadataSyncEngine.swift (actor), MutationQueue  # 2: in memory · 5: real sync
+├── DomainLayer/Sources/DomainLayer/Repositories/                                               # 1: AuthService, SyncEngine protocols
+├── DataLayer/Sources/DataLayer/Auth/AuthServiceImpl.swift                       # 2: in memory · 4: Firebase
+└── DataLayer/Sources/DataLayer/Sync/SyncEngineImpl.swift (actor), MutationQueue  # 2: in memory · 5: real sync
 SiteLog/
 ├── App/AppDelegate.swift                                                             # 5: FirebaseApp.configure() first
 └── Presentation/Access/SignIn/, Settings/Account/, Uploads/UploadStatus/             # 3
@@ -78,8 +78,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Auth/` | `AuthService` (Apple, email, sign out, delete account) |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Sync/` | `SyncEngine` (status, last synced, errors) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Repositories/AuthService.swift` | `AuthService` (Apple, email, sign out, delete account) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Repositories/SyncEngine.swift` | `SyncEngine` (status, last synced, errors) |
 
 </dd></dl>
 
@@ -89,8 +89,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Auth/FirebaseAuthService.swift` | Signs in “Hanh Nguyen” instantly until the real-data step |
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Sync/MetadataSyncEngine.swift` | “Synced 2 minutes ago” until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Auth/AuthServiceImpl.swift` | Signs in “Hanh Nguyen” instantly until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Sync/SyncEngineImpl.swift` | “Synced 2 minutes ago” until the real-data step |
 
 </dd></dl>
 
@@ -228,7 +228,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
 
 </dd></dl>
 

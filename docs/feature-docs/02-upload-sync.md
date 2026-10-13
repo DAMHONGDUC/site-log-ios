@@ -271,7 +271,7 @@ POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
 <dl><dd>
 
 ```swift
-actor MetadataSyncEngine {          // Data/; triggered by use cases
+actor SyncEngineImpl {          // Data/; triggered by use cases
     func sync() async throws        // pull, push, pull again if serverRev advanced
     func enqueue(_ mutation: Mutation) async
     func fullResync() async throws

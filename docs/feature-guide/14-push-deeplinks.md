@@ -56,7 +56,7 @@
 
 ```text
 Packages/
-└── DomainLayer/Sources/DomainLayer/DeepLinks/DeepLink.swift  # 1: pure parser
+└── DomainLayer/Sources/DomainLayer/Entities/DeepLinks/DeepLink.swift  # 1: pure parser
 SiteLog/
 ├── App/AppDelegate.swift                           # 3: push token
 └── Presentation/Notifications/, DeepLinks/         # 2–3
@@ -72,7 +72,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/DeepLinks/DeepLink.swift` | `sitelog://<route>/<id>`; ids are opaque data |
 
 </dd></dl>
 
@@ -127,7 +127,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `Packages/DomainLayer/Sources/DomainLayer/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
+| <b class="tag-edit">Edit</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/DeepLinks/DeepLink.swift` | Pure parser; ids are opaque data |
 | <b class="tag-new">New</b> | `Presentation/DeepLinks/DeepLinkRouter.swift` | Holds the destination until a view consumes it |
 
 </dd></dl>

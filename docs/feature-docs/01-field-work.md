@@ -30,7 +30,7 @@
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Projects`, `DomainLayer`, `DataLayer`, `Packages/Infrastructure/Sources/Infrastructure/Persistence`
+- Modules: `SiteLog/Presentation/Projects`, `DomainLayer`, `DataLayer`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence`
 
 **Goal:** build the `Project → Session → Location` tree faster than paper, fully offline,
 one-handed.
@@ -100,7 +100,7 @@ enum LocationTemplateLimits {
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/Capture`
+- Modules: `Packages/Infrastructure/Sources/Infrastructure/Camera`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage`
 
 **Goal:** one `AVCaptureSession` for photo, video and audio without teardown; every file hashed
 before it reaches the DB.
@@ -314,7 +314,7 @@ enum IssueDefaults {
 
 <dl><dd>
 
-- Module: `Packages/Infrastructure/Sources/Infrastructure/DeviceLink` · mock: `Tools/MockPeripheral/`
+- Module: `Packages/Infrastructure/Sources/Infrastructure/Bluetooth` · mock: `Tools/MockPeripheral/`
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
 the reading to a `Capture`.
@@ -387,23 +387,23 @@ enum DeviceLinkConstants {
 
 <dl><dd>
 
-- Modules: `Packages/Infrastructure/Sources/Infrastructure/Plans`, `SiteLog/Presentation/Plans`
+- Modules: `Packages/Infrastructure/Sources/Infrastructure/Rendering` (tiles), `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage` (plan files), `SiteLog/Presentation/Plans`
 
 **Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet.
 
 - Out: DWG/CAD, measuring, plan editing.
 
 ```swift
-@Model final class PlanSheet {
-    var id: UUID; var project: Project; var name: String
+@Model final class PlanSheetModel {
+    var id: UUID; var project: ProjectModel; var name: String
     var sourceFileURL: URL        // relative
     var pageIndex: Int; var pixelSize: CGSize
     var sha256: String            // plans are evidence too
-    var location: Location?
+    var location: LocationModel?
 }
 
-@Model final class PlanPin {
-    var id: UUID; var sheet: PlanSheet; var issue: Issue
+@Model final class PlanPinModel {
+    var id: UUID; var sheet: PlanSheetModel; var issue: IssueModel
     var normalizedPoint: NormalizedPoint  // Domain type, 0…1 on both axes
     var createdAt: Date
 }
@@ -462,7 +462,7 @@ enum PlanConstants {
 
 <dl><dd>
 
-- Modules: `Packages/Infrastructure/Sources/Infrastructure/Capture` (rendering), `DomainLayer` (models)
+- Modules: `Packages/Infrastructure/Sources/Infrastructure/Rendering` (stamped copies), `DomainLayer` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 
@@ -601,15 +601,15 @@ retyping.
 - Out: weighted scoring, branching, regulatory libraries.
 
 ```swift
-@Model final class ChecklistTemplate { var id: UUID; var name: String; var appliesTo: LocationKind?
-    var items: [ChecklistTemplateItem]; var isBuiltIn: Bool; var usageCount: Int }
-@Model final class ChecklistTemplateItem { var id: UUID; var order: Int; var text: String
+@Model final class ChecklistTemplateModel { var id: UUID; var name: String; var appliesTo: LocationKind?
+    var items: [ChecklistTemplateItemModel]; var isBuiltIn: Bool; var usageCount: Int }
+@Model final class ChecklistTemplateItemModel { var id: UUID; var order: Int; var text: String
     var defaultSeverity: IssueSeverity; var requiresPhotoOnFail: Bool }
-@Model final class ChecklistRun { var id: UUID; var template: ChecklistTemplate; var session: Session
-    var location: Location; var startedAt: Date; var completedAt: Date?; var results: [ChecklistResult] }
-@Model final class ChecklistResult { var id: UUID; var templateItem: ChecklistTemplateItem
+@Model final class ChecklistRunModel { var id: UUID; var template: ChecklistTemplateModel; var session: SessionModel
+    var location: LocationModel; var startedAt: Date; var completedAt: Date?; var results: [ChecklistResultModel] }
+@Model final class ChecklistResultModel { var id: UUID; var templateItem: ChecklistTemplateItemModel
     var outcome: ChecklistOutcome   // .pass / .fail / .notApplicable / .unanswered
-    var note: String; var issue: Issue?; var answeredAt: Date? }
+    var note: String; var issue: IssueModel?; var answeredAt: Date? }
 ```
 
 - A run stores its own results; editing a template never rewrites completed runs.

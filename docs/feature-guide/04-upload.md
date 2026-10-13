@@ -35,7 +35,7 @@
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-domain--fake-data--uploadkit-api-and-store-in-memory) | Domain + fake data | 3h | not start | UploadKit API, `SwiftDataUploadStore` in memory |
+| [1](#1-domain--fake-data--uploadkit-api-and-store-in-memory) | Domain + fake data | 3h | not start | UploadKit API, `UploadStoreImpl` in memory |
 | [2](#2-view-models--wire-the-sync-tab) | View models | 6h | not start | Wire the Sync tab |
 | [3](#3-backend--backend-endpoints) | Backend | 15h | not start | Backend endpoints |
 | [4](#4-real-data--uploadkit) | Real data | 55h | not start | UploadKit |
@@ -66,8 +66,9 @@ Packages/Infrastructure/Sources/Infrastructure/
 │   ├── UploadStateMachine.swift, ChunkPlanner.swift
 │   ├── UploadCoordinator.swift (actor), BackgroundSessionDelegate.swift
 │   └── PresignedURLProvider.swift
-├── Networking/                   # 4: backend HTTP client
-└── Persistence/SwiftDataUploadStore.swift  # 1: in memory · 4: SwiftData
+└── Networking/                   # 4: backend HTTP client
+Packages/DataLayer/Sources/DataLayer/DataSources/
+└── Local/Persistence/UploadStoreImpl.swift  # 1: in memory · 4: SwiftData
 SiteLog/
 ├── App/AppDelegate.swift         # 4: handleEventsForBackgroundURLSession
 └── Presentation/Uploads/         # 3: UploadStatus (Sync tab), UploadFiles
@@ -79,14 +80,14 @@ SiteLog/
 
 <dl><dd>
 
-- **Goal:** job record, states and the `UploadStore` protocol, plus `SwiftDataUploadStore` on in-memory values.
+- **Goal:** job record, states and the `UploadStore` protocol, plus `UploadStoreImpl` on in-memory values.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
 
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-new">New</b> | `UploadKit/UploadStore.swift` | Protocol from spec 04.1 |
 | <b class="tag-new">New</b> | `UploadKit/UploadJobRecord.swift` | Job, part, state enums |
-| <b class="tag-new">New</b> | `Persistence/SwiftDataUploadStore.swift` | The real store, values in memory until step 4 |
+| <b class="tag-new">New</b> | `Persistence/UploadStoreImpl.swift` | The real store, values in memory until step 4 |
 | <b class="tag-new">New</b> | `Packages/Infrastructure/Tests/InfrastructureTests/Doubles/InMemoryUploadStore.swift` | Test double for the state machine tests; test target only |
 
 #### Steps
@@ -214,7 +215,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-replace">Replace</b> | `Persistence/SwiftDataUploadStore.swift` | Same type, now on SwiftData |
+| <b class="tag-replace">Replace</b> | `Persistence/UploadStoreImpl.swift` | Same type, now on SwiftData |
 
 #### Steps
 
@@ -347,7 +348,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the data sources and Infrastructure services to the repositories; the registered types stay |
 
 </dd></dl>
 

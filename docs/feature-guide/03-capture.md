@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--record-a-capture) | Domain | 1h | not start | Record a capture |
-| [2](#2-fake-data--capture-source-on-a-bundled-photo) | Fake data | 2h | not start | `CameraCaptureSource` on a bundled photo |
+| [2](#2-fake-data--capture-source-on-a-bundled-photo) | Fake data | 2h | not start | `CaptureSourceImpl` on a bundled photo |
 | [3](#3-view-models--wire-the-camera) | View models | 3h | not start | Wire the camera |
 | [4](#4-real-data--camera-disk-sha-256) | Real data | 14h | not start | Camera, disk, SHA-256 |
 
@@ -58,10 +58,12 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Capture/                            # 1: RecordCaptureUseCase, CaptureSource protocol
-├── DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift  # 2: bundled image · 4: real camera
-├── DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift  # 4: Domain CaptureSource over Infrastructure Capture
-└── Infrastructure/Sources/Infrastructure/Capture/                      # 4: CaptureSessionControlling, AVCaptureSessionController, FileHasher, MediaStore
+├── DomainLayer/Sources/DomainLayer/                                    # 1: Repositories/CaptureSource, UseCases/Capture/RecordCaptureUseCase
+├── DataLayer/Sources/DataLayer/Repositories/CaptureSourceImpl.swift  # 2: bundled image · 4: real camera
+├── DataLayer/Sources/DataLayer/Repositories/CaptureSourceImpl.swift  # 4: Domain CaptureSource over Camera + FileStorage
+├── DataLayer/Sources/DataLayer/DataSources/Local/FileStorage/          # 4: MediaLocalDataSource, MediaLocalDataSourceImpl
+├── Core/Sources/Core/Crypto/FileHasher.swift                           # 4: SHA-256, 1 MB chunks
+└── Infrastructure/Sources/Infrastructure/Camera/                       # 4: CaptureSessionControlling, AVCaptureSessionController
 SiteLog/
 └── Presentation/Capture/                                               # 3: Camera, CaptureReview
 ```
@@ -74,8 +76,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/UseCases/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Repositories/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/UseCases/Capture/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
 
 </dd></dl>
 
@@ -85,7 +87,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift` | Returns a bundled JPEG until step 4; works in the Simulator |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CaptureSourceImpl.swift` | Returns a bundled JPEG until step 4; works in the Simulator |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 </dd></dl>
@@ -126,9 +128,9 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Capture/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
-| <b class="tag-new">New</b> | `Capture/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
-| <b class="tag-new">New</b> | `Capture/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Camera/CaptureSessionControlling.swift` | Protocol: configure, start, stop, capturePhoto |
+| <b class="tag-new">New</b> | `Camera/AVCaptureSessionController.swift` | Real implementation on `sessionQueue` |
+| <b class="tag-new">New</b> | `Camera/CaptureState.swift` | `idle → configuring → ready → capturingPhoto` |
 
 #### Steps
 
@@ -150,8 +152,9 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Capture/FileHasher.swift` | Streams SHA-256 in 1 MB chunks |
-| <b class="tag-new">New</b> | `Capture/MediaStore.swift` | Path `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup |
+| <b class="tag-new">New</b> | `Packages/Core/Sources/Core/Crypto/FileHasher.swift` | `public`: streams SHA-256 in 1 MB chunks |
+| <b class="tag-new">New</b> | `DataSources/Local/FileStorage/MediaLocalDataSource.swift` | Protocol: write, read, delete a media file |
+| <b class="tag-new">New</b> | `DataSources/Local/FileStorage/MediaLocalDataSourceImpl.swift` | Path `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup |
 
 </dd></dl>
 
@@ -169,12 +172,12 @@ SiteLog/
 <summary><strong>4.3 Real logic behind the screens</strong></summary>
 <dl><dd>
 
-- **Goal:** fill `CameraCaptureSource` with the real camera (repositories already on SwiftData from F02); run the airplane-mode demo.
+- **Goal:** fill `CaptureSourceImpl` with the real camera (repositories already on SwiftData from F02); run the airplane-mode demo.
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift` | Same type, now implements Domain `CaptureSource` over `CaptureSessionControlling`, `MediaStore`, `FileHasher`; maps to Domain types |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `AVCaptureSessionController` and pass it to `CameraCaptureSource` |
+| <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CaptureSourceImpl.swift` | Same type, now implements Domain `CaptureSource` over `CaptureSessionControlling`, `MediaLocalDataSource`, `FileHasher`; maps to Domain types |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `AVCaptureSessionController` and pass it to `CaptureSourceImpl` |
 
 </dd></dl>
 

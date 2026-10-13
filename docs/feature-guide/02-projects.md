@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--entities-protocols-use-cases) | Domain | 4h | not start | Entities, protocols, use cases |
-| [2](#2-fake-data--repositories-in-memory) | Fake data | 2h | not start | `SwiftData*Repository` in memory |
+| [2](#2-fake-data--repositories-in-memory) | Fake data | 2h | not start | `*RepositoryImpl` in memory |
 | [3](#3-view-models--wire-the-projects-screens) | View models | 10h | not start | Wire the Projects screens |
 | [4](#4-real-data--swiftdata) | Real data | 15h | not start | SwiftData |
 
@@ -58,10 +58,11 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Projects/           # 1: Project, Session, Location, Capture, protocols, use cases
-├── DataLayer/Sources/DataLayer/Repositories/           # 2: SwiftData*Repository in memory · 4: SwiftData
-├── DataLayer/Sources/DataLayer/Repositories/           # 4: SwiftData*Repository, mappers
-└── Infrastructure/Sources/Infrastructure/Persistence/  # 4: @Model types, SchemaV1, migration plan
+├── DomainLayer/Sources/DomainLayer/                    # 1: Entities/Projects/, Repositories/, UseCases/Projects/
+├── DataLayer/Sources/DataLayer/Repositories/           # 2: *RepositoryImpl in memory · 4: SwiftData
+├── DataLayer/Sources/DataLayer/Repositories/           # 4: *RepositoryImpl, mappers
+├── DataLayer/Sources/DataLayer/Models/Local/                   # 4: <Noun>Model (@Model), Schema/ (SchemaV1, migration plan)
+└── DataLayer/Sources/DataLayer/DataSources/Local/Persistence/  # 4: data source protocols + Impls only
 SiteLog/
 └── Presentation/Projects/                              # 3: ProjectList, NewProject, ProjectDetail, StartSession,
                                                                 #    Survey, Room, BulkLocations, CloneTree, EndSession
@@ -75,9 +76,9 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/UseCases/` | One file per use case: `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Projects/` | One file each: `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Repositories/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/UseCases/Projects/` | One file per use case: `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
 
 #### Steps
 
@@ -98,7 +99,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftData*Repository.swift` | One per aggregate (project, session, location, capture); values in memory until step 4 |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/*RepositoryImpl.swift` | One per aggregate (project, session, location, capture); values in memory until step 4 |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
@@ -153,21 +154,22 @@ SiteLog/
 <summary><strong>4.1 SwiftData schema and repositories</strong></summary>
 <dl><dd>
 
-- **Goal:** SwiftData models in `Packages/Infrastructure/Sources/Infrastructure/Persistence/` and repository implementations in `Packages/DataLayer/Sources/DataLayer/Repositories/`.
+- **Goal:** SwiftData models and data sources in `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/` and repository implementations in `Packages/DataLayer/Sources/DataLayer/Repositories/`.
 - **Spec:** [00 §3.4](../feature-docs/00-overview.md#34-schema-versioning)
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Persistence/` | `@Model` types, `#Unique`/`#Index` (location code per project, sha256 per project) |
-| <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftData*Repository.swift` | Same types and methods, now on SwiftData; mappers model ↔ entity |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Models/Local/` | `<Noun>Model` (`@Model`), `#Unique`/`#Index` (location code per project, sha256 per project) |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/` | One `<Noun>LocalDataSource` protocol + `<Noun>LocalDataSourceImpl` per aggregate |
+| <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/*RepositoryImpl.swift` | Same types and methods, now over the Persistence data sources; mappers model ↔ entity |
 
 #### Steps
 
 <dl><dd>
 
-1. Create the folder `Packages/Infrastructure/Sources/Infrastructure/Persistence/`; mark what the app uses `public`.
+1. Create `Packages/DataLayer/Sources/DataLayer/Models/Local/` and `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Persistence/`; data sources return `@Model` records, repositories map them to entities.
 2. Write models mirroring the entities; store relative file paths.
-3. Write repositories with a `@ModelActor` for writes.
+3. Write the Persistence data source `Impl`s as `@ModelActor` for writes; repositories call them.
 4. Cascade delete project → sessions, locations, plans.
 
 </dd></dl>
@@ -182,9 +184,9 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Persistence/Schema/SchemaV1.swift` | First versioned schema |
-| <b class="tag-new">New</b> | `Persistence/Schema/MigrationPlan.swift` | Stages list (empty until V2) |
-| <b class="tag-new">New</b> | `Persistence/Tests/Fixtures/` | A 100-location `SchemaV1` store |
+| <b class="tag-new">New</b> | `Models/Local/Schema/SchemaV1.swift` | First versioned schema |
+| <b class="tag-new">New</b> | `Models/Local/Schema/MigrationPlan.swift` | Stages list (empty until V2) |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Tests/DataLayerTests/Fixtures/` | A 100-location `SchemaV1` store |
 
 </dd></dl>
 

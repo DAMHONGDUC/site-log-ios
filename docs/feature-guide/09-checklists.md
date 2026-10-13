@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--checklist-types) | Domain | 1h | not start | Checklist types |
-| [2](#2-fake-data--checklists-in-memory) | Fake data | 1h | not start | `SwiftDataChecklistRepository` in memory |
+| [2](#2-fake-data--checklists-in-memory) | Fake data | 1h | not start | `ChecklistRepositoryImpl` in memory |
 | [3](#3-view-models--wire-the-checklists-screens) | View models | 4h | not start | Wire the Checklists screens |
 | [4](#4-real-data--templates-and-results) | Real data | 4h | not start | Templates and results |
 
@@ -58,8 +58,8 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Checklists/          # 1: template, item, run, result
-├── DataLayer/Sources/DataLayer/Repositories/  # 2: SwiftDataChecklistRepository in memory, built-in templates
+├── DomainLayer/Sources/DomainLayer/                     # 1: Entities/Checklists/ template, item, run, result · UseCases/Checklists/
+├── DataLayer/Sources/DataLayer/Repositories/  # 2: ChecklistRepositoryImpl in memory, built-in templates
 └── DataLayer/Sources/DataLayer/Repositories/  # 4: seeded templates, run results
 SiteLog/
 └── Presentation/Checklists/                   # 3: TemplatePicker, ChecklistRun, ChecklistDone
@@ -73,8 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Checklists/` | Template, item, run, result |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Checklists/UseCases/` | One file per use case: answer (Fail → issue through F05) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Checklists/` | Template, item, run, result |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/UseCases/Checklists/` | One file per use case: answer (Fail → issue through F05) |
 
 </dd></dl>
 
@@ -84,7 +84,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataChecklistRepository.swift` | Templates and runs; in memory until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/ChecklistRepositoryImpl.swift` | Templates and runs; in memory until the real-data step |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps

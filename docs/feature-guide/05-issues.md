@@ -35,7 +35,7 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--issue-entities-and-use-cases) | Domain | 2h | not start | Issue entities and use cases |
-| [2](#2-fake-data--issues-in-memory) | Fake data | 1h | not start | `SwiftDataIssueRepository` in memory |
+| [2](#2-fake-data--issues-in-memory) | Fake data | 1h | not start | `IssueRepositoryImpl` in memory |
 | [3](#3-view-models--wire-the-issues-screens) | View models | 7h | not start | Wire the Issues screens |
 | [4](#4-real-data--issue-logic-and-dictation) | Real data | 11h | not start | Issue logic and dictation |
 
@@ -58,9 +58,9 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Issues/              # 1: Issue, IssuePairing, PairIssuesUseCase (pure)
-├── DataLayer/Sources/DataLayer/Repositories/  # 2: SwiftDataIssueRepository in memory · 4: SwiftData
-└── DataLayer/Sources/DataLayer/Repositories/  # 4: SwiftDataIssueRepository
+├── DomainLayer/Sources/DomainLayer/                     # 1: Entities/Issues/ Issue, IssuePairing · UseCases/Issues/ PairIssuesUseCase (pure)
+├── DataLayer/Sources/DataLayer/Repositories/  # 2: IssueRepositoryImpl in memory · 4: SwiftData
+└── DataLayer/Sources/DataLayer/Repositories/  # 4: IssueRepositoryImpl
 SiteLog/
 └── Presentation/Issues/                       # 3: IssueSheet, IssueList, IssueDetail, VerificationCamera, OutcomePicker
 ```
@@ -73,8 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Issues/` | `Issue`, `IssuePairing` |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Issues/UseCases/` | One file per use case: `PairIssuesUseCase` (pure), log / close / carry-over |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Entities/Issues/` | `Issue`, `IssuePairing` |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/UseCases/Issues/` | One file per use case: `PairIssuesUseCase` (pure), log / close / carry-over |
 
 </dd></dl>
 
@@ -84,7 +84,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataIssueRepository.swift` | Issues per project and room; in memory until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/IssueRepositoryImpl.swift` | Issues per project and room; in memory until the real-data step |
 | <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
@@ -159,7 +159,7 @@ SiteLog/
 
 <dl><dd>
 
-1. `SFSpeechRecognizer` with `requiresOnDeviceRecognition = true`; vi + en.
+1. `Infrastructure/Speech/`: `SFSpeechRecognizer` with `requiresOnDeviceRecognition = true`; vi + en; a protocol next to the real type.
 2. Voice note = audio `Capture`.
 
 </dd></dl>
