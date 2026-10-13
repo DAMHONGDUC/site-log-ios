@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — Checklist types](#1-domain--checklist-types)
-4. [2. Fake data — In-memory checklists](#2-fake-data--in-memory-checklists)
+4. [2. Fake data — Checklists in memory](#2-fake-data--checklists-in-memory)
 5. [3. View models — Wire the Checklists screens](#3-view-models--wire-the-checklists-screens)
 6. [4. Real data — Templates and results](#4-real-data--templates-and-results)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -29,13 +29,13 @@
 - **Demo:** checklist run in a room; a Fail creates one prefilled issue.
 - **Spec:** [13](../feature-docs/01-field-work.md#13-checklist-templates)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--checklist-types) | Domain | 1h | not start | Checklist types |
-| [2](#2-fake-data--in-memory-checklists) | Fake data | 1h | not start | In-memory checklists |
+| [2](#2-fake-data--checklists-in-memory) | Fake data | 1h | not start | `SwiftDataChecklistRepository` in memory |
 | [3](#3-view-models--wire-the-checklists-screens) | View models | 4h | not start | Wire the Checklists screens |
 | [4](#4-real-data--templates-and-results) | Real data | 4h | not start | Templates and results |
 
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Checklists/          # 1: template, item, run, result
-├── DataLayer/Sources/DataLayer/Fakes/         # 2: InMemoryChecklistRepository with built-in templates
+├── DataLayer/Sources/DataLayer/Repositories/  # 2: SwiftDataChecklistRepository in memory, built-in templates
 └── DataLayer/Sources/DataLayer/Repositories/  # 4: seeded templates, run results
 SiteLog/
 └── Presentation/Checklists/                   # 3: TemplatePicker, ChecklistRun, ChecklistDone
@@ -78,22 +78,22 @@ SiteLog/
 
 </dd></dl>
 
-## 2. Fake data — In-memory checklists
+## 2. Fake data — Checklists in memory
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryChecklistRepository.swift` | Templates and runs |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataChecklistRepository.swift` | Templates and runs; in memory until the real-data step |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
 
 <dl><dd>
 
-1. Implement the Domain protocol as an `actor` that keeps everything in memory.
+1. Implement the Domain protocol under its real name as an `actor` that keeps everything in memory for now.
 2. Seed it with “Finishing handover” (22 items) and 5 other templates — move the values out of `App/Fakes/FakeData.swift`.
-3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
+3. Add Debug-only (`#if DEBUG`) `reset()` (empty) and `seed()`; `AppDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
 </dd></dl>

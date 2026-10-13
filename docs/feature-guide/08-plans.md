@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — Plan types](#1-domain--plan-types)
-4. [2. Fake data — In-memory plans](#2-fake-data--in-memory-plans)
+4. [2. Fake data — Plans in memory](#2-fake-data--plans-in-memory)
 5. [3. View models — Wire the Plans screens](#3-view-models--wire-the-plans-screens)
 6. [4. Real data — Import and pins](#4-real-data--import-and-pins)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -29,13 +29,13 @@
 - **Demo:** real PDF plan imported, issues pinned, pins survive relaunch.
 - **Spec:** [11](../feature-docs/01-field-work.md#11-floor-plans-and-issue-pins)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--plan-types) | Domain | 1h | not start | Plan types |
-| [2](#2-fake-data--in-memory-plans) | Fake data | 1h | not start | In-memory plans |
+| [2](#2-fake-data--plans-in-memory) | Fake data | 1h | not start | `SwiftDataPlanRepository` in memory |
 | [3](#3-view-models--wire-the-plans-screens) | View models | 5h | not start | Wire the Plans screens |
 | [4](#4-real-data--import-and-pins) | Real data | 9h | not start | Import and pins |
 
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Plans/        # 1: PlanSheet, pin as NormalizedPoint
-├── DataLayer/Sources/DataLayer/Fakes/            # 2: InMemoryPlanRepository
+├── DataLayer/Sources/DataLayer/Repositories/     # 2: SwiftDataPlanRepository in memory
 └── Infrastructure/Sources/Infrastructure/Plans/  # 4: PDFKit + CATiledLayer, tile cache
 SiteLog/
 └── Presentation/Plans/                           # 3: PlanList, PlanViewer, PinPreview, PlanImport
@@ -78,22 +78,22 @@ SiteLog/
 
 </dd></dl>
 
-## 2. Fake data — In-memory plans
+## 2. Fake data — Plans in memory
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryPlanRepository.swift` | Plan sheets and pins |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataPlanRepository.swift` | Plan sheets and pins; in memory until the real-data step |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
 
 <dl><dd>
 
-1. Implement the Domain protocol as an `actor` that keeps everything in memory.
+1. Implement the Domain protocol under its real name as an `actor` that keeps everything in memory for now.
 2. Seed it with 4 sheets, 6 pins — move the values out of `App/Fakes/FakeData.swift`.
-3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
+3. Add Debug-only (`#if DEBUG`) `reset()` (empty) and `seed()`; `AppDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
 </dd></dl>

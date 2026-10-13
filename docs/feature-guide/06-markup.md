@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — Annotation types](#1-domain--annotation-types)
-4. [2. Fake data — In-memory annotations](#2-fake-data--in-memory-annotations)
+4. [2. Fake data — Annotations in memory](#2-fake-data--annotations-in-memory)
 5. [3. View models — Wire markup and stamp](#3-view-models--wire-markup-and-stamp)
 6. [4. Real data — Rendering and trusted time](#4-real-data--rendering-and-trusted-time)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -29,13 +29,13 @@
 - **Demo:** markup saved as a layer over the original; stamped copy shared with trusted time.
 - **Spec:** [12](../feature-docs/01-field-work.md#12-annotation-and-verifiable-stamps)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--annotation-types) | Domain | 1h | not start | Annotation types |
-| [2](#2-fake-data--in-memory-annotations) | Fake data | 1h | not start | In-memory annotations |
+| [2](#2-fake-data--annotations-in-memory) | Fake data | 1h | not start | `SwiftDataAnnotationRepository` in memory |
 | [3](#3-view-models--wire-markup-and-stamp) | View models | 4h | not start | Wire markup and stamp |
 | [4](#4-real-data--rendering-and-trusted-time) | Real data | 13h | not start | Rendering and trusted time |
 
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Annotation/                              # 1: AnnotationShape, NormalizedPoint
-├── DataLayer/Sources/DataLayer/Fakes/                                       # 2: InMemoryAnnotationRepository, FixedTrustedClock
+├── DataLayer/Sources/DataLayer/Repositories/                                # 2: SwiftDataAnnotationRepository in memory, fixed trusted time
 └── Infrastructure/Sources/Infrastructure/Capture/Annotation/, TrustedTime/  # 4
 SiteLog/
 └── Presentation/Annotation/                                                 # 3: MarkupEditor, StampPreview
@@ -77,22 +77,22 @@ SiteLog/
 
 </dd></dl>
 
-## 2. Fake data — In-memory annotations
+## 2. Fake data — Annotations in memory
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataAnnotationRepository.swift` | Annotation layers per capture; a fixed trusted time until the real-data step |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
 
 <dl><dd>
 
-1. Implement the Domain protocol as an `actor` that keeps everything in memory.
+1. Implement the Domain protocol under its real name as an `actor` that keeps everything in memory for now.
 2. Seed it with one markup on the crack photo — move the values out of `App/Fakes/FakeData.swift`.
-3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
+3. Add Debug-only (`#if DEBUG`) `reset()` (empty) and `seed()`; `AppDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
 </dd></dl>

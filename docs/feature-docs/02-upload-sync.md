@@ -52,7 +52,7 @@ public protocol UploadStore: Sendable {
 ```
 
 - The app implements it over SwiftData in `Persistence`.
-- `UploadKit` ships `InMemoryUploadStore`: the state machine is testable with no app, DB or network.
+- `UploadKit` tests use `InMemoryUploadStore`, a test double in the test target: the state machine is testable with no app, DB or network.
 - Files: `UploadCoordinator` (actor, entry point), `UploadStateMachine` (pure), `ChunkPlanner`,
   `PresignedURLProvider`, `BackgroundSessionDelegate`.
 

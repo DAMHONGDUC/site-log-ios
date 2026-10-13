@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — Auth and sync protocols](#1-domain--auth-and-sync-protocols)
-4. [2. Fake data — Fake auth and sync](#2-fake-data--fake-auth-and-sync)
+4. [2. Fake data — Auth and sync in memory](#2-fake-data--auth-and-sync-in-memory)
 5. [3. View models — Wire sign-in, account, sync status](#3-view-models--wire-sign-in-account-sync-status)
 6. [4. Backend — Pull and push endpoints](#4-backend--pull-and-push-endpoints)
 7. [5. Real data — Firebase Auth and sync engine](#5-real-data--firebase-auth-and-sync-engine)
@@ -30,13 +30,13 @@
 - **Demo:** a second device sees the same data; deletes propagate.
 - **Spec:** [08](../feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](../feature-docs/03-backend.md#7-sync)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--auth-and-sync-protocols) | Domain | 1h | not start | Auth and sync protocols |
-| [2](#2-fake-data--fake-auth-and-sync) | Fake data | 1h | not start | Fake auth and sync |
+| [2](#2-fake-data--auth-and-sync-in-memory) | Fake data | 1h | not start | `FirebaseAuthService`, `MetadataSyncEngine` in memory |
 | [3](#3-view-models--wire-sign-in-account-sync-status) | View models | 8h | not start | Wire sign-in, account, sync status |
 | [4](#4-backend--pull-and-push-endpoints) | Backend | 6h | not start | Pull and push endpoints |
 | [5](#5-real-data--firebase-auth-and-sync-engine) | Real data | 44h | not start | Firebase Auth and sync engine |
@@ -63,8 +63,8 @@ Backend/migrations/0002_sync_core.sql, 0003_metadata.sql   # 4
 Backend/src/routes/sync.ts                                 # 4
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Auth/, Sync/                                                # 1: AuthService, SyncEngine protocols
-├── DataLayer/Sources/DataLayer/Fakes/                                                # 2: FakeAuthService, FakeSyncEngine
-└── DataLayer/Sources/DataLayer/Sync/MetadataSyncEngine.swift (actor), MutationQueue  # 5
+├── DataLayer/Sources/DataLayer/Auth/FirebaseAuthService.swift                       # 2: in memory · 4: Firebase
+└── DataLayer/Sources/DataLayer/Sync/MetadataSyncEngine.swift (actor), MutationQueue  # 2: in memory · 5: real sync
 SiteLog/
 ├── App/AppDelegate.swift                                                             # 5: FirebaseApp.configure() first
 └── Presentation/Access/SignIn/, Settings/Account/, Uploads/UploadStatus/             # 3
@@ -83,14 +83,14 @@ SiteLog/
 
 </dd></dl>
 
-## 2. Fake data — Fake auth and sync
+## 2. Fake data — Auth and sync in memory
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeAuthService.swift` | Signs in “Hanh Nguyen” instantly |
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeSyncEngine.swift` | “Synced 2 minutes ago” |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Auth/FirebaseAuthService.swift` | Signs in “Hanh Nguyen” instantly until the real-data step |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Sync/MetadataSyncEngine.swift` | “Synced 2 minutes ago” until the real-data step |
 
 </dd></dl>
 
@@ -228,7 +228,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
 
 </dd></dl>
 

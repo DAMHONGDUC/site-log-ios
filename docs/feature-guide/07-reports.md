@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — Report types](#1-domain--report-types)
-4. [2. Fake data — In-memory reports](#2-fake-data--in-memory-reports)
+4. [2. Fake data — Reports in memory](#2-fake-data--reports-in-memory)
 5. [3. View models — Wire the report flow](#3-view-models--wire-the-report-flow)
 6. [4. Real data — CSV, PDF, audit chain](#4-real-data--csv-pdf-audit-chain)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -29,13 +29,13 @@
 - **Demo:** signed, branded PDF and CSV from a real session, shared in airplane mode; audit chain verifies.
 - **Spec:** [05](../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07.3 audit](../feature-docs/04-reporting-security.md#073-audit-log)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--report-types) | Domain | 1h | not start | Report types |
-| [2](#2-fake-data--in-memory-reports) | Fake data | 1h | not start | In-memory reports |
+| [2](#2-fake-data--reports-in-memory) | Fake data | 1h | not start | `SwiftDataReportRepository` in memory |
 | [3](#3-view-models--wire-the-report-flow) | View models | 4h | not start | Wire the report flow |
 | [4](#4-real-data--csv-pdf-audit-chain) | Real data | 25h | not start | CSV, PDF, audit chain |
 
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Reporting/, Security/AuditEntry.swift  # 1
-├── DataLayer/Sources/DataLayer/Fakes/                                     # 2: InMemoryReportRepository
+├── DataLayer/Sources/DataLayer/Repositories/                              # 2: SwiftDataReportRepository in memory
 └── Infrastructure/Sources/Infrastructure/Reporting/                       # 4: ReportLayoutEngine (pure), PDFPageRenderer, CSVWriter
 SiteLog/
 └── Presentation/Reports/                                                  # 3: ReportBuilder, Branding, SignaturePad, PDFPreview
@@ -78,22 +78,22 @@ SiteLog/
 
 </dd></dl>
 
-## 2. Fake data — In-memory reports
+## 2. Fake data — Reports in memory
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake; the real step only changes this line |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/SwiftDataReportRepository.swift` | Branding, options, a snapshot of the sample session; a fixed sample PDF until the real-data step |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 #### Steps
 
 <dl><dd>
 
-1. Implement the Domain protocol as an `actor` that keeps everything in memory.
+1. Implement the Domain protocol under its real name as an `actor` that keeps everything in memory for now.
 2. Seed it with Eastline branding and R-0930-07 — move the values out of `App/Fakes/FakeData.swift`.
-3. Add `reset()` (empty) and `seed()`; `FakeDevDataActions` calls them from the dev menu.
+3. Add Debug-only (`#if DEBUG`) `reset()` (empty) and `seed()`; `AppDevDataActions` calls them from the dev menu.
 4. Register it in `AppDependencies`.
 
 </dd></dl>
@@ -195,7 +195,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
 
 </dd></dl>
 

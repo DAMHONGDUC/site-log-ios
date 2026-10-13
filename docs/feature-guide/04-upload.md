@@ -12,7 +12,7 @@
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
-3. [1. Domain + fake — UploadKit API and in-memory store](#1-domain--fake--uploadkit-api-and-in-memory-store)
+3. [1. Domain + fake data — UploadKit API and store in memory](#1-domain--fake-data--uploadkit-api-and-store-in-memory)
 4. [2. View models — Wire the Sync tab](#2-view-models--wire-the-sync-tab)
 5. [3. Backend — Backend endpoints](#3-backend--backend-endpoints)
 6. [4. Real data — UploadKit](#4-real-data--uploadkit)
@@ -30,12 +30,12 @@
 - **Demo:** 200 files reach storage and survive app kill and airplane mode; first TestFlight build.
 - **Spec:** [04 Upload engine](../feature-docs/02-upload-sync.md#04-upload-engine), [14 Backend](../feature-docs/03-backend.md#1-role), [17 CI/CD](../feature-docs/05-platform.md#17-cicd-and-testflight)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-domain--fake--uploadkit-api-and-in-memory-store) | Domain + fake | 3h | not start | UploadKit API and in-memory store |
+| [1](#1-domain--fake-data--uploadkit-api-and-store-in-memory) | Domain + fake data | 3h | not start | UploadKit API, `SwiftDataUploadStore` in memory |
 | [2](#2-view-models--wire-the-sync-tab) | View models | 6h | not start | Wire the Sync tab |
 | [3](#3-backend--backend-endpoints) | Backend | 15h | not start | Backend endpoints |
 | [4](#4-real-data--uploadkit) | Real data | 55h | not start | UploadKit |
@@ -62,12 +62,12 @@
 Backend/                          # 4: Node 22 + TypeScript + Fastify, Postgres, migrations/
 Packages/Infrastructure/Sources/Infrastructure/
 ├── UploadKit/                    # 1–4: uses nothing from the rest of the app
-│   ├── UploadStore.swift, InMemoryUploadStore.swift
+│   ├── UploadStore.swift
 │   ├── UploadStateMachine.swift, ChunkPlanner.swift
 │   ├── UploadCoordinator.swift (actor), BackgroundSessionDelegate.swift
 │   └── PresignedURLProvider.swift
 ├── Networking/                   # 4: backend HTTP client
-└── Persistence/                  # 4: SwiftData UploadStore
+└── Persistence/SwiftDataUploadStore.swift  # 1: in memory · 4: SwiftData
 SiteLog/
 ├── App/AppDelegate.swift         # 4: handleEventsForBackgroundURLSession
 └── Presentation/Uploads/         # 3: UploadStatus (Sync tab), UploadFiles
@@ -75,18 +75,19 @@ SiteLog/
 
 </dd></dl>
 
-## 1. Domain + fake — UploadKit API and in-memory store
+## 1. Domain + fake data — UploadKit API and store in memory
 
 <dl><dd>
 
-- **Goal:** job record, states and the `UploadStore` protocol, plus `InMemoryUploadStore`.
+- **Goal:** job record, states and the `UploadStore` protocol, plus `SwiftDataUploadStore` on in-memory values.
 - **Spec:** [04.1](../feature-docs/02-upload-sync.md#041-boundary)
 
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-new">New</b> | `UploadKit/UploadStore.swift` | Protocol from spec 04.1 |
 | <b class="tag-new">New</b> | `UploadKit/UploadJobRecord.swift` | Job, part, state enums |
-| <b class="tag-new">New</b> | `UploadKit/InMemoryUploadStore.swift` | Fake used before the real store and by tests |
+| <b class="tag-new">New</b> | `Persistence/SwiftDataUploadStore.swift` | The real store, values in memory until step 4 |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Tests/InfrastructureTests/Doubles/InMemoryUploadStore.swift` | Test double for the state machine tests; test target only |
 
 #### Steps
 
@@ -213,7 +214,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Persistence/SwiftDataUploadStore.swift` | Implements `UploadStore` |
+| <b class="tag-replace">Replace</b> | `Persistence/SwiftDataUploadStore.swift` | Same type, now on SwiftData |
 
 #### Steps
 
@@ -346,7 +347,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
 
 </dd></dl>
 
@@ -411,9 +412,9 @@ SiteLog/
 
 <dl><dd>
 
-**1. Domain + fake — UploadKit API and in-memory store**
+**1. Domain + fake data — UploadKit API and store in memory**
 
-- Store round-trip on the fake
+- Store round-trip on the test double
 
 **2. View models — Wire the Sync tab**
 
@@ -431,7 +432,7 @@ SiteLog/
 
 **4. Real data — UploadKit**
 
-- Same contract tests as the in-memory store
+- Same contract tests as the test double
 - `MockTransport` flow
 - Real device: lock the phone mid-upload
 - Full (state × event) matrix

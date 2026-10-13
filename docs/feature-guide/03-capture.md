@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — Record a capture](#1-domain--record-a-capture)
-4. [2. Fake data — Fake capture source](#2-fake-data--fake-capture-source)
+4. [2. Fake data — Capture source on a bundled photo](#2-fake-data--capture-source-on-a-bundled-photo)
 5. [3. View models — Wire the camera](#3-view-models--wire-the-camera)
 6. [4. Real data — Camera, disk, SHA-256](#4-real-data--camera-disk-sha-256)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -29,13 +29,13 @@
 - **Demo:** photo captured and hashed in airplane mode, linked to a location, kept after relaunch.
 - **Spec:** [02](../feature-docs/01-field-work.md#02-capture-pipeline)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--record-a-capture) | Domain | 1h | not start | Record a capture |
-| [2](#2-fake-data--fake-capture-source) | Fake data | 2h | not start | Fake capture source |
+| [2](#2-fake-data--capture-source-on-a-bundled-photo) | Fake data | 2h | not start | `CameraCaptureSource` on a bundled photo |
 | [3](#3-view-models--wire-the-camera) | View models | 3h | not start | Wire the camera |
 | [4](#4-real-data--camera-disk-sha-256) | Real data | 14h | not start | Camera, disk, SHA-256 |
 
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Capture/                            # 1: RecordCaptureUseCase, CaptureSource protocol
-├── DataLayer/Sources/DataLayer/Fakes/FakeCaptureSource.swift           # 2: returns a bundled image
+├── DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift  # 2: bundled image · 4: real camera
 ├── DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift  # 4: Domain CaptureSource over Infrastructure Capture
 └── Infrastructure/Sources/Infrastructure/Capture/                      # 4: CaptureSessionControlling, AVCaptureSessionController, FileHasher, MediaStore
 SiteLog/
@@ -79,14 +79,14 @@ SiteLog/
 
 </dd></dl>
 
-## 2. Fake data — Fake capture source
+## 2. Fake data — Capture source on a bundled photo
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeCaptureSource.swift` | Returns a bundled JPEG; works in the Simulator |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift` | Returns a bundled JPEG until step 4; works in the Simulator |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 </dd></dl>
 
@@ -169,12 +169,12 @@ SiteLog/
 <summary><strong>4.3 Real logic behind the screens</strong></summary>
 <dl><dd>
 
-- **Goal:** swap fakes for SwiftData repositories and the real camera; run the airplane-mode demo.
+- **Goal:** fill `CameraCaptureSource` with the real camera (repositories already on SwiftData from F02); run the airplane-mode demo.
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift` | Implements Domain `CaptureSource` over `CaptureSessionControlling`, `MediaStore`, `FileHasher`; maps to Domain types |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `SwiftData*Repository`, `AVCaptureSessionController`, `CameraCaptureSource` |
+| <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/CameraCaptureSource.swift` | Same type, now implements Domain `CaptureSource` over `CaptureSessionControlling`, `MediaStore`, `FileHasher`; maps to Domain types |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `AVCaptureSessionController` and pass it to `CameraCaptureSource` |
 
 </dd></dl>
 

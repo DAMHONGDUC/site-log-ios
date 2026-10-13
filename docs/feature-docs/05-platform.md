@@ -421,7 +421,7 @@ enum DiagnosticsConstants {
 | Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
 | Infrastructure | `Packages/Infrastructure/Tests/InfrastructureTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
 | SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding) |
-| Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
+| Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against test doubles in `SiteLogTests/Doubles/` |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |
 | Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
 | Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |

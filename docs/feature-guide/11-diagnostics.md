@@ -12,7 +12,7 @@
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
-3. [1. Domain + fake — Diagnostics snapshot and fake](#1-domain--fake--diagnostics-snapshot-and-fake)
+3. [1. Domain + fake data — Diagnostics snapshot in memory](#1-domain--fake-data--diagnostics-snapshot-in-memory)
 4. [2. View models — Wire diagnostics and cleanup](#2-view-models--wire-diagnostics-and-cleanup)
 5. [3. Real data — Storage, bundle, Crashlytics](#3-real-data--storage-bundle-crashlytics)
 6. [4. Release — Instruments pass and TestFlight #2](#4-release--instruments-pass-and-testflight-2)
@@ -29,12 +29,12 @@
 - **Demo:** integrity check, storage cleanup, diagnostic bundle, Crashlytics; second TestFlight build.
 - **Spec:** [09](../feature-docs/05-platform.md#09-diagnostics-and-observability), [19 Instruments](../feature-docs/05-platform.md#19-performance-profiling-with-instruments)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-domain--fake--diagnostics-snapshot-and-fake) | Domain + fake | 1h | not start | Diagnostics snapshot and fake |
+| [1](#1-domain--fake-data--diagnostics-snapshot-in-memory) | Domain + fake data | 1h | not start | Diagnostics snapshot, `DeviceDiagnosticsRepository` in memory |
 | [2](#2-view-models--wire-diagnostics-and-cleanup) | View models | 2h | not start | Wire diagnostics and cleanup |
 | [3](#3-real-data--storage-bundle-crashlytics) | Real data | 8h | not start | Storage, bundle, Crashlytics |
 | [4](#4-release--instruments-pass-and-testflight-2) | Release | 6h | not start | Instruments pass and TestFlight #2 |
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Diagnostics/   # 1: integrity + storage snapshot
-└── DataLayer/Sources/DataLayer/Fakes/   # 1: FakeDiagnosticsRepository
+└── DataLayer/Sources/DataLayer/Repositories/DeviceDiagnosticsRepository.swift  # 1: fixed values · 3: real checks
 SiteLog/
 └── Presentation/
     ├── Diagnostics/DiagnosticExport/   # 2: U3
@@ -68,14 +68,14 @@ SiteLog/
 
 </dd></dl>
 
-## 1. Domain + fake — Diagnostics snapshot and fake
+## 1. Domain + fake data — Diagnostics snapshot in memory
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Diagnostics/` | Integrity result, storage breakdown, device flags |
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/DeviceDiagnosticsRepository.swift` | “All 1,284 photos check out”, 4.1 / 1.6 / 12 GB until the real-data step |
 
 </dd></dl>
 
@@ -161,7 +161,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Swap the fake registrations for the real ones |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Pass the Infrastructure services to the repositories; the registered types stay |
 
 #### Steps
 

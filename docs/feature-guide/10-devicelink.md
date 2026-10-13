@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — DeviceLink types](#1-domain--devicelink-types)
-4. [2. Fake data — Fake device link](#2-fake-data--fake-device-link)
+4. [2. Fake data — Device link on scripted readings](#2-fake-data--device-link-on-scripted-readings)
 5. [3. View models — Wire pairing and overlay](#3-view-models--wire-pairing-and-overlay)
 6. [4. Real data — BLE and mock peripheral](#4-real-data--ble-and-mock-peripheral)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -29,13 +29,13 @@
 - **Demo:** laser reading from the macOS mock peripheral shows on the camera; capture never waits.
 - **Spec:** [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--devicelink-types) | Domain | 1h | not start | DeviceLink types |
-| [2](#2-fake-data--fake-device-link) | Fake data | 1h | not start | Fake device link |
+| [2](#2-fake-data--device-link-on-scripted-readings) | Fake data | 1h | not start | `BLEDeviceLink` on scripted readings |
 | [3](#3-view-models--wire-pairing-and-overlay) | View models | 3h | not start | Wire pairing and overlay |
 | [4](#4-real-data--ble-and-mock-peripheral) | Real data | 13h | not start | BLE and mock peripheral |
 
@@ -59,7 +59,7 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/DeviceLink/                   # 1: DeviceReading, DeviceLink protocol
-├── DataLayer/Sources/DataLayer/Fakes/                            # 2: FakeDeviceLink (scripted readings)
+├── DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift  # 2: scripted readings · 4: Bluetooth
 ├── DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift  # 4: Domain DeviceLink over DeviceLinkManager
 └── Infrastructure/Sources/Infrastructure/DeviceLink/             # 4: DeviceLinkManager (actor), Profiles/
 SiteLog/Presentation/
@@ -80,14 +80,14 @@ Tools/MockPeripheral/                                             # 4: macOS BLE
 
 </dd></dl>
 
-## 2. Fake data — Fake device link
+## 2. Fake data — Device link on scripted readings
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeDeviceLink.swift` | Emits 3.42 m every few seconds; a nearby list |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers the fake |
+| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift` | Emits 3.42 m every few seconds and a nearby list until step 4 |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
 
 </dd></dl>
 
@@ -124,8 +124,8 @@ Tools/MockPeripheral/                                             # 4: macOS BLE
 |---|---|---|
 | <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/DeviceLink/DeviceLinkManager.swift` | Actor around `CBCentralManager`; own reading records |
 | <b class="tag-new">New</b> | `Infrastructure/DeviceLink/Profiles/` | One file per vendor; pure `parse` |
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift` | Implements Domain `DeviceLink` over `DeviceLinkManager`; maps records to `DeviceReading` |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `BLEDeviceLink` in place of the fake |
+| <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/BLEDeviceLink.swift` | Same type, now implements Domain `DeviceLink` over `DeviceLinkManager`; maps records to `DeviceReading` |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `DeviceLinkManager` and pass it to `BLEDeviceLink` |
 | <b class="tag-new">New</b> | `Tools/MockPeripheral/` | Scripts values, disconnects, garbage bytes |
 
 #### Steps

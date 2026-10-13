@@ -59,7 +59,7 @@ site-log-ios/
 ├── Packages/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
-│   ├── DataLayer/                            # 1: empty layer folders (Repositories, DTOs, Mappers, Fakes)
+│   ├── DataLayer/                            # 1: empty layer folders (Repositories, DTOs, Mappers)
 │   ├── Infrastructure/                       # 1: empty framework folders (Persistence, Networking, …)
 │   └── SystemDesign/                         # done: Tokens/, Components/; 4: SDGallery + tests
 ├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
@@ -581,7 +581,7 @@ enum InfrastructurePlaceholder {}
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Package.swift` + `Sources/DataLayer/Placeholder.swift`
 
-<b>Explain</b> · DataLayer package: repositories, DTOs, mappers, fakes. Uses Domain, Infrastructure and Core; repositories call Infrastructure and map its records to entities.
+<b>Explain</b> · DataLayer package: repositories, DTOs, mappers. Uses Domain, Infrastructure and Core; repositories call Infrastructure and map its records to entities.
 
 <b>Think</b>
 
@@ -626,7 +626,7 @@ let package = Package(
         .package(path: "../Core"),
     ],
     targets: [
-        // Repositories, DTOs, mappers, fakes; framework code lives in Infrastructure
+        // Repositories, DTOs, mappers; framework code lives in Infrastructure
         .target(
             name: "DataLayer",
             dependencies: ["DomainLayer", "Infrastructure", "Core"],
@@ -925,7 +925,7 @@ extension Container {
 
 <b>Try</b>
 
-- Delete `.singleton`: does anything change for a `struct` clock? When would it matter? (Think of a class that holds state, like F01’s fake repository.)
+- Delete `.singleton`: does anything change for a `struct` clock? When would it matter? (Think of a type that holds state, like F01’s access repository.)
 
 </dd></dl>
 </details>

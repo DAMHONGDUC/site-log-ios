@@ -13,7 +13,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — access types and use cases](#1-domain--access-types-and-use-cases)
-4. [2. Fake data — in-memory access repository](#2-fake-data--in-memory-access-repository)
+4. [2. Fake data — access repository in memory](#2-fake-data--access-repository-in-memory)
 5. [3. View models — wire the access screens](#3-view-models--wire-the-access-screens)
 6. [4. Real data — Keychain and Face ID](#4-real-data--keychain-and-face-id)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -25,20 +25,20 @@
 
 <dl><dd>
 
-- **Goal:** A2 sign in, A1 Face ID lock, A3 passcode, privacy overlay, re-lock after *Lock after*, S4 app lock and S5 set passcode — first on a fake repository, then on Keychain + Face ID.
+- **Goal:** A2 sign in, A1 Face ID lock, A3 passcode, privacy overlay, re-lock after *Lock after*, S4 app lock and S5 set passcode — on the real `KeychainAccessRepository` from the start: in-memory values first, Keychain + Face ID in step 4.
 - **Demo:** first launch → Continue offline → tabs; lock on → Face ID or passcode; back after *Lock after* → locked again.
 - **Spec:** [07.2 App lock](../feature-docs/04-reporting-security.md#072-app-lock); mockups: Access board, S4, S5.
 - **Starts from:** F00 step 1 (Factory, `AppClock`) and the skeleton screens in `Presentation/Access/`, `Settings/AppLock/`, `Settings/SetPasscode/`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`. Domain and Presentation never name a fake; `AppDependencies` picks it.
+- **No fake repository:** step 2 writes the real repository with in-memory values; step 4 swaps its insides, never the type. Test doubles live only in test targets.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--access-types-and-use-cases) | Domain | 1h | not start | `AccessSettings`, `PasscodeCheck`, `AccessRepository`, use cases |
-| [2](#2-fake-data--in-memory-access-repository) | Fake data | 1h | not start | `InMemoryAccessRepository`, registrations, dev menu seed / delete |
+| [2](#2-fake-data--access-repository-in-memory) | Fake data | 1h | not start | `KeychainAccessRepository` on in-memory values, registrations, dev menu seed / delete |
 | [3](#3-view-models--wire-the-access-screens) | View models | 5h | not start | `RootViewModel` + one view model per screen, wired into the skeleton |
-| [4](#4-real-data--keychain-and-face-id) | Real data | 8h | not start | `KeychainAccessRepository`, `BiometricAuthenticator` |
+| [4](#4-real-data--keychain-and-face-id) | Real data | 8h | not start | Keychain, `UserDefaults`, Face ID inside `KeychainAccessRepository` |
 
 <details open>
 <summary><strong>Flow</strong></summary>
@@ -65,14 +65,13 @@
 ```text
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Access/                 # 1: AccessSettings, PasscodeCheck, AccessRepository, UseCases/ (one file each)
-├── DataLayer/Sources/DataLayer/
-│   ├── Fakes/InMemoryAccessRepository.swift      # 2
-│   └── Security/                                 # 4: KeychainAccessRepository, BiometricAuthenticator
-└── Core/Sources/Core/Logger/AppLogger.swift      # 2: access category
+├── DataLayer/Sources/DataLayer/Repositories/KeychainAccessRepository.swift  # 2: in memory · 4: real storage
+├── Infrastructure/Sources/Infrastructure/Security/                          # 4: KeychainStore, PasscodeHasher, BiometricAuthenticator
+└── Core/Sources/Core/Logger/AppLogger.swift                                 # 2: access category
 SiteLog/
 ├── App/
 │   ├── AppDependencies.swift             # 2: access registrations (+ dev data actions)
-│   └── DevData/FakeDevDataActions.swift  # 2: dev menu → fakes (Debug only)
+│   └── DevData/AppDevDataActions.swift   # 2: dev menu → repositories (Debug only)
 └── Presentation/
     ├── Root/RootView.swift, RootViewModel.swift      # 3
     ├── Access/SignIn/, FaceIDLock/, PasscodeUnlock/   # 3: + ViewModel next to each view
@@ -155,7 +154,7 @@ public struct AccessSettings: Sendable {
 <b>Try</b>
 
 - Add `import SwiftUI` at the top and run `Tools/CI/check-imports.sh`. Why must Domain stay Foundation-only? Remove it.
-- Delete the `public init`, then build the app after step 2: read what `InMemoryAccessRepository` can no longer do. Put it back.
+- Delete the `public init`, then build the app after step 2: read what `KeychainAccessRepository` can no longer do. Put it back.
 
 ---
 
@@ -219,12 +218,12 @@ public enum PasscodeCheck: Sendable {
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/AccessRepository.swift`
 
-<b>Explain</b> · What the access flow needs from storage; the fake implements it now, Keychain in step 4.
+<b>Explain</b> · What the access flow needs from storage; `KeychainAccessRepository` implements it, in memory now, Keychain in step 4.
 
 <b>Think</b>
 
 - Domain must not know about Keychain or Face ID. How can a use case still ask “is this passcode right?”
-- The fake answers instantly. Why is every method `async` anyway?
+- Step 2 answers from memory, instantly. Why is every method `async` anyway?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -450,7 +449,7 @@ public struct UnlockWithBiometricsUseCase: Sendable {
 
 </dd></dl>
 
-## 2. Fake data — in-memory access repository
+## 2. Fake data — access repository in memory
 
 <dl><dd>
 
@@ -499,9 +498,9 @@ public enum AppLogger {
 - Remove `public` from `access` and build: which files fail, and in which modules? Put it back.
 - Open Console.app, filter on subsystem `app.dd.site.log`, and watch the `Access` lines while you use A3.
 
-<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/Fakes/InMemoryAccessRepository.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/Repositories/KeychainAccessRepository.swift`
 
-<b>Explain</b> · Fake `AccessRepository` in DataLayer, kept in memory: demo passcode `123456`, Face ID always matches.
+<b>Explain</b> · The real `AccessRepository`, for now on in-memory values: demo passcode `123456`, Face ID always matches. Step 4 moves the values to Keychain + Face ID.
 
 <b>Think</b>
 
@@ -511,7 +510,7 @@ public enum AppLogger {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- An actor holding the settings, the passcode and a wrong-try counter; each protocol method reads or writes them; `reset()` and `seed()` serve the dev menu.
+- An actor holding the settings, the passcode and a wrong-try counter; each protocol method reads or writes them; Debug-only `reset()` and `seed()` serve the dev menu.
 
 </details>
 
@@ -520,7 +519,7 @@ public enum AppLogger {
 
 - `public actor … : AccessRepository`, `public init() {}`, `public func` for every method the app calls; `import Core`, `import DomainLayer`.
 - An actor method satisfies an `async` requirement without writing `async`.
-- `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`.
+- `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`, `#if DEBUG`.
 
 </details>
 
@@ -532,10 +531,10 @@ import Core
 import DomainLayer
 import os
 
-public actor InMemoryAccessRepository: AccessRepository {
+public actor KeychainAccessRepository: AccessRepository {
     private static let firstLaunch = AccessSettings(/* first-launch values */)
 
-    private var settings = InMemoryAccessRepository.firstLaunch
+    private var settings = KeychainAccessRepository.firstLaunch
     private var passcode = "123456"
     private let freeTries = 5
     private var wrongTries = 0
@@ -554,8 +553,10 @@ public actor InMemoryAccessRepository: AccessRepository {
     public func setPasscode(_ newPasscode: String) { }
     public func unlockWithBiometrics() async -> Bool { /* sleep 0.5 s, true */ }
 
+    #if DEBUG
     public func reset() { /* back to first launch */ }
     public func seed() { /* welcome seen */ }
+    #endif
 }
 ```
 
@@ -569,10 +570,8 @@ import Core
 import DomainLayer
 import os
 
-// Fake repository so the whole flow runs before Keychain and Face ID exist.
-// Step 4 replaces it with KeychainAccessRepository; only AppDependencies changes.
-// Everything resets on every cold launch, because it only lives in memory.
-public actor InMemoryAccessRepository: AccessRepository {
+// In-memory values for now; step 4 moves them to Keychain + Face ID, same type and methods.
+public actor KeychainAccessRepository: AccessRepository {
     // First-launch values: welcome not seen, lock on, Face ID on, re-lock after 10 seconds
     private static let firstLaunch = AccessSettings(
         hasSeenWelcome: false,
@@ -581,8 +580,8 @@ public actor InMemoryAccessRepository: AccessRepository {
         lockAfter: .seconds(10)
     )
 
-    private var settings = InMemoryAccessRepository.firstLaunch
-    // Demo passcode for the fake only
+    private var settings = KeychainAccessRepository.firstLaunch
+    // Demo passcode until step 4
     private var passcode = "123456"
     private let freeTries = 5
     private var wrongTries = 0
@@ -624,11 +623,11 @@ public actor InMemoryAccessRepository: AccessRepository {
     }
 
     public func unlockWithBiometrics() async -> Bool {
-        // Pretend Face ID takes half a second, then always matches
+        // Until step 4: Face ID takes half a second, then always matches
         do {
             try await Task.sleep(for: .milliseconds(500))
         } catch {
-            AppLogger.access.error("Fake Face ID sleep cancelled")
+            AppLogger.access.error("Face ID sleep cancelled")
             return false
         }
 
@@ -637,9 +636,10 @@ public actor InMemoryAccessRepository: AccessRepository {
 
     // MARK: - Dev menu
 
+    #if DEBUG
     // Delete all data → back to first launch
     public func reset() {
-        settings = InMemoryAccessRepository.firstLaunch
+        settings = KeychainAccessRepository.firstLaunch
         passcode = "123456"
         wrongTries = 0
     }
@@ -648,6 +648,7 @@ public actor InMemoryAccessRepository: AccessRepository {
     public func seed() {
         settings.hasSeenWelcome = true
     }
+    #endif
 }
 ```
 
@@ -655,23 +656,24 @@ public actor InMemoryAccessRepository: AccessRepository {
 
 <b>Try</b>
 
-- Type 5 wrong passcodes, then the right one. Does it unlock? Should it? Note what the real step 4 version must do differently.
+- Type 5 wrong passcodes, then the right one. Does it unlock? Should it? Note what step 4 must do differently.
+- Kill the app and reopen: the passcode and settings are back to first launch. Which step makes them survive?
 
 ---
 
 <b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F01 version)*
 
-<b>Explain</b> · Registers the access fake, one factory per use case, and the dev menu actions.
+<b>Explain</b> · Registers the access repository, one factory per use case, and the dev menu actions.
 
 <b>Think</b>
 
-- The dev menu needs `reset()`, which is not part of `AccessRepository`. How can it reach the fake while Presentation never knows the fake exists?
+- The dev menu needs `reset()`, which is not part of `AccessRepository`. How can it reach the repository while Presentation only knows the protocol?
 - Why is the repository `.singleton` but the use cases are not?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Register the fake by its concrete type (singleton), hand it out as the protocol, build each use case from the protocol.
+- Register the repository by its concrete type (singleton), hand it out as the protocol, build each use case from the protocol.
 
 </details>
 
@@ -679,7 +681,7 @@ public actor InMemoryAccessRepository: AccessRepository {
 <summary><b>Hint 2 · APIs</b></summary>
 
 - `import Core`, `import DataLayer`, `import DomainLayer`: the composition root is the one app file that imports DataLayer.
-- `Factory<InMemoryAccessRepository>`, `Factory<any AccessRepository>`, `self { self.inMemoryAccessRepository() }`, `#if DEBUG`.
+- `Factory<KeychainAccessRepository>`, `Factory<any AccessRepository>`, `self { self.keychainAccessRepository() }`, `#if DEBUG`.
 
 </details>
 
@@ -695,12 +697,12 @@ import FactoryKit
 extension Container {
     var clock: Factory<any AppClock> { /* unchanged */ }
 
-    var inMemoryAccessRepository: Factory<InMemoryAccessRepository> {
-        // the fake, singleton
+    var keychainAccessRepository: Factory<KeychainAccessRepository> {
+        // the repository, singleton
     }
 
     var accessRepository: Factory<any AccessRepository> {
-        // the fake, as the protocol
+        // the same repository, as the protocol
     }
 
     var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
@@ -709,7 +711,7 @@ extension Container {
     // … one per use case
 
     #if DEBUG
-    var devDataActions: Factory<any DevDataActions> { /* FakeDevDataActions() */ }
+    var devDataActions: Factory<any DevDataActions> { /* AppDevDataActions() */ }
     #endif
 }
 ```
@@ -736,14 +738,13 @@ extension Container {
 
     // MARK: - Access
 
-    // The fake, kept by its concrete type so the dev menu can reset / seed it
-    var inMemoryAccessRepository: Factory<InMemoryAccessRepository> {
-        self { InMemoryAccessRepository() }.singleton
+    // Concrete type so the dev menu can reset / seed it
+    var keychainAccessRepository: Factory<KeychainAccessRepository> {
+        self { KeychainAccessRepository() }.singleton
     }
 
-    // Step 4 changes only this line to KeychainAccessRepository
     var accessRepository: Factory<any AccessRepository> {
-        self { self.inMemoryAccessRepository() }
+        self { self.keychainAccessRepository() }
     }
 
     var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
@@ -774,7 +775,7 @@ extension Container {
 
     #if DEBUG
     var devDataActions: Factory<any DevDataActions> {
-        self { FakeDevDataActions() }
+        self { AppDevDataActions() }
     }
     #endif
 }
@@ -784,29 +785,29 @@ extension Container {
 
 <b>Try</b>
 
-- Remove `.singleton` from `inMemoryAccessRepository`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
+- Remove `.singleton` from `keychainAccessRepository`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DevData/FakeDevDataActions.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DevData/AppDevDataActions.swift`
 
-<b>Explain</b> · Connects the dev menu’s Seed data / Delete all data to the fakes (Debug only).
+<b>Explain</b> · Connects the dev menu’s Seed data / Delete all data to the repositories (Debug only).
 
 <b>Think</b>
 
-- Why does this live in `App/`, not in `Presentation/DevMenu/` or `Packages/DataLayer/Sources/DataLayer/Fakes/`?
+- Why does this live in `App/`, not in `Presentation/DevMenu/` or in DataLayer?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- A Debug-only struct that implements the dev menu’s protocol by calling the fakes.
+- A Debug-only struct that implements the dev menu’s protocol by calling each repository’s `seed()` / `reset()`.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `#if DEBUG … #endif`, `DevDataActions` (`seedData()`, `deleteAllData()`), `await Container.shared.inMemoryAccessRepository().reset()`.
+- `#if DEBUG … #endif`, `DevDataActions` (`seedData()`, `deleteAllData()`), `await Container.shared.keychainAccessRepository().reset()`.
 
 </details>
 
@@ -819,15 +820,15 @@ extension Container {
 import DataLayer
 import FactoryKit
 
-// Dev menu → fakes in Data/. Every feature adds its fake here when it lands.
+// Dev menu → repositories. Every feature adds its repository here when it lands.
 // Lives in App/ because only the composition root may know both sides.
-struct FakeDevDataActions: DevDataActions {
+struct AppDevDataActions: DevDataActions {
     func seedData() async {
-        await Container.shared.inMemoryAccessRepository().seed()
+        await Container.shared.keychainAccessRepository().seed()
     }
 
     func deleteAllData() async {
-        await Container.shared.inMemoryAccessRepository().reset()
+        await Container.shared.keychainAccessRepository().reset()
     }
 }
 
@@ -1400,7 +1401,7 @@ final class FaceIDLockViewModel {
 
 <b>Try</b>
 
-- Make the fake’s `unlockWithBiometrics` return `false`. Run: what does A1 do, and how does the user get in? Undo it.
+- Make step 2’s `unlockWithBiometrics` return `false`. Run: what does A1 do, and how does the user get in? Undo it.
 
 ---
 
@@ -2169,7 +2170,7 @@ final class SetPasscodeViewModel {
 
 | Step | Expect |
 |---|---|
-| ⌘R | Startup → A2 → **Continue offline** → A1 → fake Face ID unlocks after 0.5 s → tabs |
+| ⌘R | Startup → A2 → **Continue offline** → A1 → in-memory Face ID unlocks after 0.5 s → tabs |
 | Settings → App lock → Unlock with Face ID off; Home, wait > 10 s, reopen | A3; 5 wrong tries lock the keypad; `123456` unlocks |
 | Home (⇧⌘H), wait > 10 s, reopen | Locked again; the app switcher shows the overlay |
 | Settings → App lock → Change passcode | Enter twice; the new passcode unlocks A3 |
@@ -2184,15 +2185,16 @@ final class SetPasscodeViewModel {
 
 <dl><dd>
 
-- **Goal:** `KeychainAccessRepository` replaces `InMemoryAccessRepository`; screens and view models do not change.
+- **Goal:** `KeychainAccessRepository` keeps its type and methods, but its values move from memory to Keychain, `UserDefaults` and Face ID; screens, view models and use cases do not change.
 - **Spec:** [07.2](../feature-docs/04-reporting-security.md#072-app-lock)
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Data/Security/KeychainAccessRepository.swift` | Settings in `UserDefaults`; passcode as PBKDF2-SHA256 with a 16-byte salt and the lockout counter in Keychain |
-| <b class="tag-new">New</b> | `Data/Security/BiometricAuthenticator.swift` | `LAContext`, biometry-change detection |
-| <b class="tag-edit">Edit</b> | `App/AppDependencies.swift` | `accessRepository` returns `KeychainAccessRepository()` |
-| <b class="tag-edit">Edit</b> | `App/DevData/FakeDevDataActions.swift` | Delete all data also clears the Keychain items |
+| <b class="tag-new">New</b> | `Infrastructure/Security/KeychainStore.swift` | Read / write / delete one Keychain item, `.whenUnlockedThisDeviceOnly` |
+| <b class="tag-new">New</b> | `Infrastructure/Security/PasscodeHasher.swift` | PBKDF2-SHA256 with a 16-byte random salt; compare without storing the passcode |
+| <b class="tag-new">New</b> | `Infrastructure/Security/BiometricAuthenticator.swift` | `LAContext`, biometry-change detection |
+| <b class="tag-replace">Replace</b> | `DataLayer/Repositories/KeychainAccessRepository.swift` | Same type and methods: settings in `UserDefaults`; passcode hash and lockout counter in Keychain; Face ID through `BiometricAuthenticator`; `reset()` clears them |
+| <b class="tag-edit">Edit</b> | `App/AppDependencies.swift` | Registers the three Infrastructure services and passes them to `KeychainAccessRepository(…)` |
 
 #### Steps
 
@@ -2201,7 +2203,7 @@ final class SetPasscodeViewModel {
 1. Add `INFOPLIST_KEY_NSFaceIDUsageDescription` in `project.yml`, run `xcodegen`.
 2. Lockout counter survives relaunch; biometry change turns Face ID off.
 3. Forgot passcode: device passcode check (`LAContext` `.deviceOwnerAuthentication`), then S5.
-4. Change one registration in `AppDependencies`.
+4. Pass the Infrastructure services in `AppDependencies`; no other registration changes.
 
 </dd></dl>
 
@@ -2219,25 +2221,76 @@ final class SetPasscodeViewModel {
 
 <dl><dd>
 
+<b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Doubles/StubAccessRepository.swift`
+
+<b>Explain</b> · Test double for `AccessRepository`: answers with fixed values, never touches Keychain. Test targets are the only place doubles live.
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+import DomainLayer
+
+actor StubAccessRepository: AccessRepository {
+    private let check: PasscodeCheck
+    private var settings = AccessSettings(
+        hasSeenWelcome: true,
+        isLockEnabled: true,
+        isFaceIDEnabled: false,
+        lockAfter: .seconds(10)
+    )
+
+    init(check: PasscodeCheck = .correct) {
+        self.check = check
+    }
+
+    func loadSettings() -> AccessSettings {
+        return settings
+    }
+
+    func saveSettings(_ newSettings: AccessSettings) {
+        settings = newSettings
+    }
+
+    func markWelcomeSeen() {
+        settings.hasSeenWelcome = true
+    }
+
+    func checkPasscode(_ passcode: String) -> PasscodeCheck {
+        return check
+    }
+
+    func setPasscode(_ passcode: String) {}
+
+    func unlockWithBiometrics() -> Bool {
+        return true
+    }
+}
+```
+
+</details>
+
+---
+
 <b>File</b> · <b class="tag-new">New</b> · `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift`
 
 <b>Explain</b> · Correct passcode unlocks; a wrong one shows the tries left.
 
 <b>Think</b>
 
-- The fake is a singleton. If test A types a wrong passcode, what does test B see unless something resets it?
+- The view model test must not touch Keychain. What can stand in for `AccessRepository`, and where may that type live?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Fresh container per test, a fresh fake, the view model, one `passcodeEntered` call; check the closure and the message.
+- A small test double in the test target (`StubAccessRepository`) answers `checkPasscode` with a fixed result; fresh container per test, register the stub, one `passcodeEntered` call; check the closure and the message.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@MainActor @Suite(.container)`, `Container.shared.inMemoryAccessRepository.register { … }`, a `var didUnlock` set by the closure, `#expect`.
+- `@MainActor @Suite(.container)`, `Container.shared.accessRepository.register { … }`, a `var didUnlock` set by the closure, `#expect`.
 
 </details>
 
@@ -2245,7 +2298,7 @@ final class SetPasscodeViewModel {
 <summary><b>Hint 3 · Skeleton</b></summary>
 
 ```swift
-import DataLayer
+import DomainLayer
 import FactoryKit
 import FactoryTesting
 import Testing
@@ -2255,7 +2308,7 @@ import Testing
 @Suite(.container)
 struct PasscodeUnlockViewModelTests {
     @Test func correctPasscodeUnlocks() async {
-        // 1. register a fresh fake
+        // 1. register a stub that answers .correct
         // 2. view model whose onUnlocked sets a flag
         // 3. enter "123456", #expect the flag
     }
@@ -2272,7 +2325,7 @@ struct PasscodeUnlockViewModelTests {
 <summary><b>Code</b></summary>
 
 ```swift
-import DataLayer
+import DomainLayer
 import FactoryKit
 import FactoryTesting
 import Testing
@@ -2282,8 +2335,7 @@ import Testing
 @Suite(.container)
 struct PasscodeUnlockViewModelTests {
     @Test func correctPasscodeUnlocks() async {
-        // A fresh fake per test, so wrong tries never leak between tests
-        Container.shared.inMemoryAccessRepository.register { InMemoryAccessRepository() }
+        Container.shared.accessRepository.register { StubAccessRepository(check: .correct) }
         var didUnlock = false
         let viewModel = PasscodeUnlockViewModel(onUnlocked: { didUnlock = true })
 
@@ -2293,7 +2345,7 @@ struct PasscodeUnlockViewModelTests {
     }
 
     @Test func wrongPasscodeShowsTriesLeft() async {
-        Container.shared.inMemoryAccessRepository.register { InMemoryAccessRepository() }
+        Container.shared.accessRepository.register { StubAccessRepository(check: .wrong(triesLeft: 4)) }
         var didUnlock = false
         let viewModel = PasscodeUnlockViewModel(onUnlocked: { didUnlock = true })
 
@@ -2313,7 +2365,7 @@ struct PasscodeUnlockViewModelTests {
 
 - `RootViewModel`: lock off → unlocked; Face ID off → passcode; *Lock after* reached → locked (fixed clock)
 - `SetPasscodeViewModel`: mismatch returns to *enter*; match calls `setPasscode`
-- `KeychainAccessRepository`: hash round-trip, wrong passcode rejected, lockout survives relaunch, biometry change turns Face ID off
+- `KeychainAccessRepository` (DataLayer tests, real storage under a test Keychain service): hash round-trip, wrong passcode rejected, lockout survives relaunch, biometry change turns Face ID off
 
 </dd></dl>
 

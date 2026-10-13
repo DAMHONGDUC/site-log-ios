@@ -217,7 +217,7 @@ Project
 ```mermaid
 flowchart LR
     App["SiteLog/App: composition root<br/>Factory Container"] --> P["Presentation (app target)<br/>View + ViewModel"]
-    App --> Data["DataLayer package<br/>repository impls, DTOs, mappers, fakes"]
+    App --> Data["DataLayer package<br/>repository impls, DTOs, mappers"]
     App --> I
     P --> D["DomainLayer package<br/>entities, use cases, repository protocols"]
     Data --> D
@@ -249,7 +249,7 @@ site-log-ios/
 │       └── <Feature>/                # 2+ screens → one subfolder per screen
 ├── Packages/                         # local Swift packages; each has Sources/<Name>/ and Tests/<Name>Tests/
 │   ├── DomainLayer/                  # Entities/ UseCases/ Repositories/ — Foundation only
-│   ├── DataLayer/                    # Repositories/ DTOs/ Mappers/ Fakes/ — uses DomainLayer + Infrastructure + Core
+│   ├── DataLayer/                    # Repositories/ DTOs/ Mappers/ — uses DomainLayer + Infrastructure + Core
 │   ├── Infrastructure/               # framework code, like an outside library — uses Core only
 │   │                                 #   on device: Persistence/ (SwiftData) FileStorage/ Security/ (Keychain, CryptoKit)
 │   │                                 #              Capture/ Reporting/ Plans/ DeviceLink/
@@ -282,7 +282,7 @@ site-log-ios/
 |---|---|---|
 | Presentation | `SiteLog/Presentation/` (app target) | `DomainLayer`, `Core`, `SystemDesign`, `FactoryKit` (`@Injected` only); never `DataLayer` or `Infrastructure` |
 | Domain | `Packages/DomainLayer` | `Foundation` only |
-| Data | `Packages/DataLayer` (`Repositories/`, `DTOs/`, `Mappers/`, `Fakes/`) | `DomainLayer`, `Infrastructure`, `Core` |
+| Data | `Packages/DataLayer` (`Repositories/`, `DTOs/`, `Mappers/`) | `DomainLayer`, `Infrastructure`, `Core` |
 | Infrastructure | `Packages/Infrastructure` (`Sources/Infrastructure/<Name>/`) | `Core`, Apple frameworks, SDKs; never `DomainLayer`, `DataLayer` or app code |
 | SystemDesign | `Packages/SystemDesign` (Swift package) | SwiftUI only; never `DomainLayer` or app code |
 | Core | `Packages/Core` (`Logger/`, `Clock/`) | `Foundation`, `os`; used by every layer except `DomainLayer` and `SystemDesign` |
@@ -348,7 +348,7 @@ final class ProjectListViewModel {
 |---|---|
 | Scope | Infrastructure services and stateful services `.singleton`; use cases unscoped |
 | Resolution | View models `@Injected` use cases only |
-| Previews | `Container.shared.projectRepository { InMemoryProjectRepository() }` |
+| Previews | The registered repositories; Debug `seed()` gives them sample data |
 | Tests | `@Suite(.container)` from `FactoryTesting` |
 | Injected seams | Repositories, `AppClock`, `UploadStore`, `UploadTransport`, `CaptureSessionControlling`, `RandomNumberGenerator` |
 
@@ -493,9 +493,10 @@ final class ProjectListViewModel {
 **Adding a feature**
 
 1. Domain: entity, repository protocol, use cases.
-2. Fake data: in-memory repository in `Packages/DataLayer/Sources/DataLayer/Fakes/` (the only place fakes live), registered in `AppDependencies`.
-3. View models wired into the screens, running on the fake.
-4. Real data (Data impl, DTO, mapper; framework code in `Infrastructure`); the Factory registration swaps the fake for it.
+2. Fake data: the real repository (`<Source><Noun>Repository` in `DataLayer/Repositories/`) on in-memory values, registered once in `AppDependencies`. No separate fake repository.
+3. View models wired into the screens, running on those in-memory values.
+4. Real data: replace the repository's insides (DTO, mapper; framework code in `Infrastructure`); same type, same registration.
+   Test doubles live only in test targets (`SiteLogTests/Doubles/`, `Packages/<Name>/Tests/`).
 5. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
 
 </dd></dl>
@@ -561,7 +562,7 @@ final class ProjectListViewModel {
 
 - **Consequences:**
   - A missing registration does not compile.
-  - Previews override in one line: `Container.shared.projectRepository { InMemoryProjectRepository() }`.
+  - Tests override in one line: `Container.shared.accessRepository.register { StubAccessRepository() }`.
   - Tests: `@Suite(.container)` (`FactoryTesting`), one isolated container per test.
   - Replacing the library touches one file plus the `@Injected` lines.
 

@@ -28,7 +28,7 @@
 - **Demo:** a push opens its target; `sitelog://` links work after cold launch.
 - **Spec:** [18](../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -68,7 +68,7 @@ SiteLog/
 
 <dl><dd>
 
-- No fake needed: the parser is pure and push uses `xcrun simctl push` in the Simulator.
+- No in-memory step needed: the parser is pure and push uses `xcrun simctl push` in the Simulator.
 
 | Action | File | Holds |
 |---|---|---|

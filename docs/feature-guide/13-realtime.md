@@ -12,7 +12,7 @@
 
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
-3. [1. Fake data — Fake event stream](#1-fake-data--fake-event-stream)
+3. [1. Fake data — Event stream on a timer](#1-fake-data--event-stream-on-a-timer)
 4. [2. View models — Live state on the Sync tab](#2-view-models--live-state-on-the-sync-tab)
 5. [3. Real data — Channel, bridge, verification worker](#3-real-data--channel-bridge-verification-worker)
 6. [Tests (after the feature works)](#tests-after-the-feature-works)
@@ -28,12 +28,12 @@
 - **Demo:** the Sync tab shows server-confirmed state as events arrive; mismatches are flagged.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [14 §8–9](../feature-docs/03-backend.md#8-integrity)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **Fakes:** only in `Packages/DataLayer/Sources/DataLayer/Fakes/`, registered in `AppDependencies`; the dev menu seeds / clears them through `FakeDevDataActions`.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-fake-data--fake-event-stream) | Fake data | 1h | not start | Fake event stream |
+| [1](#1-fake-data--event-stream-on-a-timer) | Fake data | 1h | not start | `RealtimeChannel` on a timer |
 | [2](#2-view-models--live-state-on-the-sync-tab) | View models | 2h | not start | Live state on the Sync tab |
 | [3](#3-real-data--channel-bridge-verification-worker) | Real data | 17h | not start | Channel, bridge, verification worker |
 
@@ -57,8 +57,7 @@
 ```text
 Backend/src/ws.ts, workers/verify.ts                             # 3
 Packages/
-├── DataLayer/Sources/DataLayer/Fakes/FakeRealtimeChannel.swift  # 1: scripted events
-└── Infrastructure/Sources/Infrastructure/Realtime/              # 3: RealtimeChannel (actor), messages
+└── Infrastructure/Sources/Infrastructure/Realtime/              # 1: RealtimeChannel on scripted events · 3: WebSocket, messages
 SiteLog/
 ├── App/RealtimeBridge.swift                                     # 3
 └── Presentation/Uploads/UploadStatus/                           # 2: live state
@@ -66,13 +65,13 @@ SiteLog/
 
 </dd></dl>
 
-## 1. Fake data — Fake event stream
+## 1. Fake data — Event stream on a timer
 
 <dl><dd>
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Fakes/FakeRealtimeChannel.swift` | Emits `jobCompleted` / `jobFailed` on a timer |
+| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/RealtimeChannel.swift` | The real channel type; emits `jobCompleted` / `jobFailed` on a timer until step 3 |
 
 </dd></dl>
 
@@ -106,7 +105,7 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/RealtimeChannel.swift` | Actor around `URLSessionWebSocketTask` |
+| <b class="tag-replace">Replace</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/RealtimeChannel.swift` | Same type, now an actor around `URLSessionWebSocketTask` |
 | <b class="tag-new">New</b> | `Packages/Infrastructure/Sources/Infrastructure/Realtime/Messages.swift` | `auth`, `subscribe`, `ping` / `snapshot`, `jobCompleted`, `jobFailed`, `pong` |
 | <b class="tag-new">New</b> | `Backend/src/ws.ts` | Server side per 14 §9 |
 
@@ -179,7 +178,7 @@ SiteLog/
 
 **2. View models — Live state on the Sync tab**
 
-- View model with a fake event stream
+- View model with a test-double event stream
 
 **3. Real data — Channel, bridge, verification worker**
 

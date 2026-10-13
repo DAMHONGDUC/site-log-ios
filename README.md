@@ -99,8 +99,7 @@ site-log-ios/
 │   │   └── Sources/DataLayer/
 │   │       ├── Repositories/             # SwiftData<X>Repository, Keychain…, MetadataSyncEngine
 │   │       ├── DTOs/
-│   │       ├── Mappers/
-│   │       └── Fakes/                    # in-memory repositories
+│   │       └── Mappers/
 │   ├── Infrastructure/                   # framework code, like an outside library; uses Core only
 │   │   └── Sources/Infrastructure/
 │   │       ├── Persistence/              # SwiftData @Model, SchemaV1…n, migration plan
