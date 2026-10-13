@@ -1,5 +1,5 @@
 public enum PasscodeCheck: Sendable {
-    case success
-    case wring(triesLeft: Int)
+    case correct
+    case wrong(triesLeft: Int)
     case lockedOut(wait: Duration)
 }
