@@ -1,8 +1,8 @@
 // P4 · New walkthrough
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct StartSessionView: View {
     @ObserveInjection var inject
@@ -21,16 +21,16 @@ struct StartSessionView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: SDSpacing.regular) {
-                    SDTextField("Inspector", text: $inspector)
+                VStack(alignment: .leading, spacing: DSSpacing.regular) {
+                    DSTextField("Inspector", text: $inspector)
 
-                    VStack(alignment: .leading, spacing: SDSpacing.small) {
+                    VStack(alignment: .leading, spacing: DSSpacing.small) {
                         Text("Weather")
-                            .font(SDFont.footnote)
-                            .foregroundStyle(SDColor.textSecondary)
-                        HStack(spacing: SDSpacing.small) {
+                            .font(DSFont.footnote)
+                            .foregroundStyle(DSColor.textSecondary)
+                        HStack(spacing: DSSpacing.small) {
                             ForEach(weatherOptions, id: \.title) { option in
-                                SDChip(
+                                DSChip(
                                     title: option.title,
                                     systemImage: option.icon,
                                     isSelected: weather == option.title
@@ -41,22 +41,22 @@ struct StartSessionView: View {
                         }
                     }
 
-                    SDTextField(
+                    DSTextField(
                         "Note for the report",
                         placeholder: "e.g. finishing check, levels 7–9",
                         text: $note,
                         isMultiline: true
                     )
 
-                    HStack(alignment: .top, spacing: SDSpacing.small) {
-                        SDStatusMarker(kind: .major)
+                    HStack(alignment: .top, spacing: DSSpacing.small) {
+                        DSStatusMarker(kind: .major)
                         Text(
                             "14 issues from 12 Aug will be waiting in their rooms for you to re-check."
                         )
-                        .font(SDFont.subhead)
+                        .font(DSFont.subhead)
                     }
                 }
-                .padding(SDSpacing.regular)
+                .padding(DSSpacing.regular)
             }
             .navigationTitle("New walkthrough")
             .navigationBarTitleDisplayMode(.inline)

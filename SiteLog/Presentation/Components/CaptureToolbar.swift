@@ -1,5 +1,5 @@
+import DesignSystem
 import SwiftUI
-import SystemDesign
 
 struct CaptureToolbar<Left: View, Right: View>: View {
     let onCapture: () -> Void
@@ -14,9 +14,9 @@ struct CaptureToolbar<Left: View, Right: View>: View {
 
             Button(action: onCapture) {
                 Image(systemName: "camera")
-                    .foregroundStyle(SDColor.onHiVis)
-                    .frame(width: SDSize.captureButton, height: SDSize.captureButton)
-                    .background(SDColor.hiVis, in: Circle())
+                    .foregroundStyle(DSColor.onHiVis)
+                    .frame(width: DSSize.captureButton, height: DSSize.captureButton)
+                    .background(DSColor.hiVis, in: Circle())
             }
             .accessibilityLabel("Capture")
 
@@ -25,7 +25,7 @@ struct CaptureToolbar<Left: View, Right: View>: View {
             right
         }
         .padding()
-        .background(SDColor.raised)
+        .background(DSColor.raised)
     }
 }
 
@@ -37,9 +37,9 @@ struct ToolbarSideLabel: View {
         VStack {
             Image(systemName: systemImage)
             Text(title)
-                .font(SDFont.caption)
+                .font(DSFont.caption)
         }
-        .foregroundStyle(SDColor.textPrimary)
+        .foregroundStyle(DSColor.textPrimary)
     }
 }
 

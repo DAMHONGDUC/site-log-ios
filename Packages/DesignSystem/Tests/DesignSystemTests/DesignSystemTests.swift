@@ -1,9 +1,9 @@
 import Testing
 import UIKit
 
-@testable import SystemDesign
+@testable import DesignSystem
 
-struct SystemDesignTests {
+struct DesignSystemTests {
     @Test func hexColourIsDecoded() {
         let color = UIColor(hex: 0xFFD400)
 

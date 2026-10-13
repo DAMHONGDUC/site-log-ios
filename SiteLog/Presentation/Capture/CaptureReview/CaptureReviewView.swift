@@ -1,6 +1,6 @@
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct CaptureReviewView: View {
     @ObserveInjection var inject
@@ -14,12 +14,12 @@ struct CaptureReviewView: View {
                 .clipped()
                 .overlay(alignment: .bottomLeading) {
                     Text("10:42:18 · SHA-256 7f3a…c91e")
-                        .font(SDFont.code)
+                        .font(DSFont.code)
                         .foregroundStyle(Color.white)
                         .padding()
                 }
 
-            HStack(spacing: SDSpacing.small) {
+            HStack(spacing: DSSpacing.small) {
                 Button("Retake") {
                     dismiss()
                 }
@@ -35,7 +35,7 @@ struct CaptureReviewView: View {
                 }
                 .buttonStyle(.sd(.primary))
             }
-            .padding(SDSpacing.regular)
+            .padding(DSSpacing.regular)
         }
         .background(Color.black)
         .preferredColorScheme(.dark)

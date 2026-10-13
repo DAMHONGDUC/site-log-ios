@@ -1,8 +1,8 @@
 // A3 · Enter passcode
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct PasscodeUnlockView: View {
     @ObserveInjection var inject
@@ -12,7 +12,7 @@ struct PasscodeUnlockView: View {
     @State private var code = ""
 
     var body: some View {
-        VStack(spacing: SDSpacing.large) {
+        VStack(spacing: DSSpacing.large) {
             Spacer()
 
             AppMark(size: 48)
@@ -23,20 +23,20 @@ struct PasscodeUnlockView: View {
             PasscodeDots(filled: code.count)
 
             Text("2 tries left before a 1-minute wait")
-                .font(SDFont.footnote)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.footnote)
+                .foregroundStyle(DSColor.textSecondary)
 
             Spacer()
 
             PasscodeNumberPad(code: $code)
 
             Button("Forgot passcode?") {}
-                .font(SDFont.footnote.weight(.semibold))
-                .foregroundStyle(SDColor.textPrimary)
-                .padding(.bottom, SDSpacing.small)
+                .font(DSFont.footnote.weight(.semibold))
+                .foregroundStyle(DSColor.textPrimary)
+                .padding(.bottom, DSSpacing.small)
         }
         .frame(maxWidth: .infinity)
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .onChange(of: code) { _, newValue in
             if newValue.count == 6 {
                 onComplete(newValue)

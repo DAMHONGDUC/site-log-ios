@@ -1,6 +1,6 @@
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct MainTabView: View {
     @ObserveInjection var inject
@@ -30,7 +30,7 @@ struct MainTabView: View {
                 }
             }
         }
-        .tint(SDColor.textPrimary)
+        .tint(DSColor.textPrimary)
         .enableInjection()
     }
 }

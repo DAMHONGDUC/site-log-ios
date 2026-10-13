@@ -1,8 +1,8 @@
 // P5 · Walkthrough
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct SurveyView: View {
     @ObserveInjection var inject
@@ -16,26 +16,26 @@ struct SurveyView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 progressHeader
-                    .padding(.horizontal, SDSpacing.regular)
+                    .padding(.horizontal, DSSpacing.regular)
 
-                HStack(spacing: SDSpacing.small) {
+                HStack(spacing: DSSpacing.small) {
                     ForEach(filters, id: \.self) { item in
-                        SDChip(title: item, isSelected: filter == item) {
+                        DSChip(title: item, isSelected: filter == item) {
                             filter = item
                         }
                     }
                 }
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
                 ForEach(FakeData.units) { unit in
                     unitSection(unit)
                 }
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Level 7")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -50,7 +50,7 @@ struct SurveyView: View {
                 Button("End") {
                     isEndShown = true
                 }
-                .foregroundStyle(SDColor.textPrimary)
+                .foregroundStyle(DSColor.textPrimary)
             } right: {
                 Button {
                     isPlanShown = true
@@ -73,22 +73,22 @@ struct SurveyView: View {
     }
 
     private var progressHeader: some View {
-        VStack(spacing: SDSpacing.small) {
+        VStack(spacing: DSSpacing.small) {
             HStack {
                 Text("37 of 82 rooms checked")
                 Spacer()
                 Text("since 8:12")
             }
-            .font(SDFont.footnote)
-            .foregroundStyle(SDColor.textSecondary)
+            .font(DSFont.footnote)
+            .foregroundStyle(DSColor.textSecondary)
 
-            SDProgressBar(value: 37.0 / 82.0)
+            DSProgressBar(value: 37.0 / 82.0)
         }
     }
 
     private func unitSection(_ unit: FakeUnit) -> some View {
-        VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-            SDSectionHeader(title: unit.name, trailing: unit.checkedText)
+        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+            DSSectionHeader(title: unit.name, trailing: unit.checkedText)
 
             ForEach(unit.rooms) { room in
                 NavigationLink {
@@ -98,27 +98,27 @@ struct SurveyView: View {
                 }
                 .buttonStyle(.plain)
 
-                SDDivider()
+                DSDivider()
             }
         }
     }
 
     private func roomRow(_ room: FakeRoom) -> some View {
-        SDListRow(title: room.name, subtitle: room.note, showsChevron: true) {
+        DSListRow(title: room.name, subtitle: room.note, showsChevron: true) {
             Image(systemName: room.isChecked ? "checkmark.circle" : "circle")
-                .foregroundStyle(room.isChecked ? SDColor.success : SDColor.textTertiary)
+                .foregroundStyle(room.isChecked ? DSColor.success : DSColor.textTertiary)
         } trailing: {
-            HStack(spacing: SDSpacing.medium) {
+            HStack(spacing: DSSpacing.medium) {
                 if room.criticalCount > 0 {
-                    SDStatusMarker(kind: .critical, text: String(room.criticalCount))
+                    DSStatusMarker(kind: .critical, text: String(room.criticalCount))
                 }
                 if room.note != nil {
-                    SDStatusMarker(kind: .major)
+                    DSStatusMarker(kind: .major)
                 }
                 if room.photoCount > 0 {
                     Text(String(room.photoCount))
-                        .font(SDFont.subhead)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.subhead)
+                        .foregroundStyle(DSColor.textSecondary)
                 }
             }
         }

@@ -3,27 +3,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "SystemDesign",
+    name: "DesignSystem",
     platforms: [
         .iOS(.v18)
     ],
     products: [
         .library(
-            name: "SystemDesign",
-            targets: ["SystemDesign"]
+            name: "DesignSystem",
+            targets: ["DesignSystem"]
         )
     ],
     targets: [
-        // Tokens and components only; knows nothing about Domain or feature
+        // Tokens and components only; knows nothing about Domain or features
         .target(
-            name: "SystemDesign",
+            name: "DesignSystem",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],
         ),
         .testTarget(
-            name: "SystemDesignTests",
-            dependencies: ["SystemDesign"],
+            name: "DesignSystemTests",
+            dependencies: ["DesignSystem"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],

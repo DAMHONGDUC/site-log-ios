@@ -1,8 +1,8 @@
 // R4 · Signatures
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct SignaturePadView: View {
     @ObserveInjection var inject
@@ -15,28 +15,28 @@ struct SignaturePadView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 Picker("Party", selection: $party) {
                     Text("Hanh (supervisor) ✓").tag("Supervisor")
                     Text("Contractor").tag("Contractor")
                 }
                 .pickerStyle(.segmented)
 
-                SDTextField("Name and role", text: $nameAndRole)
+                DSTextField("Name and role", text: $nameAndRole)
 
                 signatureBox
 
                 Text(
                     "This is a handwritten signature for internal sign-off, not a certified digital signature."
                 )
-                .font(SDFont.footnote)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.footnote)
+                .foregroundStyle(DSColor.textSecondary)
             }
-            .padding(SDSpacing.regular)
+            .padding(DSSpacing.regular)
         }
         // Drawing must not scroll the page
         .scrollDisabled(true)
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Sign")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
@@ -50,22 +50,22 @@ struct SignaturePadView: View {
     }
 
     private var signatureBox: some View {
-        RoundedRectangle(cornerRadius: SDSpacing.medium)
-            .fill(SDColor.fill)
+        RoundedRectangle(cornerRadius: DSSpacing.medium)
+            .fill(DSColor.fill)
             .frame(height: 240)
             .overlay {
                 Canvas { context, size in
                     var line = Path()
                     line.move(to: CGPoint(x: 28, y: size.height - 48))
                     line.addLine(to: CGPoint(x: size.width - 28, y: size.height - 48))
-                    context.stroke(line, with: .color(SDColor.lineStrong), lineWidth: 1)
+                    context.stroke(line, with: .color(DSColor.lineStrong), lineWidth: 1)
 
                     for stroke in strokes + [currentStroke] {
                         var path = Path()
                         path.addLines(stroke)
                         context.stroke(
                             path,
-                            with: .color(SDColor.textPrimary),
+                            with: .color(DSColor.textPrimary),
                             style: StrokeStyle(lineWidth: 2.4, lineCap: .round)
                         )
                     }
@@ -74,17 +74,17 @@ struct SignaturePadView: View {
             .overlay(alignment: .bottom) {
                 HStack {
                     Text("Sign above the line")
-                        .font(SDFont.footnote)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.footnote)
+                        .foregroundStyle(DSColor.textSecondary)
                     Spacer()
                     Button("Clear") {
                         strokes = []
                     }
-                    .font(SDFont.subhead.weight(.semibold))
+                    .font(DSFont.subhead.weight(.semibold))
                     .underline()
-                    .foregroundStyle(SDColor.textPrimary)
+                    .foregroundStyle(DSColor.textPrimary)
                 }
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
                 .padding(.bottom)
             }
             .gesture(

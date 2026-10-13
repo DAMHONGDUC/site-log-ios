@@ -1,8 +1,8 @@
 // S1 · Settings
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct SettingsView: View {
     @ObserveInjection var inject
@@ -11,11 +11,11 @@ struct SettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 NavigationLink {
                     AccountView()
                 } label: {
-                    SDListRow(
+                    DSListRow(
                         title: FakeData.inspector,
                         subtitle: "Synced 2 minutes ago · iPhone and iPad",
                         showsChevron: true
@@ -25,35 +25,35 @@ struct SettingsView: View {
                 }
                 .buttonStyle(.plain)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "On site")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "On site")
                     link("Laser meter", value: "DISTO D2") { DevicesView() }
-                    SDDivider()
+                    DSDivider()
                     link("Quick phrases", value: "18") { QuickPhrasesPlaceholder() }
-                    SDDivider()
+                    DSDivider()
                     link("Report letterhead", value: nil) { BrandingView() }
                 }
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "Privacy")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "Privacy")
                     link("App lock", value: "Face ID · 5 min") { AppLockView() }
                 }
 
                 VStack(spacing: 0) {
                     link("Diagnostics", value: nil) { DiagnosticExportView() }
-                    SDDivider()
+                    DSDivider()
                     Button {
                         isDeleteAlertShown = true
                     } label: {
                         Text("Delete account")
-                            .font(SDFont.body)
-                            .foregroundStyle(SDColor.critical)
+                            .font(DSFont.body)
+                            .foregroundStyle(DSColor.critical)
                             .frame(
                                 maxWidth: .infinity,
-                                minHeight: SDSize.rowMinHeight,
+                                minHeight: DSSize.rowMinHeight,
                                 alignment: .leading
                             )
-                            .padding(.horizontal, SDSpacing.regular)
+                            .padding(.horizontal, DSSpacing.regular)
                     }
                 }
 
@@ -61,9 +61,9 @@ struct SettingsView: View {
                     DevMenuSection()
                 #endif
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Settings")
         .alert("Delete your account?", isPresented: $isDeleteAlertShown) {
             Button("Delete Account", role: .destructive) {}
@@ -78,8 +78,8 @@ struct SettingsView: View {
 
     private var avatar: some View {
         Image(systemName: "person.crop.circle.fill")
-            .font(SDFont.largeTitle)
-            .foregroundStyle(SDColor.textTertiary)
+            .font(DSFont.largeTitle)
+            .foregroundStyle(DSColor.textTertiary)
     }
 
     private func link<Destination: View>(
@@ -90,7 +90,7 @@ struct SettingsView: View {
         NavigationLink {
             destination()
         } label: {
-            SDListRow(title: title, value: value, showsChevron: true)
+            DSListRow(title: title, value: value, showsChevron: true)
         }
         .buttonStyle(.plain)
     }
@@ -102,8 +102,8 @@ private struct QuickPhrasesPlaceholder: View {
         ScrollView {
             VStack(spacing: 0) {
                 ForEach(FakeData.quickPhrases, id: \.self) { phrase in
-                    SDListRow(title: phrase)
-                    SDDivider()
+                    DSListRow(title: phrase)
+                    DSDivider()
                 }
             }
         }

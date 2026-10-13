@@ -1,8 +1,8 @@
 // S5 · Set passcode
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct SetPasscodeView: View {
     @ObserveInjection var inject
@@ -12,7 +12,7 @@ struct SetPasscodeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: SDSpacing.large) {
+            VStack(spacing: DSSpacing.large) {
                 Spacer()
 
                 Text("Enter a 6-digit passcode")
@@ -23,18 +23,18 @@ struct SetPasscodeView: View {
                 Text(
                     "You’ll use it when Face ID can’t see you. It stays on this iPhone and is never uploaded."
                 )
-                .font(SDFont.footnote)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.footnote)
+                .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 280)
 
                 Spacer()
 
                 PasscodeNumberPad(code: $code)
-                    .padding(.bottom, SDSpacing.large)
+                    .padding(.bottom, DSSpacing.large)
             }
             .frame(maxWidth: .infinity)
-            .background(SDColor.canvas)
+            .background(DSColor.canvas)
             .navigationTitle("Set passcode")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

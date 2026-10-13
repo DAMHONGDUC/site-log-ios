@@ -1,8 +1,8 @@
 // M5 · Pin preview
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct PinPreviewView: View {
     @ObserveInjection var inject
@@ -19,21 +19,21 @@ struct PinPreviewView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: SDSpacing.medium) {
-                HStack(alignment: .top, spacing: SDSpacing.medium) {
+            VStack(alignment: .leading, spacing: DSSpacing.medium) {
+                HStack(alignment: .top, spacing: DSSpacing.medium) {
                     SitePhotoThumb(variant: issue.photoVariant, size: 64)
 
                     VStack(alignment: .leading) {
-                        SDStatusMarker(kind: pin.severity, text: "Pin \(pin.number)")
+                        DSStatusMarker(kind: pin.severity, text: "Pin \(pin.number)")
                         Text(issue.title)
-                            .font(SDFont.headline)
+                            .font(DSFont.headline)
                         Text("\(issue.room) · \(issue.assignee) · \(issue.due)")
-                            .font(SDFont.subhead)
-                            .foregroundStyle(SDColor.textSecondary)
+                            .font(DSFont.subhead)
+                            .foregroundStyle(DSColor.textSecondary)
                     }
                 }
 
-                HStack(spacing: SDSpacing.small) {
+                HStack(spacing: DSSpacing.small) {
                     Button("Move pin") {
                         dismiss()
                     }
@@ -45,7 +45,7 @@ struct PinPreviewView: View {
                     .buttonStyle(.sd(.primary))
                 }
             }
-            .padding(SDSpacing.regular)
+            .padding(DSSpacing.regular)
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationDestination(isPresented: $isIssueShown) {
                 IssueDetailView(issue: issue)

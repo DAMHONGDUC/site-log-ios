@@ -1,8 +1,8 @@
 // M2 · Share stamped photo
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct StampPreviewView: View {
     @ObserveInjection var inject
@@ -13,7 +13,7 @@ struct StampPreviewView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 SitePhoto(variant: 0, showsCrack: true)
                     .frame(height: 300)
                     .overlay(alignment: .bottom) {
@@ -23,21 +23,21 @@ struct StampPreviewView: View {
                 Text(
                     "Time checked against the network (within 2 s) and GPS (±6 m), so the stamp can be trusted."
                 )
-                .font(SDFont.footnote)
-                .foregroundStyle(SDColor.textSecondary)
-                .padding(.horizontal, SDSpacing.regular)
+                .font(DSFont.footnote)
+                .foregroundStyle(DSColor.textSecondary)
+                .padding(.horizontal, DSSpacing.regular)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "Stamp shows")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "Stamp shows")
                     toggleRow("Date and time", isOn: $showsDate)
-                    SDDivider()
+                    DSDivider()
                     toggleRow("Project and room", isOn: $showsRoom)
-                    SDDivider()
+                    DSDivider()
                     toggleRow("My markup", isOn: $showsMarkup)
                 }
             }
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Share photo")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
@@ -59,7 +59,7 @@ struct StampPreviewView: View {
             }
             Text("Verify at sitelog.app/v/7F3K-92QD")
         }
-        .font(SDFont.code)
+        .font(DSFont.code)
         .foregroundStyle(Color.white)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical)
@@ -68,9 +68,9 @@ struct StampPreviewView: View {
 
     private func toggleRow(_ title: String, isOn: Binding<Bool>) -> some View {
         Toggle(title, isOn: isOn)
-            .tint(SDColor.success)
-            .frame(minHeight: SDSize.rowMinHeight)
-            .padding(.horizontal, SDSpacing.regular)
+            .tint(DSColor.success)
+            .frame(minHeight: DSSize.rowMinHeight)
+            .padding(.horizontal, DSSpacing.regular)
     }
 }
 

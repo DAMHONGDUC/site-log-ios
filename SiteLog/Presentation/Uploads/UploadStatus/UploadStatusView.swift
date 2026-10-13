@@ -1,36 +1,36 @@
 // U1 · Sync
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct UploadStatusView: View {
     @ObserveInjection var inject
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 progressBlock
-                    .padding(.horizontal, SDSpacing.regular)
+                    .padding(.horizontal, DSSpacing.regular)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "Waiting")
-                    SDListRow(title: "3 videos", subtitle: "Over 100 MB, so they wait for Wi-Fi") {
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "Waiting")
+                    DSListRow(title: "3 videos", subtitle: "Over 100 MB, so they wait for Wi-Fi") {
                         EmptyView()
                     } trailing: {
-                        SDStatusMarker(kind: .waiting)
+                        DSStatusMarker(kind: .waiting)
                     }
-                    SDDivider()
-                    SDListRow(title: "1 photo", subtitle: "Getting a fresh upload link") {
+                    DSDivider()
+                    DSListRow(title: "1 photo", subtitle: "Getting a fresh upload link") {
                         EmptyView()
                     } trailing: {
-                        SDStatusMarker(kind: .waiting)
+                        DSStatusMarker(kind: .waiting)
                     }
                 }
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "Didn’t upload")
-                    SDListRow(
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "Didn’t upload")
+                    DSListRow(
                         title: "IMG_0922, IMG_0925",
                         subtitle: "The server rejected the checksum"
                     ) {
@@ -44,34 +44,34 @@ struct UploadStatusView: View {
                 NavigationLink {
                     UploadFilesView()
                 } label: {
-                    SDListRow(title: "Today’s files", value: "243", showsChevron: true)
+                    DSListRow(title: "Today’s files", value: "243", showsChevron: true)
                 }
                 .buttonStyle(.plain)
 
                 Text("Some files finish while the iPhone is idle. You can close the app.")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textTertiary)
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.textTertiary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, SDSpacing.regular)
+                    .padding(.horizontal, DSSpacing.regular)
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Sync")
         .enableInjection()
     }
 
     private var progressBlock: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.small) {
-            Text("187 \(Text("of 243 files").foregroundStyle(SDColor.textTertiary))")
-                .font(SDFont.figure)
+        VStack(alignment: .leading, spacing: DSSpacing.small) {
+            Text("187 \(Text("of 243 files").foregroundStyle(DSColor.textTertiary))")
+                .font(DSFont.figure)
 
-            SDProgressBar(value: 187.0 / 243.0)
+            DSProgressBar(value: 187.0 / 243.0)
 
             Text("Riverside, today · about 6 minutes left on this Wi-Fi")
-                .font(SDFont.subhead)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.subhead)
+                .foregroundStyle(DSColor.textSecondary)
         }
     }
 }

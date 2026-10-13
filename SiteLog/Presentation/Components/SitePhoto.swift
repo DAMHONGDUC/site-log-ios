@@ -1,7 +1,7 @@
 // Placeholder until real photos are loaded
 
+import DesignSystem
 import SwiftUI
-import SystemDesign
 
 struct SitePhoto: View {
     // Unused by the placeholder
@@ -10,10 +10,10 @@ struct SitePhoto: View {
 
     var body: some View {
         Rectangle()
-            .fill(SDColor.lineStrong)
+            .fill(DSColor.lineStrong)
             .overlay {
                 Image(systemName: "photo")
-                    .foregroundStyle(SDColor.textSecondary)
+                    .foregroundStyle(DSColor.textSecondary)
             }
     }
 }
@@ -26,7 +26,7 @@ struct SitePhotoThumb: View {
     var body: some View {
         SitePhoto(variant: variant, showsCrack: showsCrack)
             .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: SDRadius.small))
+            .clipShape(RoundedRectangle(cornerRadius: DSRadius.small))
     }
 }
 

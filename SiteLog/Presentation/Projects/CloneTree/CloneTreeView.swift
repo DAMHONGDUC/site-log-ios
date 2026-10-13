@@ -1,6 +1,6 @@
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct CloneTreeView: View {
     @ObserveInjection var inject
@@ -10,33 +10,33 @@ struct CloneTreeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+            VStack(alignment: .leading, spacing: DSSpacing.tiny) {
                 Text(
                     "Pick a project. Its levels, units and rooms are copied; photos and issues are not."
                 )
-                .font(SDFont.subhead)
-                .foregroundStyle(SDColor.textSecondary)
-                .padding(.horizontal, SDSpacing.regular)
-                .padding(.bottom, SDSpacing.regular)
+                .font(DSFont.subhead)
+                .foregroundStyle(DSColor.textSecondary)
+                .padding(.horizontal, DSSpacing.regular)
+                .padding(.bottom, DSSpacing.regular)
 
-                SDSectionHeader(title: "Copy rooms from")
+                DSSectionHeader(title: "Copy rooms from")
 
                 ForEach(FakeData.projects) { project in
                     Button {
                         selectedName = project.name
                     } label: {
-                        SDListRow(title: project.name, subtitle: "82 rooms · 3 levels") {
-                            SDRadioMark(isOn: selectedName == project.name)
+                        DSListRow(title: project.name, subtitle: "82 rooms · 3 levels") {
+                            DSRadioMark(isOn: selectedName == project.name)
                         }
                     }
                     .buttonStyle(.plain)
 
-                    SDDivider()
+                    DSDivider()
                 }
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Copy rooms")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {

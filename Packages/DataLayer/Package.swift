@@ -15,14 +15,14 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../DomainLayer"),
-        .package(path: "../Infrastructure"),
+        .package(path: "../PlatformKit"), 
         .package(path: "../Core"),
     ],
     targets: [
-        // Repositories, data sources (Local, Remote), models (Local, Remote), mappers
+        // Repositories, data sources, models, mappers; system services live in PlatformKit
         .target(
             name: "DataLayer",
-            dependencies: ["DomainLayer", "Infrastructure", "Core"],
+            dependencies: ["DomainLayer", "PlatformKit", "Core"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],

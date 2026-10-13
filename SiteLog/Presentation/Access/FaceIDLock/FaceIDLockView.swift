@@ -1,8 +1,8 @@
 // A1 · Face ID lock
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct FaceIDLockView: View {
     @ObserveInjection var inject
@@ -11,27 +11,27 @@ struct FaceIDLockView: View {
     var onEnterPasscode: () -> Void = {}
 
     var body: some View {
-        VStack(spacing: SDSpacing.regular) {
+        VStack(spacing: DSSpacing.regular) {
             Spacer()
 
             AppMark(size: 72)
 
-            VStack(spacing: SDSpacing.tiny) {
+            VStack(spacing: DSSpacing.tiny) {
                 Text("SiteLog is locked")
                     .font(.title2.bold())
                 Text("Unlock to view site photos and reports.")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.textSecondary)
             }
 
             Image(systemName: "faceid")
-                .foregroundStyle(SDColor.textSecondary)
-                .padding(.top, SDSpacing.xLarge)
+                .foregroundStyle(DSColor.textSecondary)
+                .padding(.top, DSSpacing.xLarge)
 
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .bottomDock(showsBackground: false) {
             Button(action: onUnlock) {
                 Label("Unlock with Face ID", systemImage: "faceid")

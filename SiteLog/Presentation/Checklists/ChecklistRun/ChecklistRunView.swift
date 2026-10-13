@@ -1,8 +1,8 @@
 // K2 · Checklist run
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct ChecklistRunView: View {
     @ObserveInjection var inject
@@ -21,20 +21,20 @@ struct ChecklistRunView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 progressHeader
-                    .padding(.horizontal, SDSpacing.regular)
+                    .padding(.horizontal, DSSpacing.regular)
 
                 VStack(spacing: 0) {
                     ForEach(FakeData.checklistItems) { item in
                         itemRow(item)
-                        SDDivider()
+                        DSDivider()
                     }
                 }
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
@@ -46,8 +46,8 @@ struct ChecklistRunView: View {
             .buttonStyle(.sd(.primary))
 
             Text("8 items still need an answer")
-                .font(SDFont.footnote)
-                .foregroundStyle(SDColor.textTertiary)
+                .font(DSFont.footnote)
+                .foregroundStyle(DSColor.textTertiary)
         }
         .navigationDestination(isPresented: $isDoneShown) {
             ChecklistDoneView()
@@ -59,24 +59,24 @@ struct ChecklistRunView: View {
     }
 
     private var progressHeader: some View {
-        VStack(spacing: SDSpacing.small) {
+        VStack(spacing: DSSpacing.small) {
             HStack {
                 Text("\(answers.count + 11) of 22 answered")
-                    .foregroundStyle(SDColor.textSecondary)
+                    .foregroundStyle(DSColor.textSecondary)
                 Spacer()
                 Text("1 failed")
-                    .foregroundStyle(SDColor.critical)
+                    .foregroundStyle(DSColor.critical)
             }
-            .font(SDFont.footnote)
+            .font(DSFont.footnote)
 
-            SDProgressBar(value: Double(answers.count + 11) / 22)
+            DSProgressBar(value: Double(answers.count + 11) / 22)
         }
     }
 
     private func itemRow(_ item: FakeChecklistItem) -> some View {
         VStack(alignment: .leading) {
             Text("\(item.number). \(item.text)")
-                .font(SDFont.body)
+                .font(DSFont.body)
 
             Picker("Answer", selection: answerBinding(for: item)) {
                 ForEach(Answer.allCases, id: \.self) { answer in
@@ -87,8 +87,8 @@ struct ChecklistRunView: View {
 
             if answers[item.number] == .fail {
                 Text("Logged as an issue")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.critical)
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.critical)
             }
         }
         .padding()

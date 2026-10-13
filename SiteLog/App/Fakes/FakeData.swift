@@ -1,7 +1,7 @@
 // UI skeleton sample data; each feature moves its part to Data/Fakes and deletes it here
 
+import DesignSystem
 import Foundation
-import SystemDesign
 
 struct FakeProject: Identifiable {
     let id = UUID()
@@ -46,7 +46,7 @@ struct FakeIssue: Identifiable {
     let title: String
     let room: String
     let assignee: String
-    let severity: SDStatusMarker.Kind
+    let severity: DSStatusMarker.Kind
     let due: String
     let isLate: Bool
     let level: String
@@ -63,7 +63,7 @@ struct FakePlan: Identifiable {
 struct FakePin: Identifiable {
     let id = UUID()
     let number: Int
-    let severity: SDStatusMarker.Kind
+    let severity: DSStatusMarker.Kind
     // 0...1 of the plan size
     let positionX: Double
     let positionY: Double
@@ -86,7 +86,7 @@ struct FakeUploadFile: Identifiable {
     let name: String
     let detail: String
     let status: String
-    let kind: SDStatusMarker.Kind
+    let kind: DSStatusMarker.Kind
     let photoVariant: Int
 }
 

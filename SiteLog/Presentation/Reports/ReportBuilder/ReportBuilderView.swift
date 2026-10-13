@@ -1,8 +1,8 @@
 // R2 · Report options
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct ReportBuilderView: View {
     @ObserveInjection var inject
@@ -23,25 +23,25 @@ struct ReportBuilderView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
-                VStack(alignment: .leading, spacing: SDSpacing.small) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
+                VStack(alignment: .leading, spacing: DSSpacing.small) {
                     Text("Group issues by")
-                        .font(SDFont.footnote)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.footnote)
+                        .foregroundStyle(DSColor.textSecondary)
                     Picker("Group issues by", selection: $grouping) {
                         Text("Room").tag("Room")
                         Text("Contractor").tag("Contractor")
                     }
                     .pickerStyle(.segmented)
                 }
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "Include")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "Include")
 
                     ForEach(sections, id: \.title) { section in
                         sectionRow(section)
-                        SDDivider()
+                        DSDivider()
                     }
                 }
 
@@ -49,23 +49,23 @@ struct ReportBuilderView: View {
                     NavigationLink {
                         BrandingView()
                     } label: {
-                        SDListRow(title: "Your letterhead", value: "Eastline", showsChevron: true)
+                        DSListRow(title: "Your letterhead", value: "Eastline", showsChevron: true)
                     }
                     .buttonStyle(.plain)
 
-                    SDDivider()
+                    DSDivider()
 
                     NavigationLink {
                         SignaturePadView()
                     } label: {
-                        SDListRow(title: "Signatures", value: "1 of 2", showsChevron: true)
+                        DSListRow(title: "Signatures", value: "1 of 2", showsChevron: true)
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Report")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -78,7 +78,7 @@ struct ReportBuilderView: View {
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            HStack(spacing: SDSpacing.small) {
+            HStack(spacing: DSSpacing.small) {
                 Button("Excel") {}
                     .buttonStyle(.sd(.secondary))
                     .frame(width: 110)
@@ -102,12 +102,12 @@ struct ReportBuilderView: View {
             set: { included[section.title] = $0 }
         )
 
-        return SDListRow(title: section.title, subtitle: section.detail) {
+        return DSListRow(title: section.title, subtitle: section.detail) {
             EmptyView()
         } trailing: {
             Toggle(section.title, isOn: binding)
                 .labelsHidden()
-                .tint(SDColor.success)
+                .tint(DSColor.success)
         }
     }
 }

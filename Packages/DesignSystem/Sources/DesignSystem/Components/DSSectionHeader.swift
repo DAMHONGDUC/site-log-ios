@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct SDSectionHeader: View {
+public struct DSSectionHeader: View {
     let title: String
     let trailing: String?
 
@@ -12,21 +12,21 @@ public struct SDSectionHeader: View {
     public var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(title)
-                .font(SDFont.section)
-                .foregroundStyle(SDColor.textPrimary)
+                .font(DSFont.section)
+                .foregroundStyle(DSColor.textPrimary)
 
             Spacer()
 
             if let trailing {
                 Text(trailing)
-                    .font(SDFont.subhead)
-                    .foregroundStyle(SDColor.textSecondary)
+                    .font(DSFont.subhead)
+                    .foregroundStyle(DSColor.textSecondary)
             }
         }
-        .padding(.horizontal, SDSpacing.regular)
+        .padding(.horizontal, DSSpacing.regular)
     }
 }
 
 #Preview {
-    SDSectionHeader(title: "Level 7", trailing: "3 open")
+    DSSectionHeader(title: "Level 7", trailing: "3 open")
 }

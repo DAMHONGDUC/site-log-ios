@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct SDTextField: View {
+public struct DSTextField: View {
     let label: String?
     let placeholder: String
     @Binding var text: String
@@ -25,33 +25,33 @@ public struct SDTextField: View {
         VStack(alignment: .leading, spacing: 6) {
             if let label {
                 Text(label)
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.textSecondary)
             }
 
-            HStack(spacing: SDSpacing.small) {
+            HStack(spacing: DSSpacing.small) {
                 field
 
                 if let trailingSystemImage {
                     Image(systemName: trailingSystemImage)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .foregroundStyle(DSColor.textSecondary)
                 }
             }
             .padding(.horizontal, 14)
             .padding(.vertical, isMultiline ? 11 : 0)
-            .frame(minHeight: isMultiline ? 72 : SDSize.fieldHeight, alignment: .topLeading)
-            .background(SDColor.fill, in: RoundedRectangle(cornerRadius: SDRadius.field))
+            .frame(minHeight: isMultiline ? 72 : DSSize.fieldHeight, alignment: .topLeading)
+            .background(DSColor.fill, in: RoundedRectangle(cornerRadius: DSRadius.field))
         }
     }
 
     @ViewBuilder private var field: some View {
         if isMultiline {
             TextField(placeholder, text: $text, axis: .vertical)
-                .font(SDFont.body)
+                .font(DSFont.body)
                 .lineLimit(2...5)
         } else {
             TextField(placeholder, text: $text)
-                .font(SDFont.body)
+                .font(DSFont.body)
         }
     }
 }
@@ -60,9 +60,9 @@ public struct SDTextField: View {
     @Previewable @State var name = "Riverside Tower B"
     @Previewable @State var note = ""
 
-    VStack(spacing: SDSpacing.regular) {
-        SDTextField("Name", text: $name)
-        SDTextField("Note", placeholder: "e.g. finishing check", text: $note, isMultiline: true)
+    VStack(spacing: DSSpacing.regular) {
+        DSTextField("Name", text: $name)
+        DSTextField("Note", placeholder: "e.g. finishing check", text: $note, isMultiline: true)
     }
     .padding()
 }

@@ -1,8 +1,8 @@
 // U3 · Diagnostics
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct DiagnosticExportView: View {
     @ObserveInjection var inject
@@ -11,42 +11,42 @@ struct DiagnosticExportView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    HStack(spacing: SDSpacing.small) {
-                        SDStatusMarker(kind: .resolved)
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    HStack(spacing: DSSpacing.small) {
+                        DSStatusMarker(kind: .resolved)
                         Text("All 1,284 photos check out")
-                            .font(SDFont.headline)
+                            .font(DSFont.headline)
                     }
                     Text("Fingerprints match, nothing changed since capture. Checked 9:02.")
-                        .font(SDFont.subhead)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.subhead)
+                        .foregroundStyle(DSColor.textSecondary)
                         .padding(.leading)
                 }
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
-                VStack(alignment: .leading, spacing: SDSpacing.small) {
+                VStack(alignment: .leading, spacing: DSSpacing.small) {
                     Text("Storage")
-                        .font(SDFont.section)
+                        .font(DSFont.section)
                     storageBar
                     Text("4.1 GB waiting to upload · 1.6 GB already backed up · 12 GB free")
-                        .font(SDFont.footnote)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.footnote)
+                        .foregroundStyle(DSColor.textSecondary)
                 }
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "This iPhone")
-                    SDListRow(title: "Background uploads", value: "On")
-                    SDDivider()
-                    SDListRow(title: "Low Power Mode", value: "Off")
-                    SDDivider()
-                    SDListRow(title: "Live progress", value: "Polling")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "This iPhone")
+                    DSListRow(title: "Background uploads", value: "On")
+                    DSDivider()
+                    DSListRow(title: "Low Power Mode", value: "Off")
+                    DSDivider()
+                    DSListRow(title: "Live progress", value: "Polling")
                 }
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Diagnostics")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
@@ -68,7 +68,7 @@ struct DiagnosticExportView: View {
     }
 
     private var storageBar: some View {
-        SDProgressBar(value: 0.57)
+        DSProgressBar(value: 0.57)
     }
 }
 

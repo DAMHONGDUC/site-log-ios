@@ -1,5 +1,5 @@
+import DesignSystem
 import SwiftUI
-import SystemDesign
 
 struct CameraTopBar: View {
     let title: String
@@ -9,18 +9,18 @@ struct CameraTopBar: View {
         HStack {
             Button("Close", systemImage: "chevron.down", action: onClose)
                 .labelStyle(.iconOnly)
-                .frame(width: SDSize.minTapTarget, height: SDSize.minTapTarget)
+                .frame(width: DSSize.minTapTarget, height: DSSize.minTapTarget)
 
             Spacer()
 
             Text(title)
-                .font(SDFont.subhead)
+                .font(DSFont.subhead)
 
             Spacer()
 
             Button("Flash", systemImage: "bolt.slash") {}
                 .labelStyle(.iconOnly)
-                .frame(width: SDSize.minTapTarget, height: SDSize.minTapTarget)
+                .frame(width: DSSize.minTapTarget, height: DSSize.minTapTarget)
         }
         .foregroundStyle(Color.white)
         .padding(.horizontal)
@@ -36,7 +36,7 @@ struct CameraBottomBar<Side: View>: View {
     private let modes = ["VIDEO", "PHOTO", "CHECK"]
 
     var body: some View {
-        VStack(spacing: SDSpacing.regular) {
+        VStack(spacing: DSSpacing.regular) {
             Picker("Mode", selection: $mode) {
                 ForEach(modes, id: \.self) { item in
                     Text(item).tag(item)
@@ -46,7 +46,7 @@ struct CameraBottomBar<Side: View>: View {
 
             HStack {
                 Button(action: onThumbnail) {
-                    SitePhotoThumb(size: SDSize.minTapTarget)
+                    SitePhotoThumb(size: DSSize.minTapTarget)
                 }
 
                 Spacer()
@@ -78,7 +78,7 @@ struct CameraSideButton: View {
             VStack {
                 Image(systemName: systemImage)
                 Text(title)
-                    .font(SDFont.caption)
+                    .font(DSFont.caption)
             }
         }
     }

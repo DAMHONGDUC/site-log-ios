@@ -3,14 +3,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "Infrastructure",
+    name: "PlatformKit",
     platforms: [
         .iOS(.v18)
     ],
     products: [
         .library(
-            name: "Infrastructure",
-            targets: ["Infrastructure"]
+            name: "PlatformKit",
+            targets: ["PlatformKit"]
         )
     ],
     dependencies: [
@@ -19,7 +19,7 @@ let package = Package(
     targets: [
         // System services: permissions, camera, Bluetooth, Face ID… Never DomainLayer
         .target(
-            name: "Infrastructure",
+            name: "PlatformKit",
             dependencies: ["Core"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")

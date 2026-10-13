@@ -1,6 +1,6 @@
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct StorageCleanupView: View {
     @ObserveInjection var inject
@@ -8,29 +8,29 @@ struct StorageCleanupView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 Text(
                     "Only files already backed up are removed from this iPhone. They stay in the cloud and in your reports."
                 )
-                .font(SDFont.subhead)
-                .foregroundStyle(SDColor.textSecondary)
-                .padding(.horizontal, SDSpacing.regular)
+                .font(DSFont.subhead)
+                .foregroundStyle(DSColor.textSecondary)
+                .padding(.horizontal, DSSpacing.regular)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: "Backed up", trailing: "1.6 GB")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: "Backed up", trailing: "1.6 GB")
                     ForEach(FakeData.sessions.dropFirst()) { session in
-                        SDListRow(
+                        DSListRow(
                             title: "Riverside · \(session.title)",
                             subtitle: session.summary,
                             value: "540 MB"
                         )
-                        SDDivider()
+                        DSDivider()
                     }
                 }
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Free up space")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {

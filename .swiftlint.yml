@@ -1,6 +1,6 @@
 excluded:
   - .build
-  - Packages/SystemDesign/.build
+  - Packages/DesignSystem/.build
   - Packages/Core/.build
   - Packages/DomainLayer/.build
   - Packages/DataLayer/.build

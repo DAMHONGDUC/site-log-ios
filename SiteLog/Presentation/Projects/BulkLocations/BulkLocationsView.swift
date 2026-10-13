@@ -1,8 +1,8 @@
 // P6 · Add rooms in bulk
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct BulkLocationsView: View {
     @ObserveInjection var inject
@@ -14,48 +14,48 @@ struct BulkLocationsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
-                HStack(spacing: SDSpacing.medium) {
-                    SDTextField("Levels", text: $levels)
-                    SDTextField("Units per level", text: $units)
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
+                HStack(spacing: DSSpacing.medium) {
+                    DSTextField("Levels", text: $levels)
+                    DSTextField("Units per level", text: $units)
                 }
 
-                SDTextField("Rooms in every unit", text: $rooms, isMultiline: true)
+                DSTextField("Rooms in every unit", text: $rooms, isMultiline: true)
 
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
                     HStack(alignment: .firstTextBaseline) {
                         Text("Preview")
-                            .font(SDFont.section)
+                            .font(DSFont.section)
                         Spacer()
                         Text("120 rooms")
-                            .font(SDFont.subhead)
-                            .foregroundStyle(SDColor.textSecondary)
+                            .font(DSFont.subhead)
+                            .foregroundStyle(DSColor.textSecondary)
                     }
 
-                    VStack(alignment: .leading, spacing: SDSpacing.tiny) {
+                    VStack(alignment: .leading, spacing: DSSpacing.tiny) {
                         Text("Level 7 › 7A › Living room")
                         Text("Level 7 › 7A › Bedroom 1")
                         Text("Level 7 › 7A › Bedroom 2")
                         Text("and 117 more")
-                            .foregroundStyle(SDColor.textTertiary)
+                            .foregroundStyle(DSColor.textTertiary)
                     }
-                    .font(SDFont.code)
+                    .font(DSFont.code)
                 }
 
-                HStack(spacing: SDSpacing.tiny) {
+                HStack(spacing: DSSpacing.tiny) {
                     Text("Already have this layout in another project?")
-                        .foregroundStyle(SDColor.textSecondary)
+                        .foregroundStyle(DSColor.textSecondary)
                     NavigationLink("Copy its rooms") {
                         CloneTreeView()
                     }
                     .underline()
-                    .foregroundStyle(SDColor.textPrimary)
+                    .foregroundStyle(DSColor.textPrimary)
                 }
-                .font(SDFont.footnote)
+                .font(DSFont.footnote)
             }
-            .padding(SDSpacing.regular)
+            .padding(DSSpacing.regular)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Add rooms in bulk")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {

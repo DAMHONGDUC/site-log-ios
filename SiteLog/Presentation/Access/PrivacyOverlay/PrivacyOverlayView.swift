@@ -1,13 +1,13 @@
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct PrivacyOverlayView: View {
     @ObserveInjection var inject
 
     var body: some View {
         ZStack {
-            SDColor.canvas
+            DSColor.canvas
                 .ignoresSafeArea()
 
             AppMark(size: 72)

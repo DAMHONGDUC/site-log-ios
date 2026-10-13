@@ -1,8 +1,8 @@
 // R1 · Walkthrough finished
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct EndSessionView: View {
     @ObserveInjection var inject
@@ -10,48 +10,48 @@ struct EndSessionView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
-                VStack(alignment: .leading, spacing: SDSpacing.small) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
+                VStack(alignment: .leading, spacing: DSSpacing.small) {
                     Text("Tue 30 Sep · 8:12 to 14:00")
-                        .font(SDFont.footnote)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.footnote)
+                        .foregroundStyle(DSColor.textSecondary)
                     Text("All 82 rooms checked in just under six hours.")
                         .font(.title.bold())
                 }
                 .padding(.top)
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
                 Text(
                     "You took \(Text("112 photos").bold()), logged \(Text("7 new issues").bold()) and closed \(Text("9").bold()) from last time."
                 )
-                .font(SDFont.body)
-                .padding(.horizontal, SDSpacing.regular)
+                .font(DSFont.body)
+                .padding(.horizontal, DSSpacing.regular)
 
                 VStack(spacing: 0) {
-                    SDListRow(
+                    DSListRow(
                         title: "Every photo is fingerprinted",
                         subtitle: "Nothing was edited after capture"
                     ) {
                         Image(systemName: "checkmark.shield")
-                            .foregroundStyle(SDColor.success)
+                            .foregroundStyle(DSColor.success)
                     }
-                    SDDivider()
+                    DSDivider()
                     NavigationLink {
                         UploadStatusView()
                     } label: {
-                        SDListRow(
+                        DSListRow(
                             title: "Uploading 87 of 112",
                             subtitle: "Keeps going if you close the app"
                         ) {
                             Image(systemName: "arrow.triangle.2.circlepath")
-                                .foregroundStyle(SDColor.textSecondary)
+                                .foregroundStyle(DSColor.textSecondary)
                         }
                     }
                     .buttonStyle(.plain)
                 }
             }
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
             NavigationLink("Make the report") {

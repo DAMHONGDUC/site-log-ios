@@ -1,8 +1,8 @@
 // M4 · Plan viewer
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct PlanViewerView: View {
     @ObserveInjection var inject
@@ -29,17 +29,17 @@ struct PlanViewerView: View {
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
             HStack {
-                SDStatusMarker(kind: .critical, text: "1 critical")
+                DSStatusMarker(kind: .critical, text: "1 critical")
                 Spacer()
-                SDStatusMarker(kind: .major, text: "2 major")
+                DSStatusMarker(kind: .major, text: "2 major")
                 Spacer()
-                SDStatusMarker(kind: .minor, text: "1 minor")
+                DSStatusMarker(kind: .minor, text: "1 minor")
                 Spacer()
-                SDStatusMarker(kind: .resolved, text: "2 closed")
+                DSStatusMarker(kind: .resolved, text: "2 closed")
             }
             Text("Press and hold to drop a pin")
-                .font(SDFont.footnote)
-                .foregroundStyle(SDColor.textTertiary)
+                .font(DSFont.footnote)
+                .foregroundStyle(DSColor.textTertiary)
         }
         .sheet(item: $selectedPin) { pin in
             PinPreviewView(pin: pin)

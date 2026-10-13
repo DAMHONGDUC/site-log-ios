@@ -1,8 +1,8 @@
 // R3 · Letterhead
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct BrandingView: View {
     @ObserveInjection var inject
@@ -14,40 +14,40 @@ struct BrandingView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
-                HStack(spacing: SDSpacing.medium) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
+                HStack(spacing: DSSpacing.medium) {
                     Text("EL")
                         .font(.title3.bold())
-                        .foregroundStyle(SDColor.onPrimary)
+                        .foregroundStyle(DSColor.onPrimary)
                         .frame(width: 64, height: 64)
                         .background(
-                            SDColor.textPrimary,
-                            in: RoundedRectangle(cornerRadius: SDSpacing.medium)
+                            DSColor.textPrimary,
+                            in: RoundedRectangle(cornerRadius: DSSpacing.medium)
                         )
 
                     VStack(alignment: .leading) {
                         Text("Eastline logo.png")
-                            .font(SDFont.body.weight(.medium))
+                            .font(DSFont.body.weight(.medium))
                         Text("Shown on the cover and every page")
-                            .font(SDFont.subhead)
-                            .foregroundStyle(SDColor.textSecondary)
+                            .font(DSFont.subhead)
+                            .foregroundStyle(DSColor.textSecondary)
                     }
 
                     Spacer()
 
                     Button("Change") {}
-                        .font(SDFont.subhead.weight(.semibold))
+                        .font(DSFont.subhead.weight(.semibold))
                         .underline()
-                        .foregroundStyle(SDColor.textPrimary)
+                        .foregroundStyle(DSColor.textPrimary)
                 }
 
-                SDTextField("Company", text: $company)
-                SDTextField("Prepared for", text: $preparedFor)
-                SDTextField("Footer", text: $footer, isMultiline: true)
+                DSTextField("Company", text: $company)
+                DSTextField("Prepared for", text: $preparedFor)
+                DSTextField("Footer", text: $footer, isMultiline: true)
             }
-            .padding(SDSpacing.regular)
+            .padding(DSSpacing.regular)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle("Your letterhead")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)

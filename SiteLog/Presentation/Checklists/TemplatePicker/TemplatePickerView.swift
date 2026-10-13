@@ -1,8 +1,8 @@
 // K1 · Pick a checklist
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct TemplatePickerView: View {
     @ObserveInjection var inject
@@ -11,16 +11,16 @@ struct TemplatePickerView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 NavigationLink {
                     ChecklistRunView()
                 } label: {
-                    SDListRow(
+                    DSListRow(
                         title: "Finishing handover",
                         subtitle: "You stopped at item 15 of 22 this morning",
                         showsChevron: true
                     ) {
-                        SDLiveDot()
+                        DSLiveDot()
                     }
                 }
                 .buttonStyle(.plain)
@@ -37,9 +37,9 @@ struct TemplatePickerView: View {
                     trailing: String(FakeData.allChecklists.count)
                 )
             }
-            .padding(.vertical, SDSpacing.small)
+            .padding(.vertical, DSSpacing.small)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .searchable(text: $searchText)
         .navigationTitle("Checklist")
         .navigationBarTitleDisplayMode(.inline)
@@ -51,14 +51,14 @@ struct TemplatePickerView: View {
         items: [FakeChecklist],
         trailing: String?
     ) -> some View {
-        VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-            SDSectionHeader(title: title, trailing: trailing)
+        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+            DSSectionHeader(title: title, trailing: trailing)
 
             ForEach(items) { item in
                 NavigationLink {
                     ChecklistRunView(title: item.title)
                 } label: {
-                    SDListRow(
+                    DSListRow(
                         title: item.title,
                         subtitle: "\(item.itemCount) items",
                         showsChevron: true
@@ -66,7 +66,7 @@ struct TemplatePickerView: View {
                 }
                 .buttonStyle(.plain)
 
-                SDDivider()
+                DSDivider()
             }
         }
     }

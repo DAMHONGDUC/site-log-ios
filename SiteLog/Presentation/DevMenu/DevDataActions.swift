@@ -9,7 +9,7 @@
         func deleteAllData() async
     }
 
-    // Only logs; F01 replaces it with FakeDevDataActions
+    // Only logs; F01 replaces it with AppDevDataActions
     struct NoopDevDataActions: DevDataActions {
         func seedData() async {
             AppLogger.devMenu.info("Seed data - not wired yet")

@@ -1,8 +1,8 @@
 // P3 · Project overview
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct ProjectDetailView: View {
     @ObserveInjection var inject
@@ -21,7 +21,7 @@ struct ProjectDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 header
 
                 Picker("Section", selection: $section) {
@@ -30,7 +30,7 @@ struct ProjectDetailView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
                 switch section {
                 case .sessions:
@@ -41,9 +41,9 @@ struct ProjectDetailView: View {
                     PlanListView()
                 }
             }
-            .padding(.bottom, SDSpacing.regular)
+            .padding(.bottom, DSSpacing.regular)
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -75,12 +75,12 @@ struct ProjectDetailView: View {
     private var header: some View {
         VStack(alignment: .leading) {
             Text(project.name)
-                .font(SDFont.largeTitle)
+                .font(DSFont.largeTitle)
             Text("\(project.client) · \(project.area)")
-                .font(SDFont.subhead)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.subhead)
+                .foregroundStyle(DSColor.textSecondary)
         }
-        .padding(.horizontal, SDSpacing.regular)
+        .padding(.horizontal, DSSpacing.regular)
     }
 
     @ViewBuilder private var dock: some View {
@@ -106,16 +106,16 @@ struct ProjectDetailView: View {
     }
 
     private var sessionsContent: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.large) {
+        VStack(alignment: .leading, spacing: DSSpacing.large) {
             Text(
                 "\(Text("14 open issues").bold()), 2 of them overdue. Last full walkthrough on 12 Aug with Hanh."
             )
-            .font(SDFont.body)
-            .foregroundStyle(SDColor.textSecondary)
-            .padding(.horizontal, SDSpacing.regular)
+            .font(DSFont.body)
+            .foregroundStyle(DSColor.textSecondary)
+            .padding(.horizontal, DSSpacing.regular)
 
-            VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                SDSectionHeader(title: "Sessions", trailing: String(FakeData.sessions.count))
+            VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                DSSectionHeader(title: "Sessions", trailing: String(FakeData.sessions.count))
 
                 ForEach(FakeData.sessions) { session in
                     NavigationLink {
@@ -129,42 +129,42 @@ struct ProjectDetailView: View {
                     }
                     .buttonStyle(.plain)
 
-                    SDDivider()
+                    DSDivider()
                 }
             }
         }
     }
 
     private func sessionRow(_ session: FakeSession) -> some View {
-        SDListRow(title: session.title, subtitle: session.summary, showsChevron: true) {
+        DSListRow(title: session.title, subtitle: session.summary, showsChevron: true) {
             if session.isLive {
-                SDLiveDot()
+                DSLiveDot()
             } else {
                 Color.clear
                     .frame(width: 10, height: 10)
             }
         } trailing: {
             if session.hasPDF {
-                SDFileTag(text: "PDF")
+                DSFileTag(text: "PDF")
             }
         }
     }
 
     private var locationsContent: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.large) {
+        VStack(alignment: .leading, spacing: DSSpacing.large) {
             ForEach(FakeData.units) { unit in
-                VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-                    SDSectionHeader(title: unit.name, trailing: "\(unit.rooms.count) rooms")
+                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                    DSSectionHeader(title: unit.name, trailing: "\(unit.rooms.count) rooms")
 
                     ForEach(unit.rooms) { room in
                         NavigationLink {
                             RoomView(room: room, unitName: unit.name)
                         } label: {
-                            SDListRow(title: room.name, showsChevron: true)
+                            DSListRow(title: room.name, showsChevron: true)
                         }
                         .buttonStyle(.plain)
 
-                        SDDivider()
+                        DSDivider()
                     }
                 }
             }
@@ -173,11 +173,11 @@ struct ProjectDetailView: View {
                 CloneTreeView()
             } label: {
                 Text("Copy rooms from another project")
-                    .font(SDFont.subhead.weight(.semibold))
+                    .font(DSFont.subhead.weight(.semibold))
                     .underline()
-                    .foregroundStyle(SDColor.textPrimary)
+                    .foregroundStyle(DSColor.textPrimary)
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
         }
     }
 }

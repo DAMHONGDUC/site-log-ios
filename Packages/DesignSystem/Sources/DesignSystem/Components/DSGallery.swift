@@ -1,37 +1,37 @@
 import SwiftUI
 
 // Every component on one screen: used by previews.
-public struct SDGallery: View {
+public struct DSGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.regular) {
-            SDSectionHeader(title: "Level 7", trailing: "3 open")
+        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+            DSSectionHeader(title: "Level 7", trailing: "3 open")
 
             VStack(spacing: 0) {
-                SDListRow(
+                DSListRow(
                     title: "Riverside Tower B",
                     subtitle: "District 7 · 14 open issues",
                     showsChevron: true
                 )
-                SDListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
+                DSListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
             }
 
-            HStack(spacing: SDSpacing.small) {
-                SDChip(title: "All", isSelected: true, action: {})
-                SDChip(title: "Has issues", isSelected: false, action: {})
-                SDCountBadge(count: 2)
+            HStack(spacing: DSSpacing.small) {
+                DSChip(title: "All", isSelected: true, action: {})
+                DSChip(title: "Has issues", isSelected: false, action: {})
+                DSCountBadge(count: 2)
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
 
-            HStack(spacing: SDSpacing.regular) {
-                ForEach(SDStatusMarker.Kind.allCases, id: \.self) { kind in
-                    SDStatusMarker(kind: kind, text: String(describing: kind).capitalized)
+            HStack(spacing: DSSpacing.regular) {
+                ForEach(DSStatusMarker.Kind.allCases, id: \.self) { kind in
+                    DSStatusMarker(kind: kind, text: String(describing: kind).capitalized)
                 }
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
 
-            VStack(spacing: SDSpacing.small) {
+            VStack(spacing: DSSpacing.small) {
                 Button("Primary") {}
                     .buttonStyle(.sd(.primary))
                 Button("Capture") {}
@@ -43,27 +43,27 @@ public struct SDGallery: View {
                 Button("Danger") {}
                     .buttonStyle(.sd(.danger))
             }
-            .padding(.horizontal, SDSpacing.regular)
+            .padding(.horizontal, DSSpacing.regular)
 
-            SDEmptyState(
+            DSEmptyState(
                 systemImage: "folder",
                 title: "No projects yet",
                 message: "Create a project to start."
             )
             .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, SDSpacing.regular)
+        .padding(.vertical, DSSpacing.regular)
         // Fill the whole screen, including behind the status bar
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(SDColor.canvas.ignoresSafeArea())
+        .background(DSColor.canvas.ignoresSafeArea())
     }
 }
 
 #Preview("Light") {
-    SDGallery()
+    DSGallery()
 }
 
 #Preview("Dark") {
-    SDGallery()
+    DSGallery()
         .preferredColorScheme(.dark)
 }

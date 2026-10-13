@@ -1,8 +1,8 @@
 // P2 · New project
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct NewProjectView: View {
     @ObserveInjection var inject
@@ -16,13 +16,13 @@ struct NewProjectView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: SDSpacing.regular) {
-                    SDTextField("Name", placeholder: "Riverside Tower B", text: $name)
+                VStack(spacing: DSSpacing.regular) {
+                    DSTextField("Name", placeholder: "Riverside Tower B", text: $name)
                         .focused($isNameFocused)
-                    SDTextField("Site address", placeholder: "Street, district", text: $address)
-                    SDTextField("Client", placeholder: "Optional", text: $client)
+                    DSTextField("Site address", placeholder: "Street, district", text: $address)
+                    DSTextField("Client", placeholder: "Optional", text: $client)
                 }
-                .padding(SDSpacing.regular)
+                .padding(DSSpacing.regular)
             }
             .navigationTitle("New project")
             .navigationBarTitleDisplayMode(.inline)

@@ -1,8 +1,8 @@
 // C6 · Issue detail
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct IssueDetailView: View {
     @ObserveInjection var inject
@@ -14,7 +14,7 @@ struct IssueDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: SDSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
                 TabView {
                     ForEach(0..<3, id: \.self) { index in
                         SitePhoto(variant: issue.photoVariant + index, showsCrack: index == 0)
@@ -23,28 +23,28 @@ struct IssueDetailView: View {
                 .tabViewStyle(.page)
                 .frame(height: 250)
 
-                VStack(alignment: .leading, spacing: SDSpacing.small) {
-                    SDStatusMarker(kind: issue.severity, text: "\(severityName) · #\(issue.number)")
+                VStack(alignment: .leading, spacing: DSSpacing.small) {
+                    DSStatusMarker(kind: issue.severity, text: "\(severityName) · #\(issue.number)")
                     Text(issue.title)
-                        .font(SDFont.title)
+                        .font(DSFont.title)
                 }
-                .padding(.horizontal, SDSpacing.regular)
+                .padding(.horizontal, DSSpacing.regular)
 
                 VStack(spacing: 0) {
-                    SDListRow(title: "Room", value: issue.room)
-                    SDDivider()
-                    SDListRow(title: "Assigned to", value: issue.assignee)
-                    SDDivider()
-                    SDListRow(title: "Due", value: issue.due.isEmpty ? "No date" : issue.due)
+                    DSListRow(title: "Room", value: issue.room)
+                    DSDivider()
+                    DSListRow(title: "Assigned to", value: issue.assignee)
+                    DSDivider()
+                    DSListRow(title: "Due", value: issue.due.isEmpty ? "No date" : issue.due)
                 }
 
                 Text("Opened by Hanh on 12 Aug · still open on 28 Aug")
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
-                    .padding(.horizontal, SDSpacing.regular)
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.textSecondary)
+                    .padding(.horizontal, DSSpacing.regular)
             }
         }
-        .background(SDColor.canvas)
+        .background(DSColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -63,7 +63,7 @@ struct IssueDetailView: View {
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            HStack(spacing: SDSpacing.small) {
+            HStack(spacing: DSSpacing.small) {
                 Button("Mark up") {
                     isMarkupShown = true
                 }

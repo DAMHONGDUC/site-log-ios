@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct SDListRow<Leading: View, Trailing: View>: View {
+public struct DSListRow<Leading: View, Trailing: View>: View {
     let title: String
     let subtitle: String?
     let showsChevron: Bool
@@ -22,39 +22,39 @@ public struct SDListRow<Leading: View, Trailing: View>: View {
     }
 
     public var body: some View {
-        HStack(spacing: SDSpacing.medium) {
+        HStack(spacing: DSSpacing.medium) {
             leading
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(SDFont.body)
-                    .foregroundStyle(SDColor.textPrimary)
+                    .font(DSFont.body)
+                    .foregroundStyle(DSColor.textPrimary)
 
                 if let subtitle {
                     Text(subtitle)
-                        .font(SDFont.subhead)
-                        .foregroundStyle(SDColor.textSecondary)
+                        .font(DSFont.subhead)
+                        .foregroundStyle(DSColor.textSecondary)
                 }
             }
 
-            Spacer(minLength: SDSpacing.small)
+            Spacer(minLength: DSSpacing.small)
 
             trailing
 
             if showsChevron {
                 Image(systemName: "chevron.right")
-                    .font(SDFont.footnote.weight(.semibold))
-                    .foregroundStyle(SDColor.textTertiary)
+                    .font(DSFont.footnote.weight(.semibold))
+                    .foregroundStyle(DSColor.textTertiary)
             }
         }
-        .frame(minHeight: SDSize.rowMinHeight)
-        .padding(.horizontal, SDSpacing.regular)
+        .frame(minHeight: DSSize.rowMinHeight)
+        .padding(.horizontal, DSSpacing.regular)
         // Whole row is tappable
         .contentShape(Rectangle())
     }
 }
 
-extension SDListRow where Leading == EmptyView, Trailing == SDRowValue {
+extension DSListRow where Leading == EmptyView, Trailing == DSRowValue {
     public init(
         title: String,
         subtitle: String? = nil,
@@ -66,12 +66,12 @@ extension SDListRow where Leading == EmptyView, Trailing == SDRowValue {
             subtitle: subtitle,
             showsChevron: showsChevron,
             leading: { EmptyView() },
-            trailing: { SDRowValue(text: value) }
+            trailing: { DSRowValue(text: value) }
         )
     }
 }
 
-extension SDListRow where Trailing == SDRowValue {
+extension DSListRow where Trailing == DSRowValue {
     public init(
         title: String,
         subtitle: String? = nil,
@@ -84,12 +84,12 @@ extension SDListRow where Trailing == SDRowValue {
             subtitle: subtitle,
             showsChevron: showsChevron,
             leading: leading,
-            trailing: { SDRowValue(text: value) }
+            trailing: { DSRowValue(text: value) }
         )
     }
 }
 
-public struct SDRowValue: View {
+public struct DSRowValue: View {
     let text: String?
 
     public init(text: String?) {
@@ -99,22 +99,22 @@ public struct SDRowValue: View {
     public var body: some View {
         if let text {
             Text(text)
-                .font(SDFont.body)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.body)
+                .foregroundStyle(DSColor.textSecondary)
         }
     }
 }
 
-public struct SDDivider: View {
+public struct DSDivider: View {
     let inset: CGFloat
 
-    public init(inset: CGFloat = SDSpacing.regular) {
+    public init(inset: CGFloat = DSSpacing.regular) {
         self.inset = inset
     }
 
     public var body: some View {
         Rectangle()
-            .fill(SDColor.hairline)
+            .fill(DSColor.hairline)
             .frame(height: 0.5)
             .padding(.leading, inset)
     }
@@ -122,14 +122,14 @@ public struct SDDivider: View {
 
 #Preview {
     VStack(spacing: 0) {
-        SDListRow(
+        DSListRow(
             title: "Riverside Tower B",
             subtitle: "District 7 · 14 open issues",
             showsChevron: true
         )
-        SDDivider()
-        SDListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
-        SDDivider()
-        SDListRow(title: "Living room")
+        DSDivider()
+        DSListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
+        DSDivider()
+        DSListRow(title: "Living room")
     }
 }

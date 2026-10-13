@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct SDEmptyState: View {
+public struct DSEmptyState: View {
     let systemImage: String
     let title: String
     let message: String
@@ -12,26 +12,26 @@ public struct SDEmptyState: View {
     }
 
     public var body: some View {
-        VStack(spacing: SDSpacing.medium) {
+        VStack(spacing: DSSpacing.medium) {
             Image(systemName: systemImage)
                 .font(.system(size: 40))
-                .foregroundStyle(SDColor.textTertiary)
+                .foregroundStyle(DSColor.textTertiary)
 
             Text(title)
-                .font(SDFont.headline)
-                .foregroundStyle(SDColor.textPrimary)
+                .font(DSFont.headline)
+                .foregroundStyle(DSColor.textPrimary)
 
             Text(message)
-                .font(SDFont.subhead)
-                .foregroundStyle(SDColor.textSecondary)
+                .font(DSFont.subhead)
+                .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(SDSpacing.large)
+        .padding(DSSpacing.large)
     }
 }
 
 #Preview {
-    SDEmptyState(
+    DSEmptyState(
         systemImage: "folder",
         title: "No projects yet",
         message: "Create a project to start your first walkthrough."

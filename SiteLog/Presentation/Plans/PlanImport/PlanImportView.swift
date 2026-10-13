@@ -1,6 +1,6 @@
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct PlanImportView: View {
     @ObserveInjection var inject
@@ -8,20 +8,20 @@ struct PlanImportView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: SDSpacing.medium) {
-                RoundedRectangle(cornerRadius: SDRadius.large)
+            VStack(spacing: DSSpacing.medium) {
+                RoundedRectangle(cornerRadius: DSRadius.large)
                     .strokeBorder(
-                        SDColor.lineStrong,
+                        DSColor.lineStrong,
                         style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
                     )
                     .frame(height: 140)
                     .overlay {
-                        VStack(spacing: SDSpacing.small) {
+                        VStack(spacing: DSSpacing.small) {
                             Image(systemName: "doc.badge.plus")
                             Text("PDF, one sheet or many")
-                                .font(SDFont.subhead)
+                                .font(DSFont.subhead)
                         }
-                        .foregroundStyle(SDColor.textSecondary)
+                        .foregroundStyle(DSColor.textSecondary)
                     }
 
                 Button {
@@ -38,7 +38,7 @@ struct PlanImportView: View {
                 }
                 .buttonStyle(.sd(.secondary))
             }
-            .padding(SDSpacing.regular)
+            .padding(DSSpacing.regular)
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Import a plan")
             .navigationBarTitleDisplayMode(.inline)

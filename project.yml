@@ -29,16 +29,16 @@ settings:
     Release:
       VALIDATE_PRODUCT: YES
 packages:
-  SystemDesign:
-    path: Packages/SystemDesign
+  DesignSystem:
+    path: Packages/DesignSystem
   Core:
     path: Packages/Core
   DomainLayer:
     path: Packages/DomainLayer
   DataLayer:
     path: Packages/DataLayer
-  Infrastructure:
-    path: Packages/Infrastructure
+  PlatformKit:
+    path: Packages/PlatformKit
   Inject:
     url: https://github.com/krzysztofzablocki/Inject
     from: 1.6.0
@@ -71,11 +71,11 @@ targets:
         excludes:
           - "**/.gitkeep"
     dependencies:
-      - package: SystemDesign
+      - package: DesignSystem
       - package: Core
       - package: DomainLayer
       - package: DataLayer
-      - package: Infrastructure
+      - package: PlatformKit
       - package: Inject
       - package: Factory
         product: FactoryKit

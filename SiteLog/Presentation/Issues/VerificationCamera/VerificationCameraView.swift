@@ -1,8 +1,8 @@
 // C3 · Re-check camera
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct VerificationCameraView: View {
     @ObserveInjection var inject
@@ -51,13 +51,13 @@ struct VerificationCameraView: View {
             }
             .overlay(alignment: .top) {
                 ghostCard
-                    .padding(SDSpacing.regular)
+                    .padding(DSSpacing.regular)
             }
             .clipped()
     }
 
     private var ghostCard: some View {
-        VStack(spacing: SDSpacing.small) {
+        VStack(spacing: DSSpacing.small) {
             Text("Line up with 12 Aug · \(Int(ghostOpacity * 100))%")
             Slider(value: $ghostOpacity, in: 0...1)
         }

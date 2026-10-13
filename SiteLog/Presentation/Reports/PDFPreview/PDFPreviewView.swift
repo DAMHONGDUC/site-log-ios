@@ -1,8 +1,8 @@
 // R5 · PDF preview
 
+import DesignSystem
 import Inject
 import SwiftUI
-import SystemDesign
 
 struct PDFPreviewView: View {
     @ObserveInjection var inject
@@ -11,11 +11,11 @@ struct PDFPreviewView: View {
         VStack {
             fakePage
             Text("1 of 18")
-                .font(SDFont.footnote)
+                .font(DSFont.footnote)
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(SDColor.fill)
+        .background(DSColor.fill)
         .navigationTitle("R-0930-07.pdf")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -25,7 +25,7 @@ struct PDFPreviewView: View {
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            HStack(spacing: SDSpacing.small) {
+            HStack(spacing: DSSpacing.small) {
                 Button("Save to Files") {}
                     .buttonStyle(.sd(.secondary))
                 ShareLink(item: "R-0930-07.pdf") {
@@ -41,14 +41,14 @@ struct PDFPreviewView: View {
     private var fakePage: some View {
         VStack(alignment: .leading) {
             Text("Site inspection report")
-                .font(SDFont.headline)
+                .font(DSFont.headline)
             Text("Riverside Tower B · 30 September 2026 · Hanh Nguyen")
-                .font(SDFont.footnote)
+                .font(DSFont.footnote)
             Text("7 new issues: 1 critical, 4 major, 2 minor. 9 issues from 12 Aug closed.")
-                .font(SDFont.footnote)
+                .font(DSFont.footnote)
             Spacer()
             Text("Page 1 of 18")
-                .font(SDFont.footnote)
+                .font(DSFont.footnote)
         }
         .foregroundStyle(Color.black)
         .padding()
