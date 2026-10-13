@@ -77,7 +77,7 @@ SiteLog/
 |---|---|---|
 | <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/Entities.swift` | `Project`, `Session` (state machine), `Location` (depth ≤ 3), `Capture` (frozen fields) |
 | <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/*Repository.swift` | One protocol per aggregate: project, session, location, capture |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/UseCases/` | `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Projects/UseCases/` | One file per use case: `CreateProjectUseCase`, `StartSessionUseCase`, `GenerateLocationsUseCase`, `CloneLocationTreeUseCase`, … |
 
 #### Steps
 

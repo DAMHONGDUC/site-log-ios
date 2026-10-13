@@ -73,7 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Issues/` | `Issue`, `IssuePairing`, `PairIssuesUseCase` (pure), log / close / carry-over use cases |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Issues/` | `Issue`, `IssuePairing` |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Issues/UseCases/` | One file per use case: `PairIssuesUseCase` (pure), log / close / carry-over |
 
 </dd></dl>
 

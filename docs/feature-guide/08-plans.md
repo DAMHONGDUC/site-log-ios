@@ -73,7 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`), import / pin / move use cases |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Plans/` | `PlanSheet`, `Pin` (`NormalizedPoint`) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Plans/UseCases/` | One file per use case: import / pin / move |
 
 </dd></dl>
 

@@ -316,7 +316,7 @@ site-log-ios/
 | `View` | Layout only: no business `if`, no `ModelContext`, no async work |
 | `ViewModel` | `@MainActor @Observable final class`; calls use cases; exposes `Sendable` row structs |
 | Row struct | `LocationRow`, `IssueSnapshot`; never an entity or `PersistentModel` |
-| Use case | One per user action, a `struct` with one `execute`; depends on repository protocols only |
+| Use case | One per user action, a `struct` with one `execute`, one file each in `<Feature>/UseCases/`; depends on repository protocols only |
 | Repository | One per aggregate: `ProjectRepository`, `CaptureRepository`, `IssueRepository`, … |
 
 </dd></dl>
@@ -475,7 +475,7 @@ final class ProjectListViewModel {
 | Kind | Pattern | Example |
 |---|---|---|
 | ViewModel | `<Screen>ViewModel` | `SurveySessionViewModel` |
-| Use case | `<Verb><Noun>UseCase` | `CreateProjectUseCase` |
+| Use case | `<Verb><Noun>UseCase.swift`, one per file | `CreateProjectUseCase.swift` |
 | Repository protocol / impl | `<Noun>Repository` / `<Source><Noun>Repository` | `SwiftDataProjectRepository` |
 | DTO / mapper | `<Noun>DTO` / `<Noun>Mapper` | `ProjectDTO` |
 | Infrastructure protocol | `<Noun>ing` / `<Noun>Providing` | `PlanRendering` |

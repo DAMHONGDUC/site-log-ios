@@ -75,7 +75,7 @@ SiteLog/
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/CaptureSource.swift` | Protocol: start, stop, takePhoto → file URL + metadata |
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Capture/UseCases/RecordCaptureUseCase.swift` | Write → hash → save `Capture` (entity from F02) |
 
 </dd></dl>
 

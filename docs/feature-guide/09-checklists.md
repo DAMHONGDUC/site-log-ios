@@ -73,7 +73,8 @@ SiteLog/
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Checklists/` | Template, item, run, result; answer use case (Fail → issue through F05) |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Checklists/` | Template, item, run, result |
+| <b class="tag-new">New</b> | `Packages/DomainLayer/Sources/DomainLayer/Checklists/UseCases/` | One file per use case: answer (Fail → issue through F05) |
 
 </dd></dl>
 

@@ -64,7 +64,7 @@
 
 ```text
 Packages/
-├── DomainLayer/Sources/DomainLayer/Access/                 # 1: AccessSettings, PasscodeCheck, AccessRepository, AccessUseCases
+├── DomainLayer/Sources/DomainLayer/Access/                 # 1: AccessSettings, PasscodeCheck, AccessRepository, UseCases/ (one file each)
 ├── DataLayer/Sources/DataLayer/
 │   ├── Fakes/InMemoryAccessRepository.swift      # 2
 │   └── Security/                                 # 4: KeychainAccessRepository, BiometricAuthenticator
@@ -278,9 +278,18 @@ public protocol AccessRepository: Sendable {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/AccessUseCases.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Access/UseCases/` (6 files)
 
-<b>Explain</b> · One use case per user action; view models call these, never the repository.
+<b>Explain</b> · One use case per user action, one file each; view models call these, never the repository.
+
+| File | Holds |
+|---|---|
+| `LoadAccessSettingsUseCase.swift` | Reads the settings that pick the first screen. |
+| `SaveAccessSettingsUseCase.swift` | Saves the App lock settings. |
+| `FinishWelcomeUseCase.swift` | Marks the welcome screen as seen, so it never shows again. |
+| `CheckPasscodeUseCase.swift` | Checks the 6 typed digits: correct, wrong, or locked out. |
+| `SetPasscodeUseCase.swift` | Stores a new passcode (Set passcode screen). |
+| `UnlockWithBiometricsUseCase.swift` | Asks Face ID; true when it matched. |
 
 <b>Think</b>
 
@@ -289,7 +298,7 @@ public protocol AccessRepository: Sendable {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- One small struct per user action: holds the repository, has one `execute`.
+- One small struct per user action, in its own file: holds the repository, has one `execute`.
 
 </details>
 
@@ -303,6 +312,8 @@ public protocol AccessRepository: Sendable {
 <details open>
 <summary><b>Hint 3 · Skeleton</b></summary>
 
+`LoadAccessSettingsUseCase.swift`
+
 ```swift
 public struct LoadAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
@@ -315,19 +326,18 @@ public struct LoadAccessSettingsUseCase: Sendable {
         // ask the repository
     }
 }
-
-// Same shape: SaveAccessSettings, FinishWelcome, CheckPasscode,
-// SetPasscode, UnlockWithBiometrics
 ```
+
+The other five files have the same shape.
 
 </details>
 
 <details>
 <summary><b>Code</b></summary>
 
-```swift
-// One use case per user action. Each one forwards to the repository for now.
+`LoadAccessSettingsUseCase.swift`
 
+```swift
 public struct LoadAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
 
@@ -339,7 +349,11 @@ public struct LoadAccessSettingsUseCase: Sendable {
         return await repository.loadSettings()
     }
 }
+```
 
+`SaveAccessSettingsUseCase.swift`
+
+```swift
 public struct SaveAccessSettingsUseCase: Sendable {
     private let repository: any AccessRepository
 
@@ -351,7 +365,11 @@ public struct SaveAccessSettingsUseCase: Sendable {
         await repository.saveSettings(settings)
     }
 }
+```
 
+`FinishWelcomeUseCase.swift`
+
+```swift
 public struct FinishWelcomeUseCase: Sendable {
     private let repository: any AccessRepository
 
@@ -363,7 +381,11 @@ public struct FinishWelcomeUseCase: Sendable {
         await repository.markWelcomeSeen()
     }
 }
+```
 
+`CheckPasscodeUseCase.swift`
+
+```swift
 public struct CheckPasscodeUseCase: Sendable {
     private let repository: any AccessRepository
 
@@ -375,7 +397,11 @@ public struct CheckPasscodeUseCase: Sendable {
         return await repository.checkPasscode(passcode)
     }
 }
+```
 
+`SetPasscodeUseCase.swift`
+
+```swift
 public struct SetPasscodeUseCase: Sendable {
     private let repository: any AccessRepository
 
@@ -387,7 +413,11 @@ public struct SetPasscodeUseCase: Sendable {
         await repository.setPasscode(passcode)
     }
 }
+```
 
+`UnlockWithBiometricsUseCase.swift`
+
+```swift
 public struct UnlockWithBiometricsUseCase: Sendable {
     private let repository: any AccessRepository
 
@@ -405,7 +435,7 @@ public struct UnlockWithBiometricsUseCase: Sendable {
 
 <b>Try</b>
 
-- Write the first use case, then the other five without looking. Compare the names with **Code**.
+- Write the first file, then the other five without looking. Compare the names with **Code**.
 
 <details open>
 <summary><strong>1.1 Check</strong></summary>
