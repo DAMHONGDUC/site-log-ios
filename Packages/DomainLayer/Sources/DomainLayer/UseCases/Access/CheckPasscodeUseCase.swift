@@ -6,6 +6,6 @@ public struct CheckPasscodeUseCase {
     }
 
     public func execute(passcode: String) async -> Result<PasscodeCheck, AccessError> {
-        return await repository.checkPasscode(passcode: passcode)
+        return await repository.checkPasscode(inputPasscode: passcode)
     }
 }

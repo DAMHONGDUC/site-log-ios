@@ -7,6 +7,6 @@ public struct SaveAccessSettingUseCase {
     }
 
     public func execute(setting: AccessSetting) async -> Result<Void, AccessError> {
-        return await repository.saveAccessSetting(setting: setting)
+        return await repository.saveAccessSetting(newSetting: setting)
     }
 }
