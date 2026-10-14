@@ -61,6 +61,7 @@
 		3E1BEA201C79755961778CF0 /* generate_app_icon.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate_app_icon.sh; sourceTree = "<group>"; };
 		3E6A8A5E14B8E52C29D69082 /* 03-backend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "03-backend.md"; sourceTree = "<group>"; };
 		3FBD90C31B8BFC41DF60AED8 /* check-imports.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "check-imports.sh"; sourceTree = "<group>"; };
+		4034CCC34C86992BE3FF4F82 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		47A98ACE570C4E3B3E6F3848 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		481F629DD7508CE23DFEB031 /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		493D1A354595C27138CCCFF1 /* reset_xcode.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = reset_xcode.sh; sourceTree = "<group>"; };
@@ -128,6 +129,7 @@
 		CA3079F8ADB060B314F36A4C /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		CBA37277AD1DCCF0DC9215EE /* common.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = common.sh; sourceTree = "<group>"; };
 		CDA1C022516A9FC5A6FE1196 /* PlatformKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PlatformKit; path = Packages/PlatformKit; sourceTree = SOURCE_ROOT; };
+		D1CABAB41BE45A51D75AA265 /* .gitmodules */ = {isa = PBXFileReference; path = .gitmodules; sourceTree = "<group>"; };
 		D24E6D0BC5DA541E04645B7F /* 10-devicelink.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "10-devicelink.md"; sourceTree = "<group>"; };
 		D7254EABD7BC3EE96BF70F4D /* 07-reports.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "07-reports.md"; sourceTree = "<group>"; };
 		D75D5125D6F8F2806AA0B833 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 		DF25872F42F6F2FAE5F9B5CA /* build_ipa.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_ipa.sh; sourceTree = "<group>"; };
 		E10A9D779D18D7198F3C22E5 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		E17E082E4731B0114159562B /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
+		E3CB5867DE2270610BD87342 /* Gemfile.lock */ = {isa = PBXFileReference; path = Gemfile.lock; sourceTree = "<group>"; };
 		E501A03FD345691A0A48AC76 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
 		F0D19FCFBA693CEAFA6D9024 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignSystem; path = Packages/DesignSystem; sourceTree = SOURCE_ROOT; };
@@ -510,9 +513,12 @@
 				05622653328B6A994483E4C1 /* Tools */,
 				12C0AF578305E1CBD421BB22 /* .gitattributes */,
 				6B244EF1F0B74757AB50F783 /* .gitignore */,
+				D1CABAB41BE45A51D75AA265 /* .gitmodules */,
 				33C1E91E8132908B17CC58F9 /* .swift-format */,
 				FAF69F5B98D8BF7D4E07E3C7 /* .swiftlint.yml */,
+				4034CCC34C86992BE3FF4F82 /* CLAUDE.md */,
 				7D85615B3CCCDE3B45720CD8 /* Gemfile */,
+				E3CB5867DE2270610BD87342 /* Gemfile.lock */,
 				0C382647849273800997DC28 /* Makefile */,
 				61996AB7DB87AFD0F031E82D /* project.yml */,
 				34FB39010F292720B1ADF77D /* README.md */,

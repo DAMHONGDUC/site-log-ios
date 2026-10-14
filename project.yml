@@ -50,14 +50,17 @@ fileGroups:
   - fastlane
   - README.md
   - ROADMAP.md
+  - CLAUDE.md
   - .gitignore
   - .gitattributes
+  - .gitmodules
   - .swift-format
   - .swiftlint.yml
   - project.yml
   - Makefile
   - script-tools.properties
   - Gemfile
+  - Gemfile.lock
   - .vscode
   - .github
   - Tools
