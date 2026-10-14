@@ -6,19 +6,20 @@ import Testing
 
 @testable import SiteLog
 
-struct FixedLock: AppClock {
+struct FixedClock: AppClock {
     let now: Date
     let uptime: ContinuousClock.Instant
 
 }
 
-struct AppDependenciesTest {
+@Suite(.container)
+struct CoreDITests {
 
     @Test func clockCanBeReplacedInTests() {
         let fixedDate = Date(timeIntervalSince1970: 0)
 
         Container.shared.clock.register {
-            FixedLock(now: fixedDate, uptime: ContinuousClock.now)
+            FixedClock(now: fixedDate, uptime: ContinuousClock.now)
         }
 
         let clock = Container.shared.clock()
