@@ -29,7 +29,7 @@
 - **Demo:** photo captured and hashed in airplane mode, linked to a location, kept after relaunch.
 - **Spec:** [02](../feature-docs/01-field-work.md#02-capture-pipeline)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |

@@ -539,7 +539,7 @@ final class ProjectListViewModel {
 **Adding a feature**
 
 1. Domain: entity, repository protocol, use cases.
-2. Fake data: the real repository (`<Noun>RepositoryImpl` in `DataLayer/Repositories/`) on in-memory values, registered once in `AppDependencies`. No separate fake repository.
+2. Fake data: the real repository (`<Noun>RepositoryImpl` in `DataLayer/Repositories/`) on in-memory values, registered once in `AppDependencies`. No separate fake repository; the dev menu resets / seeds it through Debug-only `resetAllData()` / `seedSampleData()` on the repository protocol and `UseCases/DevData/` use cases.
 3. View models wired into the screens, running on those in-memory values.
 4. Real data: replace the repository's insides with data sources (`DataSources/Local/`, `Remote/`), models (`Models/Local/`, `Remote/`), mappers, and PlatformKit for system services; same type, same registration.
    Test doubles live only in test targets (`SiteLogTests/Doubles/`, `Packages/<Name>/Tests/`).
@@ -589,8 +589,9 @@ final class ProjectListViewModel {
 | [D15](#d15--use-cases-return-entities) | Use cases return entities | Accepted |
 | [D16](#d16--platformkit-is-a-library-not-a-ring) | PlatformKit is a library, not a ring | Accepted |
 | [D17](#d17--rename-infrastructure-and-systemdesign) | Rename `Infrastructure` and `SystemDesign` | Accepted |
+| [D18](#d18--dev-menu-data-through-use-cases) | Dev menu data through use cases | Accepted |
 
-- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
@@ -992,6 +993,24 @@ final class ProjectListViewModel {
 - **Consequences:**
   - D10 keeps the old name as history; every other rule, guide and line of code uses `PlatformKit` and `DesignSystem`.
   - New components start with `DS`.
+
+</dd></dl>
+
+### D18 — Dev menu data through use cases
+
+<dl><dd>
+
+- **Context:** the dev menu needs to wipe and seed every feature’s data; only the repositories hold it.
+- **Decision:** each repository protocol gets Debug-only `resetAllData()` / `seedSampleData()`; `UseCases/DevData/` holds `ResetAll<Feature>DataUseCase` / `Seed<Feature>DataUseCase`; `DevMenuViewModel` takes them through `init` like any screen.
+
+| Rejected | Why not |
+|---|---|
+| A separate `DevDataResettable` protocol, cast from the registered repository | A cast at runtime and a second path the rest of the app does not use |
+| Dev data as its own repository over the concrete repositories | Needs the concrete types registered again or a cast |
+
+- **Consequences:**
+  - Every implementation, test doubles included, writes the two methods under `#if DEBUG`.
+  - Release builds contain none of it: protocol methods, use cases, registrations and the dev menu are all `#if DEBUG`.
 
 </dd></dl>
 

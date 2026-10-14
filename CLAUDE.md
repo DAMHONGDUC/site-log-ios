@@ -16,7 +16,7 @@ Index of the project rules. The detail lives in [00-overview.md](docs/feature-do
 
 - Naming: `<Protocol>Impl` for every implementation in DataLayer (`AccessRepositoryImpl`, `AccessLocalDataSourceImpl`), `<Noun>Model`, `<Noun>DTO`, `<Noun>Mapper`: [§7 Conventions](docs/feature-docs/00-overview.md#7-conventions).
 - Errors: data sources and PlatformKit `throws`; repositories catch and return `Result<T, <Feature>Error>`; view models `switch` the result: [§4.6](docs/feature-docs/00-overview.md#46-error-handling).
-- No fake repositories: the fake-data step writes the real `Impl` on in-memory values; the real-data step replaces its insides. Test doubles live only in test targets: [§7 Adding a feature](docs/feature-docs/00-overview.md#7-conventions).
+- No fake repositories: the fake-data step writes the real `Impl` on in-memory values; the real-data step replaces its insides. The dev menu resets / seeds through Debug-only `resetAllData()` / `seedSampleData()` on the repository protocol, called by `UseCases/DevData/` use cases. Test doubles live only in test targets: [§7 Adding a feature](docs/feature-docs/00-overview.md#7-conventions).
 - DI: view models take use cases through `init` and never import `FactoryKit`; views build them with `Container.shared`: [D14](docs/feature-docs/00-overview.md#d14--view-models-take-use-cases-through-init).
 - `any P` for a protocol used as a type.
 - Package types the app uses are `public`, with a `public init`.

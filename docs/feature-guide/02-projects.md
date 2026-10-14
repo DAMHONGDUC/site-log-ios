@@ -29,7 +29,7 @@
 - **Demo:** project → 80 generated locations → walkthrough, all offline and kept after relaunch.
 - **Spec:** [01](../feature-docs/01-field-work.md#01-projects-sessions-locations), [00 §3 Data model](../feature-docs/00-overview.md#3-data-model)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -108,7 +108,7 @@ SiteLog/
 
 1. Implement the Domain protocol under its real name as an `actor` that keeps everything in memory for now.
 2. Seed it with “Riverside Tower B”, 37 of 82 rooms, 4 sessions — move the values out of `App/Fakes/FakeData.swift`.
-3. Add Debug-only (`#if DEBUG`) `reset()` (empty) and `seed()`; `AppDevDataActions` calls them from the dev menu.
+3. Debug only: add `resetAllData()` / `seedSampleData()` to the repository protocol and `Impl`, add `ResetAll<Feature>DataUseCase` / `Seed<Feature>DataUseCase` in `UseCases/DevData/`, call them from `DevMenuViewModel`.
 4. Register it in `AppDependencies`.
 
 </dd></dl>

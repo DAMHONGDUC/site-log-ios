@@ -29,7 +29,7 @@
 - **Demo:** checklist run in a room; a Fail creates one prefilled issue.
 - **Spec:** [13](../feature-docs/01-field-work.md#13-checklist-templates)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -93,7 +93,7 @@ SiteLog/
 
 1. Implement the Domain protocol under its real name as an `actor` that keeps everything in memory for now.
 2. Seed it with “Finishing handover” (22 items) and 5 other templates — move the values out of `App/Fakes/FakeData.swift`.
-3. Add Debug-only (`#if DEBUG`) `reset()` (empty) and `seed()`; `AppDevDataActions` calls them from the dev menu.
+3. Debug only: add `resetAllData()` / `seedSampleData()` to the repository protocol and `Impl`, add `ResetAll<Feature>DataUseCase` / `Seed<Feature>DataUseCase` in `UseCases/DevData/`, call them from `DevMenuViewModel`.
 4. Register it in `AppDependencies`.
 
 </dd></dl>

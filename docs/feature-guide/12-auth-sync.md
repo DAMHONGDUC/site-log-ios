@@ -30,7 +30,7 @@
 - **Demo:** a second device sees the same data; deletes propagate.
 - **Spec:** [08](../feature-docs/02-upload-sync.md#08-auth-and-sync), [14 §7 Sync](../feature-docs/03-backend.md#7-sync)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through `AppDevDataActions`; test doubles live only in test targets.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |

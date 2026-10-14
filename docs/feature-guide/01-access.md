@@ -67,17 +67,17 @@ Packages/
 ├── DomainLayer/Sources/DomainLayer/
 │   ├── Entities/Access/                                                   # 1: AccessSettings, PasscodeCheck, AccessError
 │   ├── Repositories/                                                      # 1: AccessRepository
-│   └── UseCases/Access/                                                   # 1: one file per use case
-├── DataLayer/Sources/DataLayer/Repositories/AccessRepositoryImpl.swift      # 2: in memory · 4: real storage
+│   └── UseCases/Access/, UseCases/DevData/                                # 1: one file per use case · 2: dev menu use cases
+├── DataLayer/Sources/DataLayer/Repositories/                               # 2: AccessRepositoryImpl (in memory · 4: real storage)
 ├── DataLayer/Sources/DataLayer/DataSources/Local/Keychain/                  # 4: AccessLocalDataSource, AccessLocalDataSourceImpl
-├── PlatformKit/Sources/PlatformKit/Biometrics/                        # 4: BiometricAuthenticating, BiometricAuthenticator
+├── PlatformKit/Sources/PlatformKit/Biometrics/                              # 4: BiometricAuthenticating, BiometricAuthenticator
 ├── Core/Sources/Core/Crypto/PasscodeHasher.swift                            # 4: PBKDF2-SHA256
 └── Core/Sources/Core/Logger/AppLogger.swift                                 # 2: access category
 SiteLog/
 ├── App/
-│   ├── AppDependencies.swift             # 2: access registrations (+ dev data actions)
-│   └── DevData/AppDevDataActions.swift   # 2: dev menu → repositories (Debug only)
+│   └── AppDependencies.swift             # 2: access registrations + dev menu use cases (Debug only)
 └── Presentation/
+    ├── DevMenu/DevMenuViewModel.swift, ResetAppAction.swift   # 2: dev menu on use cases
     ├── Root/RootView.swift, RootViewModel.swift      # 3
     ├── Access/SignIn/, FaceIDLock/, PasscodeUnlock/   # 3: + ViewModel next to each view
     └── Settings/AppLock/, SetPasscode/                # 3: + ViewModel next to each view
@@ -280,6 +280,7 @@ public protocol AccessRepository: Sendable {
     // check / set passcode
     // unlock with biometrics → Bool
     // every method returns Result<…, AccessError>
+    // Debug only: reset all data, seed sample data
 }
 ```
 
@@ -299,6 +300,12 @@ public protocol AccessRepository: Sendable {
     func setPasscode(_ passcode: String) async -> Result<Void, AccessError>
     // .success(true) when Face ID matched
     func unlockWithBiometrics() async -> Result<Bool, AccessError>
+
+    // Dev menu only
+    #if DEBUG
+    func resetAllData() async
+    func seedSampleData() async
+    #endif
 }
 ```
 
@@ -543,7 +550,7 @@ public enum AppLogger {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- An actor holding the settings, the passcode and a wrong-try counter; each protocol method reads or writes them; Debug-only `reset()` and `seed()` serve the dev menu.
+- An actor holding the settings, the passcode and a wrong-try counter; each protocol method reads or writes them; Debug-only `resetAllData()` and `seedSampleData()` serve the dev menu.
 
 </details>
 
@@ -552,7 +559,8 @@ public enum AppLogger {
 
 - `public actor … : AccessRepository`, `public init() {}`, `public func` for every method the app calls; `import Core`, `import DomainLayer`.
 - An actor method satisfies an `async` requirement without writing `async`.
-- `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`, `#if DEBUG`.
+- `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`.
+- `#if DEBUG extension AccessRepositoryImpl { … }` for `resetAllData()` / `seedSampleData()`.
 - Memory never fails, so step 2 always returns `.success(…)`; `.failure` arrives with Keychain in step 4.
 
 </details>
@@ -586,12 +594,14 @@ public actor AccessRepositoryImpl: AccessRepository {
 
     public func setPasscode(_ newPasscode: String) -> Result<Void, AccessError> { }
     public func unlockWithBiometrics() async -> Result<Bool, AccessError> { /* sleep 0.5 s, .success(true) */ }
-
-    #if DEBUG
-    public func reset() { /* back to first launch */ }
-    public func seed() { /* welcome seen */ }
-    #endif
 }
+
+#if DEBUG
+extension AccessRepositoryImpl {
+    public func resetAllData() { /* back to first launch */ }
+    public func seedSampleData() { /* welcome seen */ }
+}
+#endif
 ```
 
 </details>
@@ -670,23 +680,24 @@ public actor AccessRepositoryImpl: AccessRepository {
 
         return .success(true)
     }
+}
 
-    // MARK: - Dev menu
-
-    #if DEBUG
+// Dev menu only
+#if DEBUG
+extension AccessRepositoryImpl {
     // Delete all data → back to first launch
-    public func reset() {
+    public func resetAllData() {
         settings = AccessRepositoryImpl.firstLaunch
         passcode = "123456"
         wrongTries = 0
     }
 
     // Seed data → a returning user: welcome seen, lock on
-    public func seed() {
+    public func seedSampleData() {
         settings.hasSeenWelcome = true
     }
-    #endif
 }
+#endif
 ```
 
 </details>
@@ -698,19 +709,77 @@ public actor AccessRepositoryImpl: AccessRepository {
 
 ---
 
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/UseCases/DevData/` (2 files, Debug only)
+
+<b>Explain</b> · The dev menu’s actions as use cases, like any other screen; each calls the repository’s Debug-only method.
+
+| File | Holds |
+|---|---|
+| `ResetAllAccessDataUseCase.swift` | Back to first launch: calls `resetAllData()` |
+| `SeedAccessDataUseCase.swift` | Sample access data: calls `seedSampleData()` |
+
+<details>
+<summary><b>Code</b></summary>
+
+`ResetAllAccessDataUseCase.swift`
+
+```swift
+#if DEBUG
+// Dev menu: back to first launch for the access flow
+public struct ResetAllAccessDataUseCase {
+    private let repository: any AccessRepository
+
+    public init(repository: any AccessRepository) {
+        self.repository = repository
+    }
+
+    public func execute() async {
+        await repository.resetAllData()
+    }
+}
+#endif
+```
+
+`SeedAccessDataUseCase.swift`
+
+```swift
+#if DEBUG
+// Dev menu: put sample access settings in place
+public struct SeedAccessDataUseCase {
+    private let repository: any AccessRepository
+
+    public init(repository: any AccessRepository) {
+        self.repository = repository
+    }
+
+    public func execute() async {
+        await repository.seedSampleData()
+    }
+}
+#endif
+```
+
+</details>
+
+<b>Try</b>
+
+- Remove `#if DEBUG` from one use case and build for Release: what fails, and why is that the right failure?
+
+---
+
 <b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F01 version)*
 
-<b>Explain</b> · Registers the access repository, one factory per use case, and the dev menu actions.
+<b>Explain</b> · Registers the access repository, one factory per use case, and the two dev menu use cases.
 
 <b>Think</b>
 
-- The dev menu needs `reset()`, which is not part of `AccessRepository`. How can it reach the repository while Presentation only knows the protocol?
 - Why is the repository `.singleton` but the use cases are not?
+- Why must the dev menu factories sit inside `#if DEBUG`?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Register the repository by its concrete type (singleton), hand it out as the protocol, build each use case from the protocol.
+- Register the repository once, as the protocol (singleton); build each use case from it, dev menu ones included.
 
 </details>
 
@@ -718,7 +787,7 @@ public actor AccessRepositoryImpl: AccessRepository {
 <summary><b>Hint 2 · APIs</b></summary>
 
 - `import Core`, `import DataLayer`, `import DomainLayer`: the composition root is the one app file that imports DataLayer.
-- `Factory<AccessRepositoryImpl>`, `Factory<any AccessRepository>`, `self { self.accessRepositoryImpl() }`, `#if DEBUG`.
+- `Factory<any AccessRepository>`, `self { AccessRepositoryImpl() }.singleton`, `#if DEBUG`.
 
 </details>
 
@@ -734,12 +803,8 @@ import FactoryKit
 extension Container {
     var clock: Factory<any AppClock> { /* unchanged */ }
 
-    var accessRepositoryImpl: Factory<AccessRepositoryImpl> {
-        // the repository, singleton
-    }
-
     var accessRepository: Factory<any AccessRepository> {
-        // the same repository, as the protocol
+        // the repository, singleton, as the protocol
     }
 
     var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
@@ -748,7 +813,8 @@ extension Container {
     // … one per use case
 
     #if DEBUG
-    var devDataActions: Factory<any DevDataActions> { /* AppDevDataActions() */ }
+    var resetAllAccessData: Factory<ResetAllAccessDataUseCase> { /* from accessRepository */ }
+    var seedAccessData: Factory<SeedAccessDataUseCase> { /* from accessRepository */ }
     #endif
 }
 ```
@@ -775,13 +841,8 @@ extension Container {
 
     // MARK: - Access
 
-    // Concrete type so the dev menu can reset / seed it
-    var accessRepositoryImpl: Factory<AccessRepositoryImpl> {
-        self { AccessRepositoryImpl() }.singleton
-    }
-
     var accessRepository: Factory<any AccessRepository> {
-        self { self.accessRepositoryImpl() }
+        self { AccessRepositoryImpl() }.singleton
     }
 
     var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
@@ -811,8 +872,12 @@ extension Container {
     // MARK: - Dev menu (Debug only)
 
     #if DEBUG
-    var devDataActions: Factory<any DevDataActions> {
-        self { AppDevDataActions() }
+    var resetAllAccessData: Factory<ResetAllAccessDataUseCase> {
+        self { ResetAllAccessDataUseCase(repository: self.accessRepository()) }
+    }
+
+    var seedAccessData: Factory<SeedAccessDataUseCase> {
+        self { SeedAccessDataUseCase(repository: self.accessRepository()) }
     }
     #endif
 }
@@ -822,29 +887,29 @@ extension Container {
 
 <b>Try</b>
 
-- Remove `.singleton` from `accessRepositoryImpl`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
+- Remove `.singleton` from `accessRepository`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DevData/AppDevDataActions.swift`
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/DevMenu/DevMenuViewModel.swift`
 
-<b>Explain</b> · Connects the dev menu’s Seed data / Delete all data to the repositories (Debug only).
+<b>Explain</b> · The dev menu’s view model: Seed data and Delete all data call the DevData use cases (Debug only).
 
 <b>Think</b>
 
-- Why does this live in `App/`, not in `Presentation/DevMenu/` or in DataLayer?
+- F02 adds projects. How does Delete all data wipe them too, without the dev menu view changing?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- A Debug-only struct that implements the dev menu’s protocol by calling each repository’s `seed()` / `reset()`.
+- Like every view model: use cases through `init`, one method per button; each feature adds its reset and seed use cases here.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `#if DEBUG … #endif`, `DevDataActions` (`seedData()`, `deleteAllData()`), `await Container.shared.accessRepositoryImpl().reset()`.
+- `#if DEBUG … #endif`, `@MainActor @Observable`, `init(resetAllAccessData:seedAccessData:)`.
 
 </details>
 
@@ -854,18 +919,27 @@ extension Container {
 ```swift
 #if DEBUG
 
-import DataLayer
-import FactoryKit
+import DomainLayer
+import Observation
 
-// Dev menu → repositories. Every feature adds its repository here when it lands.
-// Lives in App/ because only the composition root may know both sides.
-struct AppDevDataActions: DevDataActions {
-    func seedData() async {
-        await Container.shared.accessRepositoryImpl().seed()
+@MainActor @Observable
+final class DevMenuViewModel {
+    @ObservationIgnored private let resetAllAccessData: ResetAllAccessDataUseCase
+    @ObservationIgnored private let seedAccessData: SeedAccessDataUseCase
+
+    init(resetAllAccessData: ResetAllAccessDataUseCase, seedAccessData: SeedAccessDataUseCase) {
+        self.resetAllAccessData = resetAllAccessData
+        self.seedAccessData = seedAccessData
     }
 
+    // Each feature adds its seed use case here
+    func seedData() async {
+        await seedAccessData.execute()
+    }
+
+    // Each feature adds its reset use case here
     func deleteAllData() async {
-        await Container.shared.accessRepositoryImpl().reset()
+        await resetAllAccessData.execute()
     }
 }
 
@@ -874,15 +948,11 @@ struct AppDevDataActions: DevDataActions {
 
 </details>
 
-<b>Try</b>
-
-- Why must `devDataActions` in `AppDependencies` sit inside `#if DEBUG` too? Remove that `#if`, build for Release, read the error.
-
 ---
 
 <b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/DevMenu/DevMenuSection.swift`
 
-<b>Explain</b> · Takes the dev menu actions from the container; add `import FactoryKit` at the top.
+<b>Explain</b> · Owns a `DevMenuViewModel` built from the container; add `import FactoryKit` at the top.
 
 <b>Think</b>
 
@@ -891,14 +961,14 @@ struct AppDevDataActions: DevDataActions {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- The default value now comes from the container.
+- `@State` keeps the view model; the view resolves the two use cases, the view model never sees the container.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `import FactoryKit`, `Container.shared.devDataActions()`.
+- `import FactoryKit`, `Container.shared.resetAllAccessData()`, `Container.shared.seedAccessData()`.
 
 </details>
 
@@ -906,8 +976,13 @@ struct AppDevDataActions: DevDataActions {
 <summary><b>Code</b></summary>
 
 ```swift
-    // was: NoopDevDataActions()
-    var actions: any DevDataActions = Container.shared.devDataActions()
+    // was: var actions: any DevDataActions = NoopDevDataActions()
+    @State private var viewModel = DevMenuViewModel(
+        resetAllAccessData: Container.shared.resetAllAccessData(),
+        seedAccessData: Container.shared.seedAccessData()
+    )
+
+    // and in the buttons: actions.seedData() → viewModel.seedData(), actions.deleteAllData() → viewModel.deleteAllData()
 ```
 
 </details>
@@ -918,9 +993,9 @@ struct AppDevDataActions: DevDataActions {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/DevMenu/DevDataActions.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/DevMenu/DevDataActions.swift` → rename to `ResetAppAction.swift`
 
-<b>Explain</b> · `NoopDevDataActions` is no longer used: delete that struct.
+<b>Explain</b> · `DevDataActions` and `NoopDevDataActions` are no longer used: delete both; the file keeps only `ResetAppAction` and its environment value.
 
 <details open>
 <summary><strong>2.1 Check</strong></summary>
@@ -2383,6 +2458,11 @@ actor StubAccessRepository: AccessRepository {
     func unlockWithBiometrics() -> Result<Bool, AccessError> {
         return .success(true)
     }
+
+    #if DEBUG
+    func resetAllData() {}
+    func seedSampleData() {}
+    #endif
 }
 ```
 
