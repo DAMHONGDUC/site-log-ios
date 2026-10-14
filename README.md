@@ -25,9 +25,11 @@
 | Step | Action |
 |---|---|
 | 1 | `brew install xcodegen swiftlint` |
-| 2 | `xcodegen generate` |
-| 3 | Open `SiteLog.xcodeproj`, run the `SiteLog` scheme (⌘R) on an iOS 18.6+ simulator; tests ⌘U |
-| 4 | Full tooling (VS Code, hot reload, format on save): [05-platform § Dev setup](docs/feature-docs/05-platform.md#dev-setup) |
+| 2 | `git submodule update --init` (shared scripts in `Packages/script-tools`) |
+| 3 | `xcodegen generate` |
+| 4 | Open `SiteLog.xcodeproj`, run the `SiteLog` scheme (⌘R) on an iOS 18.6+ simulator; tests ⌘U |
+| 5 | `make` lists the commands; `make reset-xcode` when Xcode gets stuck |
+| 6 | Full tooling (VS Code, hot reload, format on save): [05-platform § Dev setup](docs/feature-docs/05-platform.md#dev-setup) |
 
 </dd></dl>
 
@@ -120,16 +122,18 @@ site-log-ios/
 │   │       ├── UploadKit/                # background URLSession engine (standalone)
 │   │       └── Realtime/                 # WebSocket channel (standalone)
 │   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock, Crypto/ (PasscodeHasher, FileHasher); no business logic
-│   └── DesignSystem/                     # UI only: never imports Domain or app code
-│       ├── Sources/DesignSystem/
-│       │   ├── Tokens/                   # DSColor, DSFont, DSSpacing, DSRadius, DSSize
-│       │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
-│       └── Tests/DesignSystemTests/
+│   ├── DesignSystem/                     # UI only: never imports Domain or app code
+│   │   ├── Sources/DesignSystem/
+│   │   │   ├── Tokens/                   # DSColor, DSFont, DSSpacing, DSRadius, DSSize
+│   │   │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
+│   │   └── Tests/DesignSystemTests/
+│   └── script-tools/                     # git submodule: shared shell scripts + make targets (not a Swift package)
 ├── SiteLogTests/                         # app tests; package tests live in each package
 │   └── Presentation/
 ├── SiteLogUITests/
 ├── Backend/                              # Node + Postgres → 03-backend.md
 ├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/ Xcode/
+├── Makefile, script-tools.properties     # make targets from Packages/script-tools/ios/ios.mk
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/
 │   ├── feature-docs/                     # project specs
