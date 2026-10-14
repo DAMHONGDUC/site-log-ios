@@ -118,7 +118,7 @@ flowchart TD
 - Spec: [07.2](docs/feature-docs/04-reporting-security.md#072-app-lock)
 - Guide: [docs/feature-guide/01-access.md](docs/feature-guide/01-access.md)
 
-- [ ] **F01.1** - [Domain] - [1h] - `AccessSettings`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases
+- [ ] **F01.1** - [Domain] - [1h] - `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases
 - [ ] **F01.2** - [Fake data] - [1h] - `AccessRepositoryImpl` on in-memory values, registrations, dev menu seed / delete
 - [ ] **F01.3** - [View models] - [5h] - `RootViewModel`, A1–A3, S4, S5 view models wired into the skeleton
 - [ ] **F01.4** - [Real data] - [8h] - Keychain data source + Face ID inside `AccessRepositoryImpl`

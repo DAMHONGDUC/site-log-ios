@@ -421,7 +421,7 @@ final class ProjectListViewModel {
 | View | — | Never; shows the state |
 
 - Either, as in Flutter: Swift's built-in `Result<Success, Failure>` (`.success` = Right, `.failure` = Left), no library.
-  - Protocol: `func loadSettings() async -> Result<AccessSettings, AccessError>`.
+  - Protocol: `func loadAccessSetting() async -> Result<AccessSetting, AccessError>`.
   - Domain errors: one `enum <Feature>Error: Error, Sendable` per feature in `DomainLayer/Entities/<Feature>/`.
   - `throws` stops at the repository impl; Domain and Presentation never `try`.
 - A result that is a business answer stays an enum, not an error (`PasscodeCheck`).
@@ -549,6 +549,7 @@ final class ProjectListViewModel {
 | Actor | `<Noun>Coordinator` / `<Noun>Manager` | `UploadCoordinator` |
 | Constants | `enum <Area>Constants` | `UploadConstants` |
 | Factory registration | lowerCamel noun on `Container` | `projectRepository` |
+| DI file | `<Layer>DI.swift` in `App/DI/`, one per layer | `CoreDI.swift`, `RepositoriesDI.swift`, `UseCasesDI.swift` |
 | Test file | `<Type>Tests.swift` | `UploadStateMachineTests.swift` |
 
 **Definition of done (every change)**
@@ -962,7 +963,7 @@ final class ProjectListViewModel {
 <dl><dd>
 
 - **Context:** the book passes only simple request / response structures across the use case boundary, never entities, so outer layers do not depend on entity shape or call entity behaviour.
-- **Decision:** use cases take and return Domain entities (`Result<AccessSettings, AccessError>`); no `<Name>Request` / `<Name>Response` types.
+- **Decision:** use cases take and return Domain entities (`Result<AccessSetting, AccessError>`); no `<Name>Request` / `<Name>Response` types.
 
 | Rejected | Why not |
 |---|---|

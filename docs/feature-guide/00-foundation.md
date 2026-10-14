@@ -973,7 +973,7 @@ struct FixedClock: AppClock {
 }
 
 @Suite(.container)
-struct AppDependenciesTests {
+struct CoreDITests {
     @Test func clockCanBeReplacedInTests() {
         // 1. pick a fixed date
         // 2. register a FixedClock on Container.shared.clock
@@ -1003,7 +1003,7 @@ struct FixedClock: AppClock {
 
 // .container gives each test its own fresh Factory container
 @Suite(.container)
-struct AppDependenciesTests {
+struct CoreDITests {
     @Test func clockCanBeReplacedInTests() {
         let fixedDate = Date(timeIntervalSince1970: 0)
         Container.shared.clock.register {
