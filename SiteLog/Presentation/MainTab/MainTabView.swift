@@ -8,25 +8,25 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             Tab("Projects", systemImage: "folder") {
-                NavigationStack {
-                    ProjectListView()
+                CoordinatedStack {
+                    ProjectListScreen()
                 }
             }
             Tab("Issues", systemImage: "exclamationmark.triangle") {
-                NavigationStack {
-                    IssueListView()
+                CoordinatedStack {
+                    IssueListScreen()
                 }
             }
             // Fake count until the issues view model
             .badge(2)
             Tab("Sync", systemImage: "arrow.triangle.2.circlepath") {
-                NavigationStack {
-                    UploadStatusView()
+                CoordinatedStack {
+                    UploadStatusScreen()
                 }
             }
             Tab("Settings", systemImage: "gearshape") {
-                NavigationStack {
-                    SettingsView()
+                CoordinatedStack {
+                    SettingsScreen()
                 }
             }
         }

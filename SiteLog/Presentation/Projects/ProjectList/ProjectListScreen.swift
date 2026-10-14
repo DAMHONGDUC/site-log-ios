@@ -1,0 +1,112 @@
+// P1 · Projects
+
+import DesignSystem
+import Inject
+import SwiftUI
+
+struct ProjectListScreen: View {
+    @ObserveInjection var inject
+    @Environment(\.coordinator) private var coordinator
+
+    @State private var isNewProjectShown = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: DSSpacing.large) {
+                liveSessionPanel
+                    .padding(.horizontal, DSSpacing.regular)
+
+                projectsSection
+
+                Text("Saved on this iPhone · synced at 8:47")
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.textTertiary)
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(.vertical, DSSpacing.small)
+        }
+        .background(DSColor.canvas)
+        .navigationTitle("Projects")
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button("Search", systemImage: "magnifyingglass") {}
+                Button("New project", systemImage: "plus") {
+                    isNewProjectShown = true
+                }
+            }
+        }
+        .sheet(isPresented: $isNewProjectShown) {
+            NewProjectScreen()
+        }
+        .enableInjection()
+    }
+
+    private var liveSessionPanel: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.medium) {
+            HStack(spacing: DSSpacing.small) {
+                DSLiveDot()
+                Text("Walkthrough in progress · since 8:12")
+                    .font(DSFont.footnote)
+            }
+
+            VStack(alignment: .leading) {
+                Text("Riverside Tower B")
+                    .font(DSFont.headline)
+                Text("Level 7 · 37 of 82 rooms")
+                    .font(DSFont.subhead)
+                    .foregroundStyle(DSColor.textSecondary)
+            }
+
+            DSProgressBar(value: 37.0 / 82.0)
+
+            HStack {
+                Text("46 photos, 7 new issues")
+                    .font(DSFont.footnote)
+                    .foregroundStyle(DSColor.textSecondary)
+                Spacer()
+                Button("Resume") {
+                    coordinator.push(ProjectsRoute.survey)
+                }
+                .buttonStyle(.sd(.primary, small: true))
+            }
+        }
+        .padding(DSSpacing.regular)
+        .background(DSColor.fill, in: RoundedRectangle(cornerRadius: 14))
+    }
+
+    private var projectsSection: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+            DSSectionHeader(title: "All projects")
+
+            VStack(spacing: 0) {
+                ForEach(FakeData.projects) { project in
+                    Button {
+                        coordinator.push(ProjectsRoute.detail(projectID: project.id))
+                    } label: {
+                        DSListRow(
+                            title: project.name,
+                            subtitle: project.summary,
+                            showsChevron: true
+                        ) {
+                            SitePhotoThumb(variant: project.photoVariant, size: 44)
+                        }
+                    }
+                    .buttonStyle(.plain)
+
+                    DSDivider()
+                }
+
+                DSListRow(title: "Archived", value: "2", showsChevron: true) {
+                    Image(systemName: "archivebox")
+                        .foregroundStyle(DSColor.textTertiary)
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ProjectListScreen()
+    }
+}
