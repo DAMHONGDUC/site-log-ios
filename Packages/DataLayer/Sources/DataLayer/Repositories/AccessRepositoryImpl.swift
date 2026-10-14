@@ -65,17 +65,19 @@ public actor AccessRepositoryImpl: AccessRepository {
 
         return .success(true)
     }
+}
 
-    // Dev menu
-    #if DEBUG
-        public func reset() {
+// Dev menu only
+#if DEBUG
+    extension AccessRepositoryImpl {
+        public func resetAllData() {
             setting = AccessRepositoryImpl.initSetting
             passcode = "123456"
             wrongTries = 0
         }
 
-        public func seed() {
+        public func seedSampleData() {
             setting.isShowWelcomeScreen = false
         }
-    #endif
-}
+    }
+#endif

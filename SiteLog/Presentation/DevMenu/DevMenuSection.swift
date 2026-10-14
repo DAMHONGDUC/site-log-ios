@@ -2,6 +2,7 @@
 
     import Core
     import DesignSystem
+    import FactoryKit
     import Inject
     import os
     import SwiftUI
@@ -10,7 +11,10 @@
         @ObserveInjection var inject
         @Environment(\.resetApp) private var resetApp
 
-        var actions: any DevDataActions = NoopDevDataActions()
+        @State private var viewModel = DevMenuViewModel(
+            resetAllAccessData: Container.shared.resetAllAccessData(),
+            seedAccessData: Container.shared.seedAccessData()
+        )
 
         enum PendingAction: String {
             case reset = "Reset the app"
@@ -31,7 +35,7 @@
                     systemImage: "tray.and.arrow.down"
                 ) {
                     run(name: "Seed data") {
-                        await actions.seedData()
+                        await viewModel.seedData()
                     }
                 }
                 DSDivider()
@@ -117,11 +121,11 @@
             switch action {
             case .deleteAll:
                 run(name: "Delete all data") {
-                    await actions.deleteAllData()
+                    await viewModel.deleteAllData()
                 }
             case .reset:
                 run(name: "Reset the app") {
-                    await actions.deleteAllData()
+                    await viewModel.deleteAllData()
                 } then: {
                     resetApp()
                 }

@@ -5,4 +5,10 @@ public protocol AccessRepository: Sendable {
     func checkPasscode(inputPasscode: String) async -> Result<PasscodeCheck, AccessError>
     func setPasscode(newPasscode: String) async -> Result<Void, AccessError>
     func unlockWithBiometrics() async -> Result<Bool, AccessError>
+
+    // Dev menu only
+    #if DEBUG
+        func resetAllData() async
+        func seedSampleData() async
+    #endif
 }
