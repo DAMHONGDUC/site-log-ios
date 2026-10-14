@@ -55,10 +55,14 @@ fileGroups:
   - .swift-format
   - .swiftlint.yml
   - project.yml
+  - Makefile
+  - script-tools.properties
   - Gemfile
   - .vscode
   - .github
   - Tools
+  # git submodule of shell scripts; not a Swift package, so listed as files
+  - Packages/script-tools
 targets:
   SiteLog:
     type: application

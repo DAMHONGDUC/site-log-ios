@@ -36,85 +36,121 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0460EFD76136A9C9BD207B43 /* log.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = log.sh; sourceTree = "<group>"; };
 		08B468617F3FBF4E78908CA0 /* 03-capture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "03-capture.md"; sourceTree = "<group>"; };
-		09C58688EC31008C6CA8960C /* Fastfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fastfile; sourceTree = "<group>"; };
-		12C0AF578305E1CBD421BB22 /* .gitattributes */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitattributes; sourceTree = "<group>"; };
+		09C58688EC31008C6CA8960C /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
+		0C382647849273800997DC28 /* Makefile */ = {isa = PBXFileReference; path = Makefile; sourceTree = "<group>"; };
+		12C0AF578305E1CBD421BB22 /* .gitattributes */ = {isa = PBXFileReference; path = .gitattributes; sourceTree = "<group>"; };
 		1444C4B5FD30F0549FACA607 /* sitelog_sim.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = sitelog_sim.py; sourceTree = "<group>"; };
 		17647D70BA8719DBFB01C9A7 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
-		1CDFEC27E00908FC5A1BB97A /* app-icon.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "app-icon.svg"; sourceTree = "<group>"; };
+		1ACD50D562F5DD0E58426C45 /* deploy_firebase.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = deploy_firebase.sh; sourceTree = "<group>"; };
+		1CDFEC27E00908FC5A1BB97A /* app-icon.svg */ = {isa = PBXFileReference; path = "app-icon.svg"; sourceTree = "<group>"; };
 		1D1AA3F75AB2314973F8F28D /* app-icon-tinted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-tinted.png"; sourceTree = "<group>"; };
 		1F862FB843DC870F1785A6AE /* 04-upload.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-upload.md"; sourceTree = "<group>"; };
-		20562F577AA5C37B66779342 /* ci-cd-pipeline.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ci-cd-pipeline.svg"; sourceTree = "<group>"; };
+		20562F577AA5C37B66779342 /* ci-cd-pipeline.svg */ = {isa = PBXFileReference; path = "ci-cd-pipeline.svg"; sourceTree = "<group>"; };
+		211DF7B401B65692C9117B11 /* analysis_options.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = analysis_options.yaml; sourceTree = "<group>"; };
 		2253BD39ADB18A7D0F2A7AFC /* 06-markup.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "06-markup.md"; sourceTree = "<group>"; };
 		23A7E10F89F06DEB35BF53A5 /* 16-ui-finish.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "16-ui-finish.md"; sourceTree = "<group>"; };
 		23F8B2AE9C0EA29929223AB8 /* 01-field-work.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-field-work.md"; sourceTree = "<group>"; };
 		24D6EFF1B1A9C85C36AD47EE /* 15-release-readiness.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "15-release-readiness.md"; sourceTree = "<group>"; };
 		28845DE08569E1C0F4D9B331 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
-		33C1E91E8132908B17CC58F9 /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-format"; sourceTree = "<group>"; };
+		33BE132C1812B34246285ED8 /* upload_ipa.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = upload_ipa.sh; sourceTree = "<group>"; };
+		33C1E91E8132908B17CC58F9 /* .swift-format */ = {isa = PBXFileReference; path = ".swift-format"; sourceTree = "<group>"; };
 		34FB39010F292720B1ADF77D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3B2C511AB2F86DBA5AC8E071 /* strip_icon_marker.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = strip_icon_marker.sh; sourceTree = "<group>"; };
+		3E1BEA201C79755961778CF0 /* generate_app_icon.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate_app_icon.sh; sourceTree = "<group>"; };
 		3E6A8A5E14B8E52C29D69082 /* 03-backend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "03-backend.md"; sourceTree = "<group>"; };
 		3FBD90C31B8BFC41DF60AED8 /* check-imports.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "check-imports.sh"; sourceTree = "<group>"; };
 		47A98ACE570C4E3B3E6F3848 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		481F629DD7508CE23DFEB031 /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
-		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
+		493D1A354595C27138CCCFF1 /* reset_xcode.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = reset_xcode.sh; sourceTree = "<group>"; };
+		4BD784D300C2D57CBB77CBED /* round_icon_corners.dart */ = {isa = PBXFileReference; path = round_icon_corners.dart; sourceTree = "<group>"; };
+		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
+		53897337D3C1058962362E9C /* flutter.mk */ = {isa = PBXFileReference; path = flutter.mk; sourceTree = "<group>"; };
 		555954D2F238291E86205491 /* build-strict.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-strict.sh"; sourceTree = "<group>"; };
 		57AF6868C430FD5F5D09492E /* 01-access.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-access.md"; sourceTree = "<group>"; };
 		57E76234BE1FF431FD5D99C5 /* 09-checklists.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "09-checklists.md"; sourceTree = "<group>"; };
-		59ECE5A3CA31A110540197E5 /* init.lua */ = {isa = PBXFileReference; lastKnownFileType = text; path = init.lua; sourceTree = "<group>"; };
+		581D002D798070220CB1D1A2 /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
+		59ECE5A3CA31A110540197E5 /* init.lua */ = {isa = PBXFileReference; path = init.lua; sourceTree = "<group>"; };
 		5AD0C910EB8272791258E0D2 /* markdown-preview.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "markdown-preview.css"; sourceTree = "<group>"; };
 		5D18F4EE8C2B946317F43D62 /* 00-design-plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-design-plan.md"; sourceTree = "<group>"; };
 		5F3C8FAC582D03345DF63C0F /* check-no-print.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "check-no-print.sh"; sourceTree = "<group>"; };
 		5FB96206F20F929D04596D79 /* DataLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DataLayer; path = Packages/DataLayer; sourceTree = SOURCE_ROOT; };
+		5FE675530A26A174DB7E080D /* script-tools.properties */ = {isa = PBXFileReference; path = "script-tools.properties"; sourceTree = "<group>"; };
+		60CBD32FB54856B2DFCE1DF2 /* release_ios.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release_ios.sh; sourceTree = "<group>"; };
 		61996AB7DB87AFD0F031E82D /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
 		623F3DD3B6F17C1F14168586 /* 02-upload-sync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "02-upload-sync.md"; sourceTree = "<group>"; };
+		67F8CD215CAC07552ECE6001 /* strip_icon_marker.dart */ = {isa = PBXFileReference; path = strip_icon_marker.dart; sourceTree = "<group>"; };
 		6A30FA5A7033C3731379EABB /* 00-overview.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-overview.md"; sourceTree = "<group>"; };
-		6B244EF1F0B74757AB50F783 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		6B244EF1F0B74757AB50F783 /* .gitignore */ = {isa = PBXFileReference; path = .gitignore; sourceTree = "<group>"; };
 		6B39DDACB4A75FDC21A77F73 /* 08-plans.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "08-plans.md"; sourceTree = "<group>"; };
 		6C3E3968304C179E18B430C4 /* SiteLogUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SiteLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C59D64E988A1F1949FFD4F8 /* analyze_code.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = analyze_code.sh; sourceTree = "<group>"; };
+		7501BD2F08552E2C03960F29 /* .gitattributes */ = {isa = PBXFileReference; path = .gitattributes; sourceTree = "<group>"; };
+		75B6437BA08BB74A55D8BBAB /* ADOPTION_SPEC.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ADOPTION_SPEC.md; sourceTree = "<group>"; };
 		76D514EFCE9EA5BE0D33F13B /* preview.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = preview.html; sourceTree = "<group>"; };
 		77A15FF4BD3B324B7CBD88D1 /* SiteLogTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SiteLogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		785FD4D16536D95D1C625CC8 /* 05-platform.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "05-platform.md"; sourceTree = "<group>"; };
-		798091E4416EDBB8D2694D52 /* swift.code-snippets */ = {isa = PBXFileReference; lastKnownFileType = text; path = "swift.code-snippets"; sourceTree = "<group>"; };
+		798091E4416EDBB8D2694D52 /* swift.code-snippets */ = {isa = PBXFileReference; path = "swift.code-snippets"; sourceTree = "<group>"; };
 		79D599393E75D7F338195092 /* SiteLog.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SiteLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C43A7B9A4334020C0CED811 /* launch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = launch.json; sourceTree = "<group>"; };
-		7D85615B3CCCDE3B45720CD8 /* Gemfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
+		7D65E1610C36883247740FA3 /* pubspec.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = pubspec.yaml; sourceTree = "<group>"; };
+		7D85615B3CCCDE3B45720CD8 /* Gemfile */ = {isa = PBXFileReference; path = Gemfile; sourceTree = "<group>"; };
+		80BE9799143E913F5B5595A7 /* prepare_env.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = prepare_env.sh; sourceTree = "<group>"; };
 		84A6FC6108D0A6EFBF2C320B /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
-		865263E117E47137607DDB7A /* Appfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Appfile; sourceTree = "<group>"; };
+		863B5EAC36C5D1B52506B372 /* build_release_apk.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_release_apk.sh; sourceTree = "<group>"; };
+		865263E117E47137607DDB7A /* Appfile */ = {isa = PBXFileReference; path = Appfile; sourceTree = "<group>"; };
 		883E24529528E1C13EBB70C2 /* extensions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = extensions.json; sourceTree = "<group>"; };
 		89D75BFA0F72DEBBF78C55A7 /* 00-foundation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-foundation.md"; sourceTree = "<group>"; };
 		8C184E60DCF34F70C368F392 /* indent-md.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "indent-md.py"; sourceTree = "<group>"; };
+		902A771FE11C85706296AADA /* .gitignore */ = {isa = PBXFileReference; path = .gitignore; sourceTree = "<group>"; };
+		95E4AE8A2F4459B814F5E751 /* release.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release.sh; sourceTree = "<group>"; };
 		96E947E3E7E3788126FE3A80 /* 04-reporting-security.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "04-reporting-security.md"; sourceTree = "<group>"; };
+		990365CFEBA94F62292502EA /* MIGRATE_FROM_SYSTEM_DESIGN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MIGRATE_FROM_SYSTEM_DESIGN.md; sourceTree = "<group>"; };
 		996ACABF2736DF00709F85D2 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		9ABA5F700E63DEDD5E72D9DA /* app-icon-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-dark.png"; sourceTree = "<group>"; };
 		9C9399899DC008948D02DC07 /* 11-diagnostics.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "11-diagnostics.md"; sourceTree = "<group>"; };
 		9DF89B6367A1EC4737159A31 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9F92BA6BFB920CCEDB98081E /* ios.mk */ = {isa = PBXFileReference; path = ios.mk; sourceTree = "<group>"; };
 		A77DAC4C93B350F0CC123820 /* 13-realtime.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "13-realtime.md"; sourceTree = "<group>"; };
 		AB841D0C22E49593F1D62522 /* preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = preview.png; sourceTree = "<group>"; };
 		AD386344CF81DAFEEBB07CFB /* app-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon.png"; sourceTree = "<group>"; };
 		AE12B7DA7CCD9688C1F33993 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		B04D2E48A85F68D39946F1B6 /* 14-push-deeplinks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "14-push-deeplinks.md"; sourceTree = "<group>"; };
 		B16EC63A2BA655E4224D459A /* ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ROADMAP.md; sourceTree = "<group>"; };
-		B484643F314F6403FF3538E0 /* app-icon-tinted.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "app-icon-tinted.svg"; sourceTree = "<group>"; };
+		B484643F314F6403FF3538E0 /* app-icon-tinted.svg */ = {isa = PBXFileReference; path = "app-icon-tinted.svg"; sourceTree = "<group>"; };
 		BD030B4B27B6509DB43F0D88 /* 02-projects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "02-projects.md"; sourceTree = "<group>"; };
+		BD7F4CEAEEABA478D9FC9DC6 /* android.mk */ = {isa = PBXFileReference; path = android.mk; sourceTree = "<group>"; };
+		C1EBA1F6A90E0E9767078A81 /* release_output.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release_output.sh; sourceTree = "<group>"; };
+		C4A53DB62D557CC1F05F999B /* generate_code.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate_code.sh; sourceTree = "<group>"; };
 		C7E41EBD8D149259110226C2 /* 12-auth-sync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "12-auth-sync.md"; sourceTree = "<group>"; };
+		C8A4BA87B7E21251886A263F /* space_free_copy.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = space_free_copy.sh; sourceTree = "<group>"; };
 		CA3079F8ADB060B314F36A4C /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		CBA37277AD1DCCF0DC9215EE /* common.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = common.sh; sourceTree = "<group>"; };
 		CDA1C022516A9FC5A6FE1196 /* PlatformKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PlatformKit; path = Packages/PlatformKit; sourceTree = SOURCE_ROOT; };
 		D24E6D0BC5DA541E04645B7F /* 10-devicelink.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "10-devicelink.md"; sourceTree = "<group>"; };
 		D7254EABD7BC3EE96BF70F4D /* 07-reports.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "07-reports.md"; sourceTree = "<group>"; };
+		D75D5125D6F8F2806AA0B833 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D78A183D2C158A5DC821CC8B /* run_tests.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = run_tests.sh; sourceTree = "<group>"; };
 		DCA4470BC33DB6BD64190F2E /* DomainLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DomainLayer; path = Packages/DomainLayer; sourceTree = SOURCE_ROOT; };
+		DF03107FFA646689FD4CD0B0 /* project.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = project.sh; sourceTree = "<group>"; };
+		DF25872F42F6F2FAE5F9B5CA /* build_ipa.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_ipa.sh; sourceTree = "<group>"; };
 		E10A9D779D18D7198F3C22E5 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		E17E082E4731B0114159562B /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
 		E501A03FD345691A0A48AC76 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
 		F0D19FCFBA693CEAFA6D9024 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignSystem; path = Packages/DesignSystem; sourceTree = SOURCE_ROOT; };
 		F312F03E20FBC9CEE2FF7848 /* pr-checks.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "pr-checks.yml"; sourceTree = "<group>"; };
+		F764EF7A765C448ECF89F274 /* set_up.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = set_up.sh; sourceTree = "<group>"; };
+		FAF16F17C7188C1A8794B798 /* .git */ = {isa = PBXFileReference; path = .git; sourceTree = "<group>"; };
 		FAF69F5B98D8BF7D4E07E3C7 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		FBEE0ADF2B33B1381F148C20 /* 05-issues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "05-issues.md"; sourceTree = "<group>"; };
 		FBF6341ED802555E62F5FE7B /* report.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = report.xml; sourceTree = "<group>"; };
+		FF17B567700FC1C854B61F39 /* build_release_aab.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_release_aab.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0CDFE08A0FFF90E4AB2AD31D /* Exceptions for "SiteLog" folder in "SiteLog" target */ = {
+		0CDFE08A0FFF90E4AB2AD31D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				App/Config/.gitkeep,
@@ -123,7 +159,7 @@
 			);
 			target = A7DD33248760BD0BC5FAB080 /* SiteLog */;
 		};
-		801CAE69AE46DD7ECB0CA43C /* Exceptions for "SiteLogTests" folder in "SiteLogTests" target */ = {
+		801CAE69AE46DD7ECB0CA43C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Presentation/.gitkeep,
@@ -136,20 +172,32 @@
 		89947E13767BC03A5684B294 /* SiteLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0CDFE08A0FFF90E4AB2AD31D /* Exceptions for "SiteLog" folder in "SiteLog" target */,
+				0CDFE08A0FFF90E4AB2AD31D /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = SiteLog;
 			sourceTree = "<group>";
 		};
 		8B5C66225E425E93BACE048D /* SiteLogUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = SiteLogUITests;
 			sourceTree = "<group>";
 		};
 		9C548C8B1A957FD714305BEA /* SiteLogTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				801CAE69AE46DD7ECB0CA43C /* Exceptions for "SiteLogTests" folder in "SiteLogTests" target */,
+				801CAE69AE46DD7ECB0CA43C /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = SiteLogTests;
 			sourceTree = "<group>";
@@ -219,6 +267,15 @@
 			path = Protocol.xctemplate;
 			sourceTree = "<group>";
 		};
+		0F576B569021D398F632B5D9 /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				4BD784D300C2D57CBB77CBED /* round_icon_corners.dart */,
+				67F8CD215CAC07552ECE6001 /* strip_icon_marker.dart */,
+			);
+			path = bin;
+			sourceTree = "<group>";
+		};
 		188C18BC51FFD63DACD62D9D /* feature-guide */ = {
 			isa = PBXGroup;
 			children = (
@@ -254,6 +311,15 @@
 			path = fastlane;
 			sourceTree = "<group>";
 		};
+		1EC5C8B000BCB058A854599F /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				9F92BA6BFB920CCEDB98081E /* ios.mk */,
+				493D1A354595C27138CCCFF1 /* reset_xcode.sh */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
 		225EEE7FD5C901AD44124FCA /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +336,17 @@
 				20562F577AA5C37B66779342 /* ci-cd-pipeline.svg */,
 			);
 			path = images;
+			sourceTree = "<group>";
+		};
+		3A3DE2951440D9EF79399154 /* dart */ = {
+			isa = PBXGroup;
+			children = (
+				0F576B569021D398F632B5D9 /* bin */,
+				902A771FE11C85706296AADA /* .gitignore */,
+				211DF7B401B65692C9117B11 /* analysis_options.yaml */,
+				7D65E1610C36883247740FA3 /* pubspec.yaml */,
+			);
+			path = dart;
 			sourceTree = "<group>";
 		};
 		3E7FF047AA6416B7B981A26C /* app-icon */ = {
@@ -313,6 +390,57 @@
 			path = CI;
 			sourceTree = "<group>";
 		};
+		6076097970B2F112B90D8480 /* flutter */ = {
+			isa = PBXGroup;
+			children = (
+				3A3DE2951440D9EF79399154 /* dart */,
+				909B548EF97A45B3D3F82C26 /* fastlane */,
+				957134B967061AF52872CD30 /* lib */,
+				75B6437BA08BB74A55D8BBAB /* ADOPTION_SPEC.md */,
+				6C59D64E988A1F1949FFD4F8 /* analyze_code.sh */,
+				DF25872F42F6F2FAE5F9B5CA /* build_ipa.sh */,
+				1ACD50D562F5DD0E58426C45 /* deploy_firebase.sh */,
+				53897337D3C1058962362E9C /* flutter.mk */,
+				3E1BEA201C79755961778CF0 /* generate_app_icon.sh */,
+				C4A53DB62D557CC1F05F999B /* generate_code.sh */,
+				990365CFEBA94F62292502EA /* MIGRATE_FROM_SYSTEM_DESIGN.md */,
+				80BE9799143E913F5B5595A7 /* prepare_env.sh */,
+				60CBD32FB54856B2DFCE1DF2 /* release_ios.sh */,
+				D78A183D2C158A5DC821CC8B /* run_tests.sh */,
+				F764EF7A765C448ECF89F274 /* set_up.sh */,
+				3B2C511AB2F86DBA5AC8E071 /* strip_icon_marker.sh */,
+				33BE132C1812B34246285ED8 /* upload_ipa.sh */,
+			);
+			path = flutter;
+			sourceTree = "<group>";
+		};
+		62D4D15A6FF6362EF788DA2F /* android */ = {
+			isa = PBXGroup;
+			children = (
+				6BF08596DD701FEBA6594885 /* lib */,
+				BD7F4CEAEEABA478D9FC9DC6 /* android.mk */,
+				FF17B567700FC1C854B61F39 /* build_release_aab.sh */,
+				863B5EAC36C5D1B52506B372 /* build_release_apk.sh */,
+			);
+			path = android;
+			sourceTree = "<group>";
+		};
+		6BF08596DD701FEBA6594885 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				95E4AE8A2F4459B814F5E751 /* release.sh */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		70900B8E238E4B034852A243 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				9FCDBAF27969FB5A6E06C3A3 /* lib */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
 		7B6E7FD2343BCB4C989A76E8 /* docs */ = {
 			isa = PBXGroup;
 			children = (
@@ -343,6 +471,14 @@
 			path = Class.xctemplate;
 			sourceTree = "<group>";
 		};
+		909B548EF97A45B3D3F82C26 /* fastlane */ = {
+			isa = PBXGroup;
+			children = (
+				581D002D798070220CB1D1A2 /* Fastfile */,
+			);
+			path = fastlane;
+			sourceTree = "<group>";
+		};
 		913CAAEA51985961554F481A /* Enum.xctemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -350,6 +486,14 @@
 				AE12B7DA7CCD9688C1F33993 /* TemplateInfo.plist */,
 			);
 			path = Enum.xctemplate;
+			sourceTree = "<group>";
+		};
+		957134B967061AF52872CD30 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				CBA37277AD1DCCF0DC9215EE /* common.sh */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 		9869EAC28512CA6EC45B9FA9 = {
@@ -369,11 +513,24 @@
 				33C1E91E8132908B17CC58F9 /* .swift-format */,
 				FAF69F5B98D8BF7D4E07E3C7 /* .swiftlint.yml */,
 				7D85615B3CCCDE3B45720CD8 /* Gemfile */,
+				0C382647849273800997DC28 /* Makefile */,
 				61996AB7DB87AFD0F031E82D /* project.yml */,
 				34FB39010F292720B1ADF77D /* README.md */,
 				B16EC63A2BA655E4224D459A /* ROADMAP.md */,
+				5FE675530A26A174DB7E080D /* script-tools.properties */,
 				225EEE7FD5C901AD44124FCA /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		9FCDBAF27969FB5A6E06C3A3 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				0460EFD76136A9C9BD207B43 /* log.sh */,
+				DF03107FFA646689FD4CD0B0 /* project.sh */,
+				C1EBA1F6A90E0E9767078A81 /* release_output.sh */,
+				C8A4BA87B7E21251886A263F /* space_free_copy.sh */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 		A82754E769A04AA0A40942BB /* SiteLog */ = {
@@ -430,6 +587,20 @@
 			path = Docs;
 			sourceTree = "<group>";
 		};
+		D2894699FA67CF03A2F26E61 /* script-tools */ = {
+			isa = PBXGroup;
+			children = (
+				62D4D15A6FF6362EF788DA2F /* android */,
+				70900B8E238E4B034852A243 /* common */,
+				6076097970B2F112B90D8480 /* flutter */,
+				1EC5C8B000BCB058A854599F /* ios */,
+				FAF16F17C7188C1A8794B798 /* .git */,
+				7501BD2F08552E2C03960F29 /* .gitattributes */,
+				D75D5125D6F8F2806AA0B833 /* README.md */,
+			);
+			path = "script-tools";
+			sourceTree = "<group>";
+		};
 		DFF05906E49F66F8E3D49ECE /* Struct.xctemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -442,6 +613,7 @@
 		EDF0C034344B86A2D15FCF08 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				D2894699FA67CF03A2F26E61 /* script-tools */,
 				EC6FF8E04051F71410547E06 /* Core */,
 				5FB96206F20F929D04596D79 /* DataLayer */,
 				F0D19FCFBA693CEAFA6D9024 /* DesignSystem */,
