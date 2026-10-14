@@ -244,10 +244,11 @@ site-log-ios/
 │   │   ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
 │   │   └── Resources/                # Assets.xcassets, localization, seeded templates
 │   └── Presentation/                 # View + ViewModel
+│       ├── Navigation/               # NavigationCoordinator, CoordinatedStack, appDestinations()
 │       ├── Root/                     # RootView + RootViewModel: startup → access → main tabs
-│       ├── Access/                   # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
+│       ├── Access/                   # Splash/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
 │       ├── MainTab/
-│       └── <Feature>/                # 2+ screens → one subfolder per screen
+│       └── <Feature>/                # <Feature>Route.swift + 2+ screens → one subfolder per screen
 ├── Packages/                         # local Swift packages; each has Sources/<Name>/ and Tests/<Name>Tests/
 │   ├── DomainLayer/                  # Entities/<Feature>/ Repositories/ (all boundary protocols) UseCases/<Feature>/ — Foundation only
 │   ├── DataLayer/                    # Repositories/ DataSources/ Models/ Mappers/ — uses DomainLayer + PlatformKit + Core
@@ -322,9 +323,11 @@ site-log-ios/
 
 | Type | Rules |
 |---|---|
-| `View` | Layout only: no business `if`, no `ModelContext`, no async work |
+| `View` | Layout only: no business `if`, no `ModelContext`, no async work; a full screen is named `<Name>Screen` |
 | `ViewModel` | `@MainActor @Observable final class`; calls use cases; exposes `Sendable` row structs |
 | Row struct | `LocationRow`, `IssueSnapshot`; never an entity or `PersistentModel` |
+| Route | `<Feature>Route` enum, `Hashable`, cases carry ids only; `<feature>Destinations()` turns a route into its screen ([D19](#d19--feature-routes-and-a-coordinator-per-stack)) |
+| Coordinator | `NavigationCoordinator`, one per `NavigationStack` (`CoordinatedStack`), owns the path; views push routes, never views; sheets and full-screen covers stay local state |
 | Use case | One per user action, a `struct` with one `execute`, one file each in `DomainLayer/UseCases/<Feature>/`; depends on repository protocols only |
 | Repository | One per aggregate: `ProjectRepository`, `CaptureRepository`, `IssueRepository`, … |
 
@@ -516,7 +519,10 @@ final class ProjectListViewModel {
 
 | Kind | Pattern | Example |
 |---|---|---|
-| ViewModel | `<Screen>ViewModel` | `SurveySessionViewModel` |
+| Screen (a full-screen view, pushed or presented) | `<Name>Screen` | `CameraScreen`, `ProjectDetailScreen` |
+| Other view (container, overlay, component) | `<Name>View` or no suffix | `RootView`, `PrivacyOverlayView`, `BottomDock` |
+| ViewModel | `<Name>ViewModel` (screen name without `Screen`) | `CameraViewModel` for `CameraScreen` |
+| Route / destinations | `<Feature>Route` / `<feature>Destinations()` in `<Feature>Route.swift` | `ProjectsRoute`, `projectsDestinations()` |
 | Use case | `<Verb><Noun>UseCase.swift`, one per file | `CreateProjectUseCase.swift` |
 | Repository protocol / impl | `<Noun>Repository` / `<Noun>RepositoryImpl` | `ProjectRepository` / `ProjectRepositoryImpl` |
 | SwiftData model | `<Noun>Model` in `Models/Local/` | `ProjectModel` |
@@ -590,8 +596,9 @@ final class ProjectListViewModel {
 | [D16](#d16--platformkit-is-a-library-not-a-ring) | PlatformKit is a library, not a ring | Accepted |
 | [D17](#d17--rename-infrastructure-and-systemdesign) | Rename `Infrastructure` and `SystemDesign` | Accepted |
 | [D18](#d18--dev-menu-data-through-use-cases) | Dev menu data through use cases | Accepted |
+| [D19](#d19--feature-routes-and-a-coordinator-per-stack) | Feature routes and a coordinator per stack | Accepted |
 
-- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D19 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
@@ -1011,6 +1018,28 @@ final class ProjectListViewModel {
 - **Consequences:**
   - Every implementation, test doubles included, writes the two methods under `#if DEBUG`.
   - Release builds contain none of it: protocol methods, use cases, registrations and the dev menu are all `#if DEBUG`.
+
+</dd></dl>
+
+### D19 — Feature routes and a coordinator per stack
+
+<dl><dd>
+
+- **Context:** screens pushed their next screen with `NavigationLink { View() }`, so every view built other features’ views and nothing could navigate from outside (deep links, push notifications).
+- **Decision:** typed, value-based navigation.
+  - Each feature owns `<Feature>Route` (`Hashable` enum, ids only) and `<feature>Destinations()` (route → screen) in `Presentation/<Feature>/<Feature>Route.swift`.
+  - One `NavigationCoordinator` (`@Observable`, owns `NavigationPath`) per `NavigationStack`; `CoordinatedStack` creates it, registers `appDestinations()` and puts it in the environment.
+  - Views call `coordinator.push(ProjectsRoute.detail(projectID:))`; sheets and full-screen covers stay local `@State`.
+
+| Rejected | Why not |
+|---|---|
+| A coordinator per feature | One tab’s stack mixes features (Room → Checklist, Survey → Plan); a per-feature path cannot hold them |
+| Keep `NavigationLink { View() }` | Views build other features’ views; no single place for deep links |
+
+- **Consequences:**
+  - Deep links (F14) map a URL to a tab and a route, then push on that tab’s coordinator.
+  - A sheet that opens a full screen dismisses itself, then pushes on the tab’s coordinator.
+  - With view models, routes keep ids; the destination builds the view model from `Container.shared` (D14).
 
 </dd></dl>
 

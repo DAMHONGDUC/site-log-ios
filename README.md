@@ -73,8 +73,8 @@ site-log-ios/
 │   │   ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
 │   │   └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
 │   └── Presentation/                     # MVVM: View + ViewModel; 2+ screens → 1 folder / screen
-│       ├── Root/  MainTab/  Components/
-│       ├── Access/                       # Startup/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
+│       ├── Root/  MainTab/  Components/  Navigation/ (coordinator per stack, D19)
+│       ├── Access/                       # Splash/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
 │       ├── Projects/                     # ProjectList/ NewProject/ ProjectDetail/ StartSession/
 │       │                                 # Survey/ BulkLocations/ CloneTree/ EndSession/
 │       ├── Capture/                      # Camera/ CaptureReview/

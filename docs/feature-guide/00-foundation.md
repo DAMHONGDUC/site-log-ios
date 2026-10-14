@@ -90,9 +90,9 @@ site-log-ios/
 |---|---|---|
 | 1 | iOS creates `SiteLogApp`; `@UIApplicationDelegateAdaptor` creates `AppDelegate` | `App/SiteLogApp.swift` |
 | 2 | `didFinishLaunching` logs “App Launched” (Firebase goes first here in F12) | `App/AppDelegate.swift` |
-| 3 | `RootView` shows `StartupView` while state is `.running` | `Presentation/Root/RootView.swift` |
-| 4 | `StartupViewModel.onAppear()` runs `StartupSequence`, each step guarded and logged | `App/Startup/` |
-| 5 | `.ready` → access flow (F01) → `MainTabView`; `.failed` → error + Try again | `Presentation/Access/Startup/` |
+| 3 | `RootView` shows `SplashScreen` while state is `.running` | `Presentation/Root/RootView.swift` |
+| 4 | `SplashViewModel.onAppear()` runs `StartupSequence`, each step guarded and logged | `App/Startup/` |
+| 5 | `.ready` → access flow (F01) → `MainTabView`; `.failed` → error + Try again | `Presentation/Access/Splash/` |
 
 - Try the failure screen: pass `TestFailStartupStep()` in `RootView`’s `StartupSequence(steps:)`, run, then remove it.
 

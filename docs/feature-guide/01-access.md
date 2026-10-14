@@ -1330,7 +1330,7 @@ final class SignInViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInScreen.swift`
 
 <b>Explain</b> · Owns a `SignInViewModel` instead of two closures; add `import FactoryKit` at the top: the view, not the view model, reads the container.
 
@@ -1378,7 +1378,7 @@ final class SignInViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInView.swift` *(continued)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/SignIn/SignInScreen.swift` *(continued)*
 
 <b>Explain</b> · Dock buttons call the view model.
 
@@ -1434,7 +1434,7 @@ final class SignInViewModel {
 
 - Remove the `Task { }` around the call and read the compiler message.
 
-- Preview: `SignInView(onFinished: {})`.
+- Preview: `SignInScreen(onFinished: {})`.
 
 </dd></dl>
 </details>
@@ -1556,7 +1556,7 @@ final class FaceIDLockViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockScreen.swift`
 
 <b>Explain</b> · Owns a `FaceIDLockViewModel` instead of closures.
 
@@ -1603,7 +1603,7 @@ final class FaceIDLockViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockView.swift` *(continued)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/FaceIDLock/FaceIDLockScreen.swift` *(continued)*
 
 <b>Explain</b> · Dock buttons call the view model; Face ID is asked when the screen appears.
 
@@ -1781,7 +1781,7 @@ final class PasscodeUnlockViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockScreen.swift`
 
 <b>Explain</b> · Keeps `code` for the keypad; the view model checks it.
 
@@ -1835,7 +1835,7 @@ final class PasscodeUnlockViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockView.swift` *(continued)*
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Access/PasscodeUnlock/PasscodeUnlockScreen.swift` *(continued)*
 
 <b>Explain</b> · Sends the 6 digits to the view model, then clears them.
 
@@ -1918,7 +1918,7 @@ import SwiftUI
 struct RootView: View {
     @ObserveInjection var inject
     @Environment(\.scenePhase) private var scenePhase
-    @State private var startupVM = /* … */
+    @State private var splashVM = /* … */
     @State private var rootVM = RootViewModel(/* use case + clock from Container.shared */)
 
     var body: some View {
@@ -1953,7 +1953,7 @@ struct RootView: View {
     // foreground / inactive / background, given by SwiftUI
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var startupVM = StartupViewModel(
+    @State private var splashVM = SplashViewModel(
         sequence: StartupSequence(steps: [])
     )
     @State private var rootVM = RootViewModel(
@@ -1988,14 +1988,14 @@ struct RootView: View {
     }
 
     @ViewBuilder private var content: some View {
-        switch startupVM.state {
+        switch splashVM.state {
         case .ready:
             accessFlow
                 .task {
                     await rootVM.load()
                 }
         case .running, .failed:
-            StartupView(viewModel: startupVM)
+            SplashScreen(viewModel: splashVM)
         }
     }
 
@@ -2004,17 +2004,17 @@ struct RootView: View {
         case .loading:
             ProgressView()
         case .welcome:
-            SignInView(onFinished: {
+            SignInScreen(onFinished: {
                 rootVM.welcomeFinished()
             })
         case .faceIDLock:
-            FaceIDLockView(onUnlocked: {
+            FaceIDLockScreen(onUnlocked: {
                 rootVM.unlocked()
             }, onUsePasscode: {
                 rootVM.usePasscode()
             })
         case .passcodeLock:
-            PasscodeUnlockView(onUnlocked: {
+            PasscodeUnlockScreen(onUnlocked: {
                 rootVM.unlocked()
             })
         case .unlocked:
@@ -2181,7 +2181,7 @@ final class AppLockViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/AppLock/AppLockView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/AppLock/AppLockScreen.swift`
 
 <b>Explain</b> · Reads and saves the settings through `AppLockViewModel`.
 
@@ -2189,7 +2189,7 @@ final class AppLockViewModel {
 
 - `ForEach(lockAfterOptions, id: \.self)` loses its `id:` argument. Why does `Identifiable` make it unnecessary?
 
-| In `AppLockView` | Change to |
+| In `AppLockScreen` | Change to |
 |---|---|
 | top of the file | `import FactoryKit` |
 | `@State isLockOn / isFaceIDOn / lockAfter` and `lockAfterOptions` | `@State private var viewModel = AppLockViewModel(loadSettings: Container.shared.loadAccessSettings(), saveSettings: Container.shared.saveAccessSettings())` |
@@ -2330,7 +2330,7 @@ final class SetPasscodeViewModel {
 
 ---
 
-<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeView.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/Presentation/Settings/SetPasscode/SetPasscodeScreen.swift`
 
 <b>Explain</b> · Hands the typed digits to `SetPasscodeViewModel`.
 
@@ -2338,12 +2338,12 @@ final class SetPasscodeViewModel {
 
 - This screen and A3 both read 6 digits. Which parts of A3’s wiring can you reuse?
 
-| In `SetPasscodeView` | Change to |
+| In `SetPasscodeScreen` | Change to |
 |---|---|
 | top of the struct | `import FactoryKit`; `@State private var viewModel: SetPasscodeViewModel` + `init(onDone:)` like A3, with `Container.shared.setPasscode()` |
 | `Text("Enter a 6-digit passcode")` | `Text(viewModel.title)`; add `Text(viewModel.message)` under the dots |
 | `.onChange(of: code)` | at 6 digits: `Task { await viewModel.passcodeEntered(newValue); code = "" }` |
-| `AppLockView` | `SetPasscodeView(onDone: { isSetPasscodeShown = false })` |
+| `AppLockScreen` | `SetPasscodeScreen(onDone: { isSetPasscodeShown = false })` |
 
 <b>Try</b>
 

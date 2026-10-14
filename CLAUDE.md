@@ -10,7 +10,7 @@ Index of the project rules. The detail lives in [00-overview.md](docs/feature-do
 - PlatformKit: system services (permissions, camera, Bluetooth, Face ID…) and standalone engines on system APIs (`HTTPClient`, `UploadKit`, `Realtime`): [D11](docs/feature-docs/00-overview.md#d11--data-sources-in-datalayer-platformkit-for-system-services).
 - PlatformKit is a library: generic, no Domain / Data types or business rules; only DataLayer wraps it and maps its records and errors: [D16](docs/feature-docs/00-overview.md#d16--platformkit-is-a-library-not-a-ring).
 - Core: `Logger/`, `Clock/`, `Crypto/` (`PasscodeHasher`, `FileHasher`): helpers shared across layers.
-- Presentation: a feature with 2+ screens gets one folder per screen.
+- Presentation: a full screen is `<Name>Screen` with `<Name>ViewModel`; a feature with 2+ screens gets one folder per screen; navigation through `<Feature>Route` + `coordinator.push`, one `NavigationCoordinator` per stack: [D19](docs/feature-docs/00-overview.md#d19--feature-routes-and-a-coordinator-per-stack).
 
 ## Code
 

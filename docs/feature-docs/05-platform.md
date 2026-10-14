@@ -203,7 +203,7 @@ flowchart LR
 
 | Shortcut | Inserts | File |
 |---|---|---|
-| `view` | SwiftUI view with Inject hot reload | `<Screen>View.swift` |
+| `view` | SwiftUI view with Inject hot reload | `<Name>Screen.swift` (any view) |
 | `viewvm` | `@Observable` view model (`State` enum, `onAppear()`) | `<Screen>ViewModel.swift` |
 | `struct` / `class` / `enum` / `protocol` | Type named after the file (`final class`) | Any |
 
@@ -530,7 +530,7 @@ shared `DeepLink` type; a link during cold launch is not lost.
   state comes from the local store.
 - Authorization is requested at a moment that makes sense, not blindly at first launch; the token is
   logged truncated, replaceable, and re-sent when it changes.
-- Routing: `URL / push → parser → router (pending) → view consumes and navigates`. The router
+- Routing: `URL / push → parser → router (pending) → tab + <Feature>Route pushed on that tab’s NavigationCoordinator` (D19). The router
   **holds** the destination until a view consumes it (cold launch), consuming clears it, and a deleted
   target lands on a safe screen.
 - Setup: Push capability, `aps-environment`, `sitelog` URL scheme and `remote-notification`
