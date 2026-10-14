@@ -56,3 +56,6 @@ buildServer.json
 __pycache__/
 # Per-machine F5 simulator choice, see docs/feature-docs/05-platform.md (Dev setup)
 .vscode/sitelog.local.json
+
+# Local tool files. Never committed.
+tooling/**
