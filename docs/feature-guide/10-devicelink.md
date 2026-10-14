@@ -29,7 +29,7 @@
 - **Demo:** laser reading from the macOS mock peripheral shows on the camera; capture never waits.
 - **Spec:** [06](../feature-docs/01-field-work.md#06-devicelink-ble-measuring-tools)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `App/DI/RepositoriesDI.swift`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
@@ -44,7 +44,7 @@
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
-- Real data changes only registrations in `AppDependencies`, never views or view models.
+- Real data changes only registrations in `App/DI/`, never views or view models.
 - Tests come last, once the feature works end to end.
 
 </dd></dl>
@@ -88,7 +88,7 @@ Tools/MockPeripheral/                                             # 4: macOS BLE
 | Action | File | Holds |
 |---|---|---|
 | <b class="tag-new">New</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/DeviceLinkImpl.swift` | Emits 3.42 m every few seconds and a nearby list until step 4 |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Registers it once; the real-data step keeps this registration |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/DI/RepositoriesDI.swift`, `UseCasesDI.swift` | Registers it and its DevData use cases once; the real-data step keeps these registrations |
 
 </dd></dl>
 
@@ -127,7 +127,7 @@ Tools/MockPeripheral/                                             # 4: macOS BLE
 | <b class="tag-new">New</b> | `Packages/PlatformKit/Sources/PlatformKit/Bluetooth/DeviceLinkManager.swift` | Actor around `CBCentralManager`; own reading records |
 | <b class="tag-new">New</b> | `PlatformKit/Bluetooth/Profiles/` | One file per vendor; pure `parse` |
 | <b class="tag-replace">Replace</b> | `Packages/DataLayer/Sources/DataLayer/Repositories/DeviceLinkImpl.swift` | Same type, now implements Domain `DeviceLink` over `DeviceLinkManager`; maps records to `DeviceReading` |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/AppDependencies.swift` | Register `DeviceLinkManager` and pass it to `DeviceLinkImpl` |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/DI/PlatformDI.swift`, `RepositoriesDI.swift` | Register `DeviceLinkManager` and pass it to `DeviceLinkImpl` |
 | <b class="tag-new">New</b> | `Tools/MockPeripheral/` | Scripts values, disconnects, garbage bytes |
 
 #### Steps

@@ -66,7 +66,7 @@ site-log-ios/
 │   ├── App/                              # composition root: may use every layer
 │   │   ├── SiteLogApp.swift              # @main
 │   │   ├── AppDelegate.swift
-│   │   ├── AppDependencies.swift         # Factory registrations
+│   │   ├── DI/                           # Factory registrations, one file per layer
 │   │   ├── Startup/
 │   │   │   ├── StartupSequence.swift
 │   │   │   └── Steps/                    # Crashlytics, Keychain, ModelContainer, UploadReconcile,

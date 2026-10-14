@@ -20,7 +20,7 @@
 6. [Infrastructure](#6-infrastructure)
 7. [Conventions](#7-conventions)
 8. [Feature specs](#8-feature-specs)
-9. [Decisions](#9-decisions) — D01–D10, why each library, engine and package split
+9. [Decisions](#9-decisions) — D01–D20, why each library, engine and package split
 
 </dd></dl>
 
@@ -238,7 +238,7 @@ site-log-ios/
 │   ├── App/                          # composition root: may use everything
 │   │   ├── SiteLogApp.swift          # @main
 │   │   ├── AppDelegate.swift         # process-level iOS events
-│   │   ├── AppDependencies.swift     # Factory registrations
+│   │   ├── DI/                       # Factory registrations, one file per layer
 │   │   ├── Startup/                  # guarded startup steps (Steps/ per step)
 │   │   ├── Config/                   # *.xcconfig, entitlements
 │   │   ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
@@ -291,7 +291,7 @@ site-log-ios/
 | PlatformKit | `Packages/PlatformKit` (`Sources/PlatformKit/<Name>/`): system services and standalone engines on system APIs | `Core`, Apple frameworks, SDKs; never `DomainLayer`, `DataLayer` or app code |
 | DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI only; never `DomainLayer` or app code |
 | Core | `Packages/Core` (`Logger/`, `Clock/`, `Crypto/`) | `Foundation`, `os`, `CommonCrypto` / `CryptoKit`; used by every layer except `DomainLayer` and `DesignSystem` |
-| Composition root | `SiteLog/App/` (`AppDependencies.swift`, `Startup/`, `Config/`, `Fakes/`, `Resources/`) | Everything, plus `FactoryKit` |
+| Composition root | `SiteLog/App/` (`DI/`, `Startup/`, `Config/`, `Fakes/`, `Resources/`) | Everything, plus `FactoryKit` |
 
 | Rule | Enforcement |
 |---|---|
@@ -337,14 +337,29 @@ site-log-ios/
 
 <dl><dd>
 
-- All registrations live in `SiteLog/App/AppDependencies.swift`.
+- All registrations live in `SiteLog/App/DI/`, one `extension Container` file per layer ([D20](#d20--di-files-split-by-layer)):
+
+| File | Registers |
+|---|---|
+| `CoreDI.swift` | `Core` helpers: clock, logger |
+| `PlatformDI.swift` | PlatformKit services and engines |
+| `DataSourcesDI.swift` | Data sources, `ModelContainer` |
+| `RepositoriesDI.swift` | Repositories (`<Noun>RepositoryImpl`) |
+| `UseCasesDI.swift` | Use cases, one `// MARK: - <Feature>` per feature; `UseCases/DevData/` ones under `#if DEBUG` |
+
+- A file is added with its first registration; each key lives in one file only.
 - `DomainLayer`, `DataLayer` and `PlatformKit` never import `FactoryKit` (their packages do not depend on it).
 
 ```swift
+// App/DI/RepositoriesDI.swift
 extension Container {
     var projectRepository: Factory<any ProjectRepository> {
         self { ProjectRepositoryImpl(container: self.modelContainer()) }.singleton
     }
+}
+
+// App/DI/UseCasesDI.swift
+extension Container {
     var createProject: Factory<CreateProjectUseCase> {
         self { CreateProjectUseCase(repository: self.projectRepository()) }
     }
@@ -545,7 +560,7 @@ final class ProjectListViewModel {
 **Adding a feature**
 
 1. Domain: entity, repository protocol, use cases.
-2. Fake data: the real repository (`<Noun>RepositoryImpl` in `DataLayer/Repositories/`) on in-memory values, registered once in `AppDependencies`. No separate fake repository; the dev menu resets / seeds it through Debug-only `resetAllData()` / `seedSampleData()` on the repository protocol and `UseCases/DevData/` use cases.
+2. Fake data: the real repository (`<Noun>RepositoryImpl` in `DataLayer/Repositories/`) on in-memory values, registered once in `App/DI/RepositoriesDI.swift`. No separate fake repository; the dev menu resets / seeds it through Debug-only `resetAllData()` / `seedSampleData()` on the repository protocol and `UseCases/DevData/` use cases.
 3. View models wired into the screens, running on those in-memory values.
 4. Real data: replace the repository's insides with data sources (`DataSources/Local/`, `Remote/`), models (`Models/Local/`, `Remote/`), mappers, and PlatformKit for system services; same type, same registration.
    Test doubles live only in test targets (`SiteLogTests/Doubles/`, `Packages/<Name>/Tests/`).
@@ -597,8 +612,9 @@ final class ProjectListViewModel {
 | [D17](#d17--rename-infrastructure-and-systemdesign) | Rename `Infrastructure` and `SystemDesign` | Accepted |
 | [D18](#d18--dev-menu-data-through-use-cases) | Dev menu data through use cases | Accepted |
 | [D19](#d19--feature-routes-and-a-coordinator-per-stack) | Feature routes and a coordinator per stack | Accepted |
+| [D20](#d20--di-files-split-by-layer) | DI files split by layer | Accepted |
 
-- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D19 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D20 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
@@ -609,7 +625,7 @@ final class ProjectListViewModel {
 - **Context:** one place must bind `DataLayer` implementations to `DomainLayer` protocols and let previews
   and tests swap them; a hand-written `make…()` per use case grows with every feature.
 - **Decision:** [Factory](https://github.com/hmlongco/Factory) 3.x (`FactoryKit`).
-  - All registrations: `extension Container` in `SiteLog/App/AppDependencies.swift`.
+  - All registrations: `extension Container` in `SiteLog/App/DI/`, one file per layer ([D20](#d20--di-files-split-by-layer)).
   - PlatformKit services and stateful services `.singleton`; use cases unscoped.
   - View models resolve **use cases only**: `@ObservationIgnored @Injected(\.useCase)`. *Superseded by [D14](#d14--view-models-take-use-cases-through-init): use cases come in through `init`.*
   - `DomainLayer`, `DataLayer` and `PlatformKit` never import `FactoryKit`.
@@ -625,7 +641,7 @@ final class ProjectListViewModel {
   - A missing registration does not compile.
   - Tests override in one line: `Container.shared.accessRepository.register { StubAccessRepository() }`.
   - Tests: `@Suite(.container)` (`FactoryTesting`), one isolated container per test.
-  - Replacing the library touches `AppDependencies` plus the `Container.shared` lines in views.
+  - Replacing the library touches `App/DI/` plus the `Container.shared` lines in views.
 
 </dd></dl>
 
@@ -931,7 +947,7 @@ final class ProjectListViewModel {
 | Rejected | Why not |
 |---|---|
 | Keep `@Injected` in view models (D01) | A framework inside the adapter layer; dependencies invisible in `init`; tests need a container |
-| Register every view model in `AppDependencies` | One more factory per view model for the same result |
+| Register every view model in `App/DI/` | One more factory per view model for the same result |
 | `App/` builds every screen and passes factories down | No `FactoryKit` in `Presentation` at all, but every screen must receive a factory from its parent |
 
 - **Consequences:**
@@ -1040,6 +1056,28 @@ final class ProjectListViewModel {
   - Deep links (F14) map a URL to a tab and a route, then push on that tab’s coordinator.
   - A sheet that opens a full screen dismisses itself, then pushes on the tab’s coordinator.
   - With view models, routes keep ids; the destination builds the view model from `Container.shared` (D14).
+
+</dd></dl>
+
+### D20 — DI files split by layer
+
+<dl><dd>
+
+- **Context:** every registration sat in one `AppDependencies.swift`; at ~15 features (100+ factories) one file becomes hard to read and a merge hotspot.
+- **Decision:** `SiteLog/App/DI/` holds one `extension Container` file per layer: `CoreDI`, `PlatformDI`, `DataSourcesDI`, `RepositoriesDI`, `UseCasesDI`.
+  - Each file imports only the layer it registers.
+  - A shared repository or data source needs no owner: it sits with its layer.
+  - When `UseCasesDI.swift` grows past ~300 lines, it becomes `DI/UseCases/<Feature>UseCasesDI.swift`.
+
+| Rejected | Why not |
+|---|---|
+| One file per feature in `App/DI/` | Shared repositories and data sources need an owner feature |
+| `<Feature>DI.swift` next to `<Feature>Route.swift` | Presentation may not import `DataLayer`; registrations would split between two places |
+| Each package registers itself | `DomainLayer` and `PlatformKit` cannot import `FactoryKit`; needs interface modules |
+
+- **Consequences:**
+  - Adding a feature edits `RepositoriesDI` and `UseCasesDI` (its DevData use cases under `#if DEBUG`).
+  - Only `App/DI/` imports `DataLayer` and `PlatformKit` for registration.
 
 </dd></dl>
 

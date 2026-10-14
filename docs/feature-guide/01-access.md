@@ -75,7 +75,7 @@ Packages/
 └── Core/Sources/Core/Logger/AppLogger.swift                                 # 2: access category
 SiteLog/
 ├── App/
-│   └── AppDependencies.swift             # 2: access registrations + dev menu use cases (Debug only)
+│   └── DI/RepositoriesDI.swift, UseCasesDI.swift   # 2: access registrations + dev menu use cases (Debug only)
 └── Presentation/
     ├── DevMenu/DevMenuViewModel.swift, ResetAppAction.swift   # 2: dev menu on use cases
     ├── Root/RootView.swift, RootViewModel.swift      # 3
@@ -630,7 +630,7 @@ public actor AccessRepositoryImpl: AccessRepository {
     private let freeTries = 5
     private var wrongTries = 0
 
-    // An actor's default init is internal; AppDependencies needs this one
+    // An actor's default init is internal; App/DI needs this one
     public init() {}
 
     public func loadSettings() -> Result<AccessSettings, AccessError> {
@@ -767,54 +767,135 @@ public struct SeedAccessDataUseCase {
 
 ---
 
-<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F01 version)*
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DI/RepositoriesDI.swift`
 
-<b>Explain</b> · Registers the access repository, one factory per use case, and the two dev menu use cases.
+<b>Explain</b> · Registers the access repository once, as its protocol. The composition root has one file per layer.
 
 <b>Think</b>
 
 - Why is the repository `.singleton` but the use cases are not?
-- Why must the dev menu factories sit inside `#if DEBUG`?
+- Why is `App/DI/` the only app folder that imports `DataLayer`?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Register the repository once, as the protocol (singleton); build each use case from it, dev menu ones included.
+- Register the repository once, as the protocol, singleton.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `import Core`, `import DataLayer`, `import DomainLayer`: the composition root is the one app file that imports DataLayer.
-- `Factory<any AccessRepository>`, `self { AccessRepositoryImpl() }.singleton`, `#if DEBUG`.
+- `import DataLayer`, `import DomainLayer`, `import FactoryKit`.
+- `Factory<any AccessRepository>`, `self { AccessRepositoryImpl() }.singleton`.
 
 </details>
 
-<details open>
-<summary><b>Hint 3 · Skeleton</b></summary>
+<details>
+<summary><b>Code</b></summary>
 
 ```swift
-import Core
 import DataLayer
 import DomainLayer
 import FactoryKit
 
 extension Container {
-    var clock: Factory<any AppClock> { /* unchanged */ }
-
     var accessRepository: Factory<any AccessRepository> {
-        // the repository, singleton, as the protocol
+        self { AccessRepositoryImpl() }.singleton
     }
+}
+```
+
+</details>
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DI/UseCasesDI.swift`
+
+<b>Explain</b> · One factory per use case, grouped by feature with `// MARK:`; the two dev menu use cases sit under `#if DEBUG`.
+
+<b>Think</b>
+
+- This file never imports `DataLayer`. How does it still reach `AccessRepositoryImpl`?
+- Why must the dev menu factories sit inside `#if DEBUG`?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Build each use case from `self.accessRepository()`; no scope, so each resolve makes a new one.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · Skeleton</b></summary>
+
+```swift
+import DomainLayer
+import FactoryKit
+
+extension Container {
+    // MARK: - Access
 
     var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
         // built from accessRepository
     }
     // … one per use case
 
+    // MARK: - Dev menu (Debug only)
+
     #if DEBUG
     var resetAllAccessData: Factory<ResetAllAccessDataUseCase> { /* from accessRepository */ }
     var seedAccessData: Factory<SeedAccessDataUseCase> { /* from accessRepository */ }
+    #endif
+}
+```
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+import DomainLayer
+import FactoryKit
+
+extension Container {
+    // MARK: - Access
+
+    var loadAccessSettings: Factory<LoadAccessSettingsUseCase> {
+        self { LoadAccessSettingsUseCase(repository: self.accessRepository()) }
+    }
+
+    var saveAccessSettings: Factory<SaveAccessSettingsUseCase> {
+        self { SaveAccessSettingsUseCase(repository: self.accessRepository()) }
+    }
+
+    var finishWelcome: Factory<FinishWelcomeUseCase> {
+        self { FinishWelcomeUseCase(repository: self.accessRepository()) }
+    }
+
+    var checkPasscode: Factory<CheckPasscodeUseCase> {
+        self { CheckPasscodeUseCase(repository: self.accessRepository()) }
+    }
+
+    var setPasscode: Factory<SetPasscodeUseCase> {
+        self { SetPasscodeUseCase(repository: self.accessRepository()) }
+    }
+
+    var unlockWithBiometrics: Factory<UnlockWithBiometricsUseCase> {
+        self { UnlockWithBiometricsUseCase(repository: self.accessRepository()) }
+    }
+
+    // MARK: - Dev menu (Debug only)
+
+    #if DEBUG
+    var resetAllAccessData: Factory<ResetAllAccessDataUseCase> {
+        self { ResetAllAccessDataUseCase(repository: self.accessRepository()) }
+    }
+
+    var seedAccessData: Factory<SeedAccessDataUseCase> {
+        self { SeedAccessDataUseCase(repository: self.accessRepository()) }
+    }
     #endif
 }
 ```
@@ -2383,7 +2464,7 @@ final class SetPasscodeViewModel {
 | <b class="tag-new">New</b> | `Core/Crypto/PasscodeHasher.swift` | `public`: PBKDF2-SHA256 with a 16-byte random salt; compare without storing the passcode |
 | <b class="tag-new">New</b> | `PlatformKit/Biometrics/BiometricAuthenticator.swift` | `BiometricAuthenticating` protocol + `LAContext` type, biometry-change detection |
 | <b class="tag-replace">Replace</b> | `DataLayer/Repositories/AccessRepositoryImpl.swift` | Same type and methods: calls `AccessLocalDataSource` and `BiometricAuthenticating`, maps records to entities, catches their errors → `.failure(AccessError)`; `reset()` clears them |
-| <b class="tag-edit">Edit</b> | `App/AppDependencies.swift` | Registers the data source and the authenticator, passes them to `AccessRepositoryImpl(…)` |
+| <b class="tag-edit">Edit</b> | `App/DI/DataSourcesDI.swift`, `PlatformDI.swift`, `RepositoriesDI.swift` | Registers the data source and the authenticator, passes them to `AccessRepositoryImpl(…)` |
 
 #### Steps
 
@@ -2392,7 +2473,7 @@ final class SetPasscodeViewModel {
 1. Add `INFOPLIST_KEY_NSFaceIDUsageDescription` in `project.yml`, run `xcodegen`.
 2. Lockout counter survives relaunch; biometry change turns Face ID off.
 3. Forgot passcode: device passcode check (`LAContext` `.deviceOwnerAuthentication`), then S5.
-4. Pass the data source and the authenticator in `AppDependencies`; no other registration changes.
+4. Register the data source in `DataSourcesDI`, the authenticator in `PlatformDI`, pass both in `RepositoriesDI`; no other registration changes.
 
 </dd></dl>
 

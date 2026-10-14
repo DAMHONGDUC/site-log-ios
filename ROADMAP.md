@@ -48,7 +48,7 @@ flowchart LR
 
 - Every feature runs the same steps: Domain → fake data → view models → real data → tests.
 - **No fake repository.** The fake-data step writes the real repository on in-memory values; the real-data step
-  replaces its insides, never the type or the `AppDependencies` registration. The dev menu seeds / clears it;
+  replaces its insides, never the type or its registration in `App/DI/`. The dev menu seeds / clears it;
   test doubles live only in test targets.
 - The UI skeleton (~30% of Figma, every screen) is done; a feature's view models replace its `FakeData` use
   in `App/Fakes/FakeData.swift` and delete those types. The other ~70% of the UI is `F16`, last.

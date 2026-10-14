@@ -62,7 +62,7 @@ site-log-ios/
 │   ├── DataLayer/                            # 1: empty layer folders (Repositories, DataSources/Local, DataSources/Remote, Models/Local, Models/Remote, Mappers)
 │   ├── PlatformKit/                       # 1: empty folders (Permissions, Camera, Bluetooth, …, Networking, UploadKit, Realtime)
 │   └── DesignSystem/                         # done: Tokens/, Components/; 4: DSGallery + tests
-├── SiteLog/App/AppDependencies.swift         # 1 (clock) → F01 (access)
+├── SiteLog/App/DI/CoreDI.swift               # 1 (clock); F01 adds RepositoriesDI, UseCasesDI
 └── SiteLogTests/
     └── SiteLogTests.swift                    # 1: FixedClock + Factory test
 ```
@@ -717,7 +717,7 @@ public protocol AppClock: Sendable {
 
 - Remove `Sendable`, build app and tests: does anything complain yet? Where would a non-`Sendable` clock become a problem? (Hint: the actor in F01.) Put it back.
 - Swift already has a `Clock` protocol. Look it up in the docs: what would naming ours `Clock` hide?
-- Remove `public` and build the app: read what `AppDependencies.swift` can no longer see. Put it back.
+- Remove `public` and build the app: read what `App/DI/CoreDI.swift` can no longer see. Put it back.
 
 ---
 
@@ -864,9 +864,9 @@ struct SystemClockTests {
 <summary><strong>1.4 Composition root</strong></summary>
 <dl><dd>
 
-<b>File</b> · <b class="tag-replace">Replace</b> · `SiteLog/App/AppDependencies.swift` *(F00 version; F01 adds Access)*
+<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DI/CoreDI.swift` *(F01 adds the other layer files)*
 
-<b>Explain</b> · Composition root: the one place that registers which implementation backs each protocol (Factory).
+<b>Explain</b> · Composition root (`App/DI/`, one file per layer): registers which implementation backs each protocol (Factory). This file holds the `Core` helpers.
 
 <b>Think</b>
 
@@ -876,7 +876,7 @@ struct SystemClockTests {
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- One `Container` extension lists every dependency; each is a `Factory` that knows how to build the real thing.
+- Each `App/DI/<Layer>DI.swift` extends `Container`; every entry is a `Factory` that knows how to build the real thing.
 
 </details>
 

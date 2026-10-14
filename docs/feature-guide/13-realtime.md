@@ -28,7 +28,7 @@
 - **Demo:** the Sync tab shows server-confirmed state as events arrive; mismatches are flagged.
 - **Spec:** [10](../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [14 §8–9](../feature-docs/03-backend.md#8-integrity)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
-- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `AppDependencies`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
+- **No fake repository:** the fake-data step writes the real implementation on in-memory values, registered once in `App/DI/RepositoriesDI.swift`; the real-data step swaps its insides, never the type. The dev menu seeds / clears it through Debug-only `UseCases/DevData/` use cases; test doubles live only in test targets.
 - **File tags:** <b class="tag-new">New</b> create the file.
 
 | Step | Layer | Hours | Status | What |
@@ -42,7 +42,7 @@
 <dl><dd>
 
 - Steps run top to bottom; the app runs after every step.
-- Real data changes only registrations in `AppDependencies`, never views or view models.
+- Real data changes only registrations in `App/DI/`, never views or view models.
 - Tests come last, once the feature works end to end.
 
 </dd></dl>
