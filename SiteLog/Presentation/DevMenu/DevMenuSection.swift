@@ -12,8 +12,8 @@
         @Environment(\.resetApp) private var resetApp
 
         @State private var viewModel = DevMenuViewModel(
-            resetAllAccessData: Container.shared.resetAllAccessData(),
-            seedAccessData: Container.shared.seedAccessData()
+            resetAllAccessDataUseCase: Container.shared.resetAllAccessDataUseCase(),
+            seedAccessDataUseCase: Container.shared.seedAccessDataUseCase()
         )
 
         enum PendingAction: String {

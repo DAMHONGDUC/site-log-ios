@@ -345,7 +345,7 @@ public protocol AccessRepository: Sendable {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `public struct`, `private let repository: any AccessRepository`, `public init(repository:)`, `public func execute(…) async -> Result<…, AccessError>`; pass the repository’s `Result` on.
+- `public struct`, `private let accessRepository: any AccessRepository`, `public init(repository accessRepository:)`, `public func execute(…) async -> Result<…, AccessError>`; pass the repository’s `Result` on.
 
 </details>
 
@@ -356,14 +356,14 @@ public protocol AccessRepository: Sendable {
 
 ```swift
 public struct LoadAccessSettingUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
+    public init(repository accessRepository: any AccessRepository) {
         // store it
     }
 
     public func execute() async -> Result<AccessSetting, AccessError> {
-        // ask the repository
+        // ask the accessRepository
     }
 }
 ```
@@ -379,14 +379,14 @@ The other five files have the same shape.
 
 ```swift
 public struct LoadAccessSettingUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async -> Result<AccessSetting, AccessError> {
-        return await repository.loadAccessSetting()
+        return await accessRepository.loadAccessSetting()
     }
 }
 ```
@@ -395,14 +395,14 @@ public struct LoadAccessSettingUseCase: Sendable {
 
 ```swift
 public struct SaveAccessSettingUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute(setting: AccessSetting) async -> Result<Void, AccessError> {
-        return await repository.saveAccessSetting(newSetting: setting)
+        return await accessRepository.saveAccessSetting(newSetting: setting)
     }
 }
 ```
@@ -411,14 +411,14 @@ public struct SaveAccessSettingUseCase: Sendable {
 
 ```swift
 public struct MarkWelcomeScreenUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async -> Result<Void, AccessError> {
-        return await repository.markWelcomeScreen()
+        return await accessRepository.markWelcomeScreen()
     }
 }
 ```
@@ -427,14 +427,14 @@ public struct MarkWelcomeScreenUseCase: Sendable {
 
 ```swift
 public struct CheckPasscodeUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute(passcode: String) async -> Result<PasscodeCheck, AccessError> {
-        return await repository.checkPasscode(inputPasscode: passcode)
+        return await accessRepository.checkPasscode(inputPasscode: passcode)
     }
 }
 ```
@@ -443,14 +443,14 @@ public struct CheckPasscodeUseCase: Sendable {
 
 ```swift
 public struct SetPasscodeUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute(passcode: String) async -> Result<Void, AccessError> {
-        return await repository.setPasscode(newPasscode: passcode)
+        return await accessRepository.setPasscode(newPasscode: passcode)
     }
 }
 ```
@@ -459,14 +459,14 @@ public struct SetPasscodeUseCase: Sendable {
 
 ```swift
 public struct UnlockWithBiometricsUseCase: Sendable {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async -> Result<Bool, AccessError> {
-        return await repository.unlockWithBiometrics()
+        return await accessRepository.unlockWithBiometrics()
     }
 }
 ```
@@ -728,14 +728,14 @@ extension AccessRepositoryImpl {
 #if DEBUG
 // Dev menu: back to first launch for the access flow
 public struct ResetAllAccessDataUseCase {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async {
-        await repository.resetAllData()
+        await accessRepository.resetAllData()
     }
 }
 #endif
@@ -747,14 +747,14 @@ public struct ResetAllAccessDataUseCase {
 #if DEBUG
 // Dev menu: put sample access settings in place
 public struct SeedAccessDataUseCase {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async {
-        await repository.seedSampleData()
+        await accessRepository.seedSampleData()
     }
 }
 #endif
@@ -837,7 +837,7 @@ import FactoryKit
 extension Container {
     // MARK: - Access
 
-    var loadAccessSetting: Factory<LoadAccessSettingUseCase> {
+    var loadAccessSettingUseCase: Factory<LoadAccessSettingUseCase> {
         // built from accessRepository
     }
     // … one per use case
@@ -845,8 +845,8 @@ extension Container {
     // MARK: - Dev menu (Debug only)
 
     #if DEBUG
-    var resetAllAccessData: Factory<ResetAllAccessDataUseCase> { /* from accessRepository */ }
-    var seedAccessData: Factory<SeedAccessDataUseCase> { /* from accessRepository */ }
+    var resetAllAccessDataUseCase: Factory<ResetAllAccessDataUseCase> { /* from accessRepository */ }
+    var seedAccessDataUseCase: Factory<SeedAccessDataUseCase> { /* from accessRepository */ }
     #endif
 }
 ```
@@ -863,38 +863,38 @@ import FactoryKit
 extension Container {
     // MARK: - Access
 
-    var loadAccessSetting: Factory<LoadAccessSettingUseCase> {
+    var loadAccessSettingUseCase: Factory<LoadAccessSettingUseCase> {
         self { LoadAccessSettingUseCase(repository: self.accessRepository()) }
     }
 
-    var saveAccessSetting: Factory<SaveAccessSettingUseCase> {
+    var saveAccessSettingUseCase: Factory<SaveAccessSettingUseCase> {
         self { SaveAccessSettingUseCase(repository: self.accessRepository()) }
     }
 
-    var markWelcomeScreen: Factory<MarkWelcomeScreenUseCase> {
+    var markWelcomeScreenUseCase: Factory<MarkWelcomeScreenUseCase> {
         self { MarkWelcomeScreenUseCase(repository: self.accessRepository()) }
     }
 
-    var checkPasscode: Factory<CheckPasscodeUseCase> {
+    var checkPasscodeUseCase: Factory<CheckPasscodeUseCase> {
         self { CheckPasscodeUseCase(repository: self.accessRepository()) }
     }
 
-    var setPasscode: Factory<SetPasscodeUseCase> {
+    var setPasscodeUseCase: Factory<SetPasscodeUseCase> {
         self { SetPasscodeUseCase(repository: self.accessRepository()) }
     }
 
-    var unlockWithBiometrics: Factory<UnlockWithBiometricsUseCase> {
+    var unlockWithBiometricsUseCase: Factory<UnlockWithBiometricsUseCase> {
         self { UnlockWithBiometricsUseCase(repository: self.accessRepository()) }
     }
 
     // MARK: - Dev menu (Debug only)
 
     #if DEBUG
-    var resetAllAccessData: Factory<ResetAllAccessDataUseCase> {
+    var resetAllAccessDataUseCase: Factory<ResetAllAccessDataUseCase> {
         self { ResetAllAccessDataUseCase(repository: self.accessRepository()) }
     }
 
-    var seedAccessData: Factory<SeedAccessDataUseCase> {
+    var seedAccessDataUseCase: Factory<SeedAccessDataUseCase> {
         self { SeedAccessDataUseCase(repository: self.accessRepository()) }
     }
     #endif
@@ -927,38 +927,38 @@ extension Container {
         self { AccessRepositoryImpl() }.singleton
     }
 
-    var loadAccessSetting: Factory<LoadAccessSettingUseCase> {
+    var loadAccessSettingUseCase: Factory<LoadAccessSettingUseCase> {
         self { LoadAccessSettingUseCase(repository: self.accessRepository()) }
     }
 
-    var saveAccessSetting: Factory<SaveAccessSettingUseCase> {
+    var saveAccessSettingUseCase: Factory<SaveAccessSettingUseCase> {
         self { SaveAccessSettingUseCase(repository: self.accessRepository()) }
     }
 
-    var markWelcomeScreen: Factory<MarkWelcomeScreenUseCase> {
+    var markWelcomeScreenUseCase: Factory<MarkWelcomeScreenUseCase> {
         self { MarkWelcomeScreenUseCase(repository: self.accessRepository()) }
     }
 
-    var checkPasscode: Factory<CheckPasscodeUseCase> {
+    var checkPasscodeUseCase: Factory<CheckPasscodeUseCase> {
         self { CheckPasscodeUseCase(repository: self.accessRepository()) }
     }
 
-    var setPasscode: Factory<SetPasscodeUseCase> {
+    var setPasscodeUseCase: Factory<SetPasscodeUseCase> {
         self { SetPasscodeUseCase(repository: self.accessRepository()) }
     }
 
-    var unlockWithBiometrics: Factory<UnlockWithBiometricsUseCase> {
+    var unlockWithBiometricsUseCase: Factory<UnlockWithBiometricsUseCase> {
         self { UnlockWithBiometricsUseCase(repository: self.accessRepository()) }
     }
 
     // MARK: - Dev menu (Debug only)
 
     #if DEBUG
-    var resetAllAccessData: Factory<ResetAllAccessDataUseCase> {
+    var resetAllAccessDataUseCase: Factory<ResetAllAccessDataUseCase> {
         self { ResetAllAccessDataUseCase(repository: self.accessRepository()) }
     }
 
-    var seedAccessData: Factory<SeedAccessDataUseCase> {
+    var seedAccessDataUseCase: Factory<SeedAccessDataUseCase> {
         self { SeedAccessDataUseCase(repository: self.accessRepository()) }
     }
     #endif
@@ -991,7 +991,7 @@ extension Container {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `#if DEBUG … #endif`, `@MainActor @Observable`, `init(resetAllAccessData:seedAccessData:)`.
+- `#if DEBUG … #endif`, `@MainActor @Observable`, `init(resetAllAccessDataUseCase:seedAccessDataUseCase:)`.
 
 </details>
 
@@ -1006,22 +1006,22 @@ import Observation
 
 @MainActor @Observable
 final class DevMenuViewModel {
-    @ObservationIgnored private let resetAllAccessData: ResetAllAccessDataUseCase
-    @ObservationIgnored private let seedAccessData: SeedAccessDataUseCase
+    @ObservationIgnored private let resetAllAccessDataUseCase: ResetAllAccessDataUseCase
+    @ObservationIgnored private let seedAccessDataUseCase: SeedAccessDataUseCase
 
-    init(resetAllAccessData: ResetAllAccessDataUseCase, seedAccessData: SeedAccessDataUseCase) {
-        self.resetAllAccessData = resetAllAccessData
-        self.seedAccessData = seedAccessData
+    init(resetAllAccessDataUseCase: ResetAllAccessDataUseCase, seedAccessDataUseCase: SeedAccessDataUseCase) {
+        self.resetAllAccessDataUseCase = resetAllAccessDataUseCase
+        self.seedAccessDataUseCase = seedAccessDataUseCase
     }
 
     // Each feature adds its seed use case here
     func seedData() async {
-        await seedAccessData.execute()
+        await seedAccessDataUseCase.execute()
     }
 
     // Each feature adds its reset use case here
     func deleteAllData() async {
-        await resetAllAccessData.execute()
+        await resetAllAccessDataUseCase.execute()
     }
 }
 
@@ -1050,7 +1050,7 @@ final class DevMenuViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `import FactoryKit`, `Container.shared.resetAllAccessData()`, `Container.shared.seedAccessData()`.
+- `import FactoryKit`, `Container.shared.resetAllAccessDataUseCase()`, `Container.shared.seedAccessDataUseCase()`.
 
 </details>
 
@@ -1060,8 +1060,8 @@ final class DevMenuViewModel {
 ```swift
     // was: var actions: any DevDataActions = NoopDevDataActions()
     @State private var viewModel = DevMenuViewModel(
-        resetAllAccessData: Container.shared.resetAllAccessData(),
-        seedAccessData: Container.shared.seedAccessData()
+        resetAllAccessDataUseCase: Container.shared.resetAllAccessDataUseCase(),
+        seedAccessDataUseCase: Container.shared.seedAccessDataUseCase()
     )
 
     // and in the buttons: actions.seedData() → viewModel.seedData(), actions.deleteAllData() → viewModel.deleteAllData()
@@ -1122,7 +1122,7 @@ final class DevMenuViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@MainActor @Observable`, `private(set) var`, `private let loadSettings: LoadAccessSettingUseCase` and `private let clock: any AppClock` set in `init`.
+- `@MainActor @Observable`, `private(set) var`, `private let loadSettingsUseCase: LoadAccessSettingUseCase` and `private let clock: any AppClock` set in `init`.
 - `ContinuousClock.Instant`; `clock.uptime - leftAt` gives a `Duration`.
 
 </details>
@@ -1143,7 +1143,7 @@ final class RootViewModel {
     private(set) var phase: Phase = .loading
     private(set) var showsPrivacyOverlay = false
 
-    // init(loadSettings:clock:): passed in, never looked up
+    // init(loadSettingsUseCase:clock:): passed in, never looked up
     // remembered: settings, wentToBackgroundAt
 
     func load() async { /* settings → welcome, or lockOrOpen() */ }
@@ -1185,21 +1185,21 @@ final class RootViewModel {
     // true while the app is leaving the screen and the lock is on (hides content in the app switcher)
     private(set) var showsPrivacyOverlay = false
 
-    @ObservationIgnored private let loadSettings: LoadAccessSettingUseCase
+    @ObservationIgnored private let loadSettingsUseCase: LoadAccessSettingUseCase
     // uptime keeps counting while the phone sleeps and ignores clock changes (spec 07.2)
     @ObservationIgnored private let clock: any AppClock
     @ObservationIgnored private var settings: AccessSetting?
     @ObservationIgnored private var wentToBackgroundAt: ContinuousClock.Instant?
 
     // RootView passes these in from the container; tests pass stubs
-    init(loadSettings: LoadAccessSettingUseCase, clock: any AppClock) {
-        self.loadSettings = loadSettings
+    init(loadSettingsUseCase: LoadAccessSettingUseCase, clock: any AppClock) {
+        self.loadSettingsUseCase = loadSettingsUseCase
         self.clock = clock
     }
 
     // Also called by the dev menu's Reset the app
     func load() async {
-        switch await loadSettings.execute() {
+        switch await loadSettingsUseCase.execute() {
         case .success(let loadedSettings):
             settings = loadedSettings
 
@@ -1256,7 +1256,7 @@ final class RootViewModel {
         wentToBackgroundAt = nil
 
         // Re-read: S4 may have changed Lock app / Face ID / Lock after meanwhile
-        switch await loadSettings.execute() {
+        switch await loadSettingsUseCase.execute() {
         case .success(let reloaded):
             settings = reloaded
         case .failure(let error):
@@ -1332,7 +1332,7 @@ final class RootViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@ObservationIgnored private let markWelcomeScreen: MarkWelcomeScreenUseCase`, `@ObservationIgnored private let onFinished: () -> Void`, `init(markWelcomeScreen:onFinished:)`.
+- `@ObservationIgnored private let markWelcomeScreenUseCase: MarkWelcomeScreenUseCase`, `@ObservationIgnored private let onFinished: () -> Void`, `init(markWelcomeScreenUseCase:onFinished:)`.
 
 </details>
 
@@ -1347,9 +1347,9 @@ import os
 
 @MainActor @Observable
 final class SignInViewModel {
-    // markWelcomeScreen use case, onFinished closure: both passed in
+    // markWelcomeScreenUseCase dependency and onFinished closure: both passed in
 
-    init(markWelcomeScreen: MarkWelcomeScreenUseCase, onFinished: @escaping () -> Void) { }
+    init(markWelcomeScreenUseCase: MarkWelcomeScreenUseCase, onFinished: @escaping () -> Void) { }
 
     func signInWithAppleTapped() { /* log only, F12 */ }
     func continueWithEmailTapped() { /* log only */ }
@@ -1370,12 +1370,12 @@ import os
 
 @MainActor @Observable
 final class SignInViewModel {
-    @ObservationIgnored private let markWelcomeScreen: MarkWelcomeScreenUseCase
+    @ObservationIgnored private let markWelcomeScreenUseCase: MarkWelcomeScreenUseCase
     // Called when the user leaves this screen; RootView decides what comes next
     @ObservationIgnored private let onFinished: () -> Void
 
-    init(markWelcomeScreen: MarkWelcomeScreenUseCase, onFinished: @escaping () -> Void) {
-        self.markWelcomeScreen = markWelcomeScreen
+    init(markWelcomeScreenUseCase: MarkWelcomeScreenUseCase, onFinished: @escaping () -> Void) {
+        self.markWelcomeScreenUseCase = markWelcomeScreenUseCase
         self.onFinished = onFinished
     }
 
@@ -1391,7 +1391,7 @@ final class SignInViewModel {
     func continueOfflineTapped() async {
         AppLogger.access.info("Continue offline tapped")
 
-        switch await markWelcomeScreen.execute() {
+        switch await markWelcomeScreenUseCase.execute() {
         case .success:
             AppLogger.access.info("Welcome marked as seen")
         case .failure(let error):
@@ -1430,7 +1430,7 @@ final class SignInViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@State private var viewModel: SignInViewModel`, `_viewModel = State(initialValue: …)`, `Container.shared.markWelcomeScreen()`.
+- `@State private var viewModel: SignInViewModel`, `_viewModel = State(initialValue: …)`, `Container.shared.markWelcomeScreenUseCase()`.
 
 </details>
 
@@ -1444,7 +1444,7 @@ final class SignInViewModel {
     init(onFinished: @escaping () -> Void) {
         // The view hands the use case in; the view model never touches the container
         let model = SignInViewModel(
-            markWelcomeScreen: Container.shared.markWelcomeScreen(),
+            markWelcomeScreenUseCase: Container.shared.markWelcomeScreenUseCase(),
             onFinished: onFinished
         )
         // _viewModel is the @State box itself; SwiftUI keeps this view model for the view's lifetime
@@ -1543,7 +1543,7 @@ final class SignInViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `private(set) var isChecking`, `private let unlockWithBiometrics: UnlockWithBiometricsUseCase`, two closures; all three through `init`.
+- `private(set) var isChecking`, `private let unlockWithBiometricsUseCase: UnlockWithBiometricsUseCase`, two closures; all three through `init`.
 
 </details>
 
@@ -1559,10 +1559,10 @@ import os
 @MainActor @Observable
 final class FaceIDLockViewModel {
     private(set) var isChecking = false
-    // unlockWithBiometrics, onUnlocked, onUsePasscode: passed in
+    // unlockWithBiometricsUseCase, onUnlocked, onUsePasscode: passed in
 
     init(
-        unlockWithBiometrics: UnlockWithBiometricsUseCase,
+        unlockWithBiometricsUseCase: UnlockWithBiometricsUseCase,
         onUnlocked: @escaping () -> Void,
         onUsePasscode: @escaping () -> Void
     ) { }
@@ -1589,16 +1589,16 @@ final class FaceIDLockViewModel {
     // true while Face ID is checking; the button is disabled meanwhile
     private(set) var isChecking = false
 
-    @ObservationIgnored private let unlockWithBiometrics: UnlockWithBiometricsUseCase
+    @ObservationIgnored private let unlockWithBiometricsUseCase: UnlockWithBiometricsUseCase
     @ObservationIgnored private let onUnlocked: () -> Void
     @ObservationIgnored private let onUsePasscode: () -> Void
 
     init(
-        unlockWithBiometrics: UnlockWithBiometricsUseCase,
+        unlockWithBiometricsUseCase: UnlockWithBiometricsUseCase,
         onUnlocked: @escaping () -> Void,
         onUsePasscode: @escaping () -> Void
     ) {
-        self.unlockWithBiometrics = unlockWithBiometrics
+        self.unlockWithBiometricsUseCase = unlockWithBiometricsUseCase
         self.onUnlocked = onUnlocked
         self.onUsePasscode = onUsePasscode
     }
@@ -1610,7 +1610,7 @@ final class FaceIDLockViewModel {
 
     func unlockTapped() async {
         isChecking = true
-        let result = await unlockWithBiometrics.execute()
+        let result = await unlockWithBiometricsUseCase.execute()
         isChecking = false
 
         switch result {
@@ -1669,7 +1669,7 @@ final class FaceIDLockViewModel {
 
     init(onUnlocked: @escaping () -> Void, onUsePasscode: @escaping () -> Void) {
         let model = FaceIDLockViewModel(
-            unlockWithBiometrics: Container.shared.unlockWithBiometrics(),
+            unlockWithBiometricsUseCase: Container.shared.unlockWithBiometricsUseCase(),
             onUnlocked: onUnlocked,
             onUsePasscode: onUsePasscode
         )
@@ -1781,12 +1781,12 @@ final class PasscodeUnlockViewModel {
     let passcodeLength = 6
     private(set) var message = ""
     private(set) var isLockedOut = false
-    // checkPasscode use case, onUnlocked closure: passed in
+    // checkPasscodeUseCase use case, onUnlocked closure: passed in
 
-    init(checkPasscode: CheckPasscodeUseCase, onUnlocked: @escaping () -> Void) { }
+    init(checkPasscodeUseCase: CheckPasscodeUseCase, onUnlocked: @escaping () -> Void) { }
 
     func passcodeEntered(_ passcode: String) async {
-        switch await checkPasscode.execute(passcode: passcode) {
+        switch await checkPasscodeUseCase.execute(passcode: passcode) {
         case .success(.correct): // clear the message, unlock
         case .success(.wrong(let triesLeft)): // log the count only, show the message
         case .success(.lockedOut(let wait)): // lock the keypad, show minutes
@@ -1817,17 +1817,17 @@ final class PasscodeUnlockViewModel {
     // true after too many wrong tries; the keypad is disabled
     private(set) var isLockedOut = false
 
-    @ObservationIgnored private let checkPasscode: CheckPasscodeUseCase
+    @ObservationIgnored private let checkPasscodeUseCase: CheckPasscodeUseCase
     @ObservationIgnored private let onUnlocked: () -> Void
 
-    init(checkPasscode: CheckPasscodeUseCase, onUnlocked: @escaping () -> Void) {
-        self.checkPasscode = checkPasscode
+    init(checkPasscodeUseCase: CheckPasscodeUseCase, onUnlocked: @escaping () -> Void) {
+        self.checkPasscodeUseCase = checkPasscodeUseCase
         self.onUnlocked = onUnlocked
     }
 
     // The view calls this when the 6th digit is typed, like the iOS lock screen
     func passcodeEntered(_ passcode: String) async {
-        let result = await checkPasscode.execute(passcode: passcode)
+        let result = await checkPasscodeUseCase.execute(passcode: passcode)
 
         // Never log the digits themselves
         switch result {
@@ -1881,7 +1881,7 @@ final class PasscodeUnlockViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `@State private var viewModel`, `@State private var code`, `init(onUnlocked:)`, `Container.shared.checkPasscode()`; add `import FactoryKit`.
+- `@State private var viewModel`, `@State private var code`, `init(onUnlocked:)`, `Container.shared.checkPasscodeUseCase()`; add `import FactoryKit`.
 
 </details>
 
@@ -1895,7 +1895,7 @@ final class PasscodeUnlockViewModel {
 
     init(onUnlocked: @escaping () -> Void) {
         let model = PasscodeUnlockViewModel(
-            checkPasscode: Container.shared.checkPasscode(),
+            checkPasscodeUseCase: Container.shared.checkPasscodeUseCase(),
             onUnlocked: onUnlocked
         )
         _viewModel = State(initialValue: model)
@@ -2039,7 +2039,7 @@ struct RootView: View {
         sequence: StartupSequence(steps: [])
     )
     @State private var rootVM = RootViewModel(
-        loadSettings: Container.shared.loadAccessSetting(),
+        loadSettingsUseCase: Container.shared.loadAccessSettingUseCase(),
         clock: Container.shared.clock()
     )
 
@@ -2215,17 +2215,17 @@ final class AppLockViewModel {
         LockAfterOption(title: "1 hour", value: .seconds(3600)),
     ]
 
-    @ObservationIgnored private let loadSettings: LoadAccessSettingUseCase
-    @ObservationIgnored private let saveSettings: SaveAccessSettingUseCase
+    @ObservationIgnored private let loadSettingsUseCase: LoadAccessSettingUseCase
+    @ObservationIgnored private let saveSettingsUseCase: SaveAccessSettingUseCase
     @ObservationIgnored private var settings: AccessSetting?
 
-    init(loadSettings: LoadAccessSettingUseCase, saveSettings: SaveAccessSettingUseCase) {
-        self.loadSettings = loadSettings
-        self.saveSettings = saveSettings
+    init(loadSettingsUseCase: LoadAccessSettingUseCase, saveSettingsUseCase: SaveAccessSettingUseCase) {
+        self.loadSettingsUseCase = loadSettingsUseCase
+        self.saveSettingsUseCase = saveSettingsUseCase
     }
 
     func load() async {
-        switch await loadSettings.execute() {
+        switch await loadSettingsUseCase.execute() {
         case .success(let loaded):
             settings = loaded
             isLockOn = loaded.isLockOn
@@ -2245,7 +2245,7 @@ final class AppLockViewModel {
         updated.isLockOn = isLockOn
         updated.isFaceIdOn = isFaceIDOn
         updated.lockAfterTime = lockAfter
-        switch await saveSettings.execute(setting: updated) {
+        switch await saveSettingsUseCase.execute(setting: updated) {
         case .success:
             settings = updated
         case .failure(let error):
@@ -2274,7 +2274,7 @@ final class AppLockViewModel {
 | In `AppLockScreen` | Change to |
 |---|---|
 | top of the file | `import FactoryKit` |
-| `@State isLockOn / isFaceIDOn / lockAfter` and `lockAfterOptions` | `@State private var viewModel = AppLockViewModel(loadSettings: Container.shared.loadAccessSetting(), saveSettings: Container.shared.saveAccessSetting())` |
+| `@State isLockOn / isFaceIDOn / lockAfter` and `lockAfterOptions` | `@State private var viewModel = AppLockViewModel(loadSettingsUseCase: Container.shared.loadAccessSettingUseCase(), saveSettingsUseCase: Container.shared.saveAccessSettingUseCase())` |
 | `toggleRow("Lock app", isOn: $isLockOn)` | `toggleRow("Lock app", isOn: $viewModel.isLockOn)` (same for Face ID) |
 | `ForEach(lockAfterOptions, id: \.self)` | `ForEach(viewModel.lockAfterOptions)`; radio on `viewModel.lockAfterTime == option.value`; tap sets `viewModel.lockAfterTime = option.value` |
 | end of `body` | `.task { await viewModel.load() }` and `.onDisappear { Task { await viewModel.save() } }` |
@@ -2308,7 +2308,7 @@ final class AppLockViewModel {
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `enum Stage`, a computed `var title: String`, `private let setPasscode: SetPasscodeUseCase` through `init`.
+- `enum Stage`, a computed `var title: String`, `private let setPasscodeUseCase: SetPasscodeUseCase` through `init`.
 
 </details>
 
@@ -2324,9 +2324,9 @@ final class SetPasscodeViewModel {
     enum Stage { /* enter, confirm */ }
     private(set) var stage: Stage = .enter
     private(set) var message = ""
-    // injected setPasscode; firstEntry; onDone
+    // injected setPasscodeUseCase; firstEntry; onDone
 
-    init(setPasscode: SetPasscodeUseCase, onDone: @escaping () -> Void) { }
+    init(setPasscodeUseCase: SetPasscodeUseCase, onDone: @escaping () -> Void) { }
 
     var title: String { /* one text per stage */ }
 
@@ -2359,12 +2359,12 @@ final class SetPasscodeViewModel {
     private(set) var stage: Stage = .enter
     private(set) var message = ""
 
-    @ObservationIgnored private let setPasscode: SetPasscodeUseCase
+    @ObservationIgnored private let setPasscodeUseCase: SetPasscodeUseCase
     @ObservationIgnored private var firstEntry = ""
     @ObservationIgnored private let onDone: () -> Void
 
-    init(setPasscode: SetPasscodeUseCase, onDone: @escaping () -> Void) {
-        self.setPasscode = setPasscode
+    init(setPasscodeUseCase: SetPasscodeUseCase, onDone: @escaping () -> Void) {
+        self.setPasscodeUseCase = setPasscodeUseCase
         self.onDone = onDone
     }
 
@@ -2385,7 +2385,7 @@ final class SetPasscodeViewModel {
             stage = .confirm
         case .confirm:
             if passcode == firstEntry {
-                switch await setPasscode.execute(passcode: passcode) {
+                switch await setPasscodeUseCase.execute(passcode: passcode) {
                 case .success:
                     onDone()
                 case .failure(let error):
@@ -2422,7 +2422,7 @@ final class SetPasscodeViewModel {
 
 | In `SetPasscodeScreen` | Change to |
 |---|---|
-| top of the struct | `import FactoryKit`; `@State private var viewModel: SetPasscodeViewModel` + `init(onDone:)` like A3, with `Container.shared.setPasscode()` |
+| top of the struct | `import FactoryKit`; `@State private var viewModel: SetPasscodeViewModel` + `init(onDone:)` like A3, with `Container.shared.setPasscodeUseCase()` |
 | `Text("Enter a 6-digit passcode")` | `Text(viewModel.title)`; add `Text(viewModel.message)` under the dots |
 | `.onChange(of: code)` | at 6 digits: `Task { await viewModel.passcodeEntered(newValue); code = "" }` |
 | `AppLockScreen` | `SetPasscodeScreen(onDone: { isSetPasscodeShown = false })` |
@@ -2611,9 +2611,9 @@ import Testing
 @Suite
 struct PasscodeUnlockViewModelTests {
     @Test func correctPasscodeUnlocks() async {
-        let checkPasscode = CheckPasscodeUseCase(repository: StubAccessRepository(check: .correct))
+        let checkPasscodeUseCase = CheckPasscodeUseCase(repository: StubAccessRepository(check: .correct))
         var didUnlock = false
-        let viewModel = PasscodeUnlockViewModel(checkPasscode: checkPasscode, onUnlocked: { didUnlock = true })
+        let viewModel = PasscodeUnlockViewModel(checkPasscodeUseCase: checkPasscodeUseCase, onUnlocked: { didUnlock = true })
 
         await viewModel.passcodeEntered("123456")
 
@@ -2621,9 +2621,9 @@ struct PasscodeUnlockViewModelTests {
     }
 
     @Test func wrongPasscodeShowsTriesLeft() async {
-        let checkPasscode = CheckPasscodeUseCase(repository: StubAccessRepository(check: .wrong(triesLeft: 4)))
+        let checkPasscodeUseCase = CheckPasscodeUseCase(repository: StubAccessRepository(check: .wrong(triesLeft: 4)))
         var didUnlock = false
-        let viewModel = PasscodeUnlockViewModel(checkPasscode: checkPasscode, onUnlocked: { didUnlock = true })
+        let viewModel = PasscodeUnlockViewModel(checkPasscodeUseCase: checkPasscodeUseCase, onUnlocked: { didUnlock = true })
 
         await viewModel.passcodeEntered("000000")
 

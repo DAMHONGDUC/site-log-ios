@@ -615,7 +615,8 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | PlatformKit protocol | `<Noun>ing` / `<Noun>Providing` | `PlanRendering` |
 | Actor | `<Noun>Coordinator` / `<Noun>Manager` | `UploadCoordinator` |
 | Constants | `enum <Area>Constants` | `UploadConstants` |
-| Factory registration | lowerCamel noun on `Container` | `projectRepository` |
+| Dependency variables and parameters | End with the dependency role: `...UseCase`, `...Repository`, or `...DataSource` | `loadSettingsUseCase`, `accessRepository`, `accessLocalDataSource` |
+| Factory registration | lowerCamel noun plus the registered role on `Container` | `projectRepository`, `loadSettingsUseCase` |
 | DI file | `<Layer>DI.swift` in `App/DI/`, one per layer | `CoreDI.swift`, `RepositoriesDI.swift`, `UseCasesDI.swift` |
 | Test file | `<Type>Tests.swift` | `UploadStateMachineTests.swift` |
 
@@ -1021,7 +1022,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 
 - **Consequences:**
   - `FactoryKit` in `Presentation` only in views; view models are plain classes.
-  - View model tests: `PasscodeUnlockViewModel(checkPasscode: CheckPasscodeUseCase(repository: StubAccessRepository(…)), …)`; no `FactoryTesting`.
+  - View model tests: `PasscodeUnlockViewModel(checkPasscodeUseCase: CheckPasscodeUseCase(repository: StubAccessRepository(…)), …)`; no `FactoryTesting`.
   - Supersedes the `@Injected` bullet of D01.
 
 </dd></dl>

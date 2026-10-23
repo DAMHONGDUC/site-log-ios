@@ -1,11 +1,11 @@
 public struct UnlockWithBiometricsUseCase {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async -> Result<Bool, AccessError> {
-        return await repository.unlockWithBiometrics()
+        return await accessRepository.unlockWithBiometrics()
     }
 }

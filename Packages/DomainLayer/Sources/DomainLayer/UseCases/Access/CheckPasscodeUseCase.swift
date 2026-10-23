@@ -1,11 +1,11 @@
 public struct CheckPasscodeUseCase {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute(passcode: String) async -> Result<PasscodeCheck, AccessError> {
-        return await repository.checkPasscode(inputPasscode: passcode)
+        return await accessRepository.checkPasscode(inputPasscode: passcode)
     }
 }

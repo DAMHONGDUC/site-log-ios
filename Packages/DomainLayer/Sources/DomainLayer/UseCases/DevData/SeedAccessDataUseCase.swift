@@ -1,14 +1,14 @@
 #if DEBUG
     // Dev menu: put sample access settings in place
     public struct SeedAccessDataUseCase {
-        private let repository: any AccessRepository
+        private let accessRepository: any AccessRepository
 
-        public init(repository: any AccessRepository) {
-            self.repository = repository
+        public init(repository accessRepository: any AccessRepository) {
+            self.accessRepository = accessRepository
         }
 
         public func execute() async {
-            await repository.seedSampleData()
+            await accessRepository.seedSampleData()
         }
     }
 #endif

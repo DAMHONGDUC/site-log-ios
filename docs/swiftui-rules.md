@@ -37,7 +37,7 @@
 <dl><dd>
 
 9. **Views know nothing about network or database.** They only talk to the ViewModel.
-10. **Dependencies come in through `init` or a DI container.** Never call singletons directly inside a View.
+10. **Dependencies come in through `init` or a DI container.** Never call singletons directly inside a View. Name stored dependency properties and local parameter variables with their role suffix: `...UseCase`, `...Repository`, or `...DataSource`. For example, use `loadSettingsUseCase`, `accessRepository`, and `accessLocalDataSource`. Preserve an existing public argument label when compatibility requires it: `init(repository accessRepository: any AccessRepository)` keeps the `repository:` call label while naming the local variable `accessRepository`.
 11. **Organize modules by feature.** Each feature owns its View + ViewModel + UseCase.
 12. **Keep logic out of the View so it is testable** (the ViewModel should not `import SwiftUI` if possible).
 

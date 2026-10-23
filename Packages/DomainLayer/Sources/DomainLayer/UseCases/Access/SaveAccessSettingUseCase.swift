@@ -1,12 +1,12 @@
 public struct SaveAccessSettingUseCase {
 
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute(setting: AccessSetting) async -> Result<Void, AccessError> {
-        return await repository.saveAccessSetting(newSetting: setting)
+        return await accessRepository.saveAccessSetting(newSetting: setting)
     }
 }

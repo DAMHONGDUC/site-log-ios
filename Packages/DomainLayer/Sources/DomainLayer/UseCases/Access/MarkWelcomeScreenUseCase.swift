@@ -1,11 +1,11 @@
 public struct MarkWelcomeScreenUseCase {
-    private let repository: any AccessRepository
+    private let accessRepository: any AccessRepository
 
-    public init(repository: any AccessRepository) {
-        self.repository = repository
+    public init(repository accessRepository: any AccessRepository) {
+        self.accessRepository = accessRepository
     }
 
     public func execute() async -> Result<Void, AccessError> {
-        return await repository.markWelcomeScreen()
+        return await accessRepository.markWelcomeScreen()
     }
 }
