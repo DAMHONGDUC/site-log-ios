@@ -38,7 +38,7 @@ struct PlanPinView: View {
         Text(String(pin.number))
             .modifier(DSTextStyle.footnoteBold)
             .foregroundStyle(DSColor.onMedia)
-            .frame(width: 28, height: 28)
+            .frame(width: DSSpacing.spacing28, height: DSSpacing.spacing28)
             .background(color, in: Circle())
             .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
             .contentShape(Rectangle())

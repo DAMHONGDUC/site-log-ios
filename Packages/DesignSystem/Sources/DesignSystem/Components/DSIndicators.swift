@@ -12,7 +12,7 @@ public struct DSCountBadge: View {
             .modifier(DSTextStyle.badge)
             .foregroundStyle(DSColor.onMedia)
             .padding(.horizontal, DSSpacing.spacing5)
-            .frame(minWidth: 18, minHeight: 18)
+            .frame(minWidth: DSSpacing.spacing18, minHeight: DSSpacing.spacing18)
             .background(DSColor.critical, in: Capsule())
     }
 }
@@ -35,7 +35,7 @@ public struct DSProgressBar: View {
                     .frame(width: proxy.size.width * min(max(value, 0), 1))
             }
         }
-        .frame(height: 4)
+        .frame(height: DSSpacing.spacing4)
     }
 }
 
@@ -45,8 +45,8 @@ public struct DSLiveDot: View {
     public var body: some View {
         Circle()
             .fill(DSColor.hiVis)
-            .frame(width: 10, height: 10)
-            .overlay(Circle().stroke(DSColor.textPrimary, lineWidth: 1.5))
+            .frame(width: DSSpacing.spacing10, height: DSSpacing.spacing10)
+            .overlay(Circle().stroke(DSColor.textPrimary, lineWidth: DSSpacing.spacing1Point5))
     }
 }
 
@@ -62,11 +62,11 @@ public struct DSFileTag: View {
             .modifier(DSTextStyle.badge)
             .foregroundStyle(DSColor.textSecondary)
             .padding(.horizontal, DSSpacing.spacing5)
-            .frame(height: 20)
+            .frame(height: DSSpacing.spacing20)
             .overlay(
                 RoundedRectangle(cornerRadius: DSSpacing.spacing4).stroke(
                     DSColor.textSecondary,
-                    lineWidth: 1
+                    lineWidth: DSSpacing.spacing1
                 )
             )
     }
@@ -89,10 +89,10 @@ public struct DSRadioMark: View {
                     .foregroundStyle(DSColor.onPrimary)
             } else {
                 Circle()
-                    .strokeBorder(DSColor.lineStrong, lineWidth: 1.5)
+                    .strokeBorder(DSColor.lineStrong, lineWidth: DSSpacing.spacing1Point5)
             }
         }
-        .frame(width: 22, height: 22)
+        .frame(width: DSSpacing.spacing22, height: DSSpacing.spacing22)
     }
 }
 

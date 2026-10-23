@@ -57,7 +57,7 @@ struct IssueSheetScreen: View {
                             text: $assignee
                         )
                         DSTextField(String(localized: "issues.issueSheet.due"), text: $due)
-                            .frame(width: 112)
+                            .frame(width: DSSpacing.spacing112)
                     }
                 }
                 .padding(DSSpacing.spacing16)
@@ -78,7 +78,7 @@ struct IssueSheetScreen: View {
                         Image(systemName: "mappin.and.ellipse")
                     }
                     .buttonStyle(.sd(.secondary))
-                    .frame(width: 50)
+                    .frame(width: DSSpacing.spacing50)
                     .accessibilityLabel("issues.issueSheet.pinOnPlan")
 
                     Button(

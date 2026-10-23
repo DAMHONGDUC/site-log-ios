@@ -33,7 +33,7 @@ struct ReportBuilderScreen: View {
             HStack(spacing: DSSpacing.spacing8) {
                 Button("reports.reportBuilder.excel") {}
                     .buttonStyle(.sd(.secondary))
-                    .frame(width: 110)
+                    .frame(width: DSSpacing.spacing110)
 
                 Button("reports.reportBuilder.createPdf") {
                     coordinator.push(ReportsRoute.pdfPreview)

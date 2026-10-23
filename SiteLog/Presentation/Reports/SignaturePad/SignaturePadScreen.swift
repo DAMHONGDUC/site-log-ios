@@ -56,13 +56,24 @@ struct SignaturePadScreen: View {
     private var signatureBox: some View {
         RoundedRectangle(cornerRadius: DSSpacing.spacing12)
             .fill(DSColor.fill)
-            .frame(height: 240)
+            .frame(height: DSSpacing.spacing240)
             .overlay {
                 Canvas { context, size in
                     var line = Path()
-                    line.move(to: CGPoint(x: 28, y: size.height - 48))
-                    line.addLine(to: CGPoint(x: size.width - 28, y: size.height - 48))
-                    context.stroke(line, with: .color(DSColor.lineStrong), lineWidth: 1)
+                    line.move(
+                        to: CGPoint(x: DSSpacing.spacing28, y: size.height - DSSpacing.spacing48)
+                    )
+                    line.addLine(
+                        to: CGPoint(
+                            x: size.width - DSSpacing.spacing28,
+                            y: size.height - DSSpacing.spacing48
+                        )
+                    )
+                    context.stroke(
+                        line,
+                        with: .color(DSColor.lineStrong),
+                        lineWidth: DSSpacing.spacing1
+                    )
 
                     for stroke in strokes + [currentStroke] {
                         var path = Path()
@@ -70,7 +81,7 @@ struct SignaturePadScreen: View {
                         context.stroke(
                             path,
                             with: .color(DSColor.textPrimary),
-                            style: StrokeStyle(lineWidth: 2.4, lineCap: .round)
+                            style: StrokeStyle(lineWidth: DSSpacing.spacing2Point4, lineCap: .round)
                         )
                     }
                 }

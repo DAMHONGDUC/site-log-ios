@@ -33,7 +33,7 @@ struct SitePhotoThumb: View {
 #Preview {
     VStack {
         SitePhoto()
-            .frame(height: 250)
+            .frame(height: DSSpacing.spacing250)
         SitePhotoThumb()
     }
 }

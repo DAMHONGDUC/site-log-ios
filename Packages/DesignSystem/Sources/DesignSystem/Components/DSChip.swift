@@ -29,7 +29,7 @@ public struct DSChip: View {
             .modifier(DSTextStyle.subhead)
             .foregroundStyle(textColor)
             .padding(.horizontal, DSSpacing.spacing13)
-            .frame(height: 32)
+            .frame(height: DSSpacing.spacing32)
             .background(backgroundColor, in: Capsule())
         }
         .buttonStyle(.plain)

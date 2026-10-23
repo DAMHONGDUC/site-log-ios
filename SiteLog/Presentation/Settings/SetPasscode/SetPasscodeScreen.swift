@@ -26,7 +26,7 @@ struct SetPasscodeScreen: View {
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: 280)
+                .frame(maxWidth: DSSpacing.spacing280)
 
                 Spacer()
 

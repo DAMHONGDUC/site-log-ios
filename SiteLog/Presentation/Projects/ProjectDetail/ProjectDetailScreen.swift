@@ -143,7 +143,7 @@ struct ProjectDetailScreen: View {
                 DSLiveDot()
             } else {
                 DSColor.clear
-                    .frame(width: 10, height: 10)
+                    .frame(width: DSSpacing.spacing10, height: DSSpacing.spacing10)
             }
         } trailing: {
             if session.hasPDF {

@@ -53,7 +53,7 @@ private struct BrandingLogoRow: View {
             Text("reports.branding.el")
                 .modifier(DSTextStyle.section)
                 .foregroundStyle(DSColor.onPrimary)
-                .frame(width: 64, height: 64)
+                .frame(width: DSSpacing.spacing64, height: DSSpacing.spacing64)
                 .background(
                     DSColor.textPrimary,
                     in: RoundedRectangle(cornerRadius: DSSpacing.spacing12)

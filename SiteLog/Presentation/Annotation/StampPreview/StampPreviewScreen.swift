@@ -15,7 +15,7 @@ struct StampPreviewScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 SitePhoto(variant: 0, showsCrack: true)
-                    .frame(height: 300)
+                    .frame(height: DSSpacing.spacing300)
                     .overlay(alignment: .bottom) {
                         stampStrip
                     }

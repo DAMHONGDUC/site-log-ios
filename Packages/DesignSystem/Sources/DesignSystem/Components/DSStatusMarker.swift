@@ -24,7 +24,7 @@ public struct DSStatusMarker: View {
     public var body: some View {
         HStack(spacing: DSSpacing.spacing6) {
             shape
-                .frame(width: 9, height: 9)
+                .frame(width: DSSpacing.spacing9, height: DSSpacing.spacing9)
 
             if !text.isEmpty {
                 Text(text)
@@ -44,13 +44,19 @@ public struct DSStatusMarker: View {
                 .fill(DSColor.major)
         case .minor:
             Circle()
-                .strokeBorder(DSColor.minor, lineWidth: 2)
+                .strokeBorder(DSColor.minor, lineWidth: DSSpacing.spacing2)
         case .resolved:
             Circle()
                 .fill(DSColor.success)
         case .waiting:
             Circle()
-                .strokeBorder(DSColor.waiting, style: StrokeStyle(lineWidth: 1.5, dash: [2, 2]))
+                .strokeBorder(
+                    DSColor.waiting,
+                    style: StrokeStyle(
+                        lineWidth: DSSpacing.spacing1Point5,
+                        dash: [DSSpacing.spacing2, DSSpacing.spacing2]
+                    )
+                )
         }
     }
 

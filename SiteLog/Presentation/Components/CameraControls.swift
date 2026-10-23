@@ -57,7 +57,7 @@ struct CameraBottomBar<Side: View>: View {
                 Button(action: onShutter) {
                     Circle()
                         .fill(DSColor.onMedia)
-                        .frame(width: 70, height: 70)
+                        .frame(width: DSSpacing.spacing70, height: DSSpacing.spacing70)
                 }
                 .accessibilityLabel("components.cameraControls.takePhoto")
 

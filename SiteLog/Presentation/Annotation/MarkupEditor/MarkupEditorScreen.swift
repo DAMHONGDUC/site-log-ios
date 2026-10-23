@@ -53,7 +53,11 @@ struct MarkupEditorScreen: View {
                         context.stroke(
                             path,
                             with: .color(color),
-                            style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round)
+                            style: StrokeStyle(
+                                lineWidth: DSSpacing.spacing4,
+                                lineCap: .round,
+                                lineJoin: .round
+                            )
                         )
                     }
                 }
@@ -103,7 +107,7 @@ struct MarkupEditorScreen: View {
                 } label: {
                     Circle()
                         .fill(colors[index])
-                        .frame(width: 24, height: 24)
+                        .frame(width: DSSpacing.spacing24, height: DSSpacing.spacing24)
                 }
             }
         }

@@ -74,7 +74,7 @@ private struct IssuePhotoGallery: View {
             }
         }
         .tabViewStyle(.page)
-        .frame(height: 250)
+        .frame(height: DSSpacing.spacing250)
     }
 }
 

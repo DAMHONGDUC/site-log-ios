@@ -115,7 +115,7 @@ public struct DSDivider: View {
     public var body: some View {
         Rectangle()
             .fill(DSColor.hairline)
-            .frame(height: 0.5)
+            .frame(height: DSSpacing.spacing0Point5)
             .padding(.leading, inset)
     }
 }

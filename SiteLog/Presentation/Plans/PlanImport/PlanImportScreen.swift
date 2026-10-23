@@ -12,9 +12,12 @@ struct PlanImportScreen: View {
                 RoundedRectangle(cornerRadius: DSSpacing.spacing16)
                     .strokeBorder(
                         DSColor.lineStrong,
-                        style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                        style: StrokeStyle(
+                            lineWidth: DSSpacing.spacing1Point5,
+                            dash: [DSSpacing.spacing6, DSSpacing.spacing4]
+                        )
                     )
-                    .frame(height: 140)
+                    .frame(height: DSSpacing.spacing140)
                     .overlay {
                         VStack(spacing: DSSpacing.spacing8) {
                             Image(systemName: "doc.badge.plus")
