@@ -16,20 +16,25 @@ struct IssueSheetScreen: View {
     @State private var assignee = "Tuan’s masonry crew"
     @State private var due = "Fri 3 Oct"
 
-    private let severities: [(kind: DSStatusMarker.Kind, title: String)] = [
-        (.critical, "Critical"),
-        (.major, "Major"),
-        (.minor, "Minor"),
+    private let severities: [(kind: DSStatusMarker.Kind, titleKey: String)] = [
+        (.critical, "issues.severity.critical"),
+        (.major, "issues.severity.major"),
+        (.minor, "issues.severity.minor"),
     ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.regular) {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
                     if let checklistItem {
-                        Text("From checklist item \(checklistItem.number). A photo is required.")
-                            .font(DSFont.footnote)
-                            .foregroundStyle(DSColor.textSecondary)
+                        Text(
+                            String.localizedStringWithFormat(
+                                String(localized: "issues.issueSheet.checklistPhotoRequired"),
+                                checklistItem.number
+                            )
+                        )
+                        .modifier(DSTextStyle.footnote)
+                        .foregroundStyle(DSColor.textSecondary)
                     }
 
                     photoRow
@@ -37,48 +42,55 @@ struct IssueSheetScreen: View {
                     severityPicker
 
                     DSTextField(
-                        checklistItem == nil ? nil : "What’s wrong",
-                        placeholder: "Describe the issue",
+                        checklistItem == nil
+                            ? nil : String(localized: "issues.issueSheet.whatsWrong"),
+                        placeholder: String(localized: "issues.issueSheet.describeTheIssue"),
                         text: $details,
                         trailingSystemImage: "mic"
                     )
 
                     quickPhrases
 
-                    HStack(spacing: DSSpacing.medium) {
-                        DSTextField("Assigned to", text: $assignee)
-                        DSTextField("Due", text: $due)
+                    HStack(spacing: DSSpacing.spacing12) {
+                        DSTextField(
+                            String(localized: "issues.issueSheet.assignedTo"),
+                            text: $assignee
+                        )
+                        DSTextField(String(localized: "issues.issueSheet.due"), text: $due)
                             .frame(width: 112)
                     }
                 }
-                .padding(DSSpacing.regular)
+                .padding(DSSpacing.spacing16)
             }
-            .navigationTitle("New issue")
+            .navigationTitle("issues.issueSheet.newIssue")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close", systemImage: "xmark") {
+                    Button("issues.issueSheet.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
             }
             .bottomDock {
-                HStack(spacing: DSSpacing.small) {
+                HStack(spacing: DSSpacing.spacing8) {
                     Button {
                     } label: {
                         Image(systemName: "mappin.and.ellipse")
                     }
                     .buttonStyle(.sd(.secondary))
                     .frame(width: 50)
-                    .accessibilityLabel("Pin on plan")
+                    .accessibilityLabel("issues.issueSheet.pinOnPlan")
 
-                    Button(checklistItem == nil ? "Save, next photo" : "Save issue") {
+                    Button(
+                        checklistItem == nil
+                            ? "issues.issueSheet.saveNextPhoto" : "issues.issueSheet.saveIssue"
+                    ) {
                         dismiss()
                     }
                     .buttonStyle(.sd(.primary))
                 }
             }
-            .onAppear {
+            .task {
                 if let checklistItem, details.isEmpty {
                     details = checklistItem.text
                 }
@@ -88,37 +100,37 @@ struct IssueSheetScreen: View {
     }
 
     private var photoRow: some View {
-        HStack(spacing: DSSpacing.medium) {
+        HStack(spacing: DSSpacing.spacing12) {
             SitePhotoThumb(variant: 0, size: 52, showsCrack: true)
 
             VStack(alignment: .leading) {
-                Text("1 photo")
-                    .font(DSFont.body.weight(.medium))
-                Text("10:42:18 · 7f3a…c91e")
-                    .font(DSFont.code)
+                Text("issues.issueSheet.1Photo")
+                    .modifier(DSTextStyle.bodyMedium)
+                Text("issues.issueSheet.1042187F3AC91E")
+                    .modifier(DSTextStyle.code)
                     .foregroundStyle(DSColor.textSecondary)
             }
 
             Spacer()
 
-            Button("Add") {}
-                .font(DSFont.subhead.weight(.semibold))
+            Button("issues.issueSheet.add") {}
+                .modifier(DSTextStyle.subheadSemibold)
                 .underline()
                 .foregroundStyle(DSColor.textPrimary)
         }
     }
 
     private var severityPicker: some View {
-        Picker("Severity", selection: $severity) {
-            ForEach(severities, id: \.title) { item in
-                Text(item.title).tag(item.kind)
+        Picker("issues.issueSheet.severity", selection: $severity) {
+            ForEach(severities, id: \.titleKey) { item in
+                Text(NSLocalizedString(item.titleKey, comment: "")).tag(item.kind)
             }
         }
         .pickerStyle(.segmented)
     }
 
     private var quickPhrases: some View {
-        HStack(spacing: DSSpacing.small) {
+        HStack(spacing: DSSpacing.spacing8) {
             ForEach(FakeData.quickPhrases, id: \.self) { phrase in
                 DSChip(title: phrase, isSelected: false) {
                     details = phrase

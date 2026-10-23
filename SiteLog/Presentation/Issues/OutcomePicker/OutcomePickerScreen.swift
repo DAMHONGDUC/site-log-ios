@@ -10,39 +10,47 @@ struct OutcomePickerScreen: View {
 
     let issue: FakeIssue
 
-    @State private var outcome = "Yes, close it"
+    @State private var outcome = "issues.outcomePicker.closeOutcome"
 
     private let outcomes: [(title: String, detail: String)] = [
-        ("Yes, close it", "Both photos go in the report"),
-        ("Not yet", "Keep it open, add today’s photo"),
-        ("It got worse", "Raise to Critical"),
+        ("issues.outcomePicker.closeOutcome", "issues.outcomePicker.bothPhotosGoInTheReport"),
+        ("issues.outcomePicker.notYet", "issues.outcomePicker.keepItOpenAddTodayPhoto"),
+        ("issues.outcomePicker.gotWorse", "issues.outcomePicker.raiseToCritical"),
     ]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 HStack {
-                    beforeAfterPhoto(label: "12 Aug", showsCrack: true)
-                    beforeAfterPhoto(label: "Today", showsCrack: false)
+                    beforeAfterPhoto(label: "issues.outcomePicker.august12", showsCrack: true)
+                    beforeAfterPhoto(label: "issues.outcomePicker.today", showsCrack: false)
                 }
 
                 VStack(alignment: .leading) {
                     Text(issue.title)
-                        .font(DSFont.headline)
-                    Text("\(issue.assignee) · opened 12 Aug")
-                        .font(DSFont.subhead)
-                        .foregroundStyle(DSColor.textSecondary)
+                        .modifier(DSTextStyle.headline)
+                    Text(
+                        String.localizedStringWithFormat(
+                            String(localized: "issues.outcomePicker.assigneeAndOpenedDate"),
+                            issue.assignee
+                        )
+                    )
+                    .modifier(DSTextStyle.subhead)
+                    .foregroundStyle(DSColor.textSecondary)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Has it been fixed?")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: String(localized: "issues.outcomePicker.hasItBeenFixed"))
 
                     ForEach(outcomes, id: \.title) { item in
                         Button {
                             outcome = item.title
                         } label: {
-                            DSListRow(title: item.title, subtitle: item.detail) {
+                            DSListRow(
+                                title: NSLocalizedString(item.title, comment: ""),
+                                subtitle: NSLocalizedString(item.detail, comment: "")
+                            ) {
                                 DSRadioMark(isOn: outcome == item.title)
                             }
                         }
@@ -54,17 +62,22 @@ struct OutcomePickerScreen: View {
             }
         }
         .background(DSColor.canvas)
-        .navigationTitle("Issue #\(issue.number)")
+        .navigationTitle(
+            String.localizedStringWithFormat(
+                String(localized: "issues.outcomePicker.issueNumber"),
+                issue.number
+            )
+        )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button("Close", systemImage: "xmark") {
+                Button("issues.outcomePicker.close", systemImage: "xmark") {
                     dismiss()
                 }
             }
         }
         .bottomDock {
-            Button("Save") {
+            Button("issues.outcomePicker.save") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))
@@ -76,8 +89,8 @@ struct OutcomePickerScreen: View {
         VStack {
             SitePhoto(variant: issue.photoVariant, showsCrack: showsCrack)
                 .aspectRatio(3 / 4, contentMode: .fit)
-            Text(label)
-                .font(DSFont.footnote)
+            Text(NSLocalizedString(label, comment: ""))
+                .modifier(DSTextStyle.footnote)
         }
     }
 }

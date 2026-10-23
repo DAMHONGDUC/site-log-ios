@@ -1,3 +1,4 @@
+import DesignSystem
 import Inject
 import SwiftUI
 
@@ -31,6 +32,7 @@ struct RootView: View {
                 PrivacyOverlayView()
             }
         }
+        .modifier(DSTextStyle.body)
         .enableInjection()
     }
 
@@ -67,4 +69,8 @@ struct RootView: View {
             #endif
         }
     }
+}
+
+#Preview {
+    RootView()
 }

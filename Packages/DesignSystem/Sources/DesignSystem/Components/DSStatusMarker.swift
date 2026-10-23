@@ -22,13 +22,13 @@ public struct DSStatusMarker: View {
     }
 
     public var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: DSSpacing.spacing6) {
             shape
                 .frame(width: 9, height: 9)
 
             if !text.isEmpty {
                 Text(text)
-                    .font(DSFont.footnote)
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(textColor)
             }
         }
@@ -37,7 +37,7 @@ public struct DSStatusMarker: View {
     @ViewBuilder private var shape: some View {
         switch kind {
         case .critical:
-            RoundedRectangle(cornerRadius: 1)
+            RoundedRectangle(cornerRadius: DSSpacing.spacing1)
                 .fill(DSColor.critical)
         case .major:
             DSTriangle()
@@ -81,7 +81,7 @@ public struct DSTriangle: Shape {
 }
 
 #Preview {
-    VStack(alignment: .leading, spacing: DSSpacing.small) {
+    VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
         DSStatusMarker(kind: .critical, text: "Critical")
         DSStatusMarker(kind: .major, text: "Major")
         DSStatusMarker(kind: .minor, text: "Minor")

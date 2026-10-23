@@ -8,33 +8,36 @@ struct StorageCleanupScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 Text(
-                    "Only files already backed up are removed from this iPhone. They stay in the cloud and in your reports."
+                    "settings.storageCleanup.onlyFilesAlreadyBackedUpAreRemovedFromThisIphoneTheyStayInTheCloudAndInYourReports"
                 )
-                .font(DSFont.subhead)
+                .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Backed up", trailing: "1.6 GB")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(
+                        title: String(localized: "settings.storageCleanup.backedUp"),
+                        trailing: String(localized: "settings.storageCleanup.16Gb")
+                    )
                     ForEach(FakeData.sessions.dropFirst()) { session in
                         DSListRow(
                             title: "Riverside · \(session.title)",
                             subtitle: session.summary,
-                            value: "540 MB"
+                            value: String(localized: "settings.storageCleanup.540Mb")
                         )
                         DSDivider()
                     }
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Free up space")
+        .navigationTitle("settings.storageCleanup.freeUpSpace")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("Remove 1.6 GB from this iPhone") {
+            Button("settings.storageCleanup.remove16GbFromThisIphone") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

@@ -15,52 +15,59 @@ struct BulkLocationsScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                HStack(spacing: DSSpacing.medium) {
-                    DSTextField("Levels", text: $levels)
-                    DSTextField("Units per level", text: $units)
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                HStack(spacing: DSSpacing.spacing12) {
+                    DSTextField(String(localized: "projects.bulkLocations.levels"), text: $levels)
+                    DSTextField(
+                        String(localized: "projects.bulkLocations.unitsPerLevel"),
+                        text: $units
+                    )
                 }
 
-                DSTextField("Rooms in every unit", text: $rooms, isMultiline: true)
+                DSTextField(
+                    String(localized: "projects.bulkLocations.roomsInEveryUnit"),
+                    text: $rooms,
+                    isMultiline: true
+                )
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text("Preview")
-                            .font(DSFont.section)
+                        Text("projects.bulkLocations.preview")
+                            .modifier(DSTextStyle.section)
                         Spacer()
-                        Text("120 rooms")
-                            .font(DSFont.subhead)
+                        Text("projects.bulkLocations.120Rooms")
+                            .modifier(DSTextStyle.subhead)
                             .foregroundStyle(DSColor.textSecondary)
                     }
 
-                    VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                        Text("Level 7 › 7A › Living room")
-                        Text("Level 7 › 7A › Bedroom 1")
-                        Text("Level 7 › 7A › Bedroom 2")
-                        Text("and 117 more")
+                    VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                        Text("projects.bulkLocations.level77ALivingRoom")
+                        Text("projects.bulkLocations.level77ABedroom1")
+                        Text("projects.bulkLocations.level77ABedroom2")
+                        Text("projects.bulkLocations.and117More")
                             .foregroundStyle(DSColor.textTertiary)
                     }
-                    .font(DSFont.code)
+                    .modifier(DSTextStyle.code)
                 }
 
-                HStack(spacing: DSSpacing.tiny) {
-                    Text("Already have this layout in another project?")
+                HStack(spacing: DSSpacing.spacing4) {
+                    Text("projects.bulkLocations.alreadyHaveThisLayoutInAnotherProject")
                         .foregroundStyle(DSColor.textSecondary)
-                    Button("Copy its rooms") {
+                    Button("projects.bulkLocations.copyItsRooms") {
                         coordinator.push(ProjectsRoute.cloneTree)
                     }
                     .underline()
                     .foregroundStyle(DSColor.textPrimary)
                 }
-                .font(DSFont.footnote)
+                .modifier(DSTextStyle.footnote)
             }
-            .padding(DSSpacing.regular)
+            .padding(DSSpacing.spacing16)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Add rooms in bulk")
+        .navigationTitle("projects.bulkLocations.addRoomsInBulk")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("Add 120 rooms") {
+            Button("projects.bulkLocations.add120Rooms") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

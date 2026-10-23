@@ -15,18 +15,24 @@ struct RoomScreen: View {
     @State private var isIssueSheetShown = false
 
     private let photoVariants = [0, 3, 2, 0, 1, 3]
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 3)
+    private let columns = Array(
+        repeating: GridItem(.flexible(), spacing: DSSpacing.spacing2),
+        count: 3
+    )
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 header
 
                 recheckBanner
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Photos", trailing: "6 today")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(
+                        title: String(localized: "projects.room.photos"),
+                        trailing: String(localized: "projects.room.6Today")
+                    )
                     photoGrid
                 }
 
@@ -34,40 +40,46 @@ struct RoomScreen: View {
                     coordinator.push(ChecklistsRoute.run(title: nil))
                 } label: {
                     DSListRow(
-                        title: "Finishing checklist",
-                        subtitle: "14 of 22 answered",
-                        value: "64%",
+                        title: String(localized: "projects.room.finishingChecklist"),
+                        subtitle: String(localized: "projects.room.14Of22Answered"),
+                        value: String(localized: "projects.room.64"),
                         showsChevron: true
                     )
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("More", systemImage: "ellipsis") {
-                    Button("Rename room", systemImage: "pencil") {}
-                    Button("Mark as checked", systemImage: "checkmark.circle") {}
+                Menu("projects.room.more", systemImage: "ellipsis") {
+                    Button("projects.room.renameRoom", systemImage: "pencil") {}
+                    Button("projects.room.markAsChecked", systemImage: "checkmark.circle") {}
                 }
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+        .safeAreaInset(edge: .bottom, spacing: DSSpacing.spacing0) {
             CaptureToolbar {
                 isCameraShown = true
             } left: {
                 Button {
                     isIssueSheetShown = true
                 } label: {
-                    ToolbarSideLabel(systemImage: "exclamationmark.triangle", title: "Issue")
+                    ToolbarSideLabel(
+                        systemImage: "exclamationmark.triangle",
+                        title: String(localized: "projects.room.issue")
+                    )
                 }
             } right: {
                 Button {
                     coordinator.push(ChecklistsRoute.templatePicker)
                 } label: {
-                    ToolbarSideLabel(systemImage: "checklist", title: "Checklist")
+                    ToolbarSideLabel(
+                        systemImage: "checklist",
+                        title: String(localized: "projects.room.checklist")
+                    )
                 }
             }
         }
@@ -86,37 +98,42 @@ struct RoomScreen: View {
     private var header: some View {
         VStack(alignment: .leading) {
             Text(room.name)
-                .font(DSFont.largeTitle)
-            Text("\(unitName) · Level 7")
-                .font(DSFont.subhead)
-                .foregroundStyle(DSColor.textSecondary)
+                .modifier(DSTextStyle.largeTitle)
+            Text(
+                String.localizedStringWithFormat(
+                    String(localized: "projects.room.unitAndLevel"),
+                    unitName
+                )
+            )
+            .modifier(DSTextStyle.subhead)
+            .foregroundStyle(DSColor.textSecondary)
         }
-        .padding(.horizontal, DSSpacing.regular)
+        .padding(.horizontal, DSSpacing.spacing16)
     }
 
     private var recheckBanner: some View {
-        HStack(alignment: .top, spacing: DSSpacing.medium) {
+        HStack(alignment: .top, spacing: DSSpacing.spacing12) {
             DSStatusMarker(kind: .major)
 
             VStack(alignment: .leading) {
-                Text("2 issues to re-check from 12 Aug")
-                    .font(DSFont.body.weight(.medium))
-                Text("Crack by the skirting, loose socket cover")
-                    .font(DSFont.subhead)
+                Text("projects.room.2IssuesToReCheckFrom12Aug")
+                    .modifier(DSTextStyle.bodyMedium)
+                Text("projects.room.crackByTheSkirtingLooseSocketCover")
+                    .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
             }
 
             Spacer()
 
-            Button("Compare") {
+            Button("projects.room.compare") {
                 coordinator.push(IssuesRoute.outcome(issueID: FakeData.issues[1].id))
             }
-            .font(DSFont.subhead)
+            .modifier(DSTextStyle.subhead)
         }
     }
 
     private var photoGrid: some View {
-        LazyVGrid(columns: columns, spacing: 2) {
+        LazyVGrid(columns: columns, spacing: DSSpacing.spacing2) {
             ForEach(photoVariants.indices, id: \.self) { index in
                 Button {
                     coordinator.push(IssuesRoute.detail(issueID: FakeData.issues[1].id))

@@ -124,7 +124,7 @@ site-log-ios/
 │   ├── Core/                             # Logger/AppLogger, Clock/AppClock + SystemClock, Crypto/ (PasscodeHasher, FileHasher); no business logic
 │   ├── DesignSystem/                     # UI only: never imports Domain or app code
 │   │   ├── Sources/DesignSystem/
-│   │   │   ├── Tokens/                   # DSColor, DSFont, DSSpacing, DSRadius, DSSize
+│   │   │   ├── Tokens/                   # DSColor, DSTextStyle, DSSpacing
 │   │   │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
 │   │   └── Tests/DesignSystemTests/
 │   └── script-tools/                     # git submodule: shared shell scripts + make targets (not a Swift package)

@@ -18,27 +18,40 @@ struct PinPreviewScreen: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: DSSpacing.medium) {
-                HStack(alignment: .top, spacing: DSSpacing.medium) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing12) {
+                HStack(alignment: .top, spacing: DSSpacing.spacing12) {
                     SitePhotoThumb(variant: issue.photoVariant, size: 64)
 
                     VStack(alignment: .leading) {
-                        DSStatusMarker(kind: pin.severity, text: "Pin \(pin.number)")
+                        DSStatusMarker(
+                            kind: pin.severity,
+                            text: String.localizedStringWithFormat(
+                                String(localized: "plans.pinPreview.pinNumber"),
+                                pin.number
+                            )
+                        )
                         Text(issue.title)
-                            .font(DSFont.headline)
-                        Text("\(issue.room) · \(issue.assignee) · \(issue.due)")
-                            .font(DSFont.subhead)
-                            .foregroundStyle(DSColor.textSecondary)
+                            .modifier(DSTextStyle.headline)
+                        Text(
+                            String.localizedStringWithFormat(
+                                String(localized: "plans.pinPreview.issueDetails"),
+                                issue.room,
+                                issue.assignee,
+                                issue.due
+                            )
+                        )
+                        .modifier(DSTextStyle.subhead)
+                        .foregroundStyle(DSColor.textSecondary)
                     }
                 }
 
-                HStack(spacing: DSSpacing.small) {
-                    Button("Move pin") {
+                HStack(spacing: DSSpacing.spacing8) {
+                    Button("plans.pinPreview.movePin") {
                         dismiss()
                     }
                     .buttonStyle(.sd(.secondary))
 
-                    Button("Open") {
+                    Button("plans.pinPreview.open") {
                         // Close the sheet, then open the issue on the tab's stack
                         dismiss()
                         coordinator.push(IssuesRoute.detail(issueID: issue.id))
@@ -46,7 +59,7 @@ struct PinPreviewScreen: View {
                     .buttonStyle(.sd(.primary))
                 }
             }
-            .padding(DSSpacing.regular)
+            .padding(DSSpacing.spacing16)
             .frame(maxHeight: .infinity, alignment: .top)
         }
         .enableInjection()

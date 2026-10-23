@@ -5,10 +5,10 @@ public struct DSGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
             DSSectionHeader(title: "Level 7", trailing: "3 open")
 
-            VStack(spacing: 0) {
+            VStack(spacing: DSSpacing.spacing0) {
                 DSListRow(
                     title: "Riverside Tower B",
                     subtitle: "District 7 · 14 open issues",
@@ -17,21 +17,21 @@ public struct DSGallery: View {
                 DSListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
             }
 
-            HStack(spacing: DSSpacing.small) {
+            HStack(spacing: DSSpacing.spacing8) {
                 DSChip(title: "All", isSelected: true, action: {})
                 DSChip(title: "Has issues", isSelected: false, action: {})
                 DSCountBadge(count: 2)
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
 
-            HStack(spacing: DSSpacing.regular) {
+            HStack(spacing: DSSpacing.spacing16) {
                 ForEach(DSStatusMarker.Kind.allCases, id: \.self) { kind in
                     DSStatusMarker(kind: kind, text: String(describing: kind).capitalized)
                 }
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
 
-            VStack(spacing: DSSpacing.small) {
+            VStack(spacing: DSSpacing.spacing8) {
                 Button("Primary") {}
                     .buttonStyle(.sd(.primary))
                 Button("Capture") {}
@@ -43,7 +43,7 @@ public struct DSGallery: View {
                 Button("Danger") {}
                     .buttonStyle(.sd(.danger))
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
 
             DSEmptyState(
                 systemImage: "folder",
@@ -52,7 +52,7 @@ public struct DSGallery: View {
             )
             .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, DSSpacing.regular)
+        .padding(.vertical, DSSpacing.spacing16)
         // Fill the whole screen, including behind the status bar
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(DSColor.canvas.ignoresSafeArea())

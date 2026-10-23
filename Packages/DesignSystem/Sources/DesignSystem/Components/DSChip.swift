@@ -20,15 +20,15 @@ public struct DSChip: View {
 
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: DSSpacing.tiny) {
+            HStack(spacing: DSSpacing.spacing4) {
                 if let systemImage {
                     Image(systemName: systemImage)
                 }
                 Text(title)
             }
-            .font(DSFont.subhead)
+            .modifier(DSTextStyle.subhead)
             .foregroundStyle(textColor)
-            .padding(.horizontal, 13)
+            .padding(.horizontal, DSSpacing.spacing13)
             .frame(height: 32)
             .background(backgroundColor, in: Capsule())
         }
@@ -51,7 +51,7 @@ public struct DSChip: View {
 }
 
 #Preview {
-    HStack(spacing: DSSpacing.small) {
+    HStack(spacing: DSSpacing.spacing8) {
         DSChip(title: "All", isSelected: true, action: {})
         DSChip(title: "Not checked", isSelected: false, action: {})
         DSChip(title: "Sunny", systemImage: "sun.max", isSelected: false, action: {})

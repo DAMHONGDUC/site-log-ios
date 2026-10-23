@@ -10,22 +10,25 @@ struct CloneTreeScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                 Text(
-                    "Pick a project. Its levels, units and rooms are copied; photos and issues are not."
+                    "projects.cloneTree.pickAProjectItsLevelsUnitsAndRoomsAreCopiedPhotosAndIssuesAreNot"
                 )
-                .font(DSFont.subhead)
+                .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
-                .padding(.horizontal, DSSpacing.regular)
-                .padding(.bottom, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
+                .padding(.bottom, DSSpacing.spacing16)
 
-                DSSectionHeader(title: "Copy rooms from")
+                DSSectionHeader(title: String(localized: "projects.cloneTree.copyRoomsFrom"))
 
                 ForEach(FakeData.projects) { project in
                     Button {
                         selectedName = project.name
                     } label: {
-                        DSListRow(title: project.name, subtitle: "82 rooms · 3 levels") {
+                        DSListRow(
+                            title: project.name,
+                            subtitle: String(localized: "projects.cloneTree.82Rooms3Levels")
+                        ) {
                             DSRadioMark(isOn: selectedName == project.name)
                         }
                     }
@@ -34,13 +37,13 @@ struct CloneTreeScreen: View {
                     DSDivider()
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Copy rooms")
+        .navigationTitle("projects.cloneTree.copyRooms")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("Copy 82 rooms") {
+            Button("projects.cloneTree.copy82Rooms") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

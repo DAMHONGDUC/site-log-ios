@@ -8,12 +8,12 @@ struct ChecklistRunScreen: View {
     @ObserveInjection var inject
     @Environment(\.coordinator) private var coordinator
 
-    var title = "Finishing handover"
+    var title = String(localized: "checklists.checklistRun.finishingHandover")
 
     enum Answer: String, CaseIterable {
-        case pass = "Pass"
-        case fail = "Fail"
-        case notApplicable = "N/A"
+        case pass = "checklists.answer.pass"
+        case fail = "checklists.answer.fail"
+        case notApplicable = "checklists.answer.notApplicable"
     }
 
     @State private var answers: [Int: Answer] = [12: .fail, 13: .pass, 14: .notApplicable]
@@ -21,18 +21,18 @@ struct ChecklistRunScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 progressHeader
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(spacing: 0) {
+                VStack(spacing: DSSpacing.spacing0) {
                     ForEach(FakeData.checklistItems) { item in
                         itemRow(item)
                         DSDivider()
                     }
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
         .navigationTitle(title)
@@ -40,13 +40,13 @@ struct ChecklistRunScreen: View {
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
             // Demo: Finish is always enabled
-            Button("Finish") {
+            Button("checklists.checklistRun.finish") {
                 coordinator.push(ChecklistsRoute.done)
             }
             .buttonStyle(.sd(.primary))
 
-            Text("8 items still need an answer")
-                .font(DSFont.footnote)
+            Text("checklists.checklistRun.8ItemsStillNeedAnAnswer")
+                .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textTertiary)
         }
         .sheet(item: $failedItem) { item in
@@ -56,15 +56,21 @@ struct ChecklistRunScreen: View {
     }
 
     private var progressHeader: some View {
-        VStack(spacing: DSSpacing.small) {
+        VStack(spacing: DSSpacing.spacing8) {
             HStack {
-                Text("\(answers.count + 11) of 22 answered")
-                    .foregroundStyle(DSColor.textSecondary)
+                Text(
+                    String.localizedStringWithFormat(
+                        String(localized: "checklists.checklistRun.answersProgress"),
+                        answers.count + 11,
+                        22
+                    )
+                )
+                .foregroundStyle(DSColor.textSecondary)
                 Spacer()
-                Text("1 failed")
+                Text("checklists.checklistRun.1Failed")
                     .foregroundStyle(DSColor.critical)
             }
-            .font(DSFont.footnote)
+            .modifier(DSTextStyle.footnote)
 
             DSProgressBar(value: Double(answers.count + 11) / 22)
         }
@@ -72,23 +78,29 @@ struct ChecklistRunScreen: View {
 
     private func itemRow(_ item: FakeChecklistItem) -> some View {
         VStack(alignment: .leading) {
-            Text("\(item.number). \(item.text)")
-                .font(DSFont.body)
+            Text(
+                String.localizedStringWithFormat(
+                    String(localized: "checklists.checklistRun.itemNumberAndText"),
+                    item.number,
+                    item.text
+                )
+            )
+            .modifier(DSTextStyle.body)
 
-            Picker("Answer", selection: answerBinding(for: item)) {
+            Picker("checklists.checklistRun.answer", selection: answerBinding(for: item)) {
                 ForEach(Answer.allCases, id: \.self) { answer in
-                    Text(answer.rawValue).tag(Optional(answer))
+                    Text(NSLocalizedString(answer.rawValue, comment: "")).tag(Optional(answer))
                 }
             }
             .pickerStyle(.segmented)
 
             if answers[item.number] == .fail {
-                Text("Logged as an issue")
-                    .font(DSFont.footnote)
+                Text("checklists.checklistRun.loggedAsAnIssue")
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.critical)
             }
         }
-        .padding()
+        .padding(DSSpacing.spacing16)
     }
 
     // Picking Fail also opens the issue sheet (K3)

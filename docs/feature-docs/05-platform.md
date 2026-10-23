@@ -4,6 +4,10 @@
 
 - Everything around the features: dev tooling, diagnostics, testing, release pipeline,
   notifications and deep links, profiling.
+- Dev setup and the current CI workflow describe existing tooling. Diagnostics, release automation,
+  push, and profiling sections define target work unless they say otherwise.
+
+> Commands and snippets are complete only when labeled as runnable; configuration examples are small fragments of their surrounding files.
 
 </dd></dl>
 
@@ -21,6 +25,20 @@
 | [19](#19-performance-profiling-with-instruments) | Performance profiling with Instruments |
 
 ---
+
+- [Beginner terms](#beginner-terms)
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **XcodeGen:** a tool that creates the Xcode project from `project.yml`; edit the YAML source, then regenerate the project.
+- **CI:** automated checks that run on a server when code changes. Example: CI builds the app and runs lint.
+- **SwiftLint / swift-format:** tools that report style issues / format Swift code consistently.
+- **Coverage:** the share of executable code reached by tests; high coverage alone does not prove a feature works.
+- **TestFlight:** Apple's service for distributing pre-release app builds to testers.
 
 </dd></dl>
 
@@ -90,9 +108,9 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local packages (`DesignSystem`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, later `Kingfisher`, `Firebase`, optional `swift-snapshot-testing` in F16) | `packages` |
+| Local packages (`DesignSystem`, `Core`, `DomainLayer`, `DataLayer`, `PlatformKit`) and current remote ones (`Factory`, `Inject`); planned dependencies are recorded in the relevant decision | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
-| App target, bundle id, iOS 18.6 | `targets.SiteLog` |
+| App target, bundle id, iOS 18.6 minimum deployment target | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
 | Hot reload flags, Debug only | `targets.SiteLog.settings.configs.Debug` |
 | Shared `SiteLog` scheme, `INJECTION_PROJECT_ROOT` | `schemes.SiteLog` |
@@ -418,15 +436,15 @@ enum DiagnosticsConstants {
 
 | Layer | Target | Tool | What |
 |---|---|---|---|
-| Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
+| Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Planned: use cases and pure domain services; no device, no frameworks |
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
-| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (model / DTO ↔ entity), repository impls over in-memory SwiftData |
-| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Name>` | Swift Testing | SwiftData stores, Keychain data source |
-| PlatformKit | `Packages/PlatformKit/Tests/PlatformKitTests/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Rendering` report layout, Bluetooth profile parsing |
+| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Planned: mappers and repository implementations |
+| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Name>` | Swift Testing | Planned: persistence and Keychain data sources |
+| PlatformKit | `Packages/PlatformKit/Tests/PlatformKitTests/<Name>` | Swift Testing | Planned: upload state machine, realtime decoding, report layout, Bluetooth parsing |
 | DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding) |
-| Presentation | `SiteLogTests/Presentation` | Swift Testing | View models built on test doubles in `SiteLogTests/Doubles/` through `init`, no container |
+| Presentation | `SiteLogTests/Presentation` | Swift Testing | Planned: view models built on test doubles in `SiteLogTests/Doubles/` through `init`, no container |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |
-| Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
+| Flows | `SiteLogUITests` | XCUITest | Planned: smoke paths only, unlock → projects → capture → report |
 | Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
 
 **Rules**
@@ -447,9 +465,8 @@ enum DiagnosticsConstants {
 | View models | ≥ 70% |
 | Views | No line target |
 
-- CI reports coverage per folder; a PR that lowers a target fails.
-- Example: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model on a stub, no container)
-  — full code in [F01 guide](../feature-guide/01-access.md#tests-after-the-feature-works).
+- Coverage values above are future targets. Fastlane enables coverage collection for current test
+  runs, but coverage thresholds and automatic per-folder failure checks are not configured yet.
 
 ---
 
@@ -459,58 +476,35 @@ enum DiagnosticsConstants {
 
 <dl><dd>
 
-- Modules: `fastlane/`, `.github/workflows/`
+- Current CI is defined in [`.github/workflows/pr-checks.yml`](../../.github/workflows/pr-checks.yml).
+- `fastlane/Fastfile` currently contains one lane: `test`.
 
-**Goal**
+### Current workflow
 
-- Every PR proves lint, builds, unit tests, coverage ([Testing](#testing-strategy)).
-- A tag becomes a TestFlight build with no manual Xcode step.
-- No certificates or keys stored in CI; App Store review submission stays manual.
+<dl><dd>
 
-| Lane | Does |
-|---|---|
-| `test` | `xcodegen`, tests of every package that has them (`DesignSystem`, `Core`), app unit tests on the simulator, coverage per folder |
-| `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
-| `release` | Same, waits for processing |
-
-| Workflow | Trigger | Runs |
+| Trigger | Runner | Work |
 |---|---|---|
-| PR checks | PR, push to `main` | `swiftlint --strict`, lane `test` |
-| TestFlight | tag `v*`, manual | lane `beta`, in the protected `testflight` environment |
+| Pull request or push to `main` | Ubuntu | Import and `print` guards, Gitleaks, strict SwiftLint |
+| After guards and lint pass | Self-hosted macOS | `Tools/CI/build-strict.sh`, then `bundle exec fastlane test` |
 
-![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
+The `test` lane generates the Xcode project, tests `DesignSystem` and `Core`, then runs app unit tests
+in `SiteLogTests`. It collects coverage, but no coverage thresholds are enforced. UI tests are not in
+the lane. There is no nightly or TestFlight workflow yet.
 
-**Runners** — private repo, so hosted macOS minutes bill at 10× (≈200 per month).
+</dd></dl>
 
-| Runner | When | Jobs |
-|---|---|---|
-| Ubuntu (hosted) | Every push | `DomainLayer` purity, Presentation imports, `UploadKit`/`Realtime` boundary, `print(` grep, `gitleaks`, SwiftLint; backend `vitest` + `tsc` + ESLint + migrations on a throwaway Postgres |
-| Self-hosted dev Mac | Every PR | App build, zero warnings (`build-strict.sh`); lane `test` |
-| Self-hosted dev Mac | Nightly | App without `Realtime`; full suite |
-| Hosted macOS | Disabled | Fallback only |
+### Planned release workflow
 
-- Self-hosting is safe only because the repo is private.
+<dl><dd>
 
-**Signing and versions**
+- Add a protected TestFlight environment and a release lane when signing credentials and release
+  steps are ready. Store credentials in CI secrets and remove temporary credential files after use.
+- Keep App Store review submission manual.
+- Update this section only after a workflow exists and its run confirms the behavior. Do not treat a
+  tag, nightly run, coverage gate, or release lane as available before then.
 
-- Xcode-managed signing: `-allowProvisioningUpdates` + App Store Connect API key (`ASC_KEY_ID`,
-  `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`, App Manager role), written to a temp file, deleted after the build.
-- Build number = latest TestFlight + 1; `MARKETING_VERSION` in `project.yml`, bumped by hand.
-- Release: `git tag v1.0.0 && git push origin v1.0.0`.
-
-**Risks**
-
-- Fork PRs never see secrets (environment-scoped)
-- Tags serialize build numbers
-- Pin the runner's Xcode on the first mismatch
-
-**Done**
-
-- A SwiftLint warning, a compiler warning or a failing test fails the PR
-- Pushing `v0.0.1` produces a TestFlight build with no local step
-- The repo holds no `.p8`, certificate or profile
-
----
+</dd></dl>
 
 </dd></dl>
 

@@ -48,29 +48,32 @@ private struct DSButtonBody: View {
     var body: some View {
         if small {
             label
-                .font(DSFont.subhead.weight(.semibold))
+                .modifier(DSTextStyle.subheadSemibold)
                 .foregroundStyle(textColor)
-                .padding(.horizontal, 14)
-                .frame(height: DSSize.smallButtonHeight)
+                .padding(.horizontal, DSSpacing.spacing14)
+                .frame(height: DSSpacing.spacing34)
                 .background(background, in: Capsule())
                 .opacity(opacity)
         } else {
             label
-                .font(font)
+                .modifier(font)
                 .foregroundStyle(textColor)
                 .frame(maxWidth: .infinity)
-                .frame(height: DSSize.buttonHeight)
-                .background(background, in: RoundedRectangle(cornerRadius: DSRadius.button))
-                .contentShape(RoundedRectangle(cornerRadius: DSRadius.button))
+                .frame(height: DSSpacing.spacing50)
+                .background(
+                    background,
+                    in: RoundedRectangle(cornerRadius: DSSpacing.spacing13)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: DSSpacing.spacing13))
                 .opacity(opacity)
         }
     }
 
-    private var font: Font {
+    private var font: DSTextStyle {
         if kind == .ghost {
-            return DSFont.body.weight(.medium)
+            return DSTextStyle.bodyMedium
         }
-        return DSFont.headline
+        return DSTextStyle.headline
     }
 
     private var opacity: Double {
@@ -105,13 +108,13 @@ private struct DSButtonBody: View {
         case .secondary:
             return DSColor.fill
         case .ghost, .danger:
-            return Color.clear
+            return DSColor.clear
         }
     }
 }
 
 #Preview {
-    VStack(spacing: DSSpacing.medium) {
+    VStack(spacing: DSSpacing.spacing12) {
         Button("Create project") {}
             .buttonStyle(.sd(.primary))
         Button("Capture") {}
@@ -128,5 +131,5 @@ private struct DSButtonBody: View {
             .buttonStyle(.sd(.primary))
             .disabled(true)
     }
-    .padding(DSSpacing.regular)
+    .padding(DSSpacing.spacing16)
 }

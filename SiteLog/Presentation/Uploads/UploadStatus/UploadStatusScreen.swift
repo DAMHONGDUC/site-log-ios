@@ -10,34 +10,44 @@ struct UploadStatusScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 progressBlock
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Waiting")
-                    DSListRow(title: "3 videos", subtitle: "Over 100 MB, so they wait for Wi-Fi") {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: String(localized: "uploads.uploadStatus.waiting"))
+                    DSListRow(
+                        title: String(localized: "uploads.uploadStatus.3Videos"),
+                        subtitle: String(
+                            localized: "uploads.uploadStatus.over100MbSoTheyWaitForWiFi"
+                        )
+                    ) {
                         EmptyView()
                     } trailing: {
                         DSStatusMarker(kind: .waiting)
                     }
                     DSDivider()
-                    DSListRow(title: "1 photo", subtitle: "Getting a fresh upload link") {
+                    DSListRow(
+                        title: String(localized: "uploads.uploadStatus.1Photo"),
+                        subtitle: String(localized: "uploads.uploadStatus.gettingAFreshUploadLink")
+                    ) {
                         EmptyView()
                     } trailing: {
                         DSStatusMarker(kind: .waiting)
                     }
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Didn’t upload")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: String(localized: "uploads.uploadStatus.didnTUpload"))
                     DSListRow(
-                        title: "IMG_0922, IMG_0925",
-                        subtitle: "The server rejected the checksum"
+                        title: String(localized: "uploads.uploadStatus.img0922Img0925"),
+                        subtitle: String(
+                            localized: "uploads.uploadStatus.theServerRejectedTheChecksum"
+                        )
                     ) {
                         EmptyView()
                     } trailing: {
-                        Button("Retry") {}
+                        Button("uploads.uploadStatus.retry") {}
                             .buttonStyle(.sd(.secondary, small: true))
                     }
                 }
@@ -45,33 +55,37 @@ struct UploadStatusScreen: View {
                 Button {
                     coordinator.push(UploadsRoute.files)
                 } label: {
-                    DSListRow(title: "Today’s files", value: "243", showsChevron: true)
+                    DSListRow(
+                        title: String(localized: "uploads.uploadStatus.todaySFiles"),
+                        value: String(localized: "uploads.uploadStatus.243"),
+                        showsChevron: true
+                    )
                 }
                 .buttonStyle(.plain)
 
-                Text("Some files finish while the iPhone is idle. You can close the app.")
-                    .font(DSFont.footnote)
+                Text("uploads.uploadStatus.someFilesFinishWhileTheIphoneIsIdleYouCanCloseTheApp")
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textTertiary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Sync")
+        .navigationTitle("uploads.uploadStatus.sync")
         .enableInjection()
     }
 
     private var progressBlock: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.small) {
-            Text("187 \(Text("of 243 files").foregroundStyle(DSColor.textTertiary))")
-                .font(DSFont.figure)
+        VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
+            Text("uploads.uploadStatus.filesProgress")
+                .modifier(DSTextStyle.figure)
 
             DSProgressBar(value: 187.0 / 243.0)
 
-            Text("Riverside, today · about 6 minutes left on this Wi-Fi")
-                .font(DSFont.subhead)
+            Text("uploads.uploadStatus.riversideTodayAbout6MinutesLeftOnThisWiFi")
+                .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
         }
     }

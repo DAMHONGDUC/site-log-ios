@@ -9,8 +9,8 @@ struct PlanListScreen: View {
     @Environment(\.coordinator) private var coordinator
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
-            VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
+            VStack(spacing: DSSpacing.spacing0) {
                 ForEach(FakeData.plans) { plan in
                     Button {
                         coordinator.push(PlansRoute.viewer(planID: plan.id))
@@ -25,8 +25,8 @@ struct PlanListScreen: View {
                 }
             }
 
-            Text("Plans live on this iPhone and open without signal.")
-                .font(DSFont.footnote)
+            Text("plans.planList.plansLiveOnThisIphoneAndOpenWithoutSignal")
+                .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textTertiary)
                 .frame(maxWidth: .infinity)
         }

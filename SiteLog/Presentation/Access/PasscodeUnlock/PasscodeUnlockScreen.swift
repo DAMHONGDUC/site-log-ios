@@ -12,28 +12,28 @@ struct PasscodeUnlockScreen: View {
     @State private var code = ""
 
     var body: some View {
-        VStack(spacing: DSSpacing.large) {
+        VStack(spacing: DSSpacing.spacing24) {
             Spacer()
 
             AppMark(size: 48)
 
-            Text("Enter passcode")
-                .font(.title2.bold())
+            Text("access.passcodeUnlock.enterPasscode")
+                .modifier(DSTextStyle.title)
 
             PasscodeDots(filled: code.count)
 
-            Text("2 tries left before a 1-minute wait")
-                .font(DSFont.footnote)
+            Text("access.passcodeUnlock.2TriesLeftBeforeA1MinuteWait")
+                .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
 
             Spacer()
 
             PasscodeNumberPad(code: $code)
 
-            Button("Forgot passcode?") {}
-                .font(DSFont.footnote.weight(.semibold))
+            Button("access.passcodeUnlock.forgotPasscode") {}
+                .modifier(DSTextStyle.footnoteSemibold)
                 .foregroundStyle(DSColor.textPrimary)
-                .padding(.bottom, DSSpacing.small)
+                .padding(.bottom, DSSpacing.spacing8)
         }
         .frame(maxWidth: .infinity)
         .background(DSColor.canvas)

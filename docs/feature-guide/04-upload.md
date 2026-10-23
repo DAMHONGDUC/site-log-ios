@@ -2,6 +2,8 @@
 
 <dl><dd>
 
+- Code in this guide is a teaching example. Check current source and follow [F00 localization rules](00-foundation.md#user-facing-text-and-localization) before applying it.
+
 - F04 · 89h · skeleton guide — full code is added when this feature starts.
 
 </dd></dl>

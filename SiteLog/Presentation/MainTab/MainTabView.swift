@@ -7,24 +7,24 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            Tab("Projects", systemImage: "folder") {
+            Tab("maintab.mainTabView.projects", systemImage: "folder") {
                 CoordinatedStack {
                     ProjectListScreen()
                 }
             }
-            Tab("Issues", systemImage: "exclamationmark.triangle") {
+            Tab("maintab.mainTabView.issues", systemImage: "exclamationmark.triangle") {
                 CoordinatedStack {
                     IssueListScreen()
                 }
             }
             // Fake count until the issues view model
             .badge(2)
-            Tab("Sync", systemImage: "arrow.triangle.2.circlepath") {
+            Tab("maintab.mainTabView.sync", systemImage: "arrow.triangle.2.circlepath") {
                 CoordinatedStack {
                     UploadStatusScreen()
                 }
             }
-            Tab("Settings", systemImage: "gearshape") {
+            Tab("maintab.mainTabView.settings", systemImage: "gearshape") {
                 CoordinatedStack {
                     SettingsScreen()
                 }

@@ -7,11 +7,11 @@ private struct BottomDockModifier<Dock: View>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+            .safeAreaInset(edge: .bottom, spacing: DSSpacing.spacing0) {
                 VStack {
                     dock
                 }
-                .padding()
+                .padding(DSSpacing.spacing16)
                 .background {
                     if showsBackground {
                         DSColor.raised

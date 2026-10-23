@@ -7,7 +7,7 @@ struct AppMark: View {
     var size: CGFloat = 72
 
     var body: some View {
-        RoundedRectangle(cornerRadius: DSRadius.large)
+        RoundedRectangle(cornerRadius: DSSpacing.spacing16)
             .fill(DSColor.hiVis)
             .frame(width: size, height: size)
     }

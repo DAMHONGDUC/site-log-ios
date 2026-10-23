@@ -10,13 +10,13 @@ struct PDFPreviewScreen: View {
     var body: some View {
         VStack {
             fakePage
-            Text("1 of 18")
-                .font(DSFont.footnote)
+            Text("reports.pDFPreview.1Of18")
+                .modifier(DSTextStyle.footnote)
         }
-        .padding()
+        .padding(DSSpacing.spacing16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DSColor.fill)
-        .navigationTitle("R-0930-07.pdf")
+        .navigationTitle("reports.pDFPreview.r093007Pdf")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -25,11 +25,11 @@ struct PDFPreviewScreen: View {
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            HStack(spacing: DSSpacing.small) {
-                Button("Save to Files") {}
+            HStack(spacing: DSSpacing.spacing8) {
+                Button("reports.pDFPreview.saveToFiles") {}
                     .buttonStyle(.sd(.secondary))
                 ShareLink(item: "R-0930-07.pdf") {
-                    Text("Send")
+                    Text("reports.pDFPreview.send")
                 }
                 .buttonStyle(.sd(.primary))
             }
@@ -40,20 +40,20 @@ struct PDFPreviewScreen: View {
     // Placeholder page; the real PDF (PDFKit) replaces it
     private var fakePage: some View {
         VStack(alignment: .leading) {
-            Text("Site inspection report")
-                .font(DSFont.headline)
-            Text("Riverside Tower B · 30 September 2026 · Hanh Nguyen")
-                .font(DSFont.footnote)
-            Text("7 new issues: 1 critical, 4 major, 2 minor. 9 issues from 12 Aug closed.")
-                .font(DSFont.footnote)
+            Text("reports.pDFPreview.siteInspectionReport")
+                .modifier(DSTextStyle.headline)
+            Text("reports.pDFPreview.riversideTowerB30September2026HanhNguyen")
+                .modifier(DSTextStyle.footnote)
+            Text("reports.pDFPreview.7NewIssues1Critical4Major2Minor9IssuesFrom12AugClosed")
+                .modifier(DSTextStyle.footnote)
             Spacer()
-            Text("Page 1 of 18")
-                .font(DSFont.footnote)
+            Text("reports.pDFPreview.page1Of18")
+                .modifier(DSTextStyle.footnote)
         }
-        .foregroundStyle(Color.black)
-        .padding()
+        .foregroundStyle(DSColor.mediaBackdrop)
+        .padding(DSSpacing.spacing16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.white)
+        .background(DSColor.onMedia)
     }
 }
 

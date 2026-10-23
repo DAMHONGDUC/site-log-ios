@@ -3,7 +3,7 @@
 <dl><dd>
 
 - Screen inventory and Figma file structure for the whole app, derived from `docs/feature-docs/`.
-- Tokens in code: `Packages/DesignSystem` (`DSColor`, `DSFont`, `DSSpacing`, `DSRadius`, `DSSize`).
+- Tokens in code: `Packages/DesignSystem` (`DSColor`, `DSSpacing`, `DSTextStyle`).
 
 </dd></dl>
 

@@ -9,9 +9,9 @@ public struct DSCountBadge: View {
 
     public var body: some View {
         Text(String(count))
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(Color.white)
-            .padding(.horizontal, 5)
+            .modifier(DSTextStyle.badge)
+            .foregroundStyle(DSColor.onMedia)
+            .padding(.horizontal, DSSpacing.spacing5)
             .frame(minWidth: 18, minHeight: 18)
             .background(DSColor.critical, in: Capsule())
     }
@@ -59,11 +59,16 @@ public struct DSFileTag: View {
 
     public var body: some View {
         Text(text)
-            .font(.caption2.weight(.semibold))
+            .modifier(DSTextStyle.badge)
             .foregroundStyle(DSColor.textSecondary)
-            .padding(.horizontal, 5)
+            .padding(.horizontal, DSSpacing.spacing5)
             .frame(height: 20)
-            .overlay(RoundedRectangle(cornerRadius: 4).stroke(DSColor.textSecondary, lineWidth: 1))
+            .overlay(
+                RoundedRectangle(cornerRadius: DSSpacing.spacing4).stroke(
+                    DSColor.textSecondary,
+                    lineWidth: 1
+                )
+            )
     }
 }
 
@@ -80,7 +85,7 @@ public struct DSRadioMark: View {
                 Circle()
                     .fill(DSColor.textPrimary)
                 Image(systemName: "checkmark")
-                    .font(.system(size: 11, weight: .bold))
+                    .modifier(DSTextStyle.iconSmall)
                     .foregroundStyle(DSColor.onPrimary)
             } else {
                 Circle()
@@ -92,7 +97,7 @@ public struct DSRadioMark: View {
 }
 
 #Preview {
-    VStack(spacing: DSSpacing.regular) {
+    VStack(spacing: DSSpacing.spacing16) {
         DSCountBadge(count: 14)
         DSProgressBar(value: 37.0 / 82.0)
         DSLiveDot()
@@ -102,5 +107,5 @@ public struct DSRadioMark: View {
             DSRadioMark(isOn: false)
         }
     }
-    .padding()
+    .padding(DSSpacing.spacing16)
 }

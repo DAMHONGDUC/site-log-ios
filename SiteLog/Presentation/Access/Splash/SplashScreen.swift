@@ -1,3 +1,4 @@
+import DesignSystem
 import Inject
 import SwiftUI
 
@@ -10,24 +11,29 @@ struct SplashScreen: View {
         Group {
             switch viewModel.state {
             case .running:
-                VStack {
-                    Image(systemName: "hammer", ).font(.largeTitle)
+                VStack(spacing: DSSpacing.spacing8) {
+                    Image(systemName: "hammer")
+                        .modifier(DSTextStyle.iconLarge)
                     ProgressView()
                 }
 
             case .failed:
-                VStack {
-                    Text("Error")
-                    Button("Try again") {
+                VStack(spacing: DSSpacing.spacing8) {
+                    Text("access.splash.error")
+                        .modifier(DSTextStyle.body)
+                    Button("access.splash.tryAgain") {
                         Task {
                             await viewModel.onAppear()
                         }
-                    }.buttonStyle(.borderedProminent)
+                    }
+                    .modifier(DSTextStyle.headline)
+                    .buttonStyle(.borderedProminent)
                 }
 
             case .ready:
-                VStack {
-                    Text("Ready")
+                VStack(spacing: DSSpacing.spacing8) {
+                    Text("access.splash.ready")
+                        .modifier(DSTextStyle.body)
                 }
             }
         }
@@ -36,4 +42,8 @@ struct SplashScreen: View {
         }
         .enableInjection()
     }
+}
+
+#Preview {
+    SplashScreen(viewModel: SplashViewModel())
 }

@@ -12,7 +12,7 @@ struct PlanDrawing: View {
             ZStack(alignment: .topLeading) {
                 DSColor.plan
                     .overlay {
-                        Text("Floor plan")
+                        Text("components.planDrawing.floorPlan")
                             .foregroundStyle(DSColor.textTertiary)
                     }
 
@@ -36,11 +36,11 @@ struct PlanPinView: View {
 
     var body: some View {
         Text(String(pin.number))
-            .font(DSFont.footnote.bold())
-            .foregroundStyle(Color.white)
+            .modifier(DSTextStyle.footnoteBold)
+            .foregroundStyle(DSColor.onMedia)
             .frame(width: 28, height: 28)
             .background(color, in: Circle())
-            .frame(width: DSSize.minTapTarget, height: DSSize.minTapTarget)
+            .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
             .contentShape(Rectangle())
     }
 

@@ -2,6 +2,8 @@
 
 <dl><dd>
 
+- Code in this guide is a teaching example. Check current source and follow [F00 localization rules](00-foundation.md#user-facing-text-and-localization) before applying it.
+
 - F16 · 48h · skeleton guide — last feature; filled in when it starts.
 
 </dd></dl>
@@ -92,7 +94,7 @@ fastlane/Fastfile                # 9: release lane waits for processing
 | Step | Do |
 |---|---|
 | 1 | Open the Figma frame and the running screen side by side |
-| 2 | Fix spacing, sizes, fonts with tokens only (`DSSpacing`, `DSFont`…); add a token if Figma needs a new value |
+| 2 | Fix spacing, sizes, fonts with tokens only (`DSSpacing`, `DSTextStyle`, `DSColor`…); add a token if Figma needs a new value |
 | 3 | Swap placeholders and native controls for the designed ones |
 | 4 | Check light + dark, small (SE) and large (Pro Max) iPhone, largest Dynamic Type |
 | 5 | Commit per screen |

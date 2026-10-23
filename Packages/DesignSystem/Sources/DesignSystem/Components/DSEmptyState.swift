@@ -12,21 +12,21 @@ public struct DSEmptyState: View {
     }
 
     public var body: some View {
-        VStack(spacing: DSSpacing.medium) {
+        VStack(spacing: DSSpacing.spacing12) {
             Image(systemName: systemImage)
-                .font(.system(size: 40))
+                .modifier(DSTextStyle.iconLarge)
                 .foregroundStyle(DSColor.textTertiary)
 
             Text(title)
-                .font(DSFont.headline)
+                .modifier(DSTextStyle.headline)
                 .foregroundStyle(DSColor.textPrimary)
 
             Text(message)
-                .font(DSFont.subhead)
+                .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(DSSpacing.large)
+        .padding(DSSpacing.spacing24)
     }
 }
 

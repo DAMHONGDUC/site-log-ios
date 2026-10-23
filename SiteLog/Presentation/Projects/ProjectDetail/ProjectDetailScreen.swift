@@ -11,9 +11,9 @@ struct ProjectDetailScreen: View {
     let project: FakeProject
 
     enum Section: String, CaseIterable {
-        case sessions = "Sessions"
-        case locations = "Locations"
-        case plans = "Plans"
+        case sessions = "projects.section.sessions"
+        case locations = "projects.section.locations"
+        case plans = "projects.section.plans"
     }
 
     @State private var section: Section = .sessions
@@ -22,16 +22,10 @@ struct ProjectDetailScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 header
 
-                Picker("Section", selection: $section) {
-                    ForEach(Section.allCases, id: \.self) { item in
-                        Text(item.rawValue).tag(item)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, DSSpacing.regular)
+                ProjectSectionPicker(selection: $section)
 
                 switch section {
                 case .sessions:
@@ -42,18 +36,18 @@ struct ProjectDetailScreen: View {
                     PlanListScreen()
                 }
             }
-            .padding(.bottom, DSSpacing.regular)
+            .padding(.bottom, DSSpacing.spacing16)
         }
         .background(DSColor.canvas)
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("More", systemImage: "ellipsis") {
-                    Button("New walkthrough", systemImage: "figure.walk") {
+                Menu("projects.projectDetail.more", systemImage: "ellipsis") {
+                    Button("projects.projectDetail.newWalkthrough", systemImage: "figure.walk") {
                         isStartSessionShown = true
                     }
-                    Button("Import a plan", systemImage: "doc.badge.plus") {
+                    Button("projects.projectDetail.importAPlan", systemImage: "doc.badge.plus") {
                         isPlanImportShown = true
                     }
                 }
@@ -76,23 +70,29 @@ struct ProjectDetailScreen: View {
     private var header: some View {
         VStack(alignment: .leading) {
             Text(project.name)
-                .font(DSFont.largeTitle)
-            Text("\(project.client) · \(project.area)")
-                .font(DSFont.subhead)
-                .foregroundStyle(DSColor.textSecondary)
+                .modifier(DSTextStyle.largeTitle)
+            Text(
+                String.localizedStringWithFormat(
+                    String(localized: "projects.projectDetail.clientAndArea"),
+                    project.client,
+                    project.area
+                )
+            )
+            .modifier(DSTextStyle.subhead)
+            .foregroundStyle(DSColor.textSecondary)
         }
-        .padding(.horizontal, DSSpacing.regular)
+        .padding(.horizontal, DSSpacing.spacing16)
     }
 
     @ViewBuilder private var dock: some View {
         switch section {
         case .sessions:
-            Button("Resume walkthrough") {
+            Button("projects.projectDetail.resumeWalkthrough") {
                 coordinator.push(ProjectsRoute.survey)
             }
             .buttonStyle(.sd(.primary))
         case .locations:
-            Button("Add rooms in bulk") {
+            Button("projects.projectDetail.addRoomsInBulk") {
                 coordinator.push(ProjectsRoute.bulkLocations)
             }
             .buttonStyle(.sd(.primary))
@@ -100,23 +100,24 @@ struct ProjectDetailScreen: View {
             Button {
                 isPlanImportShown = true
             } label: {
-                Label("Import a plan", systemImage: "doc.badge.plus")
+                Label("projects.projectDetail.importAPlan2", systemImage: "doc.badge.plus")
             }
             .buttonStyle(.sd(.secondary))
         }
     }
 
     private var sessionsContent: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.large) {
-            Text(
-                "\(Text("14 open issues").bold()), 2 of them overdue. Last full walkthrough on 12 Aug with Hanh."
-            )
-            .font(DSFont.body)
-            .foregroundStyle(DSColor.textSecondary)
-            .padding(.horizontal, DSSpacing.regular)
+        VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+            Text("projects.projectDetail.issueSummary")
+                .modifier(DSTextStyle.body)
+                .foregroundStyle(DSColor.textSecondary)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-            VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                DSSectionHeader(title: "Sessions", trailing: String(FakeData.sessions.count))
+            VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                DSSectionHeader(
+                    title: String(localized: "projects.projectDetail.sessions"),
+                    trailing: String(FakeData.sessions.count)
+                )
 
                 ForEach(FakeData.sessions) { session in
                     Button {
@@ -141,7 +142,7 @@ struct ProjectDetailScreen: View {
             if session.isLive {
                 DSLiveDot()
             } else {
-                Color.clear
+                DSColor.clear
                     .frame(width: 10, height: 10)
             }
         } trailing: {
@@ -152,9 +153,9 @@ struct ProjectDetailScreen: View {
     }
 
     private var locationsContent: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.large) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
             ForEach(FakeData.units) { unit in
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     DSSectionHeader(title: unit.name, trailing: "\(unit.rooms.count) rooms")
 
                     ForEach(unit.rooms) { room in
@@ -173,12 +174,12 @@ struct ProjectDetailScreen: View {
             Button {
                 coordinator.push(ProjectsRoute.cloneTree)
             } label: {
-                Text("Copy rooms from another project")
-                    .font(DSFont.subhead.weight(.semibold))
+                Text("projects.projectDetail.copyRoomsFromAnotherProject")
+                    .modifier(DSTextStyle.subheadSemibold)
                     .underline()
                     .foregroundStyle(DSColor.textPrimary)
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
         }
     }
 }
@@ -187,4 +188,22 @@ struct ProjectDetailScreen: View {
     NavigationStack {
         ProjectDetailScreen(project: FakeData.projects[0])
     }
+}
+
+private struct ProjectSectionPicker: View {
+    @Binding var selection: ProjectDetailScreen.Section
+
+    var body: some View {
+        Picker("projects.projectDetail.section", selection: $selection) {
+            ForEach(ProjectDetailScreen.Section.allCases, id: \.self) { section in
+                Text(NSLocalizedString(section.rawValue, comment: "")).tag(section)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal, DSSpacing.spacing16)
+    }
+}
+
+#Preview("Project sections") {
+    ProjectSectionPicker(selection: .constant(.sessions))
 }

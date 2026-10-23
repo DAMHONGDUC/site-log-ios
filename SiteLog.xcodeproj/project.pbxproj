@@ -143,6 +143,7 @@
 		E501A03FD345691A0A48AC76 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
 		F0D19FCFBA693CEAFA6D9024 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignSystem; path = Packages/DesignSystem; sourceTree = SOURCE_ROOT; };
+		F2B5D3FE308B4659004A012F /* swiftui-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "swiftui-rules.md"; sourceTree = "<group>"; };
 		F312F03E20FBC9CEE2FF7848 /* pr-checks.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "pr-checks.yml"; sourceTree = "<group>"; };
 		F764EF7A765C448ECF89F274 /* set_up.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = set_up.sh; sourceTree = "<group>"; };
 		FAF16F17C7188C1A8794B798 /* .git */ = {isa = PBXFileReference; lastKnownFileType = text; path = .git; sourceTree = "<group>"; };
@@ -435,6 +436,7 @@
 		7B6E7FD2343BCB4C989A76E8 /* docs */ = {
 			isa = PBXGroup;
 			children = (
+				F2B5D3FE308B4659004A012F /* swiftui-rules.md */,
 				7B9FB7CDADEE290426D291FB /* design */,
 				B0EE980A4E88922590291190 /* feature-docs */,
 				188C18BC51FFD63DACD62D9D /* feature-guide */,

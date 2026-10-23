@@ -11,30 +11,34 @@ struct ChecklistDoneScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(DSColor.success)
 
-                    Text("Living room is done.")
-                        .font(DSFont.title)
+                    Text("checklists.checklistDone.livingRoomIsDone")
+                        .modifier(DSTextStyle.title)
 
-                    Text("19 passed, 2 failed and 1 didn’t apply. It took you 6 minutes.")
-                        .font(DSFont.body)
+                    Text("checklists.checklistDone.19Passed2FailedAnd1DidnTApplyItTookYou6Minutes")
+                        .modifier(DSTextStyle.body)
                         .foregroundStyle(DSColor.textSecondary)
                 }
                 .padding(.top)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Sent to the issue list")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(
+                        title: String(localized: "checklists.checklistDone.sentToTheIssueList")
+                    )
 
                     Button {
                         coordinator.push(IssuesRoute.detail(issueID: FakeData.issues[1].id))
                     } label: {
                         DSListRow(
-                            title: "Crack by the skirting",
-                            subtitle: "Tuan’s masonry crew",
+                            title: String(localized: "checklists.checklistDone.crackByTheSkirting"),
+                            subtitle: String(
+                                localized: "checklists.checklistDone.tuanSMasonryCrew"
+                            ),
                             showsChevron: true
                         ) {
                             DSStatusMarker(kind: .major)
@@ -48,8 +52,10 @@ struct ChecklistDoneScreen: View {
                         coordinator.push(IssuesRoute.detail(issueID: FakeData.issues[4].id))
                     } label: {
                         DSListRow(
-                            title: "Socket cover not level",
-                            subtitle: "Phuc Electric",
+                            title: String(
+                                localized: "checklists.checklistDone.socketCoverNotLevel"
+                            ),
+                            subtitle: String(localized: "checklists.checklistDone.phucElectric"),
                             showsChevron: true
                         ) {
                             DSStatusMarker(kind: .minor)
@@ -62,12 +68,12 @@ struct ChecklistDoneScreen: View {
         .background(DSColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("Next: Bedroom 1") {
+            Button("checklists.checklistDone.nextBedroom1") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))
 
-            Button("Back to Level 7") {
+            Button("checklists.checklistDone.backToLevel7") {
                 dismiss()
             }
             .buttonStyle(.sd(.ghost))

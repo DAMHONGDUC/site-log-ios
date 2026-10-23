@@ -7,30 +7,48 @@ struct AccountScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(spacing: 0) {
-                    DSListRow(title: "Name", value: FakeData.inspector)
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                VStack(spacing: DSSpacing.spacing0) {
+                    DSListRow(
+                        title: String(localized: "settings.account.name"),
+                        value: FakeData.inspector
+                    )
                     DSDivider()
-                    DSListRow(title: "Signed in with", value: "Apple")
+                    DSListRow(
+                        title: String(localized: "settings.account.signedInWith"),
+                        value: String(localized: "settings.account.apple")
+                    )
                     DSDivider()
-                    DSListRow(title: "Last sync", value: "2 minutes ago")
+                    DSListRow(
+                        title: String(localized: "settings.account.lastSync"),
+                        value: String(localized: "settings.account.2MinutesAgo")
+                    )
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Devices", trailing: "2")
-                    DSListRow(title: "iPhone 16", subtitle: "This iPhone")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(
+                        title: String(localized: "settings.account.devices"),
+                        trailing: String(localized: "settings.account.2")
+                    )
+                    DSListRow(
+                        title: String(localized: "settings.account.iphone16"),
+                        subtitle: String(localized: "settings.account.thisIphone")
+                    )
                     DSDivider()
-                    DSListRow(title: "iPad Air", subtitle: "Last seen yesterday")
+                    DSListRow(
+                        title: String(localized: "settings.account.ipadAir"),
+                        subtitle: String(localized: "settings.account.lastSeenYesterday")
+                    )
                 }
 
-                Button("Sign out") {}
+                Button("settings.account.signOut") {}
                     .buttonStyle(.sd(.danger))
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Account")
+        .navigationTitle("settings.account.account")
         .navigationBarTitleDisplayMode(.inline)
         .enableInjection()
     }

@@ -22,19 +22,19 @@ struct PasscodeNumberPad: View {
     private let columns = Array(repeating: GridItem(.flexible()), count: 3)
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: DSSpacing.regular) {
+        LazyVGrid(columns: columns, spacing: DSSpacing.spacing16) {
             ForEach(keys, id: \.self) { key in
                 keyView(key)
             }
         }
-        .padding(.horizontal, DSSpacing.xLarge)
+        .padding(.horizontal, DSSpacing.spacing32)
     }
 
     @ViewBuilder private func keyView(_ key: String) -> some View {
         if key.isEmpty {
-            Color.clear
+            DSColor.clear
         } else if key == "delete" {
-            Button("Delete", systemImage: "delete.left") {
+            Button("components.passcodePad.delete", systemImage: "delete.left") {
                 if !code.isEmpty {
                     code.removeLast()
                 }
@@ -46,7 +46,7 @@ struct PasscodeNumberPad: View {
                     code.append(key)
                 }
             }
-            .font(DSFont.title)
+            .modifier(DSTextStyle.title)
             .buttonStyle(.bordered)
         }
     }

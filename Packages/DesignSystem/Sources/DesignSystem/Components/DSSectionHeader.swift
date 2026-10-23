@@ -12,18 +12,18 @@ public struct DSSectionHeader: View {
     public var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(title)
-                .font(DSFont.section)
+                .modifier(DSTextStyle.section)
                 .foregroundStyle(DSColor.textPrimary)
 
             Spacer()
 
             if let trailing {
                 Text(trailing)
-                    .font(DSFont.subhead)
+                    .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
             }
         }
-        .padding(.horizontal, DSSpacing.regular)
+        .padding(.horizontal, DSSpacing.spacing16)
     }
 }
 

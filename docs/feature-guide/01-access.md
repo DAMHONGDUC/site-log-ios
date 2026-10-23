@@ -2,7 +2,8 @@
 
 <dl><dd>
 
-- F01 · 15h · step-by-step guide with full code (steps 1–3); step 4 is a skeleton.
+- F01 · 15h · access feature guide. Compare every code example with the current implementation before applying it; the repository is the source of truth.
+- Follow [F00 localization rules](00-foundation.md#user-facing-text-and-localization) for user-facing text.
 
 </dd></dl>
 

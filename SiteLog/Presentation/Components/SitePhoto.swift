@@ -26,7 +26,7 @@ struct SitePhotoThumb: View {
     var body: some View {
         SitePhoto(variant: variant, showsCrack: showsCrack)
             .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: DSRadius.small))
+            .clipShape(RoundedRectangle(cornerRadius: DSSpacing.spacing5))
     }
 }
 

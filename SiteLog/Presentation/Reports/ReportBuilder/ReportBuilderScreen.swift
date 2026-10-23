@@ -8,69 +8,21 @@ struct ReportBuilderScreen: View {
     @ObserveInjection var inject
     @Environment(\.coordinator) private var coordinator
 
-    @State private var grouping = "Room"
-    @State private var included: [String: Bool] = [:]
-
-    private let sections: [(title: String, detail: String?)] = [
-        ("Cover and summary", nil),
-        ("Pins on each plan", "2 sheets"),
-        ("Checklist results", "3 rooms"),
-        ("Issues with photos", "7"),
-        ("Before and after", "4 pairs"),
-        ("Issues open over 14 days", nil),
-        ("Signatures", "2 people"),
-    ]
-
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
-                    Text("Group issues by")
-                        .font(DSFont.footnote)
-                        .foregroundStyle(DSColor.textSecondary)
-                    Picker("Group issues by", selection: $grouping) {
-                        Text("Room").tag("Room")
-                        Text("Contractor").tag("Contractor")
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .padding(.horizontal, DSSpacing.regular)
-
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Include")
-
-                    ForEach(sections, id: \.title) { section in
-                        sectionRow(section)
-                        DSDivider()
-                    }
-                }
-
-                VStack(spacing: 0) {
-                    Button {
-                        coordinator.push(ReportsRoute.branding)
-                    } label: {
-                        DSListRow(title: "Your letterhead", value: "Eastline", showsChevron: true)
-                    }
-                    .buttonStyle(.plain)
-
-                    DSDivider()
-
-                    Button {
-                        coordinator.push(ReportsRoute.signature)
-                    } label: {
-                        DSListRow(title: "Signatures", value: "1 of 2", showsChevron: true)
-                    }
-                    .buttonStyle(.plain)
-                }
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                ReportGroupingPicker()
+                ReportOptionsList()
+                ReportMetadataLinks()
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Report")
+        .navigationTitle("reports.reportBuilder.report")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Next") {
+                Button("reports.reportBuilder.next") {
                     coordinator.push(ReportsRoute.signature)
                 }
                 .fontWeight(.semibold)
@@ -78,12 +30,12 @@ struct ReportBuilderScreen: View {
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            HStack(spacing: DSSpacing.small) {
-                Button("Excel") {}
+            HStack(spacing: DSSpacing.spacing8) {
+                Button("reports.reportBuilder.excel") {}
                     .buttonStyle(.sd(.secondary))
                     .frame(width: 110)
 
-                Button("Create PDF") {
+                Button("reports.reportBuilder.createPdf") {
                     coordinator.push(ReportsRoute.pdfPreview)
                 }
                 .buttonStyle(.sd(.primary))
@@ -91,20 +43,133 @@ struct ReportBuilderScreen: View {
         }
         .enableInjection()
     }
+}
 
-    private func sectionRow(_ section: (title: String, detail: String?)) -> some View {
-        let defaultValue = section.title != "Issues open over 14 days"
-        let binding = Binding<Bool>(
-            get: { included[section.title] ?? defaultValue },
-            set: { included[section.title] = $0 }
+private struct ReportGroupingPicker: View {
+    @State private var grouping = "Room"
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
+            Text("reports.reportBuilder.groupIssuesBy")
+                .modifier(DSTextStyle.footnote)
+                .foregroundStyle(DSColor.textSecondary)
+
+            Picker("reports.reportBuilder.groupIssuesBy2", selection: $grouping) {
+                Text("reports.reportBuilder.room").tag("Room")
+                Text("reports.reportBuilder.contractor").tag("Contractor")
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding(.horizontal, DSSpacing.spacing16)
+    }
+}
+
+private struct ReportOption: Identifiable {
+    let titleKey: String
+    let detailKey: String?
+
+    var id: String { titleKey }
+}
+
+private struct ReportOptionsList: View {
+    @State private var included: [String: Bool] = [:]
+
+    private let options: [ReportOption] = [
+        ReportOption(titleKey: "reports.options.coverAndSummary", detailKey: nil),
+        ReportOption(
+            titleKey: "reports.options.pinsOnEachPlan",
+            detailKey: "reports.options.twoSheets"
+        ),
+        ReportOption(
+            titleKey: "reports.options.checklistResults",
+            detailKey: "reports.options.threeRooms"
+        ),
+        ReportOption(
+            titleKey: "reports.options.issuesWithPhotos",
+            detailKey: "reports.options.seven"
+        ),
+        ReportOption(
+            titleKey: "reports.options.beforeAndAfter",
+            detailKey: "reports.options.fourPairs"
+        ),
+        ReportOption(titleKey: "reports.options.issuesOpenOver14Days", detailKey: nil),
+        ReportOption(
+            titleKey: "reports.options.signatures",
+            detailKey: "reports.options.twoPeople"
+        ),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+            DSSectionHeader(title: String(localized: "reports.reportBuilder.include"))
+
+            ForEach(options) { option in
+                ReportOptionRow(option: option, included: $included)
+                DSDivider()
+            }
+        }
+    }
+}
+
+private struct ReportOptionRow: View {
+    let option: ReportOption
+    @Binding var included: [String: Bool]
+
+    private var title: String {
+        NSLocalizedString(option.titleKey, comment: "")
+    }
+
+    private var detail: String? {
+        guard let detailKey = option.detailKey else { return nil }
+        return NSLocalizedString(detailKey, comment: "")
+    }
+
+    private var isIncluded: Binding<Bool> {
+        Binding(
+            get: { included[option.id] ?? (option.id != "reports.options.issuesOpenOver14Days") },
+            set: { included[option.id] = $0 }
         )
+    }
 
-        return DSListRow(title: section.title, subtitle: section.detail) {
+    var body: some View {
+        DSListRow(title: title, subtitle: detail) {
             EmptyView()
         } trailing: {
-            Toggle(section.title, isOn: binding)
+            Toggle(title, isOn: isIncluded)
                 .labelsHidden()
                 .tint(DSColor.success)
+        }
+    }
+}
+
+private struct ReportMetadataLinks: View {
+    @Environment(\.coordinator) private var coordinator
+
+    var body: some View {
+        VStack(spacing: DSSpacing.spacing0) {
+            Button {
+                coordinator.push(ReportsRoute.branding)
+            } label: {
+                DSListRow(
+                    title: String(localized: "reports.reportBuilder.yourLetterhead"),
+                    value: String(localized: "reports.reportBuilder.eastline"),
+                    showsChevron: true
+                )
+            }
+            .buttonStyle(.plain)
+
+            DSDivider()
+
+            Button {
+                coordinator.push(ReportsRoute.signature)
+            } label: {
+                DSListRow(
+                    title: String(localized: "reports.reportBuilder.signatures"),
+                    value: String(localized: "reports.reportBuilder.oneOfTwo"),
+                    showsChevron: true
+                )
+            }
+            .buttonStyle(.plain)
         }
     }
 }
@@ -113,4 +178,16 @@ struct ReportBuilderScreen: View {
     NavigationStack {
         ReportBuilderScreen()
     }
+}
+
+#Preview("Grouping picker") {
+    ReportGroupingPicker()
+}
+
+#Preview("Report options") {
+    ReportOptionsList()
+}
+
+#Preview("Metadata links") {
+    ReportMetadataLinks()
 }

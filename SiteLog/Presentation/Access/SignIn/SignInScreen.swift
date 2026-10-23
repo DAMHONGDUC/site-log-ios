@@ -11,42 +11,51 @@ struct SignInScreen: View {
     var onContinueOffline: () -> Void = {}
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.small) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
             AppMark(size: 56)
                 .padding(.top)
 
-            Text("Your site log,\non every device.")
-                .font(DSFont.largeTitle)
+            Text("access.signIn.yourSiteLogOnEveryDevice")
+                .modifier(DSTextStyle.largeTitle)
 
             Text(
-                "Sign in to back up projects and hand off between iPhone and iPad. Everything still works offline without an account."
+                "access.signIn.signInToBackUpProjectsAndHandOffBetweenIphoneAndIpadEverythingStillWorksOfflineWithoutAnAccount"
             )
-            .font(DSFont.subhead)
+            .modifier(DSTextStyle.subhead)
             .foregroundStyle(DSColor.textSecondary)
 
             Spacer()
 
-            VStack(alignment: .leading, spacing: DSSpacing.medium) {
-                featureRow(systemImage: "wifi.slash", text: "Works with zero signal")
-                featureRow(systemImage: "checkmark.shield", text: "Photos hashed at capture")
-                featureRow(systemImage: "doc.text", text: "Signed PDF in one tap")
+            VStack(alignment: .leading, spacing: DSSpacing.spacing12) {
+                featureRow(
+                    systemImage: "wifi.slash",
+                    text: String(localized: "access.signIn.worksWithZeroSignal")
+                )
+                featureRow(
+                    systemImage: "checkmark.shield",
+                    text: String(localized: "access.signIn.photosHashedAtCapture")
+                )
+                featureRow(
+                    systemImage: "doc.text",
+                    text: String(localized: "access.signIn.signedPdfInOneTap")
+                )
             }
         }
-        .padding(.horizontal, DSSpacing.regular)
+        .padding(.horizontal, DSSpacing.spacing16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(DSColor.canvas)
         .bottomDock(showsBackground: false) {
             Button(action: onSignIn) {
-                Label("Sign in with Apple", systemImage: "apple.logo")
+                Label("access.signIn.signInWithApple", systemImage: "apple.logo")
             }
             .buttonStyle(.sd(.primary))
 
             Button(action: onSignIn) {
-                Label("Continue with email", systemImage: "envelope")
+                Label("access.signIn.continueWithEmail", systemImage: "envelope")
             }
             .buttonStyle(.sd(.secondary))
 
-            Button("Continue offline", action: onContinueOffline)
+            Button("access.signIn.continueOffline", action: onContinueOffline)
                 .buttonStyle(.sd(.ghost))
         }
         .enableInjection()
@@ -54,7 +63,7 @@ struct SignInScreen: View {
 
     private func featureRow(systemImage: String, text: String) -> some View {
         Label(text, systemImage: systemImage)
-            .font(DSFont.subhead)
+            .modifier(DSTextStyle.subhead)
     }
 }
 

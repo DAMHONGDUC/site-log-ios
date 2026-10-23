@@ -22,14 +22,14 @@ public struct DSTextField: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing6) {
             if let label {
                 Text(label)
-                    .font(DSFont.footnote)
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textSecondary)
             }
 
-            HStack(spacing: DSSpacing.small) {
+            HStack(spacing: DSSpacing.spacing8) {
                 field
 
                 if let trailingSystemImage {
@@ -37,21 +37,31 @@ public struct DSTextField: View {
                         .foregroundStyle(DSColor.textSecondary)
                 }
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, isMultiline ? 11 : 0)
-            .frame(minHeight: isMultiline ? 72 : DSSize.fieldHeight, alignment: .topLeading)
-            .background(DSColor.fill, in: RoundedRectangle(cornerRadius: DSRadius.field))
+            .padding(.horizontal, DSSpacing.spacing14)
+            .padding(
+                .vertical,
+                isMultiline ? DSSpacing.spacing11 : DSSpacing.spacing0
+            )
+            .frame(
+                minHeight: isMultiline
+                    ? DSSpacing.spacing72 : DSSpacing.spacing46,
+                alignment: .topLeading
+            )
+            .background(
+                DSColor.fill,
+                in: RoundedRectangle(cornerRadius: DSSpacing.spacing11)
+            )
         }
     }
 
     @ViewBuilder private var field: some View {
         if isMultiline {
             TextField(placeholder, text: $text, axis: .vertical)
-                .font(DSFont.body)
+                .modifier(DSTextStyle.body)
                 .lineLimit(2...5)
         } else {
             TextField(placeholder, text: $text)
-                .font(DSFont.body)
+                .modifier(DSTextStyle.body)
         }
     }
 }
@@ -60,9 +70,9 @@ public struct DSTextField: View {
     @Previewable @State var name = "Riverside Tower B"
     @Previewable @State var note = ""
 
-    VStack(spacing: DSSpacing.regular) {
+    VStack(spacing: DSSpacing.spacing16) {
         DSTextField("Name", text: $name)
         DSTextField("Note", placeholder: "e.g. finishing check", text: $note, isMultiline: true)
     }
-    .padding()
+    .padding(DSSpacing.spacing16)
 }

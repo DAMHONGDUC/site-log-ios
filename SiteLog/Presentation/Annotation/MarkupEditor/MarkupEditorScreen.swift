@@ -9,7 +9,7 @@ struct MarkupEditorScreen: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var tool = "pencil"
-    @State private var color = Color.red
+    @State private var color = DSColor.markup
     @State private var strokes: [[CGPoint]] = []
     @State private var currentStroke: [CGPoint] = []
 
@@ -17,28 +17,28 @@ struct MarkupEditorScreen: View {
     private let colors: [Color] = [.red, DSColor.hiVis, .white, .black]
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: DSSpacing.spacing0) {
             HStack {
-                Button("Cancel") {
+                Button("annotation.markupEditor.cancel") {
                     dismiss()
                 }
                 Spacer()
-                Button("Done") {
+                Button("annotation.markupEditor.done") {
                     dismiss()
                 }
             }
-            .foregroundStyle(Color.white)
-            .padding()
+            .foregroundStyle(DSColor.onMedia)
+            .padding(DSSpacing.spacing16)
 
             drawingArea
 
             toolRow
-                .padding()
+                .padding(DSSpacing.spacing16)
 
             colorRow
-                .padding()
+                .padding(DSSpacing.spacing16)
         }
-        .background(Color.black)
+        .background(DSColor.mediaBackdrop)
         .preferredColorScheme(.dark)
         .enableInjection()
     }
@@ -78,7 +78,7 @@ struct MarkupEditorScreen: View {
                     tool = item
                 } label: {
                     Image(systemName: item)
-                        .foregroundStyle(tool == item ? DSColor.hiVis : Color.white)
+                        .foregroundStyle(tool == item ? DSColor.hiVis : DSColor.onMedia)
                 }
                 Spacer()
             }
@@ -89,14 +89,14 @@ struct MarkupEditorScreen: View {
                 }
             } label: {
                 Image(systemName: "arrow.uturn.backward")
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(DSColor.onMedia)
             }
-            .accessibilityLabel("Undo")
+            .accessibilityLabel("annotation.markupEditor.undo")
         }
     }
 
     private var colorRow: some View {
-        HStack(spacing: DSSpacing.regular) {
+        HStack(spacing: DSSpacing.spacing16) {
             ForEach(colors.indices, id: \.self) { index in
                 Button {
                     color = colors[index]

@@ -3,6 +3,10 @@
 <dl><dd>
 
 - The paid deliverable and the protection of the evidence behind it.
+- This file defines target behavior for reports and security. Check source and feature guides for
+  implementation status; code examples here illustrate data shape and design only.
+
+> Code blocks below are API or data-model sketches unless the text says they are complete; referenced types belong to the target design.
 
 </dd></dl>
 
@@ -11,9 +15,22 @@
 <dl><dd>
 
 - [05 PDF and spreadsheet export](#05-pdf-and-spreadsheet-export) — sections, rendering, spreadsheet
-- [07 Security and audit log](#07-security-and-audit-log) — at rest, app lock, audit log, leaks and secrets
+- [07 Security and audit log](#07-security-and-audit-log)
+- [Beginner terms](#beginner-terms) — at rest, app lock, audit log, leaks and secrets
 
 ---
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **Encryption at rest:** scrambling files while they are stored on the device. Example: iOS Data Protection restricts access to a file while the device is locked.
+- **Keychain:** Apple's protected store for small secrets such as passcode-derived keys.
+- **HMAC:** a keyed fingerprint used to check that data came from someone with the shared secret and was not changed.
+- **AES-GCM:** encryption that also detects changes to encrypted data. **PBKDF2:** a deliberately slow way to derive a key from a passcode.
+- **PKI:** a system of certificates and keys used to verify identity. Explain certificate-chain terms before using them in implementation steps.
 
 </dd></dl>
 
@@ -192,6 +209,9 @@ never leaked into logs or analytics.
 | Passcode | 6 digits, app-only; required before Lock app turns on | — |
 | Unlock with Face ID | On / Off; hidden when the device has no biometrics | On once a passcode is set |
 | Lock after | Immediately · 1 minute · 5 minutes · 15 minutes · 1 hour | 5 minutes |
+
+These are the intended product defaults. The current in-memory access repository uses temporary
+sample settings; update those values when implementing the persistent access data source.
 
 | Rule | Detail |
 |---|---|

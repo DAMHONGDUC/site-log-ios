@@ -16,25 +16,37 @@ struct NewProjectScreen: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: DSSpacing.regular) {
-                    DSTextField("Name", placeholder: "Riverside Tower B", text: $name)
-                        .focused($isNameFocused)
-                    DSTextField("Site address", placeholder: "Street, district", text: $address)
-                    DSTextField("Client", placeholder: "Optional", text: $client)
+                VStack(spacing: DSSpacing.spacing16) {
+                    DSTextField(
+                        String(localized: "projects.newProject.name"),
+                        placeholder: String(localized: "projects.newProject.riversideTowerB"),
+                        text: $name
+                    )
+                    .focused($isNameFocused)
+                    DSTextField(
+                        String(localized: "projects.newProject.siteAddress"),
+                        placeholder: String(localized: "projects.newProject.streetDistrict"),
+                        text: $address
+                    )
+                    DSTextField(
+                        String(localized: "projects.newProject.client"),
+                        placeholder: String(localized: "projects.newProject.optional"),
+                        text: $client
+                    )
                 }
-                .padding(DSSpacing.regular)
+                .padding(DSSpacing.spacing16)
             }
-            .navigationTitle("New project")
+            .navigationTitle("projects.newProject.newProject")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close", systemImage: "xmark") {
+                    Button("projects.newProject.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
             }
             .bottomDock {
-                Button("Create project") {
+                Button("projects.newProject.createProject") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.primary))

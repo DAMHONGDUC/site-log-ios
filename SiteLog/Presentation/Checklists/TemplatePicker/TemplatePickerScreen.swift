@@ -12,13 +12,15 @@ struct TemplatePickerScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 Button {
                     coordinator.push(ChecklistsRoute.run(title: nil))
                 } label: {
                     DSListRow(
-                        title: "Finishing handover",
-                        subtitle: "You stopped at item 15 of 22 this morning",
+                        title: String(localized: "checklists.templatePicker.finishingHandover"),
+                        subtitle: String(
+                            localized: "checklists.templatePicker.youStoppedAtItem15Of22ThisMorning"
+                        ),
                         showsChevron: true
                     ) {
                         DSLiveDot()
@@ -27,22 +29,22 @@ struct TemplatePickerScreen: View {
                 .buttonStyle(.plain)
 
                 checklistSection(
-                    title: "Used recently",
+                    title: String(localized: "checklists.templatePicker.usedRecently"),
                     items: FakeData.recentChecklists,
                     trailing: nil
                 )
 
                 checklistSection(
-                    title: "All checklists",
+                    title: String(localized: "checklists.templatePicker.allChecklists"),
                     items: FakeData.allChecklists,
                     trailing: String(FakeData.allChecklists.count)
                 )
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
         .searchable(text: $searchText)
-        .navigationTitle("Checklist")
+        .navigationTitle("checklists.templatePicker.checklist")
         .navigationBarTitleDisplayMode(.inline)
         .enableInjection()
     }
@@ -52,7 +54,7 @@ struct TemplatePickerScreen: View {
         items: [FakeChecklist],
         trailing: String?
     ) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
             DSSectionHeader(title: title, trailing: trailing)
 
             ForEach(items) { item in
@@ -61,7 +63,10 @@ struct TemplatePickerScreen: View {
                 } label: {
                     DSListRow(
                         title: item.title,
-                        subtitle: "\(item.itemCount) items",
+                        subtitle: String.localizedStringWithFormat(
+                            String(localized: "checklists.templatePicker.itemCount"),
+                            item.itemCount
+                        ),
                         showsChevron: true
                     )
                 }

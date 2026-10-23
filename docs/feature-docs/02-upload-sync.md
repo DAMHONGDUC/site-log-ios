@@ -3,6 +3,8 @@
 <dl><dd>
 
 - How bytes and metadata leave the device and reach other devices. Server side: [03-backend.md](03-backend.md).
+- These are target specifications. The upload, sync, and realtime implementations are planned work;
+  code samples define contracts and are not drop-in implementations.
 
 | Path | Carries | Spec |
 |---|---|---|
@@ -10,6 +12,8 @@
 | Delta sync | Metadata | [08](#08-auth-and-sync) |
 | WebSocket | Server-side job state | [10](#10-realtime-progress-channel) |
 | BLE | Measuring tools only | [06](01-field-work.md#06-devicelink-ble-measuring-tools) |
+
+> Code blocks below are contract sketches, not standalone Swift files; referenced records are defined by the target data model.
 
 </dd></dl>
 
@@ -20,8 +24,20 @@
 - [04 Upload engine](#04-upload-engine) — boundary, protocol, background constraints, state machine, policy
 - [08 Auth and sync](#08-auth-and-sync) — offline-first and auth, protocol, client engine
 - [10 Realtime progress channel](#10-realtime-progress-channel)
+- [Beginner terms](#beginner-terms)
 
 ---
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **Presigned URL:** a temporary address that grants permission to upload one object. Example: the app sends photo bytes directly to storage using that address.
+- **ETag:** a storage receipt for an uploaded part. The app sends the receipts when it completes a multipart upload.
+- **Idempotent:** repeating the same request has the same result as sending it once. Example: retrying `complete` does not create a second file.
+- **Cursor:** a marker for where the next sync page begins. **Tombstone:** a small deletion record sent during sync so another device also removes the item.
 
 </dd></dl>
 
@@ -72,7 +88,7 @@ public protocol UploadStore: Sendable {
 | 4 | `POST /uploads/:id/parts/refresh {numbers}` | Fresh URLs — **mandatory** after a long kill |
 | 5 | `DELETE /uploads/:id` | Abort |
 
-- Mode from `byteSize`: under 5 MB single PUT, else multipart with uniform 8 MB parts (R2 requires
+- Mode from `byteSize`: under 5 MiB single PUT, else multipart with uniform 8 MiB parts (R2 requires
   equal non-final parts, so `ChunkPlanner` splits by fixed size).
 - Every call carries a Firebase ID token; the key prefix must match its uid.
 
@@ -115,12 +131,29 @@ pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → com
 
 ```swift
 public struct UploadStateMachine {
-    public enum Event { case planned([UploadPartRecord]), partSucceeded(Int, etag: String),
-        partFailed(Int, FailureReason), urlsRefreshed([UploadPartRecord]),
-        networkBecameAvailable, completed(remoteKey: String), cancelledByUser }
-    public enum Effect { case enqueuePart(Int), refreshURLs([Int]), callComplete([Int: String]),
-        scheduleRetry(Int, after: TimeInterval), deleteTempFile(Int), abort(FailureReason) }
-    public func reduce(state: UploadJobState, event: Event) -> (UploadJobState, [Effect])
+    public enum Event {
+        case planned([UploadPartRecord])
+        case partSucceeded(Int, etag: String)
+        case partFailed(Int, FailureReason)
+        case urlsRefreshed([UploadPartRecord])
+        case networkBecameAvailable
+        case completed(remoteKey: String)
+        case cancelledByUser
+    }
+
+    public enum Effect {
+        case enqueuePart(Int)
+        case refreshURLs([Int])
+        case callComplete([Int: String])
+        case scheduleRetry(Int, after: TimeInterval)
+        case deleteTempFile(Int)
+        case abort(FailureReason)
+    }
+
+    public func reduce(
+        state: UploadJobState,
+        event: Event
+    ) -> (UploadJobState, [Effect])
 }
 ```
 

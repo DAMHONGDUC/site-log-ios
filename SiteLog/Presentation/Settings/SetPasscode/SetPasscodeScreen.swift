@@ -12,18 +12,18 @@ struct SetPasscodeScreen: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: DSSpacing.large) {
+            VStack(spacing: DSSpacing.spacing24) {
                 Spacer()
 
-                Text("Enter a 6-digit passcode")
-                    .font(.title2.bold())
+                Text("settings.setPasscode.enterA6DigitPasscode")
+                    .modifier(DSTextStyle.title)
 
                 PasscodeDots(filled: code.count)
 
                 Text(
-                    "You’ll use it when Face ID can’t see you. It stays on this iPhone and is never uploaded."
+                    "settings.setPasscode.youLlUseItWhenFaceIdCanTSeeYouItStaysOnThisIphoneAndIsNeverUploaded"
                 )
-                .font(DSFont.footnote)
+                .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 280)
@@ -31,15 +31,15 @@ struct SetPasscodeScreen: View {
                 Spacer()
 
                 PasscodeNumberPad(code: $code)
-                    .padding(.bottom, DSSpacing.large)
+                    .padding(.bottom, DSSpacing.spacing24)
             }
             .frame(maxWidth: .infinity)
             .background(DSColor.canvas)
-            .navigationTitle("Set passcode")
+            .navigationTitle("settings.setPasscode.setPasscode")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button("settings.setPasscode.cancel") {
                         dismiss()
                     }
                 }

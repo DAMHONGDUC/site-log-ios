@@ -13,7 +13,7 @@ struct StampPreviewScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 SitePhoto(variant: 0, showsCrack: true)
                     .frame(height: 300)
                     .overlay(alignment: .bottom) {
@@ -21,28 +21,37 @@ struct StampPreviewScreen: View {
                     }
 
                 Text(
-                    "Time checked against the network (within 2 s) and GPS (±6 m), so the stamp can be trusted."
+                    "annotation.stampPreview.timeCheckedAgainstTheNetworkWithin2SAndGps6MSoTheStampCanBeTrusted"
                 )
-                .font(DSFont.footnote)
+                .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Stamp shows")
-                    toggleRow("Date and time", isOn: $showsDate)
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: String(localized: "annotation.stampPreview.stampShows"))
+                    toggleRow(
+                        String(localized: "annotation.stampPreview.dateAndTime"),
+                        isOn: $showsDate
+                    )
                     DSDivider()
-                    toggleRow("Project and room", isOn: $showsRoom)
+                    toggleRow(
+                        String(localized: "annotation.stampPreview.projectAndRoom"),
+                        isOn: $showsRoom
+                    )
                     DSDivider()
-                    toggleRow("My markup", isOn: $showsMarkup)
+                    toggleRow(
+                        String(localized: "annotation.stampPreview.myMarkup"),
+                        isOn: $showsMarkup
+                    )
                 }
             }
         }
         .background(DSColor.canvas)
-        .navigationTitle("Share photo")
+        .navigationTitle("annotation.stampPreview.sharePhoto")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
             ShareLink(item: "Verify at sitelog.app/v/7F3K-92QD") {
-                Label("Share", systemImage: "square.and.arrow.up")
+                Label("annotation.stampPreview.share", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.sd(.primary))
         }
@@ -50,27 +59,27 @@ struct StampPreviewScreen: View {
     }
 
     private var stampStrip: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing0) {
             if showsDate {
-                Text("30 Sep 2026 10:42:18 +07 · Riverside Tower B")
+                Text("annotation.stampPreview.30Sep202610421807RiversideTowerB")
             }
             if showsRoom {
-                Text("Level 7 › 7A › Living room · 10.7297, 106.7215")
+                Text("annotation.stampPreview.level77ALivingRoom1072971067215")
             }
-            Text("Verify at sitelog.app/v/7F3K-92QD")
+            Text("annotation.stampPreview.verifyAtSitelogAppV7F3K92Qd")
         }
-        .font(DSFont.code)
-        .foregroundStyle(Color.white)
+        .modifier(DSTextStyle.code)
+        .foregroundStyle(DSColor.onMedia)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical)
-        .background(Color.black.opacity(0.72))
+        .background(DSColor.mediaBackdrop.opacity(0.72))
     }
 
     private func toggleRow(_ title: String, isOn: Binding<Bool>) -> some View {
         Toggle(title, isOn: isOn)
             .tint(DSColor.success)
-            .frame(minHeight: DSSize.rowMinHeight)
-            .padding(.horizontal, DSSpacing.regular)
+            .frame(minHeight: DSSpacing.spacing52)
+            .padding(.horizontal, DSSpacing.spacing16)
     }
 }
 

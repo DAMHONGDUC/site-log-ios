@@ -5,6 +5,10 @@
 - What the supervisor does on site: organize the walk, capture, log and verify issues, pin them on
   plans, mark up photos, run checklists, read measuring tools.
 - Architecture and data model: [00-overview.md](00-overview.md).
+- These are feature specifications. They describe intended behavior; use the source tree to check
+  what is implemented today and the matching feature guide for implementation steps.
+
+> Code blocks below show small API or data-model sketches. A sketch omits neighboring feature types unless it says it is a complete file.
 
 </dd></dl>
 
@@ -21,8 +25,20 @@
 | [11](#11-floor-plans-and-issue-pins) | Floor plans and issue pins |
 | [12](#12-annotation-and-verifiable-stamps) | Annotation, stamps, dictation, trusted time, verification code |
 | [13](#13-checklist-templates) | Checklist templates |
+- [Beginner terms](#beginner-terms)
 
 ---
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **Offline-first:** save work on the iPhone before relying on a network. Example: a room note stays saved in airplane mode.
+- **Hash:** a fixed-size fingerprint of file bytes. Example: SHA-256 can show whether a saved video changed.
+- **BLE:** Bluetooth Low Energy, a short-range connection used by measuring tools. Example: read a laser meter measurement nearby.
+- **Glossary note:** `AVAssetWriter` writes video to a file; `jetsam` is iOS stopping an app that uses too much memory; `RSSI` is a rough Bluetooth signal-strength reading.
 
 </dd></dl>
 
@@ -56,7 +72,7 @@ Project list → [+] New project → Project detail: [Sessions] [Locations] [Pla
 
 ```swift
 struct LocationRow: Identifiable, Sendable {
-    let id: PersistentIdentifier
+    let id: UUID
     let code: String
     let captureCount: Int
     let openIssueCount: Int
@@ -148,16 +164,27 @@ idle → configuring → ready → capturingPhoto → ready
 | `sha256` | Streamed from the closed file | Always present |
 
 ```swift
+import CryptoKit
+import Foundation
+
 func sha256(ofFileAt url: URL) throws -> String {
     let handle = try FileHandle(forReadingFrom: url)
-    defer { try? handle.close() }
     var hasher = SHA256()
-    while let chunk = try handle.read(upToCount: HashConstants.streamingChunkBytes), !chunk.isEmpty {
+
+    while let chunk = try handle.read(upToCount: HashConstants.streamingChunkBytes),
+          !chunk.isEmpty
+    {
         hasher.update(data: chunk)
     }
-    return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+
+    try handle.close()
+    let digest = hasher.finalize()
+    return digest.map { String(format: "%02x", $0) }.joined()
 }
 ```
+
+`HashConstants.streamingChunkBytes` is declared in the same feature module. The function propagates
+read and close errors to its caller; the repository boundary logs the failure.
 
 - Stream in chunks: `Data(contentsOf:)` on a 1.5 GB video triggers jetsam.
 - Files: `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup.
@@ -182,7 +209,7 @@ enum CaptureConstants {
 }
 enum PreRecordConstants {
     static let segmentDuration: TimeInterval = 3
-    static let segmentCount: Int = 11
+    static let segmentCount: Int = 10
     static let minBatteryLevel: Float = 0.20
 }
 enum HashConstants { static let streamingChunkBytes: Int = 1_048_576 }
@@ -394,17 +421,26 @@ enum DeviceLinkConstants {
 - Out: DWG/CAD, measuring, plan editing.
 
 ```swift
-@Model final class PlanSheetModel {
-    var id: UUID; var project: ProjectModel; var name: String
-    var sourceFileURL: URL        // relative
-    var pageIndex: Int; var pixelSize: CGSize
-    var sha256: String            // plans are evidence too
+import SwiftData
+
+@Model
+final class PlanSheetModel {
+    var id: UUID
+    var project: ProjectModel
+    var name: String
+    var sourceFileURL: URL
+    var pageIndex: Int
+    var pixelSize: CGSize
+    var sha256: String
     var location: LocationModel?
 }
 
-@Model final class PlanPinModel {
-    var id: UUID; var sheet: PlanSheetModel; var issue: IssueModel
-    var normalizedPoint: NormalizedPoint  // Domain type, 0…1 on both axes
+@Model
+final class PlanPinModel {
+    var id: UUID
+    var sheet: PlanSheetModel
+    var issue: IssueModel
+    var normalizedPoint: NormalizedPoint
     var createdAt: Date
 }
 ```
@@ -601,15 +637,47 @@ retyping.
 - Out: weighted scoring, branching, regulatory libraries.
 
 ```swift
-@Model final class ChecklistTemplateModel { var id: UUID; var name: String; var appliesTo: LocationKind?
-    var items: [ChecklistTemplateItemModel]; var isBuiltIn: Bool; var usageCount: Int }
-@Model final class ChecklistTemplateItemModel { var id: UUID; var order: Int; var text: String
-    var defaultSeverity: IssueSeverity; var requiresPhotoOnFail: Bool }
-@Model final class ChecklistRunModel { var id: UUID; var template: ChecklistTemplateModel; var session: SessionModel
-    var location: LocationModel; var startedAt: Date; var completedAt: Date?; var results: [ChecklistResultModel] }
-@Model final class ChecklistResultModel { var id: UUID; var templateItem: ChecklistTemplateItemModel
-    var outcome: ChecklistOutcome   // .pass / .fail / .notApplicable / .unanswered
-    var note: String; var issue: IssueModel?; var answeredAt: Date? }
+import SwiftData
+
+@Model
+final class ChecklistTemplateModel {
+    var id: UUID
+    var name: String
+    var appliesTo: LocationKind?
+    var items: [ChecklistTemplateItemModel]
+    var isBuiltIn: Bool
+    var usageCount: Int
+}
+
+@Model
+final class ChecklistTemplateItemModel {
+    var id: UUID
+    var order: Int
+    var text: String
+    var defaultSeverity: IssueSeverity
+    var requiresPhotoOnFail: Bool
+}
+
+@Model
+final class ChecklistRunModel {
+    var id: UUID
+    var template: ChecklistTemplateModel
+    var session: SessionModel
+    var location: LocationModel
+    var startedAt: Date
+    var completedAt: Date?
+    var results: [ChecklistResultModel]
+}
+
+@Model
+final class ChecklistResultModel {
+    var id: UUID
+    var templateItem: ChecklistTemplateItemModel
+    var outcome: ChecklistOutcome
+    var note: String
+    var issue: IssueModel?
+    var answeredAt: Date?
+}
 ```
 
 - A run stores its own results; editing a template never rewrites completed runs.

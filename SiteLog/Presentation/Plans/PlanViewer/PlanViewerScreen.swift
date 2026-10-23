@@ -19,26 +19,29 @@ struct PlanViewerScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("Layers", systemImage: "square.3.layers.3d") {
-                    Button("Open issues") {}
-                    Button("Closed issues") {}
-                    Button("Photos") {}
+                Menu("plans.planViewer.layers", systemImage: "square.3.layers.3d") {
+                    Button("plans.planViewer.openIssues") {}
+                    Button("plans.planViewer.closedIssues") {}
+                    Button("plans.planViewer.photos") {}
                 }
             }
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
             HStack {
-                DSStatusMarker(kind: .critical, text: "1 critical")
+                DSStatusMarker(
+                    kind: .critical,
+                    text: String(localized: "plans.planViewer.1Critical")
+                )
                 Spacer()
-                DSStatusMarker(kind: .major, text: "2 major")
+                DSStatusMarker(kind: .major, text: String(localized: "plans.planViewer.2Major"))
                 Spacer()
-                DSStatusMarker(kind: .minor, text: "1 minor")
+                DSStatusMarker(kind: .minor, text: String(localized: "plans.planViewer.1Minor"))
                 Spacer()
-                DSStatusMarker(kind: .resolved, text: "2 closed")
+                DSStatusMarker(kind: .resolved, text: String(localized: "plans.planViewer.2Closed"))
             }
-            Text("Press and hold to drop a pin")
-                .font(DSFont.footnote)
+            Text("plans.planViewer.pressAndHoldToDropAPin")
+                .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textTertiary)
         }
         .sheet(item: $selectedPin) { pin in

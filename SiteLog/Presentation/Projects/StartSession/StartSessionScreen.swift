@@ -9,66 +9,71 @@ struct StartSessionScreen: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var inspector = FakeData.inspector
-    @State private var weather = "Sunny"
+    @State private var weather = "projects.startSession.weather.sunny"
     @State private var note = ""
 
-    private let weatherOptions: [(title: String, icon: String)] = [
-        ("Sunny", "sun.max"),
-        ("Overcast", "cloud"),
-        ("Rain", "cloud.rain"),
+    private let weatherOptions: [(titleKey: String, icon: String)] = [
+        ("projects.startSession.weather.sunny", "sun.max"),
+        ("projects.startSession.weather.overcast", "cloud"),
+        ("projects.startSession.weather.rain", "cloud.rain"),
     ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.regular) {
-                    DSTextField("Inspector", text: $inspector)
+                VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
+                    DSTextField(
+                        String(localized: "projects.startSession.inspector"),
+                        text: $inspector
+                    )
 
-                    VStack(alignment: .leading, spacing: DSSpacing.small) {
-                        Text("Weather")
-                            .font(DSFont.footnote)
+                    VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
+                        Text("projects.startSession.weather")
+                            .modifier(DSTextStyle.footnote)
                             .foregroundStyle(DSColor.textSecondary)
-                        HStack(spacing: DSSpacing.small) {
-                            ForEach(weatherOptions, id: \.title) { option in
+                        HStack(spacing: DSSpacing.spacing8) {
+                            ForEach(weatherOptions, id: \.titleKey) { option in
                                 DSChip(
-                                    title: option.title,
+                                    title: NSLocalizedString(option.titleKey, comment: ""),
                                     systemImage: option.icon,
-                                    isSelected: weather == option.title
+                                    isSelected: weather == option.titleKey
                                 ) {
-                                    weather = option.title
+                                    weather = option.titleKey
                                 }
                             }
                         }
                     }
 
                     DSTextField(
-                        "Note for the report",
-                        placeholder: "e.g. finishing check, levels 7–9",
+                        String(localized: "projects.startSession.noteForTheReport"),
+                        placeholder: String(
+                            localized: "projects.startSession.eGFinishingCheckLevels79"
+                        ),
                         text: $note,
                         isMultiline: true
                     )
 
-                    HStack(alignment: .top, spacing: DSSpacing.small) {
+                    HStack(alignment: .top, spacing: DSSpacing.spacing8) {
                         DSStatusMarker(kind: .major)
                         Text(
-                            "14 issues from 12 Aug will be waiting in their rooms for you to re-check."
+                            "projects.startSession.14IssuesFrom12AugWillBeWaitingInTheirRoomsForYouToReCheck"
                         )
-                        .font(DSFont.subhead)
+                        .modifier(DSTextStyle.subhead)
                     }
                 }
-                .padding(DSSpacing.regular)
+                .padding(DSSpacing.spacing16)
             }
-            .navigationTitle("New walkthrough")
+            .navigationTitle("projects.startSession.newWalkthrough")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close", systemImage: "xmark") {
+                    Button("projects.startSession.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
             }
             .bottomDock {
-                Button("Start") {
+                Button("projects.startSession.start") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.primary))

@@ -15,16 +15,19 @@ struct CaptureToolbar<Left: View, Right: View>: View {
             Button(action: onCapture) {
                 Image(systemName: "camera")
                     .foregroundStyle(DSColor.onHiVis)
-                    .frame(width: DSSize.captureButton, height: DSSize.captureButton)
+                    .frame(
+                        width: DSSpacing.spacing68,
+                        height: DSSpacing.spacing68
+                    )
                     .background(DSColor.hiVis, in: Circle())
             }
-            .accessibilityLabel("Capture")
+            .accessibilityLabel("components.captureToolbar.capture")
 
             Spacer()
 
             right
         }
-        .padding()
+        .padding(DSSpacing.spacing16)
         .background(DSColor.raised)
     }
 }
@@ -37,7 +40,7 @@ struct ToolbarSideLabel: View {
         VStack {
             Image(systemName: systemImage)
             Text(title)
-                .font(DSFont.caption)
+                .modifier(DSTextStyle.caption)
         }
         .foregroundStyle(DSColor.textPrimary)
     }
@@ -48,9 +51,12 @@ struct ToolbarSideLabel: View {
         Spacer()
         CaptureToolbar {
         } left: {
-            Text("End")
+            Text("components.captureToolbar.end")
         } right: {
-            ToolbarSideLabel(systemImage: "map", title: "Plan")
+            ToolbarSideLabel(
+                systemImage: "map",
+                title: String(localized: "components.captureToolbar.plan")
+            )
         }
     }
 }

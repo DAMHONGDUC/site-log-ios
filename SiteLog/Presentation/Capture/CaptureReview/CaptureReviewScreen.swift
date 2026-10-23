@@ -9,35 +9,35 @@ struct CaptureReviewScreen: View {
     @State private var isMarkupShown = false
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: DSSpacing.spacing0) {
             SitePhoto(variant: 0, showsCrack: true)
                 .clipped()
                 .overlay(alignment: .bottomLeading) {
-                    Text("10:42:18 · SHA-256 7f3a…c91e")
-                        .font(DSFont.code)
-                        .foregroundStyle(Color.white)
-                        .padding()
+                    Text("capture.captureReview.104218Sha2567F3AC91E")
+                        .modifier(DSTextStyle.code)
+                        .foregroundStyle(DSColor.onMedia)
+                        .padding(DSSpacing.spacing16)
                 }
 
-            HStack(spacing: DSSpacing.small) {
-                Button("Retake") {
+            HStack(spacing: DSSpacing.spacing8) {
+                Button("capture.captureReview.retake") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.secondary))
 
-                Button("Mark up") {
+                Button("capture.captureReview.markUp") {
                     isMarkupShown = true
                 }
                 .buttonStyle(.sd(.secondary))
 
-                Button("Use photo") {
+                Button("capture.captureReview.usePhoto") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.primary))
             }
-            .padding(DSSpacing.regular)
+            .padding(DSSpacing.spacing16)
         }
-        .background(Color.black)
+        .background(DSColor.mediaBackdrop)
         .preferredColorScheme(.dark)
         .fullScreenCover(isPresented: $isMarkupShown) {
             MarkupEditorScreen()

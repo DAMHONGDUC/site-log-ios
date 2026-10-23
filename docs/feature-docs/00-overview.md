@@ -5,6 +5,11 @@
 - Product, market, data model, architecture, data flows, infrastructure, conventions.
 - Feature specs live in five files ([§8](#8-feature-specs)); spec numbers `01`–`19` are stable and
   used by [ROADMAP.md](../../ROADMAP.md), which also owns the build order.
+- This is the approved target design, not a claim that every feature or dependency is implemented.
+  `project.yml` and source files show the current implementation; feature guides show the build steps.
+- **Suggested reading order:** read this overview first, then the feature spec you need, then its
+  matching guide in `docs/feature-guide/`. A *specification* describes intended behavior; a *guide*
+  walks through implementation steps.
 
 </dd></dl>
 
@@ -21,6 +26,30 @@
 7. [Conventions](#7-conventions)
 8. [Feature specs](#8-feature-specs)
 9. [Decisions](#9-decisions) — D01–D20, why each library, engine and package split
+10. [Beginner glossary](#beginner-glossary) — common SwiftUI and architecture terms
+
+</dd></dl>
+
+## Beginner glossary
+
+<dl><dd>
+
+| Term | Meaning | Short example |
+|---|---|---|
+| Feature | One user task and the code that supports it | Projects: create and browse projects |
+| View | A SwiftUI value that describes what appears on screen | `Text("projects.projectList.projects")` |
+| ViewModel | An object that prepares screen state and handles user actions | A project list model loads rows for a screen |
+| MVVM | Model–View–ViewModel, a pattern that keeps screen state and actions outside layout code | The View draws project rows; its ViewModel loads them |
+| Clean Architecture | A way to keep business rules independent from screens and storage | A use case can work without SwiftUI |
+| Swift package | A reusable module with its own source and dependencies | `DesignSystem` is a package the app imports |
+| `@State` | SwiftUI storage for a value owned by one View | A selected tab stays in that screen |
+| Use case | One named action the app can perform | `CreateProjectUseCase` creates one project |
+| Repository | A boundary for reading and writing app data | `ProjectRepository` stores projects |
+| Dependency injection (DI) | Supplying an object its collaborators from outside | Pass a use case into a ViewModel's `init` |
+| Entity | A business concept that does not depend on storage or UI | `Project` |
+| DTO | A data-transfer object used at a system boundary | JSON received from a server |
+| Actor | A Swift type that protects mutable state across concurrent tasks | An upload actor serializes upload changes |
+| Localization key | A stable identifier whose visible text is translated by the app | `projects.projectList.projects` → “Projects” |
 
 </dd></dl>
 
@@ -91,6 +120,9 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
 | Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
 
+- This table records the selected target stack. A dependency is part of the app only after it appears
+  in [`project.yml`](../../project.yml).
+
 </dd></dl>
 
 ### 1.4 Non-goals
@@ -134,7 +166,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Edge | Why it matters | Answer |
 |---|---|---|
 | Verifiable capture | `Date()` is spoofable from Settings, breaking chain of custody | Wall clock + monotonic uptime + server offset, printed `timeConfidence`, server verification code ([12](01-field-work.md#12-annotation-and-verifiable-stamps)) |
-| Vietnamese handover | Signed two-party record has legal standing; buyers sign only after every defect is re-inspected; room-by-room | Signature page, before/after loop ([03](01-field-work.md#03-issues-and-before-after-pairing)), checklists are load-bearing |
+| Vietnamese handover | A signed two-party record documents acceptance; the legal effect depends on the local process | Signature page, before/after loop ([03](01-field-work.md#03-issues-and-before-after-pairing)), checklists are load-bearing |
 
 </dd></dl>
 
@@ -208,6 +240,8 @@ Project
 
 <dl><dd>
 
+- The layout and flows below describe the target architecture. Create folders with their first source
+  file; do not treat an empty directory in this diagram as an implemented feature.
 - Clean Architecture: dependencies point inward to `DomainLayer`.
 - Layers are local Swift packages in `Packages/`; the app target holds `App/` and `Presentation/`.
 - `SiteLog/App/` is the only place that wires layers together.
@@ -242,12 +276,13 @@ site-log-ios/
 │   │   ├── Startup/                  # guarded startup steps (Steps/ per step)
 │   │   ├── Config/                   # *.xcconfig, entitlements
 │   │   ├── Fakes/                    # UI skeleton sample data; shrinks as each feature lands
-│   │   └── Resources/                # Assets.xcassets, localization, seeded templates
+│   │   └── Resources/                # Assets.xcassets and seeded templates
 │   └── Presentation/                 # View + ViewModel
 │       ├── Navigation/               # NavigationCoordinator, CoordinatedStack, appDestinations()
 │       ├── Root/                     # RootView + RootViewModel: startup → access → main tabs
 │       ├── Access/                   # Splash/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
 │       ├── MainTab/
+│       ├── Resources/Strings/         # Localizable.xcstrings; centralized presentation text keys
 │       └── <Feature>/                # <Feature>Route.swift + 2+ screens → one subfolder per screen
 ├── Packages/                         # local Swift packages; each has Sources/<Name>/ and Tests/<Name>Tests/
 │   ├── DomainLayer/                  # Entities/<Feature>/ Repositories/ (all boundary protocols) UseCases/<Feature>/ — Foundation only
@@ -274,7 +309,8 @@ site-log-ios/
 └── project.yml                       # XcodeGen
 ```
 
-- The folder skeleton exists from the start; empty folders hold a `.gitkeep` (excluded from the app build in `project.yml`; SwiftPM ignores hidden files).
+- Add package folders as their first files are implemented. When a `.gitkeep` is needed to retain an
+  empty app folder, `project.yml` excludes it from the build.
 - Why packages: [D09](#d09--layers-as-local-swift-packages); what goes in data sources vs PlatformKit: [D11](#d11--data-sources-in-datalayer-platformkit-for-system-services).
 
 </dd></dl>
@@ -289,7 +325,7 @@ site-log-ios/
 | Domain | `Packages/DomainLayer` | `Foundation` only |
 | Data | `Packages/DataLayer` (`Repositories/`, `DataSources/Local/`, `DataSources/Remote/`, `Models/Local/`, `Models/Remote/`, `Mappers/`) | `DomainLayer`, `PlatformKit`, `Core` |
 | PlatformKit | `Packages/PlatformKit` (`Sources/PlatformKit/<Name>/`): system services and standalone engines on system APIs | `Core`, Apple frameworks, SDKs; never `DomainLayer`, `DataLayer` or app code |
-| DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI only; never `DomainLayer` or app code |
+| DesignSystem | `Packages/DesignSystem` (Swift package) | SwiftUI + UIKit (`UIColor` provides dynamic light/dark colors); never `DomainLayer` or app code |
 | Core | `Packages/Core` (`Logger/`, `Clock/`, `Crypto/`) | `Foundation`, `os`, `CommonCrypto` / `CryptoKit`; used by every layer except `DomainLayer` and `DesignSystem` |
 | Composition root | `SiteLog/App/` (`DI/`, `Startup/`, `Config/`, `Fakes/`, `Resources/`) | Everything, plus `FactoryKit` |
 
@@ -307,7 +343,7 @@ site-log-ios/
 | Each data source and each PlatformKit folder ships a protocol next to its real type; repositories hold the protocol | Review |
 | A data source folder holds only data source protocols and their `Impl`s; helpers go to `Core/`, SwiftData schema to `Models/Local/Schema/` | Review |
 | Data sources and PlatformKit take their configuration (base URL, bucket) through `init`; they never read `AppConfig` | Review |
-| Data sources never use repositories or each other; a store may implement an PlatformKit protocol (`Local/Persistence/UploadStoreImpl` → `PlatformKit/UploadKit`) | Review |
+| Data sources never use repositories or each other; a store may implement a PlatformKit protocol (`Local/Persistence/UploadStoreImpl` → `PlatformKit/UploadKit`) | Review |
 | PlatformKit holds system services and standalone engines on system APIs; reading or writing app data is a data source | Review |
 | PlatformKit is a library ([D16](#d16--platformkit-is-a-library-not-a-ring)): no Domain or Data types, no business rules; it may know the external formats it speaks (backend messages, BLE profiles, PDF layout) | CI `check-imports.sh` (no `DomainLayer` / `DataLayer` import) + review |
 | Only `DataLayer` wraps PlatformKit for the app: it holds the PlatformKit protocol, maps its records and errors to entities and Domain errors | Review |
@@ -351,33 +387,58 @@ site-log-ios/
 - `DomainLayer`, `DataLayer` and `PlatformKit` never import `FactoryKit` (their packages do not depend on it).
 
 ```swift
-// App/DI/RepositoriesDI.swift
-extension Container {
-    var projectRepository: Factory<any ProjectRepository> {
-        self { ProjectRepositoryImpl(container: self.modelContainer()) }.singleton
+import DesignSystem
+import Inject
+import SwiftUI
+
+struct SplashScreen: View {
+    @ObserveInjection var inject
+
+    let viewModel: SplashViewModel
+
+    var body: some View {
+        Group {
+            switch viewModel.state {
+            case .running:
+                VStack(spacing: DSSpacing.spacing8) {
+                    Image(systemName: "hammer")
+                        .modifier(DSTextStyle.iconLarge)
+                    ProgressView()
+                }
+
+            case .failed:
+                VStack(spacing: DSSpacing.spacing8) {
+                    Text("access.splash.error")
+                        .modifier(DSTextStyle.body)
+                    Button("access.splash.tryAgain") {
+                        Task {
+                            await viewModel.onAppear()
+                        }
+                    }
+                    .modifier(DSTextStyle.headline)
+                    .buttonStyle(.borderedProminent)
+                }
+
+            case .ready:
+                VStack(spacing: DSSpacing.spacing8) {
+                    Text("access.splash.ready")
+                        .modifier(DSTextStyle.body)
+                }
+            }
+        }
+        .task {
+            await viewModel.onAppear()
+        }
+        .enableInjection()
     }
 }
 
-// App/DI/UseCasesDI.swift
-extension Container {
-    var createProject: Factory<CreateProjectUseCase> {
-        self { CreateProjectUseCase(repository: self.projectRepository()) }
-    }
+#Preview {
+    SplashScreen(viewModel: SplashViewModel())
 }
-
-@MainActor @Observable
-final class ProjectListViewModel {
-    // No FactoryKit here: the use case comes in through init
-    private let createProject: CreateProjectUseCase
-
-    init(createProject: CreateProjectUseCase) {
-        self.createProject = createProject
-    }
-}
-
-// The view builds its view model from the container
-@State private var viewModel = ProjectListViewModel(createProject: Container.shared.createProject())
 ```
+
+This is the current splash screen pattern: the View receives its ViewModel through `init`, renders its state, and starts async work with `.task`. Real feature screens receive use cases through their ViewModel initializer; `Container.shared` is resolved at the composition boundary ([D14](#d14--view-models-take-use-cases-through-init)).
 
 | Rule | Detail |
 |---|---|
@@ -493,7 +554,8 @@ final class ProjectListViewModel {
 | `<tmp>/upload-parts/` | `.completeUnlessOpen` | No |
 | SwiftData store | `.complete` | Metadata |
 
-- Nothing backed up to iCloud (`isExcludedFromBackup`); R2 is the source of truth.
+- Media is excluded from iCloud backup (`isExcludedFromBackup`). R2 holds the remote media copy; the
+  local store remains authoritative for local app state.
 - The DB stores relative paths.
 
 </dd></dl>
@@ -504,11 +566,12 @@ final class ProjectListViewModel {
 
 | Item | Where | Committed |
 |---|---|---|
-| `GoogleService-Info.plist` | `SiteLog/App/Config/` | No — CI writes it from a secret |
-| Backend URL, bucket, feature flags | `*.xcconfig` per environment → `AppConfig` | `.example` only |
-| R2 access keys | Backend only | Never in the app |
+| `project.yml` | Repository root | Yes; current XcodeGen source of truth |
+| `GoogleService-Info.plist`, environment `.xcconfig` files, backend URL and bucket | Planned under `SiteLog/App/Config/` | Keep secrets out of Git; add CI injection when Firebase/backend integration is implemented |
+| R2 access keys | Backend configuration | Never in the app; backend is specified in [03-backend.md](03-backend.md) |
 
-- Schemes: `SiteLog-Debug`, `SiteLog-Staging`, `SiteLog-Release`. CI: [17](05-platform.md#17-cicd-and-testflight).
+- Current project has one `SiteLog` scheme with Debug and Release configurations. Additional
+  environments and schemes are future work; CI status is in [17](05-platform.md#17-cicd-and-testflight).
 
 </dd></dl>
 
@@ -522,11 +585,15 @@ final class ProjectListViewModel {
 |---|---|
 | Layers | Dependencies point inward; `DomainLayer` imports no frameworks |
 | Dependencies | Only well-known packages SwiftUI developers commonly use: mature, widely adopted, actively maintained, listed on [Swift Package Index](https://swiftpackageindex.com); prefer Apple frameworks; add via `project.yml`; record the choice in [§9 Decisions](#9-decisions) |
-| Constants | In dedicated `enum`s; spacing/color/type via `DesignSystem` |
+| Constants | In dedicated `enum`s; spacing via `DSSpacing`, typography via `DSTextStyle`, and color via `DSColor` in `DesignSystem` |
+| User-facing text | Keep keys and translations in `SiteLog/Presentation/Resources/Strings/Localizable.xcstrings`; use keys from Presentation, never user-facing literals in Domain or Data |
+| Text keys | Name keys by feature and meaning, such as `access.signIn.continueOffline`; keep translated values in the catalog and do not build sentences by concatenating localized fragments. When a DesignSystem component accepts `String`, pass `String(localized: "feature.screen.component")` so it receives translated text |
+| Current catalog status | UI text keys live in `SiteLog/Presentation/Resources/Strings/Localizable.xcstrings`; add each key there with its default-language value before using it |
+| Examples | Keep code snippets short, use explicit types, and explain one idea at a time; label pseudocode and target contracts so readers do not mistake them for current, runnable code |
 | Logging | Every action logs with data, successes included: `"Upload failed — {captureId, part: 3/12, status: 503}"` |
 | Errors | Log `String(reflecting:)`; catch broad; **no `print`**; which layer catches: [§4.6](#46-error-handling) |
 | Startup | Each step guarded; crash reporting first |
-| Size | Extract at ~80 lines; variants are parameters |
+| SwiftUI body size | Extract subviews when `body` exceeds ~50 lines; see [SwiftUI rules](../swiftui-rules.md) |
 | Views | No business logic; view models orchestrate |
 | Style | Explicit types, `let` by default |
 | Existentials | A protocol used as a type is written `any P` (`any AccessRepository`); `some P` or a generic when one concrete type is fixed at build |
@@ -557,6 +624,7 @@ final class ProjectListViewModel {
 - Clean build, zero warnings; scoped tests pass.
 - Diff reviewed for literals, hard-coded user strings, unlogged `catch`, cross-boundary imports.
 - No secret in the diff or logs.
+- Every user-facing string uses a key from the centralized String Catalog; keep dynamic values as arguments, not concatenated text.
 
 **Adding a feature**
 
@@ -716,7 +784,7 @@ final class ProjectListViewModel {
 | Starscream / Socket.IO | `URLSessionWebSocketTask` covers it; no extra dependency |
 
 - **Consequences:**
-  - App must build and pass tests with `Realtime` removed (nightly CI).
+  - Target check: the app should build and pass its scoped tests with `Realtime` removed. No nightly CI job is configured yet.
   - Backend serves the channel from the same process, fanned out by `pg_notify`.
 
 </dd></dl>

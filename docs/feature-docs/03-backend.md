@@ -5,6 +5,10 @@
 - Directory: `Backend/` · Node.js + TypeScript ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync)).
 - Signs URLs, owns **all** application data, pushes state. Firebase: identity and crash reporting only.
 - Client side: [02-upload-sync.md](02-upload-sync.md).
+- This is the backend target specification. The `Backend/` directory and backend service are not
+  implemented yet; treat endpoint and schema examples as design contracts.
+
+> Code blocks below are endpoint or schema sketches, not standalone TypeScript modules; imports and neighboring service types are omitted.
 
 </dd></dl>
 
@@ -25,6 +29,20 @@
 11. [Operations](#11-operations)
 12. [Done and tests](#12-done-and-tests)
 
+- [Beginner terms](#beginner-terms)
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **Backend:** the server that verifies requests and coordinates shared data. Example: it checks a sign-in token before issuing an upload URL.
+- **Endpoint:** one named server operation. Example: `POST /uploads` starts an upload.
+- **Migration:** a versioned database change. Example: add a column while preserving existing rows.
+- **Parameterized SQL:** a query where values are passed separately from SQL text, which helps prevent injection.
+- **MiB:** 1,048,576 bytes. It is different from decimal MB, which is 1,000,000 bytes.
+
 </dd></dl>
 
 ## 1. Role
@@ -39,7 +57,7 @@
 | Record job state, countersign capture hashes | Authenticate users itself |
 | Serve the WebSocket channel, resolve verification codes, delete accounts | |
 
-- Expect ~1800–2500 lines of TypeScript.
+- Keep the implementation split by responsibility; line count is not a completion target.
 
 </dd></dl>
 
@@ -79,7 +97,7 @@
 | 9 | `GET` | `/health` | none | Liveness |
 | — | `WS` | `/ws` | first message | Progress channel |
 
-- Single-PUT threshold 5 MB and part size 8 MB **must match the client** (config on both sides).
+- Single-PUT threshold 5 MiB and part size 8 MiB **must match the client** (config on both sides).
 - Presign TTL 1 h; longer TTLs are not a fix — refresh is.
 - `HeadObject` on `complete` stops a client registering a code for an object it never uploaded.
 - `/verify` returns `{sha256, byteSize, receivedAt, verified, verifiedAt, projectRef}` — never media,
@@ -224,9 +242,9 @@ sequenceDiagram
     participant App as iOS
     participant BE as Backend
     participant R2 as R2
-    App->>BE: POST /uploads {byteSize 240 MB}
+    App->>BE: POST /uploads {byteSize 240 MiB}
     BE->>R2: CreateMultipartUpload
-    BE-->>App: multipart, 30 × 8 MB parts
+    BE-->>App: multipart, 30 × 8 MiB parts
     loop parts 1..12
         App->>R2: PUT part → 200 + ETag
     end

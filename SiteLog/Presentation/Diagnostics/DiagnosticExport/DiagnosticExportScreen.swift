@@ -10,53 +10,68 @@ struct DiagnosticExportScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    HStack(spacing: DSSpacing.small) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    HStack(spacing: DSSpacing.spacing8) {
                         DSStatusMarker(kind: .resolved)
-                        Text("All 1,284 photos check out")
-                            .font(DSFont.headline)
+                        Text("diagnostics.diagnosticExport.all1284PhotosCheckOut")
+                            .modifier(DSTextStyle.headline)
                     }
-                    Text("Fingerprints match, nothing changed since capture. Checked 9:02.")
-                        .font(DSFont.subhead)
-                        .foregroundStyle(DSColor.textSecondary)
-                        .padding(.leading)
+                    Text(
+                        "diagnostics.diagnosticExport.fingerprintsMatchNothingChangedSinceCaptureChecked902"
+                    )
+                    .modifier(DSTextStyle.subhead)
+                    .foregroundStyle(DSColor.textSecondary)
+                    .padding(.leading)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
-                    Text("Storage")
-                        .font(DSFont.section)
+                VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
+                    Text("diagnostics.diagnosticExport.storage")
+                        .modifier(DSTextStyle.section)
                     storageBar
-                    Text("4.1 GB waiting to upload · 1.6 GB already backed up · 12 GB free")
-                        .font(DSFont.footnote)
-                        .foregroundStyle(DSColor.textSecondary)
+                    Text(
+                        "diagnostics.diagnosticExport.41GbWaitingToUpload16GbAlreadyBackedUp12GbFree"
+                    )
+                    .modifier(DSTextStyle.footnote)
+                    .foregroundStyle(DSColor.textSecondary)
                 }
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "This iPhone")
-                    DSListRow(title: "Background uploads", value: "On")
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(
+                        title: String(localized: "diagnostics.diagnosticExport.thisIphone")
+                    )
+                    DSListRow(
+                        title: String(localized: "diagnostics.diagnosticExport.backgroundUploads"),
+                        value: String(localized: "diagnostics.diagnosticExport.on")
+                    )
                     DSDivider()
-                    DSListRow(title: "Low Power Mode", value: "Off")
+                    DSListRow(
+                        title: String(localized: "diagnostics.diagnosticExport.lowPowerMode"),
+                        value: String(localized: "diagnostics.diagnosticExport.off")
+                    )
                     DSDivider()
-                    DSListRow(title: "Live progress", value: "Polling")
+                    DSListRow(
+                        title: String(localized: "diagnostics.diagnosticExport.liveProgress"),
+                        value: String(localized: "diagnostics.diagnosticExport.polling")
+                    )
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Diagnostics")
+        .navigationTitle("diagnostics.diagnosticExport.diagnostics")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            Button("Free up 1.6 GB") {
+            Button("diagnostics.diagnosticExport.freeUp16Gb") {
                 coordinator.push(SettingsRoute.storageCleanup)
             }
             .buttonStyle(.sd(.secondary))
 
             ShareLink(item: "sitelog-diagnostics.zip") {
-                Text("Send diagnostics to support")
+                Text("diagnostics.diagnosticExport.sendDiagnosticsToSupport")
             }
             .buttonStyle(.sd(.ghost))
         }

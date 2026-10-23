@@ -11,27 +11,27 @@ struct EndSessionScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                VStack(alignment: .leading, spacing: DSSpacing.small) {
-                    Text("Tue 30 Sep · 8:12 to 14:00")
-                        .font(DSFont.footnote)
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
+                    Text("projects.endSession.tue30Sep812To1400")
+                        .modifier(DSTextStyle.footnote)
                         .foregroundStyle(DSColor.textSecondary)
-                    Text("All 82 rooms checked in just under six hours.")
-                        .font(.title.bold())
+                    Text("projects.endSession.all82RoomsCheckedInJustUnderSixHours")
+                        .modifier(DSTextStyle.pageTitle)
                 }
                 .padding(.top)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
-                Text(
-                    "You took \(Text("112 photos").bold()), logged \(Text("7 new issues").bold()) and closed \(Text("9").bold()) from last time."
-                )
-                .font(DSFont.body)
-                .padding(.horizontal, DSSpacing.regular)
+                Text("projects.endSession.summary")
+                    .modifier(DSTextStyle.body)
+                    .padding(.horizontal, DSSpacing.spacing16)
 
-                VStack(spacing: 0) {
+                VStack(spacing: DSSpacing.spacing0) {
                     DSListRow(
-                        title: "Every photo is fingerprinted",
-                        subtitle: "Nothing was edited after capture"
+                        title: String(localized: "projects.endSession.everyPhotoIsFingerprinted"),
+                        subtitle: String(
+                            localized: "projects.endSession.nothingWasEditedAfterCapture"
+                        )
                     ) {
                         Image(systemName: "checkmark.shield")
                             .foregroundStyle(DSColor.success)
@@ -41,8 +41,10 @@ struct EndSessionScreen: View {
                         coordinator.push(UploadsRoute.status)
                     } label: {
                         DSListRow(
-                            title: "Uploading 87 of 112",
-                            subtitle: "Keeps going if you close the app"
+                            title: String(localized: "projects.endSession.uploading87Of112"),
+                            subtitle: String(
+                                localized: "projects.endSession.keepsGoingIfYouCloseTheApp"
+                            )
                         ) {
                             Image(systemName: "arrow.triangle.2.circlepath")
                                 .foregroundStyle(DSColor.textSecondary)
@@ -55,12 +57,12 @@ struct EndSessionScreen: View {
         .background(DSColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("Make the report") {
+            Button("projects.endSession.makeTheReport") {
                 coordinator.push(ReportsRoute.builder)
             }
             .buttonStyle(.sd(.primary))
 
-            Button("Later") {
+            Button("projects.endSession.later") {
                 dismiss()
             }
             .buttonStyle(.sd(.ghost))

@@ -15,8 +15,13 @@ struct VerificationCameraScreen: View {
     @State private var isOutcomeShown = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            CameraTopBar(title: "Re-check #\(issue.number)") {
+        VStack(spacing: DSSpacing.spacing0) {
+            CameraTopBar(
+                title: String.localizedStringWithFormat(
+                    String(localized: "issues.verificationCamera.title"),
+                    issue.number
+                )
+            ) {
                 dismiss()
             }
 
@@ -27,12 +32,15 @@ struct VerificationCameraScreen: View {
             } onThumbnail: {
                 isOutcomeShown = true
             } side: {
-                CameraSideButton(systemImage: "square.3.layers.3d", title: "Ghost") {
+                CameraSideButton(
+                    systemImage: "square.3.layers.3d",
+                    title: String(localized: "issues.verificationCamera.ghost")
+                ) {
                     ghostOpacity = ghostOpacity > 0 ? 0 : 0.3
                 }
             }
         }
-        .background(Color.black)
+        .background(DSColor.mediaBackdrop)
         .preferredColorScheme(.dark)
         .fullScreenCover(isPresented: $isOutcomeShown) {
             NavigationStack {
@@ -51,19 +59,24 @@ struct VerificationCameraScreen: View {
             }
             .overlay(alignment: .top) {
                 ghostCard
-                    .padding(DSSpacing.regular)
+                    .padding(DSSpacing.spacing16)
             }
             .clipped()
     }
 
     private var ghostCard: some View {
-        VStack(spacing: DSSpacing.small) {
-            Text("Line up with 12 Aug · \(Int(ghostOpacity * 100))%")
+        VStack(spacing: DSSpacing.spacing8) {
+            Text(
+                String.localizedStringWithFormat(
+                    String(localized: "issues.verificationCamera.ghostOpacity"),
+                    Int(ghostOpacity * 100)
+                )
+            )
             Slider(value: $ghostOpacity, in: 0...1)
         }
-        .foregroundStyle(Color.white)
+        .foregroundStyle(DSColor.onMedia)
         .padding(.vertical)
-        .background(Color.black)
+        .background(DSColor.mediaBackdrop)
     }
 }
 

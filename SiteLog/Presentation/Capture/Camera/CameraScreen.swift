@@ -15,7 +15,7 @@ struct CameraScreen: View {
     @State private var isIssueSheetShown = false
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: DSSpacing.spacing0) {
             CameraTopBar(title: roomName) {
                 dismiss()
             }
@@ -27,12 +27,15 @@ struct CameraScreen: View {
             } onThumbnail: {
                 isReviewShown = true
             } side: {
-                CameraSideButton(systemImage: "exclamationmark.triangle", title: "Issue") {
+                CameraSideButton(
+                    systemImage: "exclamationmark.triangle",
+                    title: String(localized: "capture.camera.issue")
+                ) {
                     isIssueSheetShown = true
                 }
             }
         }
-        .background(Color.black)
+        .background(DSColor.mediaBackdrop)
         .preferredColorScheme(.dark)
         .sheet(isPresented: $isIssueSheetShown) {
             IssueSheetScreen()
@@ -47,16 +50,16 @@ struct CameraScreen: View {
         SitePhoto(variant: 0, showsCrack: true)
             .overlay(alignment: .topLeading) {
                 laserReading
-                    .padding(DSSpacing.regular)
+                    .padding(DSSpacing.spacing16)
             }
             .clipped()
     }
 
     private var laserReading: some View {
-        Text("3.42 m · DISTO")
-            .foregroundStyle(Color.white)
-            .padding(DSSpacing.small)
-            .background(Color.black)
+        Text("capture.camera.342MDisto")
+            .foregroundStyle(DSColor.onMedia)
+            .padding(DSSpacing.spacing8)
+            .background(DSColor.mediaBackdrop)
     }
 }
 

@@ -12,25 +12,25 @@ struct ProjectListScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 liveSessionPanel
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
 
                 projectsSection
 
-                Text("Saved on this iPhone · synced at 8:47")
-                    .font(DSFont.footnote)
+                Text("projects.projectList.savedOnThisIphoneSyncedAt847")
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textTertiary)
                     .frame(maxWidth: .infinity)
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Projects")
+        .navigationTitle("projects.projectList.projects")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button("Search", systemImage: "magnifyingglass") {}
-                Button("New project", systemImage: "plus") {
+                Button("projects.projectList.search", systemImage: "magnifyingglass") {}
+                Button("projects.projectList.newProject", systemImage: "plus") {
                     isNewProjectShown = true
                 }
             }
@@ -42,43 +42,43 @@ struct ProjectListScreen: View {
     }
 
     private var liveSessionPanel: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.medium) {
-            HStack(spacing: DSSpacing.small) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing12) {
+            HStack(spacing: DSSpacing.spacing8) {
                 DSLiveDot()
-                Text("Walkthrough in progress · since 8:12")
-                    .font(DSFont.footnote)
+                Text("projects.projectList.walkthroughInProgressSince812")
+                    .modifier(DSTextStyle.footnote)
             }
 
             VStack(alignment: .leading) {
-                Text("Riverside Tower B")
-                    .font(DSFont.headline)
-                Text("Level 7 · 37 of 82 rooms")
-                    .font(DSFont.subhead)
+                Text("projects.projectList.riversideTowerB")
+                    .modifier(DSTextStyle.headline)
+                Text("projects.projectList.level737Of82Rooms")
+                    .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
             }
 
             DSProgressBar(value: 37.0 / 82.0)
 
             HStack {
-                Text("46 photos, 7 new issues")
-                    .font(DSFont.footnote)
+                Text("projects.projectList.46Photos7NewIssues")
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                 Spacer()
-                Button("Resume") {
+                Button("projects.projectList.resume") {
                     coordinator.push(ProjectsRoute.survey)
                 }
                 .buttonStyle(.sd(.primary, small: true))
             }
         }
-        .padding(DSSpacing.regular)
-        .background(DSColor.fill, in: RoundedRectangle(cornerRadius: 14))
+        .padding(DSSpacing.spacing16)
+        .background(DSColor.fill, in: RoundedRectangle(cornerRadius: DSSpacing.spacing14))
     }
 
     private var projectsSection: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-            DSSectionHeader(title: "All projects")
+        VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+            DSSectionHeader(title: String(localized: "projects.projectList.allProjects"))
 
-            VStack(spacing: 0) {
+            VStack(spacing: DSSpacing.spacing0) {
                 ForEach(FakeData.projects) { project in
                     Button {
                         coordinator.push(ProjectsRoute.detail(projectID: project.id))
@@ -96,7 +96,11 @@ struct ProjectListScreen: View {
                     DSDivider()
                 }
 
-                DSListRow(title: "Archived", value: "2", showsChevron: true) {
+                DSListRow(
+                    title: String(localized: "projects.projectList.archived"),
+                    value: String(localized: "projects.projectList.2"),
+                    showsChevron: true
+                ) {
                     Image(systemName: "archivebox")
                         .foregroundStyle(DSColor.textTertiary)
                 }

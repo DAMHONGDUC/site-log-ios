@@ -12,13 +12,15 @@ struct SettingsScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 Button {
                     coordinator.push(SettingsRoute.account)
                 } label: {
                     DSListRow(
                         title: FakeData.inspector,
-                        subtitle: "Synced 2 minutes ago · iPhone and iPad",
+                        subtitle: String(
+                            localized: "settings.settings.synced2MinutesAgoIphoneAndIpad"
+                        ),
                         showsChevron: true
                     ) {
                         avatar
@@ -26,35 +28,58 @@ struct SettingsScreen: View {
                 }
                 .buttonStyle(.plain)
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "On site")
-                    link("Laser meter", value: "DISTO D2", to: SettingsRoute.devices)
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: String(localized: "settings.settings.onSite"))
+                    link(
+                        NSLocalizedString("settings.settings.laserMeter", comment: ""),
+                        value: "DISTO D2",
+                        to: SettingsRoute.devices
+                    )
                     DSDivider()
-                    link("Quick phrases", value: "18", to: SettingsRoute.quickPhrases)
+                    link(
+                        NSLocalizedString("settings.settings.quickPhrases", comment: ""),
+                        value: "18",
+                        to: SettingsRoute.quickPhrases
+                    )
                     DSDivider()
-                    link("Report letterhead", value: nil, to: ReportsRoute.branding)
+                    link(
+                        NSLocalizedString("settings.settings.reportLetterhead", comment: ""),
+                        value: nil,
+                        to: ReportsRoute.branding
+                    )
                 }
 
-                VStack(alignment: .leading, spacing: DSSpacing.tiny) {
-                    DSSectionHeader(title: "Privacy")
-                    link("App lock", value: "Face ID · 5 min", to: SettingsRoute.appLock)
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: String(localized: "settings.settings.privacy"))
+                    link(
+                        NSLocalizedString("settings.settings.appLock", comment: ""),
+                        value: NSLocalizedString(
+                            "settings.settings.faceIdFiveMinutes",
+                            comment: ""
+                        ),
+                        to: SettingsRoute.appLock
+                    )
                 }
 
-                VStack(spacing: 0) {
-                    link("Diagnostics", value: nil, to: DiagnosticsRoute.export)
+                VStack(spacing: DSSpacing.spacing0) {
+                    link(
+                        NSLocalizedString("settings.settings.diagnostics", comment: ""),
+                        value: nil,
+                        to: DiagnosticsRoute.export
+                    )
                     DSDivider()
                     Button {
                         isDeleteAlertShown = true
                     } label: {
-                        Text("Delete account")
-                            .font(DSFont.body)
+                        Text("settings.settings.deleteAccount")
+                            .modifier(DSTextStyle.body)
                             .foregroundStyle(DSColor.critical)
                             .frame(
                                 maxWidth: .infinity,
-                                minHeight: DSSize.rowMinHeight,
+                                minHeight: DSSpacing.spacing52,
                                 alignment: .leading
                             )
-                            .padding(.horizontal, DSSpacing.regular)
+                            .padding(.horizontal, DSSpacing.spacing16)
                     }
                 }
 
@@ -62,16 +87,16 @@ struct SettingsScreen: View {
                     DevMenuSection()
                 #endif
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Settings")
-        .alert("Delete your account?", isPresented: $isDeleteAlertShown) {
-            Button("Delete Account", role: .destructive) {}
-            Button("Cancel", role: .cancel) {}
+        .navigationTitle("settings.settings.settings")
+        .alert("settings.settings.deleteYourAccount", isPresented: $isDeleteAlertShown) {
+            Button("settings.settings.deleteAccount2", role: .destructive) {}
+            Button("settings.settings.cancel", role: .cancel) {}
         } message: {
             Text(
-                "We’ll remove the cloud copies of 3 projects and 1,284 photos within 30 days. What’s on this iPhone stays until you delete the app."
+                "settings.settings.weLlRemoveTheCloudCopiesOf3ProjectsAnd1284PhotosWithin30DaysWhatSOnThisIphoneStaysUntilYouDeleteTheApp"
             )
         }
         .enableInjection()
@@ -79,7 +104,7 @@ struct SettingsScreen: View {
 
     private var avatar: some View {
         Image(systemName: "person.crop.circle.fill")
-            .font(DSFont.largeTitle)
+            .modifier(DSTextStyle.largeTitle)
             .foregroundStyle(DSColor.textTertiary)
     }
 
@@ -97,14 +122,14 @@ struct SettingsScreen: View {
 struct QuickPhrasesScreen: View {
     var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
+            VStack(spacing: DSSpacing.spacing0) {
                 ForEach(FakeData.quickPhrases, id: \.self) { phrase in
                     DSListRow(title: phrase)
                     DSDivider()
                 }
             }
         }
-        .navigationTitle("Quick phrases")
+        .navigationTitle("settings.settings.quickPhrases")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

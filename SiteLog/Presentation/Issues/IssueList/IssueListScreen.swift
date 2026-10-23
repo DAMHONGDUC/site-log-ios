@@ -9,34 +9,36 @@ struct IssueListScreen: View {
     @Environment(\.coordinator) private var coordinator
 
     enum Filter: String, CaseIterable {
-        case open = "Open"
-        case closed = "Closed"
-        case all = "All"
+        case open = "issues.filter.open"
+        case closed = "issues.filter.closed"
+        case all = "issues.filter.all"
     }
 
     @State private var filter: Filter = .open
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.large) {
-                Text("Riverside Tower B")
-                    .font(DSFont.subhead)
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                Text("issues.issueList.riversideTowerB")
+                    .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
-                    .padding(.horizontal, DSSpacing.regular)
+                    .padding(.horizontal, DSSpacing.spacing16)
 
-                Picker("Filter", selection: $filter) {
+                Picker("issues.issueList.filter", selection: $filter) {
                     ForEach(Filter.allCases, id: \.self) { item in
-                        Text(item.rawValue).tag(item)
+                        Text(NSLocalizedString(item.rawValue, comment: "")).tag(item)
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, DSSpacing.regular)
+                .padding(.horizontal, DSSpacing.spacing16)
 
                 if visibleIssues.isEmpty {
                     DSEmptyState(
                         systemImage: "checkmark.circle",
-                        title: "Nothing here",
-                        message: "Issues you log on site show up in this list."
+                        title: String(localized: "issues.issueList.nothingHere"),
+                        message: String(
+                            localized: "issues.issueList.issuesYouLogOnSiteShowUpInThisList"
+                        )
                     )
                     .frame(maxWidth: .infinity)
                 } else {
@@ -45,14 +47,14 @@ struct IssueListScreen: View {
                     }
                 }
             }
-            .padding(.vertical, DSSpacing.small)
+            .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("Issues")
+        .navigationTitle("issues.issueList.issues")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button("Search", systemImage: "magnifyingglass") {}
-                Button("Filter", systemImage: "line.3.horizontal.decrease") {}
+                Button("issues.issueList.search", systemImage: "magnifyingglass") {}
+                Button("issues.issueList.filter2", systemImage: "line.3.horizontal.decrease") {}
             }
         }
         .enableInjection()
@@ -81,7 +83,7 @@ struct IssueListScreen: View {
     private func levelSection(_ level: String) -> some View {
         let issues = visibleIssues.filter { $0.level == level }
 
-        return VStack(alignment: .leading, spacing: DSSpacing.tiny) {
+        return VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
             DSSectionHeader(title: level, trailing: "\(issues.count) open")
 
             ForEach(issues) { issue in
@@ -109,7 +111,7 @@ struct IssueRow: View {
                 DSStatusMarker(kind: issue.isOpen ? issue.severity : .resolved, text: severityText)
                 if !issue.due.isEmpty {
                     Text(issue.due)
-                        .font(DSFont.footnote)
+                        .modifier(DSTextStyle.footnote)
                         .foregroundStyle(issue.isLate ? DSColor.critical : DSColor.textSecondary)
                 }
             }
@@ -118,19 +120,19 @@ struct IssueRow: View {
 
     private var severityText: String {
         if !issue.isOpen {
-            return "Resolved"
+            return String(localized: "issues.severity.resolved")
         }
         switch issue.severity {
         case .critical:
-            return "Critical"
+            return String(localized: "issues.severity.critical")
         case .major:
-            return "Major"
+            return String(localized: "issues.severity.major")
         case .minor:
-            return "Minor"
+            return String(localized: "issues.severity.minor")
         case .resolved:
-            return "Resolved"
+            return String(localized: "issues.severity.resolved")
         case .waiting:
-            return "Waiting"
+            return String(localized: "issues.severity.waiting")
         }
     }
 }

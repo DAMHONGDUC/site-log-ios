@@ -8,18 +8,18 @@ struct PlanImportScreen: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: DSSpacing.medium) {
-                RoundedRectangle(cornerRadius: DSRadius.large)
+            VStack(spacing: DSSpacing.spacing12) {
+                RoundedRectangle(cornerRadius: DSSpacing.spacing16)
                     .strokeBorder(
                         DSColor.lineStrong,
                         style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
                     )
                     .frame(height: 140)
                     .overlay {
-                        VStack(spacing: DSSpacing.small) {
+                        VStack(spacing: DSSpacing.spacing8) {
                             Image(systemName: "doc.badge.plus")
-                            Text("PDF, one sheet or many")
-                                .font(DSFont.subhead)
+                            Text("plans.planImport.pdfOneSheetOrMany")
+                                .modifier(DSTextStyle.subhead)
                         }
                         .foregroundStyle(DSColor.textSecondary)
                     }
@@ -27,24 +27,24 @@ struct PlanImportScreen: View {
                 Button {
                     dismiss()
                 } label: {
-                    Label("Choose from Files", systemImage: "folder")
+                    Label("plans.planImport.chooseFromFiles", systemImage: "folder")
                 }
                 .buttonStyle(.sd(.primary))
 
                 Button {
                     dismiss()
                 } label: {
-                    Label("Photograph a printed sheet", systemImage: "camera")
+                    Label("plans.planImport.photographAPrintedSheet", systemImage: "camera")
                 }
                 .buttonStyle(.sd(.secondary))
             }
-            .padding(DSSpacing.regular)
+            .padding(DSSpacing.spacing16)
             .frame(maxHeight: .infinity, alignment: .top)
-            .navigationTitle("Import a plan")
+            .navigationTitle("plans.planImport.importAPlan")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close", systemImage: "xmark") {
+                    Button("plans.planImport.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }

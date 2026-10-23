@@ -2,7 +2,7 @@
 
 <dl><dd>
 
-- F00 · 26h (8h done) · step-by-step guide with full, tested code.
+- F00 · 26h · foundation guide. Repository files are the source of truth for code.
 
 </dd></dl>
 
@@ -17,7 +17,8 @@
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
 7. [4. DesignSystem tests](#4-designsystem-tests)
-8. [Feature done](#feature-done)
+8. [User-facing text and localization](#user-facing-text-and-localization)
+9. [Feature done](#feature-done)
 
 </dd></dl>
 
@@ -28,8 +29,8 @@
 - **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem.
 - **Demo:** the app builds with zero warnings, CI is green, the DesignSystem tests pass.
 - **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
-- **Already done:** entry point and tooling; DesignSystem tokens and components (built with the UI skeleton, 2026-10-08).
-- **Verified:** all code below builds with zero warnings and passes its tests on iPhone 17 Pro (iOS 26.4); `fastlane test` passes. Not yet built: the `PlatformKit` package (added 2026-10-12, [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package); system services only since [D11](../feature-docs/00-overview.md#d11--data-sources-in-datalayer-platformkit-for-system-services)).
+- **Already in the repository:** check the current source files before following an example. Some implementation steps below describe planned work and may not match the latest code.
+- **Code examples:** use them to understand a small idea; do not copy a full file without comparing it with the current source and project rules.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file · <b class="tag-check">Check</b> already in the repo, compare only.
 
@@ -1914,7 +1915,7 @@ public struct DSGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
             // section header
             // two list rows
             // chips + count badge
@@ -1942,29 +1943,29 @@ public struct DSGallery: View {
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.regular) {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
             DSSectionHeader(title: "Level 7", trailing: "3 open")
 
-            VStack(spacing: 0) {
+            VStack(spacing: DSSpacing.spacing0) {
                 DSListRow(title: "Riverside Tower B", subtitle: "District 7 · 14 open issues", showsChevron: true)
                 DSListRow(title: "Lock after", value: "5 minutes", showsChevron: true)
             }
 
-            HStack(spacing: DSSpacing.small) {
+            HStack(spacing: DSSpacing.spacing8) {
                 DSChip(title: "All", isSelected: true, action: {})
                 DSChip(title: "Has issues", isSelected: false, action: {})
                 DSCountBadge(count: 2)
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
 
-            HStack(spacing: DSSpacing.regular) {
+            HStack(spacing: DSSpacing.spacing16) {
                 ForEach(DSStatusMarker.Kind.allCases, id: \.self) { kind in
                     DSStatusMarker(kind: kind, text: String(describing: kind).capitalized)
                 }
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
 
-            VStack(spacing: DSSpacing.small) {
+            VStack(spacing: DSSpacing.spacing8) {
                 Button("Primary") {}
                     .buttonStyle(.sd(.primary))
                 Button("Capture") {}
@@ -1976,12 +1977,12 @@ public struct DSGallery: View {
                 Button("Danger") {}
                     .buttonStyle(.sd(.danger))
             }
-            .padding(.horizontal, DSSpacing.regular)
+            .padding(.horizontal, DSSpacing.spacing16)
 
             DSEmptyState(systemImage: "folder", title: "No projects yet", message: "Create a project to start.")
                 .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, DSSpacing.regular)
+        .padding(.vertical, DSSpacing.spacing16)
         // Fill the whole screen, including behind the status bar
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(DSColor.canvas.ignoresSafeArea())
@@ -2015,6 +2016,21 @@ public struct DSGallery: View {
 
 </dd></dl>
 </details>
+
+</dd></dl>
+
+## User-facing text and localization
+
+<dl><dd>
+
+- Keep app text catalogs under `SiteLog/Presentation/Resources/Strings/`.
+- Add one `Localizable.xcstrings` catalog there and group keys by feature, for example `access.signIn.continueOffline`.
+- Put the English source text in the catalog. Views refer to the key, not a sentence written inline.
+- Keep user-facing text out of Domain and Data. Those layers return values or errors; Presentation chooses the localized message.
+- Use SwiftUI's string localization support (`Text("access.signIn.continueOffline")`) so Xcode can extract the key into the String Catalog.
+- Add new keys to the catalog before using them. Keep keys stable when the displayed wording changes.
+
+The app target already enables string extraction and generated catalog symbols in `project.yml`. Keep the catalog in this dedicated folder so translations can be added without searching through feature code.
 
 </dd></dl>
 

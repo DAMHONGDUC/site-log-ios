@@ -11,22 +11,22 @@ struct FaceIDLockScreen: View {
     var onEnterPasscode: () -> Void = {}
 
     var body: some View {
-        VStack(spacing: DSSpacing.regular) {
+        VStack(spacing: DSSpacing.spacing16) {
             Spacer()
 
             AppMark(size: 72)
 
-            VStack(spacing: DSSpacing.tiny) {
-                Text("SiteLog is locked")
-                    .font(.title2.bold())
-                Text("Unlock to view site photos and reports.")
-                    .font(DSFont.footnote)
+            VStack(spacing: DSSpacing.spacing4) {
+                Text("access.faceIDLock.sitelogIsLocked")
+                    .modifier(DSTextStyle.title)
+                Text("access.faceIDLock.unlockToViewSitePhotosAndReports")
+                    .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textSecondary)
             }
 
             Image(systemName: "faceid")
                 .foregroundStyle(DSColor.textSecondary)
-                .padding(.top, DSSpacing.xLarge)
+                .padding(.top, DSSpacing.spacing32)
 
             Spacer()
         }
@@ -34,11 +34,11 @@ struct FaceIDLockScreen: View {
         .background(DSColor.canvas)
         .bottomDock(showsBackground: false) {
             Button(action: onUnlock) {
-                Label("Unlock with Face ID", systemImage: "faceid")
+                Label("access.faceIDLock.unlockWithFaceId", systemImage: "faceid")
             }
             .buttonStyle(.sd(.primary))
 
-            Button("Enter passcode", action: onEnterPasscode)
+            Button("access.faceIDLock.enterPasscode", action: onEnterPasscode)
                 .buttonStyle(.sd(.ghost))
         }
         .enableInjection()

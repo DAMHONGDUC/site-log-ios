@@ -22,33 +22,33 @@ public struct DSListRow<Leading: View, Trailing: View>: View {
     }
 
     public var body: some View {
-        HStack(spacing: DSSpacing.medium) {
+        HStack(spacing: DSSpacing.spacing12) {
             leading
 
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing1) {
                 Text(title)
-                    .font(DSFont.body)
+                    .modifier(DSTextStyle.body)
                     .foregroundStyle(DSColor.textPrimary)
 
                 if let subtitle {
                     Text(subtitle)
-                        .font(DSFont.subhead)
+                        .modifier(DSTextStyle.subhead)
                         .foregroundStyle(DSColor.textSecondary)
                 }
             }
 
-            Spacer(minLength: DSSpacing.small)
+            Spacer(minLength: DSSpacing.spacing8)
 
             trailing
 
             if showsChevron {
                 Image(systemName: "chevron.right")
-                    .font(DSFont.footnote.weight(.semibold))
+                    .modifier(DSTextStyle.footnoteSemibold)
                     .foregroundStyle(DSColor.textTertiary)
             }
         }
-        .frame(minHeight: DSSize.rowMinHeight)
-        .padding(.horizontal, DSSpacing.regular)
+        .frame(minHeight: DSSpacing.spacing52)
+        .padding(.horizontal, DSSpacing.spacing16)
         // Whole row is tappable
         .contentShape(Rectangle())
     }
@@ -99,7 +99,7 @@ public struct DSRowValue: View {
     public var body: some View {
         if let text {
             Text(text)
-                .font(DSFont.body)
+                .modifier(DSTextStyle.body)
                 .foregroundStyle(DSColor.textSecondary)
         }
     }
@@ -108,7 +108,7 @@ public struct DSRowValue: View {
 public struct DSDivider: View {
     let inset: CGFloat
 
-    public init(inset: CGFloat = DSSpacing.regular) {
+    public init(inset: CGFloat = DSSpacing.spacing16) {
         self.inset = inset
     }
 
@@ -121,7 +121,7 @@ public struct DSDivider: View {
 }
 
 #Preview {
-    VStack(spacing: 0) {
+    VStack(spacing: DSSpacing.spacing0) {
         DSListRow(
             title: "Riverside Tower B",
             subtitle: "District 7 · 14 open issues",
