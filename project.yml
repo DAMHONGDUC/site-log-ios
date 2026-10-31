@@ -77,6 +77,9 @@ targets:
         # .gitkeep only keeps empty folders in git; never part of the build
         excludes:
           - "**/.gitkeep"
+          - Presentation/Resources/Strings/Localizable.xcstrings
+      - path: SiteLog/Presentation/Resources/Strings/Localizable.xcstrings
+        group: Localization
     dependencies:
       - package: DesignSystem
       - package: Core

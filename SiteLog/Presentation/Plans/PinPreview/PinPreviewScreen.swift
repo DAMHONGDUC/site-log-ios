@@ -26,7 +26,7 @@ struct PinPreviewScreen: View {
                         DSStatusMarker(
                             kind: pin.severity,
                             text: String.localizedStringWithFormat(
-                                String(localized: "plans.pinPreview.pinNumber"),
+                                String(localized: "plans.pin_preview.pin_number"),
                                 pin.number
                             )
                         )
@@ -34,7 +34,7 @@ struct PinPreviewScreen: View {
                             .modifier(DSTextStyle.headline)
                         Text(
                             String.localizedStringWithFormat(
-                                String(localized: "plans.pinPreview.issueDetails"),
+                                String(localized: "plans.pin_preview.issue_details"),
                                 issue.room,
                                 issue.assignee,
                                 issue.due
@@ -46,12 +46,12 @@ struct PinPreviewScreen: View {
                 }
 
                 HStack(spacing: DSSpacing.spacing8) {
-                    Button("plans.pinPreview.movePin") {
+                    Button("plans.pin_preview.move_pin") {
                         dismiss()
                     }
                     .buttonStyle(.sd(.secondary))
 
-                    Button("plans.pinPreview.open") {
+                    Button("plans.pin_preview.open") {
                         // Close the sheet, then open the issue on the tab's stack
                         dismiss()
                         coordinator.push(IssuesRoute.detail(issueID: issue.id))

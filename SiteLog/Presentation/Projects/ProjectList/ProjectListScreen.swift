@@ -18,7 +18,7 @@ struct ProjectListScreen: View {
 
                 projectsSection
 
-                Text("projects.projectList.savedOnThisIphoneSyncedAt847")
+                Text(verbatim: "Saved on this iPhone · synced at 8:47")
                     .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textTertiary)
                     .frame(maxWidth: .infinity)
@@ -26,11 +26,11 @@ struct ProjectListScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("projects.projectList.projects")
+        .navigationTitle("projects.project_list.projects")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button("projects.projectList.search", systemImage: "magnifyingglass") {}
-                Button("projects.projectList.newProject", systemImage: "plus") {
+                Button("projects.project_list.search", systemImage: "magnifyingglass") {}
+                Button("projects.project_list.new_project", systemImage: "plus") {
                     isNewProjectShown = true
                 }
             }
@@ -45,14 +45,14 @@ struct ProjectListScreen: View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing12) {
             HStack(spacing: DSSpacing.spacing8) {
                 DSLiveDot()
-                Text("projects.projectList.walkthroughInProgressSince812")
+                Text(verbatim: "Walkthrough in progress · since 8:12")
                     .modifier(DSTextStyle.footnote)
             }
 
             VStack(alignment: .leading) {
-                Text("projects.projectList.riversideTowerB")
+                Text(verbatim: "Riverside Tower B")
                     .modifier(DSTextStyle.headline)
-                Text("projects.projectList.level737Of82Rooms")
+                Text(verbatim: "Level 7 · 37 of 82 rooms")
                     .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
             }
@@ -60,11 +60,11 @@ struct ProjectListScreen: View {
             DSProgressBar(value: 37.0 / 82.0)
 
             HStack {
-                Text("projects.projectList.46Photos7NewIssues")
+                Text(verbatim: "46 photos, 7 new issues")
                     .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                 Spacer()
-                Button("projects.projectList.resume") {
+                Button("projects.project_list.resume") {
                     coordinator.push(ProjectsRoute.survey)
                 }
                 .buttonStyle(.sd(.primary, small: true))
@@ -76,7 +76,7 @@ struct ProjectListScreen: View {
 
     private var projectsSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-            DSSectionHeader(title: String(localized: "projects.projectList.allProjects"))
+            DSSectionHeader(title: String(localized: "projects.project_list.all_projects"))
 
             VStack(spacing: DSSpacing.spacing0) {
                 ForEach(FakeData.projects) { project in
@@ -97,8 +97,8 @@ struct ProjectListScreen: View {
                 }
 
                 DSListRow(
-                    title: String(localized: "projects.projectList.archived"),
-                    value: String(localized: "projects.projectList.2"),
+                    title: String(localized: "projects.project_list.archived"),
+                    value: "2",
                     showsChevron: true
                 ) {
                     Image(systemName: "archivebox")

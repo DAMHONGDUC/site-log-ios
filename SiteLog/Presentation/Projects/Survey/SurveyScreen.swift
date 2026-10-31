@@ -12,8 +12,8 @@ struct SurveyScreen: View {
     @State private var isCameraShown = false
 
     private let filters = [
-        "projects.survey.filter.all", "projects.survey.filter.notChecked",
-        "projects.survey.filter.hasIssues",
+        "projects.survey.filter.all", "projects.survey.filter.not_checked",
+        "projects.survey.filter.has_issues",
     ]
 
     var body: some View {
@@ -41,7 +41,7 @@ struct SurveyScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("projects.survey.level7")
+        .navigationTitle(Text(verbatim: "Level 7"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -77,9 +77,9 @@ struct SurveyScreen: View {
     private var progressHeader: some View {
         VStack(spacing: DSSpacing.spacing8) {
             HStack {
-                Text("projects.survey.37Of82RoomsChecked")
+                Text(verbatim: "37 of 82 rooms checked")
                 Spacer()
-                Text("projects.survey.since812")
+                Text(verbatim: "since 8:12")
             }
             .modifier(DSTextStyle.footnote)
             .foregroundStyle(DSColor.textSecondary)

@@ -14,12 +14,10 @@ struct DiagnosticExportScreen: View {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     HStack(spacing: DSSpacing.spacing8) {
                         DSStatusMarker(kind: .resolved)
-                        Text("diagnostics.diagnosticExport.all1284PhotosCheckOut")
+                        Text(verbatim: "All 1,284 photos check out")
                             .modifier(DSTextStyle.headline)
                     }
-                    Text(
-                        "diagnostics.diagnosticExport.fingerprintsMatchNothingChangedSinceCaptureChecked902"
-                    )
+                    Text(verbatim: "Fingerprints match, nothing changed since capture. Checked 9:02.")
                     .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
                     .padding(.leading)
@@ -27,12 +25,10 @@ struct DiagnosticExportScreen: View {
                 .padding(.horizontal, DSSpacing.spacing16)
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-                    Text("diagnostics.diagnosticExport.storage")
+                    Text("diagnostics.diagnostic_export.storage")
                         .modifier(DSTextStyle.section)
                     storageBar
-                    Text(
-                        "diagnostics.diagnosticExport.41GbWaitingToUpload16GbAlreadyBackedUp12GbFree"
-                    )
+                    Text(verbatim: "4.1 GB waiting to upload · 1.6 GB already backed up · 12 GB free")
                     .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                 }
@@ -40,38 +36,38 @@ struct DiagnosticExportScreen: View {
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     DSSectionHeader(
-                        title: String(localized: "diagnostics.diagnosticExport.thisIphone")
+                        title: String(localized: "diagnostics.diagnostic_export.this_iphone")
                     )
                     DSListRow(
-                        title: String(localized: "diagnostics.diagnosticExport.backgroundUploads"),
-                        value: String(localized: "diagnostics.diagnosticExport.on")
-                    )
-                    DSDivider()
-                    DSListRow(
-                        title: String(localized: "diagnostics.diagnosticExport.lowPowerMode"),
-                        value: String(localized: "diagnostics.diagnosticExport.off")
+                        title: String(localized: "diagnostics.diagnostic_export.background_uploads"),
+                        value: String(localized: "diagnostics.diagnostic_export.on")
                     )
                     DSDivider()
                     DSListRow(
-                        title: String(localized: "diagnostics.diagnosticExport.liveProgress"),
-                        value: String(localized: "diagnostics.diagnosticExport.polling")
+                        title: String(localized: "diagnostics.diagnostic_export.low_power_mode"),
+                        value: String(localized: "diagnostics.diagnostic_export.off")
+                    )
+                    DSDivider()
+                    DSListRow(
+                        title: String(localized: "diagnostics.diagnostic_export.live_progress"),
+                        value: String(localized: "diagnostics.diagnostic_export.polling")
                     )
                 }
             }
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("diagnostics.diagnosticExport.diagnostics")
+        .navigationTitle("diagnostics.diagnostic_export.diagnostics")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            Button("diagnostics.diagnosticExport.freeUp16Gb") {
+            Button("diagnostics.diagnostic_export.free_up16_gb") {
                 coordinator.push(SettingsRoute.storageCleanup)
             }
             .buttonStyle(.sd(.secondary))
 
             ShareLink(item: "sitelog-diagnostics.zip") {
-                Text("diagnostics.diagnosticExport.sendDiagnosticsToSupport")
+                Text("diagnostics.diagnostic_export.send_action")
             }
             .buttonStyle(.sd(.ghost))
         }

@@ -18,7 +18,7 @@ struct BrandingScreen: View {
                 BrandingLogoRow()
 
                 DSTextField(String(localized: "reports.branding.company"), text: $company)
-                DSTextField(String(localized: "reports.branding.preparedFor"), text: $preparedFor)
+                DSTextField(String(localized: "reports.branding.prepared_for"), text: $preparedFor)
                 DSTextField(
                     String(localized: "reports.branding.footer"),
                     text: $footer,
@@ -28,7 +28,7 @@ struct BrandingScreen: View {
             .padding(DSSpacing.spacing16)
         }
         .background(DSColor.canvas)
-        .navigationTitle("reports.branding.yourLetterhead")
+        .navigationTitle("reports.branding.your_letterhead")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
@@ -50,7 +50,7 @@ struct BrandingScreen: View {
 private struct BrandingLogoRow: View {
     var body: some View {
         HStack(spacing: DSSpacing.spacing12) {
-            Text("reports.branding.el")
+            Text(verbatim: "EL")
                 .modifier(DSTextStyle.section)
                 .foregroundStyle(DSColor.onPrimary)
                 .frame(width: DSSpacing.spacing64, height: DSSpacing.spacing64)
@@ -60,9 +60,9 @@ private struct BrandingLogoRow: View {
                 )
 
             VStack(alignment: .leading) {
-                Text("reports.branding.eastlineLogoPng")
+                Text(verbatim: "Eastline logo.png")
                     .modifier(DSTextStyle.bodyMedium)
-                Text("reports.branding.shownOnTheCoverAndEveryPage")
+                Text("reports.branding.shown_on_the_cover_and_every_page")
                     .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
             }

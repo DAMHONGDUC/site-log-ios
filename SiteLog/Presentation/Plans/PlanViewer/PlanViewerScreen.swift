@@ -19,10 +19,10 @@ struct PlanViewerScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("plans.planViewer.layers", systemImage: "square.3.layers.3d") {
-                    Button("plans.planViewer.openIssues") {}
-                    Button("plans.planViewer.closedIssues") {}
-                    Button("plans.planViewer.photos") {}
+                Menu("plans.plan_viewer.layers", systemImage: "square.3.layers.3d") {
+                    Button("plans.plan_viewer.open_issues") {}
+                    Button("plans.plan_viewer.closed_issues") {}
+                    Button("plans.plan_viewer.photos") {}
                 }
             }
         }
@@ -31,16 +31,16 @@ struct PlanViewerScreen: View {
             HStack {
                 DSStatusMarker(
                     kind: .critical,
-                    text: String(localized: "plans.planViewer.1Critical")
+                    text: "1 critical"
                 )
                 Spacer()
-                DSStatusMarker(kind: .major, text: String(localized: "plans.planViewer.2Major"))
+                DSStatusMarker(kind: .major, text: "2 major")
                 Spacer()
-                DSStatusMarker(kind: .minor, text: String(localized: "plans.planViewer.1Minor"))
+                DSStatusMarker(kind: .minor, text: "1 minor")
                 Spacer()
-                DSStatusMarker(kind: .resolved, text: String(localized: "plans.planViewer.2Closed"))
+                DSStatusMarker(kind: .resolved, text: "2 closed")
             }
-            Text("plans.planViewer.pressAndHoldToDropAPin")
+            Text("plans.plan_viewer.press_and_hold_to_drop_a_pin")
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textTertiary)
         }

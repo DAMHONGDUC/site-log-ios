@@ -31,7 +31,7 @@ struct RoomScreen: View {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     DSSectionHeader(
                         title: String(localized: "projects.room.photos"),
-                        trailing: String(localized: "projects.room.6Today")
+                        trailing: "6 today"
                     )
                     photoGrid
                 }
@@ -40,9 +40,9 @@ struct RoomScreen: View {
                     coordinator.push(ChecklistsRoute.run(title: nil))
                 } label: {
                     DSListRow(
-                        title: String(localized: "projects.room.finishingChecklist"),
-                        subtitle: String(localized: "projects.room.14Of22Answered"),
-                        value: String(localized: "projects.room.64"),
+                        title: String(localized: "projects.room.finishing_checklist"),
+                        subtitle: "14 of 22 answered",
+                        value: "64%",
                         showsChevron: true
                     )
                 }
@@ -55,8 +55,8 @@ struct RoomScreen: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu("projects.room.more", systemImage: "ellipsis") {
-                    Button("projects.room.renameRoom", systemImage: "pencil") {}
-                    Button("projects.room.markAsChecked", systemImage: "checkmark.circle") {}
+                    Button("projects.room.rename_room", systemImage: "pencil") {}
+                    Button("projects.room.mark_as_checked", systemImage: "checkmark.circle") {}
                 }
             }
         }
@@ -101,7 +101,7 @@ struct RoomScreen: View {
                 .modifier(DSTextStyle.largeTitle)
             Text(
                 String.localizedStringWithFormat(
-                    String(localized: "projects.room.unitAndLevel"),
+                    String(localized: "projects.room.unit_and_level"),
                     unitName
                 )
             )
@@ -116,9 +116,9 @@ struct RoomScreen: View {
             DSStatusMarker(kind: .major)
 
             VStack(alignment: .leading) {
-                Text("projects.room.2IssuesToReCheckFrom12Aug")
+                Text(verbatim: "2 issues to re-check from 12 Aug")
                     .modifier(DSTextStyle.bodyMedium)
-                Text("projects.room.crackByTheSkirtingLooseSocketCover")
+                Text(verbatim: "Crack by the skirting, loose socket cover")
                     .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
             }

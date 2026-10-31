@@ -13,24 +13,24 @@ struct CaptureReviewScreen: View {
             SitePhoto(variant: 0, showsCrack: true)
                 .clipped()
                 .overlay(alignment: .bottomLeading) {
-                    Text("capture.captureReview.104218Sha2567F3AC91E")
+                    Text(verbatim: "10:42:18 · SHA-256 7f3a…c91e")
                         .modifier(DSTextStyle.code)
                         .foregroundStyle(DSColor.onMedia)
                         .padding(DSSpacing.spacing16)
                 }
 
             HStack(spacing: DSSpacing.spacing8) {
-                Button("capture.captureReview.retake") {
+                Button("capture.capture_review.retake") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.secondary))
 
-                Button("capture.captureReview.markUp") {
+                Button("capture.capture_review.mark_up") {
                     isMarkupShown = true
                 }
                 .buttonStyle(.sd(.secondary))
 
-                Button("capture.captureReview.usePhoto") {
+                Button("capture.capture_review.use_photo") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.primary))

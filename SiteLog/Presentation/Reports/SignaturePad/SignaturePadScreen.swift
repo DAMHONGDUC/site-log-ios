@@ -17,21 +17,21 @@ struct SignaturePadScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
-                Picker("reports.signaturePad.party", selection: $party) {
-                    Text("reports.signaturePad.hanhSupervisor").tag("Supervisor")
-                    Text("reports.signaturePad.contractor").tag("Contractor")
+                Picker("reports.signature_pad.party", selection: $party) {
+                    Text(verbatim: "Hanh (supervisor) ✓").tag("Supervisor")
+                    Text("reports.signature_pad.contractor").tag("Contractor")
                 }
                 .pickerStyle(.segmented)
 
                 DSTextField(
-                    String(localized: "reports.signaturePad.nameAndRole"),
+                    String(localized: "reports.signature_pad.name_and_role"),
                     text: $nameAndRole
                 )
 
                 signatureBox
 
                 Text(
-                    "reports.signaturePad.thisIsAHandwrittenSignatureForInternalSignOffNotACertifiedDigitalSignature"
+                    "reports.signature_pad.signature_disclaimer"
                 )
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
@@ -41,11 +41,11 @@ struct SignaturePadScreen: View {
         // Drawing must not scroll the page
         .scrollDisabled(true)
         .background(DSColor.canvas)
-        .navigationTitle("reports.signaturePad.sign")
+        .navigationTitle("reports.signature_pad.sign")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
-            Button("reports.signaturePad.done") {
+            Button("reports.signature_pad.done") {
                 coordinator.push(ReportsRoute.pdfPreview)
             }
             .buttonStyle(.sd(.primary))
@@ -88,11 +88,11 @@ struct SignaturePadScreen: View {
             }
             .overlay(alignment: .bottom) {
                 HStack {
-                    Text("reports.signaturePad.signAboveTheLine")
+                    Text("reports.signature_pad.sign_above_the_line")
                         .modifier(DSTextStyle.footnote)
                         .foregroundStyle(DSColor.textSecondary)
                     Spacer()
-                    Button("reports.signaturePad.clear") {
+                    Button("reports.signature_pad.clear") {
                         strokes = []
                     }
                     .modifier(DSTextStyle.subheadSemibold)

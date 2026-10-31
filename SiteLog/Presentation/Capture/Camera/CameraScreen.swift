@@ -56,7 +56,7 @@ struct CameraScreen: View {
     }
 
     private var laserReading: some View {
-        Text("capture.camera.342MDisto")
+        Text(verbatim: "3.42 m · DISTO")
             .foregroundStyle(DSColor.onMedia)
             .padding(DSSpacing.spacing8)
             .background(DSColor.mediaBackdrop)

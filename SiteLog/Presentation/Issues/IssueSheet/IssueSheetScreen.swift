@@ -29,7 +29,7 @@ struct IssueSheetScreen: View {
                     if let checklistItem {
                         Text(
                             String.localizedStringWithFormat(
-                                String(localized: "issues.issueSheet.checklistPhotoRequired"),
+                                String(localized: "issues.issue_sheet.checklist_photo_required"),
                                 checklistItem.number
                             )
                         )
@@ -43,8 +43,8 @@ struct IssueSheetScreen: View {
 
                     DSTextField(
                         checklistItem == nil
-                            ? nil : String(localized: "issues.issueSheet.whatsWrong"),
-                        placeholder: String(localized: "issues.issueSheet.describeTheIssue"),
+                            ? nil : String(localized: "issues.issue_sheet.whats_wrong"),
+                        placeholder: String(localized: "issues.issue_sheet.describe_the_issue"),
                         text: $details,
                         trailingSystemImage: "mic"
                     )
@@ -53,20 +53,20 @@ struct IssueSheetScreen: View {
 
                     HStack(spacing: DSSpacing.spacing12) {
                         DSTextField(
-                            String(localized: "issues.issueSheet.assignedTo"),
+                            String(localized: "issues.issue_sheet.assigned_to"),
                             text: $assignee
                         )
-                        DSTextField(String(localized: "issues.issueSheet.due"), text: $due)
+                        DSTextField(String(localized: "issues.issue_sheet.due"), text: $due)
                             .frame(width: DSSpacing.spacing112)
                     }
                 }
                 .padding(DSSpacing.spacing16)
             }
-            .navigationTitle("issues.issueSheet.newIssue")
+            .navigationTitle("issues.issue_sheet.new_issue")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("issues.issueSheet.close", systemImage: "xmark") {
+                    Button("issues.issue_sheet.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
@@ -79,11 +79,11 @@ struct IssueSheetScreen: View {
                     }
                     .buttonStyle(.sd(.secondary))
                     .frame(width: DSSpacing.spacing50)
-                    .accessibilityLabel("issues.issueSheet.pinOnPlan")
+                    .accessibilityLabel("issues.issue_sheet.pin_on_plan")
 
                     Button(
                         checklistItem == nil
-                            ? "issues.issueSheet.saveNextPhoto" : "issues.issueSheet.saveIssue"
+                            ? "issues.issue_sheet.save_next_photo" : "issues.issue_sheet.save_issue"
                     ) {
                         dismiss()
                     }
@@ -104,16 +104,16 @@ struct IssueSheetScreen: View {
             SitePhotoThumb(variant: 0, size: 52, showsCrack: true)
 
             VStack(alignment: .leading) {
-                Text("issues.issueSheet.1Photo")
+                Text(verbatim: "1 photo")
                     .modifier(DSTextStyle.bodyMedium)
-                Text("issues.issueSheet.1042187F3AC91E")
+                Text(verbatim: "10:42:18 · 7f3a…c91e")
                     .modifier(DSTextStyle.code)
                     .foregroundStyle(DSColor.textSecondary)
             }
 
             Spacer()
 
-            Button("issues.issueSheet.add") {}
+            Button("issues.issue_sheet.add") {}
                 .modifier(DSTextStyle.subheadSemibold)
                 .underline()
                 .foregroundStyle(DSColor.textPrimary)
@@ -121,7 +121,7 @@ struct IssueSheetScreen: View {
     }
 
     private var severityPicker: some View {
-        Picker("issues.issueSheet.severity", selection: $severity) {
+        Picker("issues.issue_sheet.severity", selection: $severity) {
             ForEach(severities, id: \.titleKey) { item in
                 Text(NSLocalizedString(item.titleKey, comment: "")).tag(item.kind)
             }

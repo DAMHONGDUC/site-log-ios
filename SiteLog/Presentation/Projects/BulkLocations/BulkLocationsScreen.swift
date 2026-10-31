@@ -17,43 +17,43 @@ struct BulkLocationsScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 HStack(spacing: DSSpacing.spacing12) {
-                    DSTextField(String(localized: "projects.bulkLocations.levels"), text: $levels)
+                    DSTextField(String(localized: "projects.bulk_locations.levels"), text: $levels)
                     DSTextField(
-                        String(localized: "projects.bulkLocations.unitsPerLevel"),
+                        String(localized: "projects.bulk_locations.units_per_level"),
                         text: $units
                     )
                 }
 
                 DSTextField(
-                    String(localized: "projects.bulkLocations.roomsInEveryUnit"),
+                    String(localized: "projects.bulk_locations.rooms_in_every_unit"),
                     text: $rooms,
                     isMultiline: true
                 )
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text("projects.bulkLocations.preview")
+                        Text("projects.bulk_locations.preview")
                             .modifier(DSTextStyle.section)
                         Spacer()
-                        Text("projects.bulkLocations.120Rooms")
+                        Text(verbatim: "120 rooms")
                             .modifier(DSTextStyle.subhead)
                             .foregroundStyle(DSColor.textSecondary)
                     }
 
                     VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                        Text("projects.bulkLocations.level77ALivingRoom")
-                        Text("projects.bulkLocations.level77ABedroom1")
-                        Text("projects.bulkLocations.level77ABedroom2")
-                        Text("projects.bulkLocations.and117More")
+                        Text(verbatim: "Level 7 › 7A › Living room")
+                        Text(verbatim: "Level 7 › 7A › Bedroom 1")
+                        Text(verbatim: "Level 7 › 7A › Bedroom 2")
+                        Text(verbatim: "and 117 more")
                             .foregroundStyle(DSColor.textTertiary)
                     }
                     .modifier(DSTextStyle.code)
                 }
 
                 HStack(spacing: DSSpacing.spacing4) {
-                    Text("projects.bulkLocations.alreadyHaveThisLayoutInAnotherProject")
+                    Text("projects.bulk_locations.duplicate_layout_prompt")
                         .foregroundStyle(DSColor.textSecondary)
-                    Button("projects.bulkLocations.copyItsRooms") {
+                    Button("projects.bulk_locations.copy_its_rooms") {
                         coordinator.push(ProjectsRoute.cloneTree)
                     }
                     .underline()
@@ -64,10 +64,10 @@ struct BulkLocationsScreen: View {
             .padding(DSSpacing.spacing16)
         }
         .background(DSColor.canvas)
-        .navigationTitle("projects.bulkLocations.addRoomsInBulk")
+        .navigationTitle("projects.bulk_locations.add_rooms_in_bulk")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("projects.bulkLocations.add120Rooms") {
+            Button("projects.bulk_locations.add120_rooms") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

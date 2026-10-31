@@ -31,23 +31,23 @@ struct IssueDetailScreen: View {
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                 }
-                .accessibilityLabel("issues.issueDetail.share")
+                .accessibilityLabel("issues.issue_detail.share")
 
-                Menu("issues.issueDetail.more", systemImage: "ellipsis") {
-                    Button("issues.issueDetail.edit", systemImage: "pencil") {}
-                    Button("issues.issueDetail.delete", systemImage: "trash", role: .destructive) {}
+                Menu("issues.issue_detail.more", systemImage: "ellipsis") {
+                    Button("issues.issue_detail.edit", systemImage: "pencil") {}
+                    Button("issues.issue_detail.delete", systemImage: "trash", role: .destructive) {}
                 }
             }
         }
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
             HStack(spacing: DSSpacing.spacing8) {
-                Button("issues.issueDetail.markUp") {
+                Button("issues.issue_detail.mark_up") {
                     isMarkupShown = true
                 }
                 .buttonStyle(.sd(.secondary))
 
-                Button("issues.issueDetail.reCheckNow") {
+                Button("issues.issue_detail.re_check_now") {
                     isRecheckShown = true
                 }
                 .buttonStyle(.sd(.primary))
@@ -97,7 +97,7 @@ private struct IssueSummaryView: View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
             Text(
                 String.localizedStringWithFormat(
-                    String(localized: "issues.issueDetail.status"),
+                    String(localized: "issues.issue_detail.status"),
                     severityName,
                     issue.number
                 )
@@ -117,17 +117,17 @@ private struct IssueDetailRows: View {
 
     var body: some View {
         VStack(spacing: DSSpacing.spacing0) {
-            DSListRow(title: String(localized: "issues.issueDetail.room"), value: issue.room)
+            DSListRow(title: String(localized: "issues.issue_detail.room"), value: issue.room)
             DSDivider()
             DSListRow(
-                title: String(localized: "issues.issueDetail.assignedTo"),
+                title: String(localized: "issues.issue_detail.assigned_to"),
                 value: issue.assignee
             )
             DSDivider()
             DSListRow(
-                title: String(localized: "issues.issueDetail.due"),
+                title: String(localized: "issues.issue_detail.due"),
                 value: issue.due.isEmpty
-                    ? String(localized: "issues.issueDetail.noDate") : issue.due
+                    ? String(localized: "issues.issue_detail.no_date") : issue.due
             )
         }
     }
@@ -135,7 +135,7 @@ private struct IssueDetailRows: View {
 
 private struct IssueHistoryNote: View {
     var body: some View {
-        Text("issues.issueDetail.openedByHanhOn12AugStillOpenOn28Aug")
+        Text(verbatim: "Opened by Hanh on 12 Aug · still open on 28 Aug")
             .modifier(DSTextStyle.footnote)
             .foregroundStyle(DSColor.textSecondary)
             .padding(.horizontal, DSSpacing.spacing16)

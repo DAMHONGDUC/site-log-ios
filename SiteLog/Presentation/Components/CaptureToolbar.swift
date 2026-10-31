@@ -21,7 +21,7 @@ struct CaptureToolbar<Left: View, Right: View>: View {
                     )
                     .background(DSColor.hiVis, in: Circle())
             }
-            .accessibilityLabel("components.captureToolbar.capture")
+            .accessibilityLabel("components.capture_toolbar.capture")
 
             Spacer()
 
@@ -51,11 +51,11 @@ struct ToolbarSideLabel: View {
         Spacer()
         CaptureToolbar {
         } left: {
-            Text("components.captureToolbar.end")
+            Text("components.capture_toolbar.end")
         } right: {
             ToolbarSideLabel(
                 systemImage: "map",
-                title: String(localized: "components.captureToolbar.plan")
+                title: String(localized: "components.capture_toolbar.plan")
             )
         }
     }

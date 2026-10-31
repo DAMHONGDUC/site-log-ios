@@ -10,20 +10,20 @@ struct OutcomePickerScreen: View {
 
     let issue: FakeIssue
 
-    @State private var outcome = "issues.outcomePicker.closeOutcome"
+    @State private var outcome = "issues.outcome_picker.close_outcome"
 
     private let outcomes: [(title: String, detail: String)] = [
-        ("issues.outcomePicker.closeOutcome", "issues.outcomePicker.bothPhotosGoInTheReport"),
-        ("issues.outcomePicker.notYet", "issues.outcomePicker.keepItOpenAddTodayPhoto"),
-        ("issues.outcomePicker.gotWorse", "issues.outcomePicker.raiseToCritical"),
+        ("issues.outcome_picker.close_outcome", "issues.outcome_picker.both_photos_go_in_the_report"),
+        ("issues.outcome_picker.not_yet", "issues.outcome_picker.keep_it_open_add_today_photo"),
+        ("issues.outcome_picker.got_worse", "issues.outcome_picker.raise_to_critical"),
     ]
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 HStack {
-                    beforeAfterPhoto(label: "issues.outcomePicker.august12", showsCrack: true)
-                    beforeAfterPhoto(label: "issues.outcomePicker.today", showsCrack: false)
+                    beforeAfterPhoto(label: "12 Aug", showsCrack: true)
+                    beforeAfterPhoto(label: "issues.outcome_picker.today", showsCrack: false)
                 }
 
                 VStack(alignment: .leading) {
@@ -31,7 +31,7 @@ struct OutcomePickerScreen: View {
                         .modifier(DSTextStyle.headline)
                     Text(
                         String.localizedStringWithFormat(
-                            String(localized: "issues.outcomePicker.assigneeAndOpenedDate"),
+                            String(localized: "issues.outcome_picker.assignee_and_opened_date"),
                             issue.assignee
                         )
                     )
@@ -41,7 +41,7 @@ struct OutcomePickerScreen: View {
                 .padding(.horizontal, DSSpacing.spacing16)
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                    DSSectionHeader(title: String(localized: "issues.outcomePicker.hasItBeenFixed"))
+                    DSSectionHeader(title: String(localized: "issues.outcome_picker.has_it_been_fixed"))
 
                     ForEach(outcomes, id: \.title) { item in
                         Button {
@@ -64,20 +64,20 @@ struct OutcomePickerScreen: View {
         .background(DSColor.canvas)
         .navigationTitle(
             String.localizedStringWithFormat(
-                String(localized: "issues.outcomePicker.issueNumber"),
+                String(localized: "issues.outcome_picker.issue_number"),
                 issue.number
             )
         )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button("issues.outcomePicker.close", systemImage: "xmark") {
+                Button("issues.outcome_picker.close", systemImage: "xmark") {
                     dismiss()
                 }
             }
         }
         .bottomDock {
-            Button("issues.outcomePicker.save") {
+            Button("issues.outcome_picker.save") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

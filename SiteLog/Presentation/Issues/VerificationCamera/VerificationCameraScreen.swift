@@ -18,7 +18,7 @@ struct VerificationCameraScreen: View {
         VStack(spacing: DSSpacing.spacing0) {
             CameraTopBar(
                 title: String.localizedStringWithFormat(
-                    String(localized: "issues.verificationCamera.title"),
+                    String(localized: "issues.verification_camera.title"),
                     issue.number
                 )
             ) {
@@ -34,7 +34,7 @@ struct VerificationCameraScreen: View {
             } side: {
                 CameraSideButton(
                     systemImage: "square.3.layers.3d",
-                    title: String(localized: "issues.verificationCamera.ghost")
+                    title: String(localized: "issues.verification_camera.ghost")
                 ) {
                     ghostOpacity = ghostOpacity > 0 ? 0 : 0.3
                 }
@@ -68,7 +68,7 @@ struct VerificationCameraScreen: View {
         VStack(spacing: DSSpacing.spacing8) {
             Text(
                 String.localizedStringWithFormat(
-                    String(localized: "issues.verificationCamera.ghostOpacity"),
+                    String(localized: "issues.verification_camera.ghost_opacity"),
                     Int(ghostOpacity * 100)
                 )
             )

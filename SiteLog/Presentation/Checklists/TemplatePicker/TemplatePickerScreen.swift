@@ -17,9 +17,9 @@ struct TemplatePickerScreen: View {
                     coordinator.push(ChecklistsRoute.run(title: nil))
                 } label: {
                     DSListRow(
-                        title: String(localized: "checklists.templatePicker.finishingHandover"),
+                        title: String(localized: "checklists.template_picker.finishing_handover"),
                         subtitle: String(
-                            localized: "checklists.templatePicker.youStoppedAtItem15Of22ThisMorning"
+                            localized: "checklists.template_picker.progress_reminder"
                         ),
                         showsChevron: true
                     ) {
@@ -29,13 +29,13 @@ struct TemplatePickerScreen: View {
                 .buttonStyle(.plain)
 
                 checklistSection(
-                    title: String(localized: "checklists.templatePicker.usedRecently"),
+                    title: String(localized: "checklists.template_picker.used_recently"),
                     items: FakeData.recentChecklists,
                     trailing: nil
                 )
 
                 checklistSection(
-                    title: String(localized: "checklists.templatePicker.allChecklists"),
+                    title: String(localized: "checklists.template_picker.all_checklists"),
                     items: FakeData.allChecklists,
                     trailing: String(FakeData.allChecklists.count)
                 )
@@ -44,7 +44,7 @@ struct TemplatePickerScreen: View {
         }
         .background(DSColor.canvas)
         .searchable(text: $searchText)
-        .navigationTitle("checklists.templatePicker.checklist")
+        .navigationTitle("checklists.template_picker.checklist")
         .navigationBarTitleDisplayMode(.inline)
         .enableInjection()
     }
@@ -64,7 +64,7 @@ struct TemplatePickerScreen: View {
                     DSListRow(
                         title: item.title,
                         subtitle: String.localizedStringWithFormat(
-                            String(localized: "checklists.templatePicker.itemCount"),
+                            String(localized: "checklists.template_picker.item_count"),
                             item.itemCount
                         ),
                         showsChevron: true

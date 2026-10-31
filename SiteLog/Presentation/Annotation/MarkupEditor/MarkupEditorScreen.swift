@@ -19,11 +19,11 @@ struct MarkupEditorScreen: View {
     var body: some View {
         VStack(spacing: DSSpacing.spacing0) {
             HStack {
-                Button("annotation.markupEditor.cancel") {
+                Button("annotation.markup_editor.cancel") {
                     dismiss()
                 }
                 Spacer()
-                Button("annotation.markupEditor.done") {
+                Button("annotation.markup_editor.done") {
                     dismiss()
                 }
             }
@@ -95,7 +95,7 @@ struct MarkupEditorScreen: View {
                 Image(systemName: "arrow.uturn.backward")
                     .foregroundStyle(DSColor.onMedia)
             }
-            .accessibilityLabel("annotation.markupEditor.undo")
+            .accessibilityLabel("annotation.markup_editor.undo")
         }
     }
 

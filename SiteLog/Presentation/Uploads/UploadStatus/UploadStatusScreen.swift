@@ -15,11 +15,11 @@ struct UploadStatusScreen: View {
                     .padding(.horizontal, DSSpacing.spacing16)
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                    DSSectionHeader(title: String(localized: "uploads.uploadStatus.waiting"))
+                    DSSectionHeader(title: String(localized: "uploads.upload_status.waiting"))
                     DSListRow(
-                        title: String(localized: "uploads.uploadStatus.3Videos"),
+                        title: "3 videos",
                         subtitle: String(
-                            localized: "uploads.uploadStatus.over100MbSoTheyWaitForWiFi"
+                            localized: "uploads.upload_status.wifi_wait_notice"
                         )
                     ) {
                         EmptyView()
@@ -28,8 +28,8 @@ struct UploadStatusScreen: View {
                     }
                     DSDivider()
                     DSListRow(
-                        title: String(localized: "uploads.uploadStatus.1Photo"),
-                        subtitle: String(localized: "uploads.uploadStatus.gettingAFreshUploadLink")
+                        title: "1 photo",
+                        subtitle: String(localized: "uploads.upload_status.getting_a_fresh_upload_link")
                     ) {
                         EmptyView()
                     } trailing: {
@@ -38,16 +38,16 @@ struct UploadStatusScreen: View {
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                    DSSectionHeader(title: String(localized: "uploads.uploadStatus.didnTUpload"))
+                    DSSectionHeader(title: String(localized: "uploads.upload_status.didn_t_upload"))
                     DSListRow(
-                        title: String(localized: "uploads.uploadStatus.img0922Img0925"),
+                        title: "IMG_0922, IMG_0925",
                         subtitle: String(
-                            localized: "uploads.uploadStatus.theServerRejectedTheChecksum"
+                            localized: "uploads.upload_status.checksum_error"
                         )
                     ) {
                         EmptyView()
                     } trailing: {
-                        Button("uploads.uploadStatus.retry") {}
+                        Button("uploads.upload_status.retry") {}
                             .buttonStyle(.sd(.secondary, small: true))
                     }
                 }
@@ -56,14 +56,14 @@ struct UploadStatusScreen: View {
                     coordinator.push(UploadsRoute.files)
                 } label: {
                     DSListRow(
-                        title: String(localized: "uploads.uploadStatus.todaySFiles"),
-                        value: String(localized: "uploads.uploadStatus.243"),
+                        title: String(localized: "uploads.upload_status.today_s_files"),
+                        value: "243",
                         showsChevron: true
                     )
                 }
                 .buttonStyle(.plain)
 
-                Text("uploads.uploadStatus.someFilesFinishWhileTheIphoneIsIdleYouCanCloseTheApp")
+                Text("uploads.upload_status.background_upload_note")
                     .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.textTertiary)
                     .multilineTextAlignment(.center)
@@ -73,18 +73,18 @@ struct UploadStatusScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("uploads.uploadStatus.sync")
+        .navigationTitle("uploads.upload_status.sync")
         .enableInjection()
     }
 
     private var progressBlock: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-            Text("uploads.uploadStatus.filesProgress")
+            Text(verbatim: "187 of 243 files")
                 .modifier(DSTextStyle.figure)
 
             DSProgressBar(value: 187.0 / 243.0)
 
-            Text("uploads.uploadStatus.riversideTodayAbout6MinutesLeftOnThisWiFi")
+            Text(verbatim: "Riverside, today · about 6 minutes left on this Wi-Fi")
                 .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
         }

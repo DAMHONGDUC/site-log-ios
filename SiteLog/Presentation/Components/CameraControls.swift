@@ -7,7 +7,7 @@ struct CameraTopBar: View {
 
     var body: some View {
         HStack {
-            Button("components.cameraControls.close", systemImage: "chevron.down", action: onClose)
+            Button("components.camera_controls.close", systemImage: "chevron.down", action: onClose)
                 .labelStyle(.iconOnly)
                 .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
 
@@ -18,7 +18,7 @@ struct CameraTopBar: View {
 
             Spacer()
 
-            Button("components.cameraControls.flash", systemImage: "bolt.slash") {}
+            Button("components.camera_controls.flash", systemImage: "bolt.slash") {}
                 .labelStyle(.iconOnly)
                 .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
         }
@@ -40,7 +40,7 @@ struct CameraBottomBar<Side: View>: View {
 
     var body: some View {
         VStack(spacing: DSSpacing.spacing16) {
-            Picker("components.cameraControls.mode", selection: $mode) {
+            Picker("components.camera_controls.mode", selection: $mode) {
                 ForEach(modes, id: \.self) { item in
                     Text(NSLocalizedString(item, comment: "")).tag(item)
                 }
@@ -59,7 +59,7 @@ struct CameraBottomBar<Side: View>: View {
                         .fill(DSColor.onMedia)
                         .frame(width: DSSpacing.spacing70, height: DSSpacing.spacing70)
                 }
-                .accessibilityLabel("components.cameraControls.takePhoto")
+                .accessibilityLabel("components.camera_controls.take_photo")
 
                 Spacer()
 

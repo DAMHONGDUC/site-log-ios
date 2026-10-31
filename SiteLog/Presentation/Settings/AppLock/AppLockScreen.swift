@@ -9,13 +9,13 @@ struct AppLockScreen: View {
 
     @State private var isLockOn = true
     @State private var isFaceIDOn = true
-    @State private var lockAfter = "settings.appLock.fiveMinutes"
+    @State private var lockAfter = "settings.app_lock.five_minutes"
     @State private var isSetPasscodeShown = false
 
     private let lockAfterOptions = [
-        "settings.appLock.immediately", "settings.appLock.oneMinute",
-        "settings.appLock.fiveMinutes", "settings.appLock.fifteenMinutes",
-        "settings.appLock.oneHour",
+        "settings.app_lock.immediately", "settings.app_lock.one_minute",
+        "settings.app_lock.five_minutes", "settings.app_lock.fifteen_minutes",
+        "settings.app_lock.one_hour",
     ]
 
     var body: some View {
@@ -23,11 +23,11 @@ struct AppLockScreen: View {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
                     VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                        DSSectionHeader(title: String(localized: "settings.appLock.lockApp"))
-                        toggleRow(String(localized: "settings.appLock.lockApp"), isOn: $isLockOn)
+                        DSSectionHeader(title: String(localized: "settings.app_lock.lock_app"))
+                        toggleRow(String(localized: "settings.app_lock.lock_app"), isOn: $isLockOn)
                         DSDivider()
                         toggleRow(
-                            String(localized: "settings.appLock.unlockWithFaceId"),
+                            String(localized: "settings.app_lock.unlock_with_face_id"),
                             isOn: $isFaceIDOn
                         )
                         DSDivider()
@@ -35,7 +35,7 @@ struct AppLockScreen: View {
                             isSetPasscodeShown = true
                         } label: {
                             DSListRow(
-                                title: String(localized: "settings.appLock.changePasscode"),
+                                title: String(localized: "settings.app_lock.change_passcode"),
                                 showsChevron: true
                             )
                         }
@@ -44,14 +44,14 @@ struct AppLockScreen: View {
                     footnote(
                         String(
                             localized:
-                                "settings.appLock.faceIdCanFailUnderAHelmetOrMaskYourPasscodeAlwaysWorks"
+                                "settings.app_lock.passcode_note"
                         )
                     )
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
                     VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                        DSSectionHeader(title: String(localized: "settings.appLock.lockAfter"))
+                        DSSectionHeader(title: String(localized: "settings.app_lock.lock_after"))
                         ForEach(lockAfterOptions, id: \.self) { option in
                             Button {
                                 lockAfter = option
@@ -67,7 +67,7 @@ struct AppLockScreen: View {
                     footnote(
                         String(
                             localized:
-                                "settings.appLock.countedFromWhenYouLeaveSitelogUploadsKeepRunningWhileItSLocked"
+                                "settings.app_lock.lock_timer_note"
                         )
                     )
                 }
@@ -75,7 +75,7 @@ struct AppLockScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("settings.appLock.appLock")
+        .navigationTitle("settings.app_lock.app_lock")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isSetPasscodeShown) {
             SetPasscodeScreen()

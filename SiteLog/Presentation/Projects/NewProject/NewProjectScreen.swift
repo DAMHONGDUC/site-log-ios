@@ -18,35 +18,35 @@ struct NewProjectScreen: View {
             ScrollView {
                 VStack(spacing: DSSpacing.spacing16) {
                     DSTextField(
-                        String(localized: "projects.newProject.name"),
-                        placeholder: String(localized: "projects.newProject.riversideTowerB"),
+                        String(localized: "projects.new_project.name"),
+                        placeholder: "Riverside Tower B",
                         text: $name
                     )
                     .focused($isNameFocused)
                     DSTextField(
-                        String(localized: "projects.newProject.siteAddress"),
-                        placeholder: String(localized: "projects.newProject.streetDistrict"),
+                        String(localized: "projects.new_project.site_address"),
+                        placeholder: String(localized: "projects.new_project.street_district"),
                         text: $address
                     )
                     DSTextField(
-                        String(localized: "projects.newProject.client"),
-                        placeholder: String(localized: "projects.newProject.optional"),
+                        String(localized: "projects.new_project.client"),
+                        placeholder: String(localized: "projects.new_project.optional"),
                         text: $client
                     )
                 }
                 .padding(DSSpacing.spacing16)
             }
-            .navigationTitle("projects.newProject.newProject")
+            .navigationTitle("projects.new_project.new_project")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("projects.newProject.close", systemImage: "xmark") {
+                    Button("projects.new_project.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
             }
             .bottomDock {
-                Button("projects.newProject.createProject") {
+                Button("projects.new_project.create_project") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.primary))

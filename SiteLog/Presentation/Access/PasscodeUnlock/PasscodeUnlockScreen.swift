@@ -17,12 +17,12 @@ struct PasscodeUnlockScreen: View {
 
             AppMark(size: 48)
 
-            Text("access.passcodeUnlock.enterPasscode")
+            Text("access.passcode_unlock.enter_passcode")
                 .modifier(DSTextStyle.title)
 
             PasscodeDots(filled: code.count)
 
-            Text("access.passcodeUnlock.2TriesLeftBeforeA1MinuteWait")
+            Text("access.passcode_unlock.attempts_remaining_notice")
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
 
@@ -30,7 +30,7 @@ struct PasscodeUnlockScreen: View {
 
             PasscodeNumberPad(code: $code)
 
-            Button("access.passcodeUnlock.forgotPasscode") {}
+            Button("access.passcode_unlock.forgot_passcode") {}
                 .modifier(DSTextStyle.footnoteSemibold)
                 .foregroundStyle(DSColor.textPrimary)
                 .padding(.bottom, DSSpacing.spacing8)

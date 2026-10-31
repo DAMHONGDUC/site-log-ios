@@ -1,7 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "access.faceIDLock.enterPasscode": {
+    "access.face_id_lock.enter_passcode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -12,7 +12,7 @@
         }
       }
     },
-    "access.faceIDLock.sitelogIsLocked": {
+    "access.face_id_lock.sitelog_is_locked": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -23,7 +23,7 @@
         }
       }
     },
-    "access.faceIDLock.unlockToViewSitePhotosAndReports": {
+    "access.face_id_lock.unlock_description": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -34,7 +34,7 @@
         }
       }
     },
-    "access.faceIDLock.unlockWithFaceId": {
+    "access.face_id_lock.unlock_with_face_id": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -45,7 +45,7 @@
         }
       }
     },
-    "access.passcodeUnlock.2TriesLeftBeforeA1MinuteWait": {
+    "access.passcode_unlock.attempts_remaining_notice": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -56,7 +56,7 @@
         }
       }
     },
-    "access.passcodeUnlock.enterPasscode": {
+    "access.passcode_unlock.enter_passcode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -67,7 +67,7 @@
         }
       }
     },
-    "access.passcodeUnlock.forgotPasscode": {
+    "access.passcode_unlock.forgot_passcode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -78,7 +78,7 @@
         }
       }
     },
-    "access.signIn.continueOffline": {
+    "access.sign_in.tertiary_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -89,7 +89,7 @@
         }
       }
     },
-    "access.signIn.continueWithEmail": {
+    "access.sign_in.secondary_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -100,7 +100,7 @@
         }
       }
     },
-    "access.signIn.photosHashedAtCapture": {
+    "access.sign_in.benefit_2": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -111,7 +111,7 @@
         }
       }
     },
-    "access.signIn.signInToBackUpProjectsAndHandOffBetweenIphoneAndIpadEverythingStillWorksOfflineWithoutAnAccount": {
+    "access.sign_in.description": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -122,7 +122,7 @@
         }
       }
     },
-    "access.signIn.signInWithApple": {
+    "access.sign_in.primary_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -133,7 +133,7 @@
         }
       }
     },
-    "access.signIn.signedPdfInOneTap": {
+    "access.sign_in.benefit_3": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -144,7 +144,7 @@
         }
       }
     },
-    "access.signIn.worksWithZeroSignal": {
+    "access.sign_in.benefit_1": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -155,7 +155,7 @@
         }
       }
     },
-    "access.signIn.yourSiteLogOnEveryDevice": {
+    "access.sign_in.title": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -188,7 +188,7 @@
         }
       }
     },
-    "access.splash.tryAgain": {
+    "access.splash.try_again": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -199,7 +199,7 @@
         }
       }
     },
-    "annotation.markupEditor.cancel": {
+    "annotation.markup_editor.cancel": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -210,7 +210,7 @@
         }
       }
     },
-    "annotation.markupEditor.done": {
+    "annotation.markup_editor.done": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -221,7 +221,7 @@
         }
       }
     },
-    "annotation.markupEditor.undo": {
+    "annotation.markup_editor.undo": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -232,18 +232,7 @@
         }
       }
     },
-    "annotation.stampPreview.30Sep202610421807RiversideTowerB": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30 Sep 2026 10:42:18 +07 · Riverside Tower B"
-          }
-        }
-      }
-    },
-    "annotation.stampPreview.dateAndTime": {
+    "annotation.stamp_preview.date_and_time": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -254,18 +243,7 @@
         }
       }
     },
-    "annotation.stampPreview.level77ALivingRoom1072971067215": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level 7 › 7A › Living room · 10.7297, 106.7215"
-          }
-        }
-      }
-    },
-    "annotation.stampPreview.myMarkup": {
+    "annotation.stamp_preview.my_markup": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -276,7 +254,7 @@
         }
       }
     },
-    "annotation.stampPreview.projectAndRoom": {
+    "annotation.stamp_preview.project_and_room": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -287,7 +265,7 @@
         }
       }
     },
-    "annotation.stampPreview.share": {
+    "annotation.stamp_preview.share": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -298,7 +276,7 @@
         }
       }
     },
-    "annotation.stampPreview.sharePhoto": {
+    "annotation.stamp_preview.share_photo": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -309,7 +287,7 @@
         }
       }
     },
-    "annotation.stampPreview.stampShows": {
+    "annotation.stamp_preview.stamp_shows": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -320,35 +298,13 @@
         }
       }
     },
-    "annotation.stampPreview.timeCheckedAgainstTheNetworkWithin2SAndGps6MSoTheStampCanBeTrusted": {
+    "annotation.stamp_preview.time_accuracy_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Time checked against the network (within 2 s) and GPS (±6 m), so the stamp can be trusted."
-          }
-        }
-      }
-    },
-    "annotation.stampPreview.verifyAtSitelogAppV7F3K92Qd": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verify at sitelog.app/v/7F3K-92QD"
-          }
-        }
-      }
-    },
-    "capture.camera.342MDisto": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3.42 m · DISTO"
           }
         }
       }
@@ -364,18 +320,7 @@
         }
       }
     },
-    "capture.captureReview.104218Sha2567F3AC91E": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "10:42:18 · SHA-256 7f3a…c91e"
-          }
-        }
-      }
-    },
-    "capture.captureReview.markUp": {
+    "capture.capture_review.mark_up": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -386,7 +331,7 @@
         }
       }
     },
-    "capture.captureReview.retake": {
+    "capture.capture_review.retake": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -397,7 +342,7 @@
         }
       }
     },
-    "capture.captureReview.usePhoto": {
+    "capture.capture_review.use_photo": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -419,7 +364,7 @@
         }
       }
     },
-    "checklists.answer.notApplicable": {
+    "checklists.answer.not_applicable": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -441,18 +386,7 @@
         }
       }
     },
-    "checklists.checklistDone.19Passed2FailedAnd1DidnTApplyItTookYou6Minutes": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "19 passed, 2 failed and 1 didn’t apply. It took you 6 minutes."
-          }
-        }
-      }
-    },
-    "checklists.checklistDone.backToLevel7": {
+    "checklists.checklist_done.back_to_level7": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -463,7 +397,7 @@
         }
       }
     },
-    "checklists.checklistDone.crackByTheSkirting": {
+    "checklists.checklist_done.crack_by_the_skirting": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -474,7 +408,7 @@
         }
       }
     },
-    "checklists.checklistDone.livingRoomIsDone": {
+    "checklists.checklist_done.living_room_is_done": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -485,7 +419,7 @@
         }
       }
     },
-    "checklists.checklistDone.nextBedroom1": {
+    "checklists.checklist_done.next_bedroom1": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -496,18 +430,7 @@
         }
       }
     },
-    "checklists.checklistDone.phucElectric": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phuc Electric"
-          }
-        }
-      }
-    },
-    "checklists.checklistDone.sentToTheIssueList": {
+    "checklists.checklist_done.sent_to_the_issue_list": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -518,7 +441,7 @@
         }
       }
     },
-    "checklists.checklistDone.socketCoverNotLevel": {
+    "checklists.checklist_done.socket_cover_not_level": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -529,29 +452,7 @@
         }
       }
     },
-    "checklists.checklistDone.tuanSMasonryCrew": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tuan’s masonry crew"
-          }
-        }
-      }
-    },
-    "checklists.checklistRun.1Failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 failed"
-          }
-        }
-      }
-    },
-    "checklists.checklistRun.8ItemsStillNeedAnAnswer": {
+    "checklists.checklist_run.remaining_items_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -562,7 +463,7 @@
         }
       }
     },
-    "checklists.checklistRun.answer": {
+    "checklists.checklist_run.answer": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -573,7 +474,7 @@
         }
       }
     },
-    "checklists.checklistRun.answersProgress": {
+    "checklists.checklist_run.answers_progress": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -584,7 +485,7 @@
         }
       }
     },
-    "checklists.checklistRun.finish": {
+    "checklists.checklist_run.finish": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -595,7 +496,7 @@
         }
       }
     },
-    "checklists.checklistRun.finishingHandover": {
+    "checklists.checklist_run.finishing_handover": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -606,7 +507,7 @@
         }
       }
     },
-    "checklists.checklistRun.itemNumberAndText": {
+    "checklists.checklist_run.item_number_and_text": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -617,7 +518,7 @@
         }
       }
     },
-    "checklists.checklistRun.loggedAsAnIssue": {
+    "checklists.checklist_run.logged_as_an_issue": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -628,7 +529,7 @@
         }
       }
     },
-    "checklists.templatePicker.allChecklists": {
+    "checklists.template_picker.all_checklists": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -639,7 +540,7 @@
         }
       }
     },
-    "checklists.templatePicker.checklist": {
+    "checklists.template_picker.checklist": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -650,7 +551,7 @@
         }
       }
     },
-    "checklists.templatePicker.finishingHandover": {
+    "checklists.template_picker.finishing_handover": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -661,7 +562,7 @@
         }
       }
     },
-    "checklists.templatePicker.itemCount": {
+    "checklists.template_picker.item_count": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -672,7 +573,7 @@
         }
       }
     },
-    "checklists.templatePicker.usedRecently": {
+    "checklists.template_picker.used_recently": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -683,7 +584,7 @@
         }
       }
     },
-    "checklists.templatePicker.youStoppedAtItem15Of22ThisMorning": {
+    "checklists.template_picker.progress_reminder": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -727,7 +628,7 @@
         }
       }
     },
-    "components.cameraControls.close": {
+    "components.camera_controls.close": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -738,7 +639,7 @@
         }
       }
     },
-    "components.cameraControls.flash": {
+    "components.camera_controls.flash": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -749,7 +650,7 @@
         }
       }
     },
-    "components.cameraControls.mode": {
+    "components.camera_controls.mode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -760,7 +661,7 @@
         }
       }
     },
-    "components.cameraControls.takePhoto": {
+    "components.camera_controls.take_photo": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -771,7 +672,7 @@
         }
       }
     },
-    "components.captureToolbar.capture": {
+    "components.capture_toolbar.capture": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -782,7 +683,7 @@
         }
       }
     },
-    "components.captureToolbar.end": {
+    "components.capture_toolbar.end": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -793,7 +694,7 @@
         }
       }
     },
-    "components.captureToolbar.plan": {
+    "components.capture_toolbar.plan": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -804,7 +705,7 @@
         }
       }
     },
-    "components.passcodePad.delete": {
+    "components.passcode_pad.delete": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -815,7 +716,7 @@
         }
       }
     },
-    "components.planDrawing.floorPlan": {
+    "components.plan_drawing.floor_plan": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -826,7 +727,7 @@
         }
       }
     },
-    "devmenu.action.deleteAll": {
+    "devmenu.action.delete_all": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -837,7 +738,7 @@
         }
       }
     },
-    "devmenu.action.deleteAllDescription": {
+    "devmenu.action.delete_all_description": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -859,7 +760,7 @@
         }
       }
     },
-    "devmenu.action.resetDescription": {
+    "devmenu.action.reset_description": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -870,7 +771,7 @@
         }
       }
     },
-    "devmenu.action.seedData": {
+    "devmenu.action.seed_data": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -881,7 +782,7 @@
         }
       }
     },
-    "devmenu.action.seedDataDescription": {
+    "devmenu.action.seed_data_description": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -892,7 +793,7 @@
         }
       }
     },
-    "devmenu.actionFinished": {
+    "devmenu.action_finished": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -903,7 +804,7 @@
         }
       }
     },
-    "devmenu.confirmAction": {
+    "devmenu.confirm_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -914,7 +815,7 @@
         }
       }
     },
-    "devmenu.devMenuSection.cancel": {
+    "devmenu.dev_menu_section.cancel": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -925,7 +826,7 @@
         }
       }
     },
-    "devmenu.devMenuSection.debug": {
+    "devmenu.dev_menu_section.debug": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -936,7 +837,7 @@
         }
       }
     },
-    "devmenu.devMenuSection.thisCanTBeUndone": {
+    "devmenu.dev_menu_section.this_can_t_be_undone": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -947,29 +848,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.41GbWaitingToUpload16GbAlreadyBackedUp12GbFree": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4.1 GB waiting to upload · 1.6 GB already backed up · 12 GB free"
-          }
-        }
-      }
-    },
-    "diagnostics.diagnosticExport.all1284PhotosCheckOut": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All 1,284 photos check out"
-          }
-        }
-      }
-    },
-    "diagnostics.diagnosticExport.backgroundUploads": {
+    "diagnostics.diagnostic_export.background_uploads": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -980,7 +859,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.diagnostics": {
+    "diagnostics.diagnostic_export.diagnostics": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -991,18 +870,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.fingerprintsMatchNothingChangedSinceCaptureChecked902": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fingerprints match, nothing changed since capture. Checked 9:02."
-          }
-        }
-      }
-    },
-    "diagnostics.diagnosticExport.freeUp16Gb": {
+    "diagnostics.diagnostic_export.free_up16_gb": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1013,7 +881,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.liveProgress": {
+    "diagnostics.diagnostic_export.live_progress": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1024,7 +892,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.lowPowerMode": {
+    "diagnostics.diagnostic_export.low_power_mode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1035,7 +903,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.off": {
+    "diagnostics.diagnostic_export.off": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1046,7 +914,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.on": {
+    "diagnostics.diagnostic_export.on": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1057,7 +925,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.polling": {
+    "diagnostics.diagnostic_export.polling": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1068,7 +936,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.sendDiagnosticsToSupport": {
+    "diagnostics.diagnostic_export.send_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1079,7 +947,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.storage": {
+    "diagnostics.diagnostic_export.storage": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1090,7 +958,7 @@
         }
       }
     },
-    "diagnostics.diagnosticExport.thisIphone": {
+    "diagnostics.diagnostic_export.this_iphone": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1134,7 +1002,7 @@
         }
       }
     },
-    "issues.issueDetail.assignedTo": {
+    "issues.issue_detail.assigned_to": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1145,7 +1013,7 @@
         }
       }
     },
-    "issues.issueDetail.delete": {
+    "issues.issue_detail.delete": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1156,7 +1024,7 @@
         }
       }
     },
-    "issues.issueDetail.due": {
+    "issues.issue_detail.due": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1167,7 +1035,7 @@
         }
       }
     },
-    "issues.issueDetail.edit": {
+    "issues.issue_detail.edit": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1178,7 +1046,7 @@
         }
       }
     },
-    "issues.issueDetail.markUp": {
+    "issues.issue_detail.mark_up": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1189,7 +1057,7 @@
         }
       }
     },
-    "issues.issueDetail.more": {
+    "issues.issue_detail.more": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1200,7 +1068,7 @@
         }
       }
     },
-    "issues.issueDetail.noDate": {
+    "issues.issue_detail.no_date": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1211,18 +1079,7 @@
         }
       }
     },
-    "issues.issueDetail.openedByHanhOn12AugStillOpenOn28Aug": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opened by Hanh on 12 Aug · still open on 28 Aug"
-          }
-        }
-      }
-    },
-    "issues.issueDetail.reCheckNow": {
+    "issues.issue_detail.re_check_now": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1233,7 +1090,7 @@
         }
       }
     },
-    "issues.issueDetail.room": {
+    "issues.issue_detail.room": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1244,7 +1101,7 @@
         }
       }
     },
-    "issues.issueDetail.share": {
+    "issues.issue_detail.share": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1255,7 +1112,7 @@
         }
       }
     },
-    "issues.issueDetail.status": {
+    "issues.issue_detail.status": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1266,7 +1123,7 @@
         }
       }
     },
-    "issues.issueList.filter": {
+    "issues.issue_list.filter": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1277,7 +1134,7 @@
         }
       }
     },
-    "issues.issueList.filter2": {
+    "issues.issue_list.filter2": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1288,7 +1145,7 @@
         }
       }
     },
-    "issues.issueList.issues": {
+    "issues.issue_list.issues": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1299,7 +1156,7 @@
         }
       }
     },
-    "issues.issueList.issuesYouLogOnSiteShowUpInThisList": {
+    "issues.issue_list.empty_state_message": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1310,7 +1167,7 @@
         }
       }
     },
-    "issues.issueList.nothingHere": {
+    "issues.issue_list.nothing_here": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1321,18 +1178,7 @@
         }
       }
     },
-    "issues.issueList.riversideTowerB": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Riverside Tower B"
-          }
-        }
-      }
-    },
-    "issues.issueList.search": {
+    "issues.issue_list.search": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1343,29 +1189,7 @@
         }
       }
     },
-    "issues.issueSheet.1042187F3AC91E": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "10:42:18 · 7f3a…c91e"
-          }
-        }
-      }
-    },
-    "issues.issueSheet.1Photo": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 photo"
-          }
-        }
-      }
-    },
-    "issues.issueSheet.add": {
+    "issues.issue_sheet.add": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1376,7 +1200,7 @@
         }
       }
     },
-    "issues.issueSheet.assignedTo": {
+    "issues.issue_sheet.assigned_to": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1387,7 +1211,7 @@
         }
       }
     },
-    "issues.issueSheet.checklistPhotoRequired": {
+    "issues.issue_sheet.checklist_photo_required": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1398,7 +1222,7 @@
         }
       }
     },
-    "issues.issueSheet.close": {
+    "issues.issue_sheet.close": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1409,7 +1233,7 @@
         }
       }
     },
-    "issues.issueSheet.describeTheIssue": {
+    "issues.issue_sheet.describe_the_issue": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1420,7 +1244,7 @@
         }
       }
     },
-    "issues.issueSheet.due": {
+    "issues.issue_sheet.due": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1431,7 +1255,7 @@
         }
       }
     },
-    "issues.issueSheet.newIssue": {
+    "issues.issue_sheet.new_issue": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1442,7 +1266,7 @@
         }
       }
     },
-    "issues.issueSheet.pinOnPlan": {
+    "issues.issue_sheet.pin_on_plan": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1453,7 +1277,7 @@
         }
       }
     },
-    "issues.issueSheet.saveIssue": {
+    "issues.issue_sheet.save_issue": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1464,7 +1288,7 @@
         }
       }
     },
-    "issues.issueSheet.saveNextPhoto": {
+    "issues.issue_sheet.save_next_photo": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1475,7 +1299,7 @@
         }
       }
     },
-    "issues.issueSheet.severity": {
+    "issues.issue_sheet.severity": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1486,7 +1310,7 @@
         }
       }
     },
-    "issues.issueSheet.whatsWrong": {
+    "issues.issue_sheet.whats_wrong": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1497,7 +1321,7 @@
         }
       }
     },
-    "issues.outcomePicker.assigneeAndOpenedDate": {
+    "issues.outcome_picker.assignee_and_opened_date": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1508,18 +1332,7 @@
         }
       }
     },
-    "issues.outcomePicker.august12": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "12 Aug"
-          }
-        }
-      }
-    },
-    "issues.outcomePicker.bothPhotosGoInTheReport": {
+    "issues.outcome_picker.both_photos_go_in_the_report": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1530,7 +1343,7 @@
         }
       }
     },
-    "issues.outcomePicker.close": {
+    "issues.outcome_picker.close": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1541,7 +1354,7 @@
         }
       }
     },
-    "issues.outcomePicker.closeOutcome": {
+    "issues.outcome_picker.close_outcome": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1552,7 +1365,7 @@
         }
       }
     },
-    "issues.outcomePicker.gotWorse": {
+    "issues.outcome_picker.got_worse": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1563,7 +1376,7 @@
         }
       }
     },
-    "issues.outcomePicker.hasItBeenFixed": {
+    "issues.outcome_picker.has_it_been_fixed": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1574,7 +1387,7 @@
         }
       }
     },
-    "issues.outcomePicker.issueNumber": {
+    "issues.outcome_picker.issue_number": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1585,7 +1398,7 @@
         }
       }
     },
-    "issues.outcomePicker.keepItOpenAddTodayPhoto": {
+    "issues.outcome_picker.keep_it_open_add_today_photo": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1596,7 +1409,7 @@
         }
       }
     },
-    "issues.outcomePicker.notYet": {
+    "issues.outcome_picker.not_yet": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1607,7 +1420,7 @@
         }
       }
     },
-    "issues.outcomePicker.raiseToCritical": {
+    "issues.outcome_picker.raise_to_critical": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1618,7 +1431,7 @@
         }
       }
     },
-    "issues.outcomePicker.save": {
+    "issues.outcome_picker.save": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1629,7 +1442,7 @@
         }
       }
     },
-    "issues.outcomePicker.today": {
+    "issues.outcome_picker.today": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1695,7 +1508,7 @@
         }
       }
     },
-    "issues.verificationCamera.ghost": {
+    "issues.verification_camera.ghost": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1706,7 +1519,7 @@
         }
       }
     },
-    "issues.verificationCamera.ghostOpacity": {
+    "issues.verification_camera.ghost_opacity": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1717,7 +1530,7 @@
         }
       }
     },
-    "issues.verificationCamera.title": {
+    "issues.verification_camera.title": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1728,7 +1541,7 @@
         }
       }
     },
-    "maintab.mainTabView.issues": {
+    "maintab.main_tab_view.issues": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1739,7 +1552,7 @@
         }
       }
     },
-    "maintab.mainTabView.projects": {
+    "maintab.main_tab_view.projects": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1750,7 +1563,7 @@
         }
       }
     },
-    "maintab.mainTabView.settings": {
+    "maintab.main_tab_view.settings": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1761,7 +1574,7 @@
         }
       }
     },
-    "maintab.mainTabView.sync": {
+    "maintab.main_tab_view.sync": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1772,7 +1585,7 @@
         }
       }
     },
-    "plans.pinPreview.issueDetails": {
+    "plans.pin_preview.issue_details": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1783,7 +1596,7 @@
         }
       }
     },
-    "plans.pinPreview.movePin": {
+    "plans.pin_preview.move_pin": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1794,7 +1607,7 @@
         }
       }
     },
-    "plans.pinPreview.open": {
+    "plans.pin_preview.open": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1805,7 +1618,7 @@
         }
       }
     },
-    "plans.pinPreview.pinNumber": {
+    "plans.pin_preview.pin_number": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1816,7 +1629,7 @@
         }
       }
     },
-    "plans.planImport.chooseFromFiles": {
+    "plans.plan_import.choose_from_files": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1827,7 +1640,7 @@
         }
       }
     },
-    "plans.planImport.close": {
+    "plans.plan_import.close": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1838,7 +1651,7 @@
         }
       }
     },
-    "plans.planImport.importAPlan": {
+    "plans.plan_import.import_a_plan": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1849,7 +1662,7 @@
         }
       }
     },
-    "plans.planImport.pdfOneSheetOrMany": {
+    "plans.plan_import.pdf_one_sheet_or_many": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1860,7 +1673,7 @@
         }
       }
     },
-    "plans.planImport.photographAPrintedSheet": {
+    "plans.plan_import.photograph_a_printed_sheet": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1871,7 +1684,7 @@
         }
       }
     },
-    "plans.planList.plansLiveOnThisIphoneAndOpenWithoutSignal": {
+    "plans.plan_list.offline_availability": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1882,51 +1695,7 @@
         }
       }
     },
-    "plans.planViewer.1Critical": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 critical"
-          }
-        }
-      }
-    },
-    "plans.planViewer.1Minor": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 minor"
-          }
-        }
-      }
-    },
-    "plans.planViewer.2Closed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 closed"
-          }
-        }
-      }
-    },
-    "plans.planViewer.2Major": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 major"
-          }
-        }
-      }
-    },
-    "plans.planViewer.closedIssues": {
+    "plans.plan_viewer.closed_issues": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1937,7 +1706,7 @@
         }
       }
     },
-    "plans.planViewer.layers": {
+    "plans.plan_viewer.layers": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1948,7 +1717,7 @@
         }
       }
     },
-    "plans.planViewer.openIssues": {
+    "plans.plan_viewer.open_issues": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1959,7 +1728,7 @@
         }
       }
     },
-    "plans.planViewer.photos": {
+    "plans.plan_viewer.photos": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1970,7 +1739,7 @@
         }
       }
     },
-    "plans.planViewer.pressAndHoldToDropAPin": {
+    "plans.plan_viewer.press_and_hold_to_drop_a_pin": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1981,18 +1750,7 @@
         }
       }
     },
-    "projects.bulkLocations.120Rooms": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "120 rooms"
-          }
-        }
-      }
-    },
-    "projects.bulkLocations.add120Rooms": {
+    "projects.bulk_locations.add120_rooms": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2003,7 +1761,7 @@
         }
       }
     },
-    "projects.bulkLocations.addRoomsInBulk": {
+    "projects.bulk_locations.add_rooms_in_bulk": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2014,7 +1772,7 @@
         }
       }
     },
-    "projects.bulkLocations.alreadyHaveThisLayoutInAnotherProject": {
+    "projects.bulk_locations.duplicate_layout_prompt": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2025,18 +1783,7 @@
         }
       }
     },
-    "projects.bulkLocations.and117More": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "and 117 more"
-          }
-        }
-      }
-    },
-    "projects.bulkLocations.copyItsRooms": {
+    "projects.bulk_locations.copy_its_rooms": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2047,40 +1794,7 @@
         }
       }
     },
-    "projects.bulkLocations.level77ABedroom1": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level 7 › 7A › Bedroom 1"
-          }
-        }
-      }
-    },
-    "projects.bulkLocations.level77ABedroom2": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level 7 › 7A › Bedroom 2"
-          }
-        }
-      }
-    },
-    "projects.bulkLocations.level77ALivingRoom": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level 7 › 7A › Living room"
-          }
-        }
-      }
-    },
-    "projects.bulkLocations.levels": {
+    "projects.bulk_locations.levels": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2091,7 +1805,7 @@
         }
       }
     },
-    "projects.bulkLocations.preview": {
+    "projects.bulk_locations.preview": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2102,7 +1816,7 @@
         }
       }
     },
-    "projects.bulkLocations.roomsInEveryUnit": {
+    "projects.bulk_locations.rooms_in_every_unit": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2113,7 +1827,7 @@
         }
       }
     },
-    "projects.bulkLocations.unitsPerLevel": {
+    "projects.bulk_locations.units_per_level": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2124,18 +1838,7 @@
         }
       }
     },
-    "projects.cloneTree.82Rooms3Levels": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "82 rooms · 3 levels"
-          }
-        }
-      }
-    },
-    "projects.cloneTree.copy82Rooms": {
+    "projects.clone_tree.copy82_rooms": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2146,7 +1849,7 @@
         }
       }
     },
-    "projects.cloneTree.copyRooms": {
+    "projects.clone_tree.copy_rooms": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2157,7 +1860,7 @@
         }
       }
     },
-    "projects.cloneTree.copyRoomsFrom": {
+    "projects.clone_tree.copy_rooms_from": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2168,7 +1871,7 @@
         }
       }
     },
-    "projects.cloneTree.pickAProjectItsLevelsUnitsAndRoomsAreCopiedPhotosAndIssuesAreNot": {
+    "projects.clone_tree.copy_details": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2179,40 +1882,7 @@
         }
       }
     },
-    "projects.endSession.7NewIssues": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "7 new issues"
-          }
-        }
-      }
-    },
-    "projects.endSession.9": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "9"
-          }
-        }
-      }
-    },
-    "projects.endSession.all82RoomsCheckedInJustUnderSixHours": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All 82 rooms checked in just under six hours."
-          }
-        }
-      }
-    },
-    "projects.endSession.everyPhotoIsFingerprinted": {
+    "projects.end_session.every_photo_is_fingerprinted": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2223,7 +1893,7 @@
         }
       }
     },
-    "projects.endSession.keepsGoingIfYouCloseTheApp": {
+    "projects.end_session.background_upload_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2234,7 +1904,7 @@
         }
       }
     },
-    "projects.endSession.later": {
+    "projects.end_session.later": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2245,7 +1915,7 @@
         }
       }
     },
-    "projects.endSession.makeTheReport": {
+    "projects.end_session.make_the_report": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2256,51 +1926,7 @@
         }
       }
     },
-    "projects.endSession.nothingWasEditedAfterCapture": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing was edited after capture"
-          }
-        }
-      }
-    },
-    "projects.endSession.summary": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You took 112 photos, logged 7 new issues and closed 9 from last time."
-          }
-        }
-      }
-    },
-    "projects.endSession.tue30Sep812To1400": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tue 30 Sep · 8:12 to 14:00"
-          }
-        }
-      }
-    },
-    "projects.endSession.uploading87Of112": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uploading 87 of 112"
-          }
-        }
-      }
-    },
-    "projects.newProject.client": {
+    "projects.new_project.client": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2311,7 +1937,7 @@
         }
       }
     },
-    "projects.newProject.close": {
+    "projects.new_project.close": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2322,7 +1948,7 @@
         }
       }
     },
-    "projects.newProject.createProject": {
+    "projects.new_project.create_project": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2333,7 +1959,7 @@
         }
       }
     },
-    "projects.newProject.name": {
+    "projects.new_project.name": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2344,7 +1970,7 @@
         }
       }
     },
-    "projects.newProject.newProject": {
+    "projects.new_project.new_project": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2355,7 +1981,7 @@
         }
       }
     },
-    "projects.newProject.optional": {
+    "projects.new_project.optional": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2366,18 +1992,7 @@
         }
       }
     },
-    "projects.newProject.riversideTowerB": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Riverside Tower B"
-          }
-        }
-      }
-    },
-    "projects.newProject.siteAddress": {
+    "projects.new_project.site_address": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2388,7 +2003,7 @@
         }
       }
     },
-    "projects.newProject.streetDistrict": {
+    "projects.new_project.street_district": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2399,7 +2014,7 @@
         }
       }
     },
-    "projects.projectDetail.addRoomsInBulk": {
+    "projects.project_detail.add_rooms_in_bulk": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2410,7 +2025,7 @@
         }
       }
     },
-    "projects.projectDetail.clientAndArea": {
+    "projects.project_detail.client_and_area": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2421,7 +2036,7 @@
         }
       }
     },
-    "projects.projectDetail.copyRoomsFromAnotherProject": {
+    "projects.project_detail.copy_rooms_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2432,7 +2047,7 @@
         }
       }
     },
-    "projects.projectDetail.importAPlan": {
+    "projects.project_detail.import_a_plan": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2443,7 +2058,7 @@
         }
       }
     },
-    "projects.projectDetail.importAPlan2": {
+    "projects.project_detail.import_a_plan2": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2454,18 +2069,7 @@
         }
       }
     },
-    "projects.projectDetail.issueSummary": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "14 open issues, 2 of them overdue. Last full walkthrough on 12 Aug with Hanh."
-          }
-        }
-      }
-    },
-    "projects.projectDetail.more": {
+    "projects.project_detail.more": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2476,7 +2080,7 @@
         }
       }
     },
-    "projects.projectDetail.newWalkthrough": {
+    "projects.project_detail.new_walkthrough": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2487,7 +2091,7 @@
         }
       }
     },
-    "projects.projectDetail.resumeWalkthrough": {
+    "projects.project_detail.resume_walkthrough": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2498,7 +2102,7 @@
         }
       }
     },
-    "projects.projectDetail.section": {
+    "projects.project_detail.section": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2509,7 +2113,7 @@
         }
       }
     },
-    "projects.projectDetail.sessions": {
+    "projects.project_detail.sessions": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2520,29 +2124,7 @@
         }
       }
     },
-    "projects.projectList.2": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2"
-          }
-        }
-      }
-    },
-    "projects.projectList.46Photos7NewIssues": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "46 photos, 7 new issues"
-          }
-        }
-      }
-    },
-    "projects.projectList.addSampleProject": {
+    "projects.project_list.add_sample_project": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2553,7 +2135,7 @@
         }
       }
     },
-    "projects.projectList.allProjects": {
+    "projects.project_list.all_projects": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2564,7 +2146,7 @@
         }
       }
     },
-    "projects.projectList.archived": {
+    "projects.project_list.archived": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2575,18 +2157,7 @@
         }
       }
     },
-    "projects.projectList.level737Of82Rooms": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level 7 · 37 of 82 rooms"
-          }
-        }
-      }
-    },
-    "projects.projectList.newProject": {
+    "projects.project_list.new_project": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2597,7 +2168,7 @@
         }
       }
     },
-    "projects.projectList.projects": {
+    "projects.project_list.projects": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2608,7 +2179,7 @@
         }
       }
     },
-    "projects.projectList.resume": {
+    "projects.project_list.resume": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2619,90 +2190,13 @@
         }
       }
     },
-    "projects.projectList.riversideTowerB": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Riverside Tower B"
-          }
-        }
-      }
-    },
-    "projects.projectList.savedOnThisIphoneSyncedAt847": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saved on this iPhone · synced at 8:47"
-          }
-        }
-      }
-    },
-    "projects.projectList.search": {
+    "projects.project_list.search": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Search"
-          }
-        }
-      }
-    },
-    "projects.projectList.walkthroughInProgressSince812": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Walkthrough in progress · since 8:12"
-          }
-        }
-      }
-    },
-    "projects.room.14Of22Answered": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "14 of 22 answered"
-          }
-        }
-      }
-    },
-    "projects.room.2IssuesToReCheckFrom12Aug": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 issues to re-check from 12 Aug"
-          }
-        }
-      }
-    },
-    "projects.room.64": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "64%"
-          }
-        }
-      }
-    },
-    "projects.room.6Today": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "6 today"
           }
         }
       }
@@ -2729,18 +2223,7 @@
         }
       }
     },
-    "projects.room.crackByTheSkirtingLooseSocketCover": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Crack by the skirting, loose socket cover"
-          }
-        }
-      }
-    },
-    "projects.room.finishingChecklist": {
+    "projects.room.finishing_checklist": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2762,7 +2245,7 @@
         }
       }
     },
-    "projects.room.markAsChecked": {
+    "projects.room.mark_as_checked": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2795,7 +2278,7 @@
         }
       }
     },
-    "projects.room.renameRoom": {
+    "projects.room.rename_room": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2806,7 +2289,7 @@
         }
       }
     },
-    "projects.room.unitAndLevel": {
+    "projects.room.unit_and_level": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2850,7 +2333,7 @@
         }
       }
     },
-    "projects.startSession.14IssuesFrom12AugWillBeWaitingInTheirRoomsForYouToReCheck": {
+    "projects.start_session.pending_issues_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2861,7 +2344,7 @@
         }
       }
     },
-    "projects.startSession.close": {
+    "projects.start_session.close": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2872,7 +2355,7 @@
         }
       }
     },
-    "projects.startSession.eGFinishingCheckLevels79": {
+    "projects.start_session.session_name_placeholder": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2883,7 +2366,7 @@
         }
       }
     },
-    "projects.startSession.inspector": {
+    "projects.start_session.inspector": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2894,7 +2377,7 @@
         }
       }
     },
-    "projects.startSession.newWalkthrough": {
+    "projects.start_session.new_walkthrough": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2905,7 +2388,7 @@
         }
       }
     },
-    "projects.startSession.noteForTheReport": {
+    "projects.start_session.note_for_the_report": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2916,7 +2399,7 @@
         }
       }
     },
-    "projects.startSession.start": {
+    "projects.start_session.start": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2927,7 +2410,7 @@
         }
       }
     },
-    "projects.startSession.weather": {
+    "projects.start_session.weather": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2938,7 +2421,7 @@
         }
       }
     },
-    "projects.startSession.weather.overcast": {
+    "projects.start_session.weather.overcast": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2949,7 +2432,7 @@
         }
       }
     },
-    "projects.startSession.weather.rain": {
+    "projects.start_session.weather.rain": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2960,24 +2443,13 @@
         }
       }
     },
-    "projects.startSession.weather.sunny": {
+    "projects.start_session.weather.sunny": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Sunny"
-          }
-        }
-      }
-    },
-    "projects.survey.37Of82RoomsChecked": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "37 of 82 rooms checked"
           }
         }
       }
@@ -3015,7 +2487,7 @@
         }
       }
     },
-    "projects.survey.filter.hasIssues": {
+    "projects.survey.filter.has_issues": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3026,24 +2498,13 @@
         }
       }
     },
-    "projects.survey.filter.notChecked": {
+    "projects.survey.filter.not_checked": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Not checked"
-          }
-        }
-      }
-    },
-    "projects.survey.level7": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level 7"
           }
         }
       }
@@ -3055,17 +2516,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Plan"
-          }
-        }
-      }
-    },
-    "projects.survey.since812": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "since 8:12"
           }
         }
       }
@@ -3092,28 +2542,6 @@
         }
       }
     },
-    "reports.branding.eastlineLogoPng": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eastline logo.png"
-          }
-        }
-      }
-    },
-    "reports.branding.el": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "EL"
-          }
-        }
-      }
-    },
     "reports.branding.footer": {
       "extractionState": "manual",
       "localizations": {
@@ -3125,7 +2553,7 @@
         }
       }
     },
-    "reports.branding.preparedFor": {
+    "reports.branding.prepared_for": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3147,7 +2575,7 @@
         }
       }
     },
-    "reports.branding.shownOnTheCoverAndEveryPage": {
+    "reports.branding.shown_on_the_cover_and_every_page": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3158,7 +2586,7 @@
         }
       }
     },
-    "reports.branding.yourLetterhead": {
+    "reports.branding.your_letterhead": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3169,7 +2597,7 @@
         }
       }
     },
-    "reports.options.beforeAndAfter": {
+    "reports.options.before_and_after": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3180,7 +2608,7 @@
         }
       }
     },
-    "reports.options.checklistResults": {
+    "reports.options.checklist_results": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3191,7 +2619,7 @@
         }
       }
     },
-    "reports.options.coverAndSummary": {
+    "reports.options.cover_and_summary": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3202,18 +2630,7 @@
         }
       }
     },
-    "reports.options.fourPairs": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 pairs"
-          }
-        }
-      }
-    },
-    "reports.options.issuesOpenOver14Days": {
+    "reports.options.issues_open_over14_days": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3224,7 +2641,7 @@
         }
       }
     },
-    "reports.options.issuesWithPhotos": {
+    "reports.options.issues_with_photos": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3235,24 +2652,13 @@
         }
       }
     },
-    "reports.options.pinsOnEachPlan": {
+    "reports.options.pins_on_each_plan": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pins on each plan"
-          }
-        }
-      }
-    },
-    "reports.options.seven": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "7"
           }
         }
       }
@@ -3268,95 +2674,7 @@
         }
       }
     },
-    "reports.options.threeRooms": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3 rooms"
-          }
-        }
-      }
-    },
-    "reports.options.twoPeople": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 people"
-          }
-        }
-      }
-    },
-    "reports.options.twoSheets": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 sheets"
-          }
-        }
-      }
-    },
-    "reports.pDFPreview.1Of18": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 of 18"
-          }
-        }
-      }
-    },
-    "reports.pDFPreview.7NewIssues1Critical4Major2Minor9IssuesFrom12AugClosed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "7 new issues: 1 critical, 4 major, 2 minor. 9 issues from 12 Aug closed."
-          }
-        }
-      }
-    },
-    "reports.pDFPreview.page1Of18": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Page 1 of 18"
-          }
-        }
-      }
-    },
-    "reports.pDFPreview.r093007Pdf": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "R-0930-07.pdf"
-          }
-        }
-      }
-    },
-    "reports.pDFPreview.riversideTowerB30September2026HanhNguyen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Riverside Tower B · 30 September 2026 · Hanh Nguyen"
-          }
-        }
-      }
-    },
-    "reports.pDFPreview.saveToFiles": {
+    "reports.pdf_preview.save_to_files": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3367,7 +2685,7 @@
         }
       }
     },
-    "reports.pDFPreview.send": {
+    "reports.pdf_preview.send": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3378,7 +2696,7 @@
         }
       }
     },
-    "reports.pDFPreview.siteInspectionReport": {
+    "reports.pdf_preview.site_inspection_report": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3389,18 +2707,7 @@
         }
       }
     },
-    "reports.reportBuilder.1Of2": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 of 2"
-          }
-        }
-      }
-    },
-    "reports.reportBuilder.contractor": {
+    "reports.report_builder.contractor": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3411,7 +2718,7 @@
         }
       }
     },
-    "reports.reportBuilder.createPdf": {
+    "reports.report_builder.create_pdf": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3422,18 +2729,7 @@
         }
       }
     },
-    "reports.reportBuilder.eastline": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eastline"
-          }
-        }
-      }
-    },
-    "reports.reportBuilder.excel": {
+    "reports.report_builder.excel": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3444,7 +2740,7 @@
         }
       }
     },
-    "reports.reportBuilder.groupIssuesBy": {
+    "reports.report_builder.group_issues_by": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3455,7 +2751,7 @@
         }
       }
     },
-    "reports.reportBuilder.groupIssuesBy2": {
+    "reports.report_builder.group_issues_by2": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3466,7 +2762,7 @@
         }
       }
     },
-    "reports.reportBuilder.include": {
+    "reports.report_builder.include": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3477,7 +2773,7 @@
         }
       }
     },
-    "reports.reportBuilder.next": {
+    "reports.report_builder.next": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3488,18 +2784,7 @@
         }
       }
     },
-    "reports.reportBuilder.oneOfTwo": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 of 2"
-          }
-        }
-      }
-    },
-    "reports.reportBuilder.report": {
+    "reports.report_builder.report": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3510,7 +2795,7 @@
         }
       }
     },
-    "reports.reportBuilder.room": {
+    "reports.report_builder.room": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3521,7 +2806,7 @@
         }
       }
     },
-    "reports.reportBuilder.signatures": {
+    "reports.report_builder.signatures": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3532,7 +2817,7 @@
         }
       }
     },
-    "reports.reportBuilder.yourLetterhead": {
+    "reports.report_builder.your_letterhead": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3543,7 +2828,7 @@
         }
       }
     },
-    "reports.signaturePad.clear": {
+    "reports.signature_pad.clear": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3554,7 +2839,7 @@
         }
       }
     },
-    "reports.signaturePad.contractor": {
+    "reports.signature_pad.contractor": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3565,7 +2850,7 @@
         }
       }
     },
-    "reports.signaturePad.done": {
+    "reports.signature_pad.done": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3576,18 +2861,7 @@
         }
       }
     },
-    "reports.signaturePad.hanhSupervisor": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hanh (supervisor) ✓"
-          }
-        }
-      }
-    },
-    "reports.signaturePad.nameAndRole": {
+    "reports.signature_pad.name_and_role": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3598,7 +2872,7 @@
         }
       }
     },
-    "reports.signaturePad.party": {
+    "reports.signature_pad.party": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3609,7 +2883,7 @@
         }
       }
     },
-    "reports.signaturePad.sign": {
+    "reports.signature_pad.sign": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3620,7 +2894,7 @@
         }
       }
     },
-    "reports.signaturePad.signAboveTheLine": {
+    "reports.signature_pad.sign_above_the_line": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3631,35 +2905,13 @@
         }
       }
     },
-    "reports.signaturePad.thisIsAHandwrittenSignatureForInternalSignOffNotACertifiedDigitalSignature": {
+    "reports.signature_pad.signature_disclaimer": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "This is a handwritten signature for internal sign-off, not a certified digital signature."
-          }
-        }
-      }
-    },
-    "settings.account.2": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2"
-          }
-        }
-      }
-    },
-    "settings.account.2MinutesAgo": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 minutes ago"
           }
         }
       }
@@ -3675,17 +2927,6 @@
         }
       }
     },
-    "settings.account.apple": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apple"
-          }
-        }
-      }
-    },
     "settings.account.devices": {
       "extractionState": "manual",
       "localizations": {
@@ -3697,40 +2938,7 @@
         }
       }
     },
-    "settings.account.ipadAir": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPad Air"
-          }
-        }
-      }
-    },
-    "settings.account.iphone16": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone 16"
-          }
-        }
-      }
-    },
-    "settings.account.lastSeenYesterday": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Last seen yesterday"
-          }
-        }
-      }
-    },
-    "settings.account.lastSync": {
+    "settings.account.last_sync": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3752,7 +2960,7 @@
         }
       }
     },
-    "settings.account.signOut": {
+    "settings.account.sign_out": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3763,7 +2971,7 @@
         }
       }
     },
-    "settings.account.signedInWith": {
+    "settings.account.signed_in_with": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3774,18 +2982,7 @@
         }
       }
     },
-    "settings.account.thisIphone": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This iPhone"
-          }
-        }
-      }
-    },
-    "settings.appLock.appLock": {
+    "settings.app_lock.app_lock": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3796,7 +2993,7 @@
         }
       }
     },
-    "settings.appLock.changePasscode": {
+    "settings.app_lock.change_passcode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3807,7 +3004,7 @@
         }
       }
     },
-    "settings.appLock.countedFromWhenYouLeaveSitelogUploadsKeepRunningWhileItSLocked": {
+    "settings.app_lock.lock_timer_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3818,7 +3015,7 @@
         }
       }
     },
-    "settings.appLock.faceIdCanFailUnderAHelmetOrMaskYourPasscodeAlwaysWorks": {
+    "settings.app_lock.passcode_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3829,7 +3026,7 @@
         }
       }
     },
-    "settings.appLock.fifteenMinutes": {
+    "settings.app_lock.fifteen_minutes": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3840,7 +3037,7 @@
         }
       }
     },
-    "settings.appLock.fiveMinutes": {
+    "settings.app_lock.five_minutes": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3851,7 +3048,7 @@
         }
       }
     },
-    "settings.appLock.immediately": {
+    "settings.app_lock.immediately": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3862,7 +3059,7 @@
         }
       }
     },
-    "settings.appLock.lockAfter": {
+    "settings.app_lock.lock_after": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3873,7 +3070,7 @@
         }
       }
     },
-    "settings.appLock.lockApp": {
+    "settings.app_lock.lock_app": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3884,7 +3081,7 @@
         }
       }
     },
-    "settings.appLock.oneHour": {
+    "settings.app_lock.one_hour": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3895,7 +3092,7 @@
         }
       }
     },
-    "settings.appLock.oneMinute": {
+    "settings.app_lock.one_minute": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3906,7 +3103,7 @@
         }
       }
     },
-    "settings.appLock.unlockWithFaceId": {
+    "settings.app_lock.unlock_with_face_id": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3917,7 +3114,7 @@
         }
       }
     },
-    "settings.devices.laserMeter": {
+    "settings.devices.laser_meter": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3928,7 +3125,7 @@
         }
       }
     },
-    "settings.devices.myDevices": {
+    "settings.devices.my_devices": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3972,7 +3169,7 @@
         }
       }
     },
-    "settings.devices.theCameraNeverWaitsForTheMeterIfItDisconnectsYouKeepShootingAndWeReconnectQuietly": {
+    "settings.devices.reconnect_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3983,7 +3180,7 @@
         }
       }
     },
-    "settings.setPasscode.cancel": {
+    "settings.set_passcode.cancel": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3994,7 +3191,7 @@
         }
       }
     },
-    "settings.setPasscode.enterA6DigitPasscode": {
+    "settings.set_passcode.enter_a6_digit_passcode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4005,7 +3202,7 @@
         }
       }
     },
-    "settings.setPasscode.setPasscode": {
+    "settings.set_passcode.set_passcode": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4016,7 +3213,7 @@
         }
       }
     },
-    "settings.setPasscode.youLlUseItWhenFaceIdCanTSeeYouItStaysOnThisIphoneAndIsNeverUploaded": {
+    "settings.set_passcode.passcode_privacy_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4027,7 +3224,7 @@
         }
       }
     },
-    "settings.settings.appLock": {
+    "settings.settings.app_lock": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4049,7 +3246,7 @@
         }
       }
     },
-    "settings.settings.deleteAccount": {
+    "settings.settings.delete_account": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4060,7 +3257,7 @@
         }
       }
     },
-    "settings.settings.deleteAccount2": {
+    "settings.settings.delete_account2": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4071,7 +3268,7 @@
         }
       }
     },
-    "settings.settings.deleteYourAccount": {
+    "settings.settings.delete_your_account": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4093,18 +3290,7 @@
         }
       }
     },
-    "settings.settings.faceIdFiveMinutes": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Face ID · 5 min"
-          }
-        }
-      }
-    },
-    "settings.settings.laserMeter": {
+    "settings.settings.laser_meter": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4115,7 +3301,7 @@
         }
       }
     },
-    "settings.settings.onSite": {
+    "settings.settings.on_site": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4137,7 +3323,7 @@
         }
       }
     },
-    "settings.settings.quickPhrases": {
+    "settings.settings.quick_phrases": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4148,7 +3334,7 @@
         }
       }
     },
-    "settings.settings.reportLetterhead": {
+    "settings.settings.report_letterhead": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4170,18 +3356,7 @@
         }
       }
     },
-    "settings.settings.synced2MinutesAgoIphoneAndIpad": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Synced 2 minutes ago · iPhone and iPad"
-          }
-        }
-      }
-    },
-    "settings.settings.weLlRemoveTheCloudCopiesOf3ProjectsAnd1284PhotosWithin30DaysWhatSOnThisIphoneStaysUntilYouDeleteTheApp": {
+    "settings.settings.delete_account_notice": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4192,29 +3367,7 @@
         }
       }
     },
-    "settings.storageCleanup.16Gb": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1.6 GB"
-          }
-        }
-      }
-    },
-    "settings.storageCleanup.540Mb": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "540 MB"
-          }
-        }
-      }
-    },
-    "settings.storageCleanup.backedUp": {
+    "settings.storage_cleanup.backed_up": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4225,7 +3378,7 @@
         }
       }
     },
-    "settings.storageCleanup.freeUpSpace": {
+    "settings.storage_cleanup.free_up_space": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4236,7 +3389,7 @@
         }
       }
     },
-    "settings.storageCleanup.onlyFilesAlreadyBackedUpAreRemovedFromThisIphoneTheyStayInTheCloudAndInYourReports": {
+    "settings.storage_cleanup.backup_notice": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4247,7 +3400,7 @@
         }
       }
     },
-    "settings.storageCleanup.remove16GbFromThisIphone": {
+    "settings.storage_cleanup.remove_files_action": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4302,7 +3455,7 @@
         }
       }
     },
-    "uploads.uploadFiles.filter": {
+    "uploads.upload_files.filter": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4313,7 +3466,7 @@
         }
       }
     },
-    "uploads.uploadFiles.filter2": {
+    "uploads.upload_files.filter2": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4324,7 +3477,7 @@
         }
       }
     },
-    "uploads.uploadFiles.todaySFiles": {
+    "uploads.upload_files.today_s_files": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4335,40 +3488,7 @@
         }
       }
     },
-    "uploads.uploadStatus.1Photo": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 photo"
-          }
-        }
-      }
-    },
-    "uploads.uploadStatus.243": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "243"
-          }
-        }
-      }
-    },
-    "uploads.uploadStatus.3Videos": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3 videos"
-          }
-        }
-      }
-    },
-    "uploads.uploadStatus.didnTUpload": {
+    "uploads.upload_status.didn_t_upload": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4379,18 +3499,7 @@
         }
       }
     },
-    "uploads.uploadStatus.filesProgress": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "187 of 243 files"
-          }
-        }
-      }
-    },
-    "uploads.uploadStatus.gettingAFreshUploadLink": {
+    "uploads.upload_status.getting_a_fresh_upload_link": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4401,18 +3510,7 @@
         }
       }
     },
-    "uploads.uploadStatus.img0922Img0925": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "IMG_0922, IMG_0925"
-          }
-        }
-      }
-    },
-    "uploads.uploadStatus.over100MbSoTheyWaitForWiFi": {
+    "uploads.upload_status.wifi_wait_notice": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4423,7 +3521,7 @@
         }
       }
     },
-    "uploads.uploadStatus.retry": {
+    "uploads.upload_status.retry": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4434,18 +3532,7 @@
         }
       }
     },
-    "uploads.uploadStatus.riversideTodayAbout6MinutesLeftOnThisWiFi": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Riverside, today · about 6 minutes left on this Wi-Fi"
-          }
-        }
-      }
-    },
-    "uploads.uploadStatus.someFilesFinishWhileTheIphoneIsIdleYouCanCloseTheApp": {
+    "uploads.upload_status.background_upload_note": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4456,7 +3543,7 @@
         }
       }
     },
-    "uploads.uploadStatus.sync": {
+    "uploads.upload_status.sync": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4467,7 +3554,7 @@
         }
       }
     },
-    "uploads.uploadStatus.theServerRejectedTheChecksum": {
+    "uploads.upload_status.checksum_error": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4478,7 +3565,7 @@
         }
       }
     },
-    "uploads.uploadStatus.todaySFiles": {
+    "uploads.upload_status.today_s_files": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -4489,7 +3576,7 @@
         }
       }
     },
-    "uploads.uploadStatus.waiting": {
+    "uploads.upload_status.waiting": {
       "extractionState": "manual",
       "localizations": {
         "en": {

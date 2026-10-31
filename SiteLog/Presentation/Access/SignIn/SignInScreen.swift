@@ -15,11 +15,11 @@ struct SignInScreen: View {
             AppMark(size: 56)
                 .padding(.top)
 
-            Text("access.signIn.yourSiteLogOnEveryDevice")
+            Text("access.sign_in.title")
                 .modifier(DSTextStyle.largeTitle)
 
             Text(
-                "access.signIn.signInToBackUpProjectsAndHandOffBetweenIphoneAndIpadEverythingStillWorksOfflineWithoutAnAccount"
+                "access.sign_in.description"
             )
             .modifier(DSTextStyle.subhead)
             .foregroundStyle(DSColor.textSecondary)
@@ -29,15 +29,15 @@ struct SignInScreen: View {
             VStack(alignment: .leading, spacing: DSSpacing.spacing12) {
                 featureRow(
                     systemImage: "wifi.slash",
-                    text: String(localized: "access.signIn.worksWithZeroSignal")
+                    text: String(localized: "access.sign_in.benefit_1")
                 )
                 featureRow(
                     systemImage: "checkmark.shield",
-                    text: String(localized: "access.signIn.photosHashedAtCapture")
+                    text: String(localized: "access.sign_in.benefit_2")
                 )
                 featureRow(
                     systemImage: "doc.text",
-                    text: String(localized: "access.signIn.signedPdfInOneTap")
+                    text: String(localized: "access.sign_in.benefit_3")
                 )
             }
         }
@@ -46,16 +46,16 @@ struct SignInScreen: View {
         .background(DSColor.canvas)
         .bottomDock(showsBackground: false) {
             Button(action: onSignIn) {
-                Label("access.signIn.signInWithApple", systemImage: "apple.logo")
+                Label("access.sign_in.primary_action", systemImage: "apple.logo")
             }
             .buttonStyle(.sd(.primary))
 
             Button(action: onSignIn) {
-                Label("access.signIn.continueWithEmail", systemImage: "envelope")
+                Label("access.sign_in.secondary_action", systemImage: "envelope")
             }
             .buttonStyle(.sd(.secondary))
 
-            Button("access.signIn.continueOffline", action: onContinueOffline)
+            Button("access.sign_in.tertiary_action", action: onContinueOffline)
                 .buttonStyle(.sd(.ghost))
         }
         .enableInjection()

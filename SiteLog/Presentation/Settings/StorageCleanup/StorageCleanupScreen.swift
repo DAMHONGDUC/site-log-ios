@@ -10,7 +10,7 @@ struct StorageCleanupScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 Text(
-                    "settings.storageCleanup.onlyFilesAlreadyBackedUpAreRemovedFromThisIphoneTheyStayInTheCloudAndInYourReports"
+                    "settings.storage_cleanup.backup_notice"
                 )
                 .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
@@ -18,14 +18,14 @@ struct StorageCleanupScreen: View {
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     DSSectionHeader(
-                        title: String(localized: "settings.storageCleanup.backedUp"),
-                        trailing: String(localized: "settings.storageCleanup.16Gb")
+                        title: String(localized: "settings.storage_cleanup.backed_up"),
+                        trailing: "1.6 GB"
                     )
                     ForEach(FakeData.sessions.dropFirst()) { session in
                         DSListRow(
                             title: "Riverside · \(session.title)",
                             subtitle: session.summary,
-                            value: String(localized: "settings.storageCleanup.540Mb")
+                            value: "540 MB"
                         )
                         DSDivider()
                     }
@@ -34,10 +34,10 @@ struct StorageCleanupScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("settings.storageCleanup.freeUpSpace")
+        .navigationTitle("settings.storage_cleanup.free_up_space")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("settings.storageCleanup.remove16GbFromThisIphone") {
+            Button("settings.storage_cleanup.remove_files_action") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

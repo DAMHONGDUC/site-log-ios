@@ -17,7 +17,7 @@ struct UploadFilesScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
-                Picker("uploads.uploadFiles.filter", selection: $filter) {
+                Picker("uploads.upload_files.filter", selection: $filter) {
                     ForEach(filters, id: \.self) { item in
                         Text(NSLocalizedString(item, comment: "")).tag(item)
                     }
@@ -35,11 +35,11 @@ struct UploadFilesScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("uploads.uploadFiles.todaySFiles")
+        .navigationTitle("uploads.upload_files.today_s_files")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("uploads.uploadFiles.filter2", systemImage: "line.3.horizontal.decrease") {}
+                Button("uploads.upload_files.filter2", systemImage: "line.3.horizontal.decrease") {}
             }
         }
         .enableInjection()

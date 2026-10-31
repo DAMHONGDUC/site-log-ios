@@ -25,7 +25,7 @@ struct PlanListScreen: View {
                 }
             }
 
-            Text("plans.planList.plansLiveOnThisIphoneAndOpenWithoutSignal")
+            Text("plans.plan_list.offline_availability")
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textTertiary)
                 .frame(maxWidth: .infinity)

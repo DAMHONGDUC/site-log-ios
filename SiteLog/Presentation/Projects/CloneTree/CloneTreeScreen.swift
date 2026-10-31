@@ -12,14 +12,14 @@ struct CloneTreeScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                 Text(
-                    "projects.cloneTree.pickAProjectItsLevelsUnitsAndRoomsAreCopiedPhotosAndIssuesAreNot"
+                    "projects.clone_tree.copy_details"
                 )
                 .modifier(DSTextStyle.subhead)
                 .foregroundStyle(DSColor.textSecondary)
                 .padding(.horizontal, DSSpacing.spacing16)
                 .padding(.bottom, DSSpacing.spacing16)
 
-                DSSectionHeader(title: String(localized: "projects.cloneTree.copyRoomsFrom"))
+                DSSectionHeader(title: String(localized: "projects.clone_tree.copy_rooms_from"))
 
                 ForEach(FakeData.projects) { project in
                     Button {
@@ -27,7 +27,7 @@ struct CloneTreeScreen: View {
                     } label: {
                         DSListRow(
                             title: project.name,
-                            subtitle: String(localized: "projects.cloneTree.82Rooms3Levels")
+                            subtitle: "82 rooms · 3 levels"
                         ) {
                             DSRadioMark(isOn: selectedName == project.name)
                         }
@@ -40,10 +40,10 @@ struct CloneTreeScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("projects.cloneTree.copyRooms")
+        .navigationTitle("projects.clone_tree.copy_rooms")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("projects.cloneTree.copy82Rooms") {
+            Button("projects.clone_tree.copy82_rooms") {
                 dismiss()
             }
             .buttonStyle(.sd(.primary))

@@ -19,12 +19,12 @@ struct IssueListScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
-                Text("issues.issueList.riversideTowerB")
+                Text(verbatim: "Riverside Tower B")
                     .modifier(DSTextStyle.subhead)
                     .foregroundStyle(DSColor.textSecondary)
                     .padding(.horizontal, DSSpacing.spacing16)
 
-                Picker("issues.issueList.filter", selection: $filter) {
+                Picker("issues.issue_list.filter", selection: $filter) {
                     ForEach(Filter.allCases, id: \.self) { item in
                         Text(NSLocalizedString(item.rawValue, comment: "")).tag(item)
                     }
@@ -35,9 +35,9 @@ struct IssueListScreen: View {
                 if visibleIssues.isEmpty {
                     DSEmptyState(
                         systemImage: "checkmark.circle",
-                        title: String(localized: "issues.issueList.nothingHere"),
+                        title: String(localized: "issues.issue_list.nothing_here"),
                         message: String(
-                            localized: "issues.issueList.issuesYouLogOnSiteShowUpInThisList"
+                            localized: "issues.issue_list.empty_state_message"
                         )
                     )
                     .frame(maxWidth: .infinity)
@@ -50,11 +50,11 @@ struct IssueListScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("issues.issueList.issues")
+        .navigationTitle("issues.issue_list.issues")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button("issues.issueList.search", systemImage: "magnifyingglass") {}
-                Button("issues.issueList.filter2", systemImage: "line.3.horizontal.decrease") {}
+                Button("issues.issue_list.search", systemImage: "magnifyingglass") {}
+                Button("issues.issue_list.filter2", systemImage: "line.3.horizontal.decrease") {}
             }
         }
         .enableInjection()

@@ -43,11 +43,11 @@ struct ProjectDetailScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu("projects.projectDetail.more", systemImage: "ellipsis") {
-                    Button("projects.projectDetail.newWalkthrough", systemImage: "figure.walk") {
+                Menu("projects.project_detail.more", systemImage: "ellipsis") {
+                    Button("projects.project_detail.new_walkthrough", systemImage: "figure.walk") {
                         isStartSessionShown = true
                     }
-                    Button("projects.projectDetail.importAPlan", systemImage: "doc.badge.plus") {
+                    Button("projects.project_detail.import_a_plan", systemImage: "doc.badge.plus") {
                         isPlanImportShown = true
                     }
                 }
@@ -73,7 +73,7 @@ struct ProjectDetailScreen: View {
                 .modifier(DSTextStyle.largeTitle)
             Text(
                 String.localizedStringWithFormat(
-                    String(localized: "projects.projectDetail.clientAndArea"),
+                    String(localized: "projects.project_detail.client_and_area"),
                     project.client,
                     project.area
                 )
@@ -87,12 +87,12 @@ struct ProjectDetailScreen: View {
     @ViewBuilder private var dock: some View {
         switch section {
         case .sessions:
-            Button("projects.projectDetail.resumeWalkthrough") {
+            Button("projects.project_detail.resume_walkthrough") {
                 coordinator.push(ProjectsRoute.survey)
             }
             .buttonStyle(.sd(.primary))
         case .locations:
-            Button("projects.projectDetail.addRoomsInBulk") {
+            Button("projects.project_detail.add_rooms_in_bulk") {
                 coordinator.push(ProjectsRoute.bulkLocations)
             }
             .buttonStyle(.sd(.primary))
@@ -100,7 +100,7 @@ struct ProjectDetailScreen: View {
             Button {
                 isPlanImportShown = true
             } label: {
-                Label("projects.projectDetail.importAPlan2", systemImage: "doc.badge.plus")
+                Label("projects.project_detail.import_a_plan2", systemImage: "doc.badge.plus")
             }
             .buttonStyle(.sd(.secondary))
         }
@@ -108,14 +108,14 @@ struct ProjectDetailScreen: View {
 
     private var sessionsContent: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
-            Text("projects.projectDetail.issueSummary")
+            Text(verbatim: "14 open issues, 2 of them overdue. Last full walkthrough on 12 Aug with Hanh.")
                 .modifier(DSTextStyle.body)
                 .foregroundStyle(DSColor.textSecondary)
                 .padding(.horizontal, DSSpacing.spacing16)
 
             VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                 DSSectionHeader(
-                    title: String(localized: "projects.projectDetail.sessions"),
+                    title: String(localized: "projects.project_detail.sessions"),
                     trailing: String(FakeData.sessions.count)
                 )
 
@@ -174,7 +174,7 @@ struct ProjectDetailScreen: View {
             Button {
                 coordinator.push(ProjectsRoute.cloneTree)
             } label: {
-                Text("projects.projectDetail.copyRoomsFromAnotherProject")
+                Text("projects.project_detail.copy_rooms_action")
                     .modifier(DSTextStyle.subheadSemibold)
                     .underline()
                     .foregroundStyle(DSColor.textPrimary)
@@ -194,7 +194,7 @@ private struct ProjectSectionPicker: View {
     @Binding var selection: ProjectDetailScreen.Section
 
     var body: some View {
-        Picker("projects.projectDetail.section", selection: $selection) {
+        Picker("projects.project_detail.section", selection: $selection) {
             ForEach(ProjectDetailScreen.Section.allCases, id: \.self) { section in
                 Text(NSLocalizedString(section.rawValue, comment: "")).tag(section)
             }

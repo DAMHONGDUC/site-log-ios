@@ -11,7 +11,7 @@ struct DevicesScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                    DSSectionHeader(title: String(localized: "settings.devices.myDevices"))
+                    DSSectionHeader(title: String(localized: "settings.devices.my_devices"))
                     ForEach(FakeData.myDevices) { device in
                         DSListRow(title: device.name, subtitle: device.detail) {
                             EmptyView()
@@ -41,7 +41,7 @@ struct DevicesScreen: View {
                 }
 
                 Text(
-                    "settings.devices.theCameraNeverWaitsForTheMeterIfItDisconnectsYouKeepShootingAndWeReconnectQuietly"
+                    "settings.devices.reconnect_note"
                 )
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
@@ -50,7 +50,7 @@ struct DevicesScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("settings.devices.laserMeter")
+        .navigationTitle("settings.devices.laser_meter")
         .navigationBarTitleDisplayMode(.inline)
         .enableInjection()
     }

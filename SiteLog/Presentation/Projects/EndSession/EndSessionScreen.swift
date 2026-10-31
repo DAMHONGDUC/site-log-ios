@@ -13,25 +13,23 @@ struct EndSessionScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-                    Text("projects.endSession.tue30Sep812To1400")
+                    Text(verbatim: "Tue 30 Sep · 8:12 to 14:00")
                         .modifier(DSTextStyle.footnote)
                         .foregroundStyle(DSColor.textSecondary)
-                    Text("projects.endSession.all82RoomsCheckedInJustUnderSixHours")
+                    Text(verbatim: "All 82 rooms checked in just under six hours.")
                         .modifier(DSTextStyle.pageTitle)
                 }
                 .padding(.top)
                 .padding(.horizontal, DSSpacing.spacing16)
 
-                Text("projects.endSession.summary")
+                Text(verbatim: "You took 112 photos, logged 7 new issues and closed 9 from last time.")
                     .modifier(DSTextStyle.body)
                     .padding(.horizontal, DSSpacing.spacing16)
 
                 VStack(spacing: DSSpacing.spacing0) {
                     DSListRow(
-                        title: String(localized: "projects.endSession.everyPhotoIsFingerprinted"),
-                        subtitle: String(
-                            localized: "projects.endSession.nothingWasEditedAfterCapture"
-                        )
+                        title: String(localized: "projects.end_session.every_photo_is_fingerprinted"),
+                        subtitle: "Nothing was edited after capture"
                     ) {
                         Image(systemName: "checkmark.shield")
                             .foregroundStyle(DSColor.success)
@@ -41,9 +39,9 @@ struct EndSessionScreen: View {
                         coordinator.push(UploadsRoute.status)
                     } label: {
                         DSListRow(
-                            title: String(localized: "projects.endSession.uploading87Of112"),
+                            title: "Uploading 87 of 112",
                             subtitle: String(
-                                localized: "projects.endSession.keepsGoingIfYouCloseTheApp"
+                                localized: "projects.end_session.background_upload_note"
                             )
                         ) {
                             Image(systemName: "arrow.triangle.2.circlepath")
@@ -57,12 +55,12 @@ struct EndSessionScreen: View {
         .background(DSColor.canvas)
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
-            Button("projects.endSession.makeTheReport") {
+            Button("projects.end_session.make_the_report") {
                 coordinator.push(ReportsRoute.builder)
             }
             .buttonStyle(.sd(.primary))
 
-            Button("projects.endSession.later") {
+            Button("projects.end_session.later") {
                 dismiss()
             }
             .buttonStyle(.sd(.ghost))

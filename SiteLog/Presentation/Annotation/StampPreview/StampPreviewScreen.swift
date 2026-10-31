@@ -21,37 +21,37 @@ struct StampPreviewScreen: View {
                     }
 
                 Text(
-                    "annotation.stampPreview.timeCheckedAgainstTheNetworkWithin2SAndGps6MSoTheStampCanBeTrusted"
+                    "annotation.stamp_preview.time_accuracy_note"
                 )
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
                 .padding(.horizontal, DSSpacing.spacing16)
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                    DSSectionHeader(title: String(localized: "annotation.stampPreview.stampShows"))
+                    DSSectionHeader(title: String(localized: "annotation.stamp_preview.stamp_shows"))
                     toggleRow(
-                        String(localized: "annotation.stampPreview.dateAndTime"),
+                        String(localized: "annotation.stamp_preview.date_and_time"),
                         isOn: $showsDate
                     )
                     DSDivider()
                     toggleRow(
-                        String(localized: "annotation.stampPreview.projectAndRoom"),
+                        String(localized: "annotation.stamp_preview.project_and_room"),
                         isOn: $showsRoom
                     )
                     DSDivider()
                     toggleRow(
-                        String(localized: "annotation.stampPreview.myMarkup"),
+                        String(localized: "annotation.stamp_preview.my_markup"),
                         isOn: $showsMarkup
                     )
                 }
             }
         }
         .background(DSColor.canvas)
-        .navigationTitle("annotation.stampPreview.sharePhoto")
+        .navigationTitle("annotation.stamp_preview.share_photo")
         .navigationBarTitleDisplayMode(.inline)
         .bottomDock {
             ShareLink(item: "Verify at sitelog.app/v/7F3K-92QD") {
-                Label("annotation.stampPreview.share", systemImage: "square.and.arrow.up")
+                Label("annotation.stamp_preview.share", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.sd(.primary))
         }
@@ -61,12 +61,12 @@ struct StampPreviewScreen: View {
     private var stampStrip: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing0) {
             if showsDate {
-                Text("annotation.stampPreview.30Sep202610421807RiversideTowerB")
+                Text(verbatim: "30 Sep 2026 10:42:18 +07 · Riverside Tower B")
             }
             if showsRoom {
-                Text("annotation.stampPreview.level77ALivingRoom1072971067215")
+                Text(verbatim: "Level 7 › 7A › Living room · 10.7297, 106.7215")
             }
-            Text("annotation.stampPreview.verifyAtSitelogAppV7F3K92Qd")
+            Text(verbatim: "Verify at sitelog.app/v/7F3K-92QD")
         }
         .modifier(DSTextStyle.code)
         .foregroundStyle(DSColor.onMedia)

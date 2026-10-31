@@ -15,13 +15,13 @@ struct SetPasscodeScreen: View {
             VStack(spacing: DSSpacing.spacing24) {
                 Spacer()
 
-                Text("settings.setPasscode.enterA6DigitPasscode")
+                Text("settings.set_passcode.enter_a6_digit_passcode")
                     .modifier(DSTextStyle.title)
 
                 PasscodeDots(filled: code.count)
 
                 Text(
-                    "settings.setPasscode.youLlUseItWhenFaceIdCanTSeeYouItStaysOnThisIphoneAndIsNeverUploaded"
+                    "settings.set_passcode.passcode_privacy_note"
                 )
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
@@ -35,11 +35,11 @@ struct SetPasscodeScreen: View {
             }
             .frame(maxWidth: .infinity)
             .background(DSColor.canvas)
-            .navigationTitle("settings.setPasscode.setPasscode")
+            .navigationTitle("settings.set_passcode.set_passcode")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("settings.setPasscode.cancel") {
+                    Button("settings.set_passcode.cancel") {
                         dismiss()
                     }
                 }

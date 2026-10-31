@@ -34,7 +34,7 @@ struct PasscodeNumberPad: View {
         if key.isEmpty {
             DSColor.clear
         } else if key == "delete" {
-            Button("components.passcodePad.delete", systemImage: "delete.left") {
+            Button("components.passcode_pad.delete", systemImage: "delete.left") {
                 if !code.isEmpty {
                     code.removeLast()
                 }

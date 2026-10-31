@@ -21,7 +21,7 @@ struct PlanImportScreen: View {
                     .overlay {
                         VStack(spacing: DSSpacing.spacing8) {
                             Image(systemName: "doc.badge.plus")
-                            Text("plans.planImport.pdfOneSheetOrMany")
+                            Text("plans.plan_import.pdf_one_sheet_or_many")
                                 .modifier(DSTextStyle.subhead)
                         }
                         .foregroundStyle(DSColor.textSecondary)
@@ -30,24 +30,24 @@ struct PlanImportScreen: View {
                 Button {
                     dismiss()
                 } label: {
-                    Label("plans.planImport.chooseFromFiles", systemImage: "folder")
+                    Label("plans.plan_import.choose_from_files", systemImage: "folder")
                 }
                 .buttonStyle(.sd(.primary))
 
                 Button {
                     dismiss()
                 } label: {
-                    Label("plans.planImport.photographAPrintedSheet", systemImage: "camera")
+                    Label("plans.plan_import.photograph_a_printed_sheet", systemImage: "camera")
                 }
                 .buttonStyle(.sd(.secondary))
             }
             .padding(DSSpacing.spacing16)
             .frame(maxHeight: .infinity, alignment: .top)
-            .navigationTitle("plans.planImport.importAPlan")
+            .navigationTitle("plans.plan_import.import_a_plan")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("plans.planImport.close", systemImage: "xmark") {
+                    Button("plans.plan_import.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }

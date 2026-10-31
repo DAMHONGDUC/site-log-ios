@@ -8,12 +8,12 @@ struct ChecklistRunScreen: View {
     @ObserveInjection var inject
     @Environment(\.coordinator) private var coordinator
 
-    var title = String(localized: "checklists.checklistRun.finishingHandover")
+    var title = String(localized: "checklists.checklist_run.finishing_handover")
 
     enum Answer: String, CaseIterable {
         case pass = "checklists.answer.pass"
         case fail = "checklists.answer.fail"
-        case notApplicable = "checklists.answer.notApplicable"
+        case notApplicable = "checklists.answer.not_applicable"
     }
 
     @State private var answers: [Int: Answer] = [12: .fail, 13: .pass, 14: .notApplicable]
@@ -40,12 +40,12 @@ struct ChecklistRunScreen: View {
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
             // Demo: Finish is always enabled
-            Button("checklists.checklistRun.finish") {
+            Button("checklists.checklist_run.finish") {
                 coordinator.push(ChecklistsRoute.done)
             }
             .buttonStyle(.sd(.primary))
 
-            Text("checklists.checklistRun.8ItemsStillNeedAnAnswer")
+            Text("checklists.checklist_run.remaining_items_note")
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textTertiary)
         }
@@ -60,14 +60,14 @@ struct ChecklistRunScreen: View {
             HStack {
                 Text(
                     String.localizedStringWithFormat(
-                        String(localized: "checklists.checklistRun.answersProgress"),
+                        String(localized: "checklists.checklist_run.answers_progress"),
                         answers.count + 11,
                         22
                     )
                 )
                 .foregroundStyle(DSColor.textSecondary)
                 Spacer()
-                Text("checklists.checklistRun.1Failed")
+                Text(verbatim: "1 failed")
                     .foregroundStyle(DSColor.critical)
             }
             .modifier(DSTextStyle.footnote)
@@ -80,14 +80,14 @@ struct ChecklistRunScreen: View {
         VStack(alignment: .leading) {
             Text(
                 String.localizedStringWithFormat(
-                    String(localized: "checklists.checklistRun.itemNumberAndText"),
+                    String(localized: "checklists.checklist_run.item_number_and_text"),
                     item.number,
                     item.text
                 )
             )
             .modifier(DSTextStyle.body)
 
-            Picker("checklists.checklistRun.answer", selection: answerBinding(for: item)) {
+            Picker("checklists.checklist_run.answer", selection: answerBinding(for: item)) {
                 ForEach(Answer.allCases, id: \.self) { answer in
                     Text(NSLocalizedString(answer.rawValue, comment: "")).tag(Optional(answer))
                 }
@@ -95,7 +95,7 @@ struct ChecklistRunScreen: View {
             .pickerStyle(.segmented)
 
             if answers[item.number] == .fail {
-                Text("checklists.checklistRun.loggedAsAnIssue")
+                Text("checklists.checklist_run.logged_as_an_issue")
                     .modifier(DSTextStyle.footnote)
                     .foregroundStyle(DSColor.critical)
             }

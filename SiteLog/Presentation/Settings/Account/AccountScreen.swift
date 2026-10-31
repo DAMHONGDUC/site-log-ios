@@ -15,33 +15,33 @@ struct AccountScreen: View {
                     )
                     DSDivider()
                     DSListRow(
-                        title: String(localized: "settings.account.signedInWith"),
-                        value: String(localized: "settings.account.apple")
+                        title: String(localized: "settings.account.signed_in_with"),
+                        value: "Apple"
                     )
                     DSDivider()
                     DSListRow(
-                        title: String(localized: "settings.account.lastSync"),
-                        value: String(localized: "settings.account.2MinutesAgo")
+                        title: String(localized: "settings.account.last_sync"),
+                        value: "2 minutes ago"
                     )
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
                     DSSectionHeader(
                         title: String(localized: "settings.account.devices"),
-                        trailing: String(localized: "settings.account.2")
+                        trailing: "2"
                     )
                     DSListRow(
-                        title: String(localized: "settings.account.iphone16"),
-                        subtitle: String(localized: "settings.account.thisIphone")
+                        title: "iPhone 16",
+                        subtitle: "This iPhone"
                     )
                     DSDivider()
                     DSListRow(
-                        title: String(localized: "settings.account.ipadAir"),
-                        subtitle: String(localized: "settings.account.lastSeenYesterday")
+                        title: "iPad Air",
+                        subtitle: "Last seen yesterday"
                     )
                 }
 
-                Button("settings.account.signOut") {}
+                Button("settings.account.sign_out") {}
                     .buttonStyle(.sd(.danger))
                     .padding(.horizontal, DSSpacing.spacing16)
             }

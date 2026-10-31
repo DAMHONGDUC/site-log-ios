@@ -18,11 +18,11 @@ struct ReportBuilderScreen: View {
             .padding(.vertical, DSSpacing.spacing8)
         }
         .background(DSColor.canvas)
-        .navigationTitle("reports.reportBuilder.report")
+        .navigationTitle("reports.report_builder.report")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("reports.reportBuilder.next") {
+                Button("reports.report_builder.next") {
                     coordinator.push(ReportsRoute.signature)
                 }
                 .fontWeight(.semibold)
@@ -31,11 +31,11 @@ struct ReportBuilderScreen: View {
         .toolbarVisibility(.hidden, for: .tabBar)
         .bottomDock {
             HStack(spacing: DSSpacing.spacing8) {
-                Button("reports.reportBuilder.excel") {}
+                Button("reports.report_builder.excel") {}
                     .buttonStyle(.sd(.secondary))
                     .frame(width: DSSpacing.spacing110)
 
-                Button("reports.reportBuilder.createPdf") {
+                Button("reports.report_builder.create_pdf") {
                     coordinator.push(ReportsRoute.pdfPreview)
                 }
                 .buttonStyle(.sd(.primary))
@@ -50,13 +50,13 @@ private struct ReportGroupingPicker: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-            Text("reports.reportBuilder.groupIssuesBy")
+            Text("reports.report_builder.group_issues_by")
                 .modifier(DSTextStyle.footnote)
                 .foregroundStyle(DSColor.textSecondary)
 
-            Picker("reports.reportBuilder.groupIssuesBy2", selection: $grouping) {
-                Text("reports.reportBuilder.room").tag("Room")
-                Text("reports.reportBuilder.contractor").tag("Contractor")
+            Picker("reports.report_builder.group_issues_by2", selection: $grouping) {
+                Text("reports.report_builder.room").tag("Room")
+                Text("reports.report_builder.contractor").tag("Contractor")
             }
             .pickerStyle(.segmented)
         }
@@ -66,7 +66,7 @@ private struct ReportGroupingPicker: View {
 
 private struct ReportOption: Identifiable {
     let titleKey: String
-    let detailKey: String?
+    let detail: String?
 
     var id: String { titleKey }
 }
@@ -75,33 +75,33 @@ private struct ReportOptionsList: View {
     @State private var included: [String: Bool] = [:]
 
     private let options: [ReportOption] = [
-        ReportOption(titleKey: "reports.options.coverAndSummary", detailKey: nil),
+        ReportOption(titleKey: "reports.options.cover_and_summary", detailKey: nil),
         ReportOption(
-            titleKey: "reports.options.pinsOnEachPlan",
-            detailKey: "reports.options.twoSheets"
+            titleKey: "reports.options.pins_on_each_plan",
+            detail: "2 sheets"
         ),
         ReportOption(
-            titleKey: "reports.options.checklistResults",
-            detailKey: "reports.options.threeRooms"
+            titleKey: "reports.options.checklist_results",
+            detail: "3 rooms"
         ),
         ReportOption(
-            titleKey: "reports.options.issuesWithPhotos",
-            detailKey: "reports.options.seven"
+            titleKey: "reports.options.issues_with_photos",
+            detail: "7"
         ),
         ReportOption(
-            titleKey: "reports.options.beforeAndAfter",
-            detailKey: "reports.options.fourPairs"
+            titleKey: "reports.options.before_and_after",
+            detail: "4 pairs"
         ),
-        ReportOption(titleKey: "reports.options.issuesOpenOver14Days", detailKey: nil),
+        ReportOption(titleKey: "reports.options.issues_open_over14_days", detail: nil),
         ReportOption(
             titleKey: "reports.options.signatures",
-            detailKey: "reports.options.twoPeople"
+            detail: "2 people"
         ),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-            DSSectionHeader(title: String(localized: "reports.reportBuilder.include"))
+            DSSectionHeader(title: String(localized: "reports.report_builder.include"))
 
             ForEach(options) { option in
                 ReportOptionRow(option: option, included: $included)
@@ -120,13 +120,12 @@ private struct ReportOptionRow: View {
     }
 
     private var detail: String? {
-        guard let detailKey = option.detailKey else { return nil }
-        return NSLocalizedString(detailKey, comment: "")
+        option.detail
     }
 
     private var isIncluded: Binding<Bool> {
         Binding(
-            get: { included[option.id] ?? (option.id != "reports.options.issuesOpenOver14Days") },
+            get: { included[option.id] ?? (option.id != "reports.options.issues_open_over14_days") },
             set: { included[option.id] = $0 }
         )
     }
@@ -151,8 +150,8 @@ private struct ReportMetadataLinks: View {
                 coordinator.push(ReportsRoute.branding)
             } label: {
                 DSListRow(
-                    title: String(localized: "reports.reportBuilder.yourLetterhead"),
-                    value: String(localized: "reports.reportBuilder.eastline"),
+                    title: String(localized: "reports.report_builder.your_letterhead"),
+                    value: "Eastline",
                     showsChevron: true
                 )
             }
@@ -164,8 +163,8 @@ private struct ReportMetadataLinks: View {
                 coordinator.push(ReportsRoute.signature)
             } label: {
                 DSListRow(
-                    title: String(localized: "reports.reportBuilder.signatures"),
-                    value: String(localized: "reports.reportBuilder.oneOfTwo"),
+                    title: String(localized: "reports.report_builder.signatures"),
+                    value: "1 of 2",
                     showsChevron: true
                 )
             }

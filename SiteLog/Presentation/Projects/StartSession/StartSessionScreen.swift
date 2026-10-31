@@ -9,13 +9,13 @@ struct StartSessionScreen: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var inspector = FakeData.inspector
-    @State private var weather = "projects.startSession.weather.sunny"
+    @State private var weather = "projects.start_session.weather.sunny"
     @State private var note = ""
 
     private let weatherOptions: [(titleKey: String, icon: String)] = [
-        ("projects.startSession.weather.sunny", "sun.max"),
-        ("projects.startSession.weather.overcast", "cloud"),
-        ("projects.startSession.weather.rain", "cloud.rain"),
+        ("projects.start_session.weather.sunny", "sun.max"),
+        ("projects.start_session.weather.overcast", "cloud"),
+        ("projects.start_session.weather.rain", "cloud.rain"),
     ]
 
     var body: some View {
@@ -23,12 +23,12 @@ struct StartSessionScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing16) {
                     DSTextField(
-                        String(localized: "projects.startSession.inspector"),
+                        String(localized: "projects.start_session.inspector"),
                         text: $inspector
                     )
 
                     VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-                        Text("projects.startSession.weather")
+                        Text("projects.start_session.weather")
                             .modifier(DSTextStyle.footnote)
                             .foregroundStyle(DSColor.textSecondary)
                         HStack(spacing: DSSpacing.spacing8) {
@@ -45,9 +45,9 @@ struct StartSessionScreen: View {
                     }
 
                     DSTextField(
-                        String(localized: "projects.startSession.noteForTheReport"),
+                        String(localized: "projects.start_session.note_for_the_report"),
                         placeholder: String(
-                            localized: "projects.startSession.eGFinishingCheckLevels79"
+                            localized: "projects.start_session.session_name_placeholder"
                         ),
                         text: $note,
                         isMultiline: true
@@ -56,24 +56,24 @@ struct StartSessionScreen: View {
                     HStack(alignment: .top, spacing: DSSpacing.spacing8) {
                         DSStatusMarker(kind: .major)
                         Text(
-                            "projects.startSession.14IssuesFrom12AugWillBeWaitingInTheirRoomsForYouToReCheck"
+                            "projects.start_session.pending_issues_note"
                         )
                         .modifier(DSTextStyle.subhead)
                     }
                 }
                 .padding(DSSpacing.spacing16)
             }
-            .navigationTitle("projects.startSession.newWalkthrough")
+            .navigationTitle("projects.start_session.new_walkthrough")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("projects.startSession.close", systemImage: "xmark") {
+                    Button("projects.start_session.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
             }
             .bottomDock {
-                Button("projects.startSession.start") {
+                Button("projects.start_session.start") {
                     dismiss()
                 }
                 .buttonStyle(.sd(.primary))

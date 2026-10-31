@@ -12,7 +12,7 @@ struct PlanDrawing: View {
             ZStack(alignment: .topLeading) {
                 DSColor.plan
                     .overlay {
-                        Text("components.planDrawing.floorPlan")
+                        Text("components.plan_drawing.floor_plan")
                             .foregroundStyle(DSColor.textTertiary)
                     }
 

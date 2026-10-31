@@ -21,7 +21,7 @@ struct SplashScreen: View {
                 VStack(spacing: DSSpacing.spacing8) {
                     Text("access.splash.error")
                         .modifier(DSTextStyle.body)
-                    Button("access.splash.tryAgain") {
+                    Button("access.splash.try_again") {
                         Task {
                             await viewModel.onAppear()
                         }
