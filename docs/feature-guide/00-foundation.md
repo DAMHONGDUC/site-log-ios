@@ -2024,13 +2024,50 @@ public struct DSGallery: View {
 <dl><dd>
 
 - Keep app text catalogs under `SiteLog/Presentation/Resources/Strings/`.
-- Add one `Localizable.xcstrings` catalog there and group keys by feature, for example `access.signIn.continueOffline`.
-- Put the English source text in the catalog. Views refer to the key, not a sentence written inline.
+- Add one `Localizable.xcstrings` catalog there and group short `snake_case` keys by feature and UI role, for example `access.sign_in.title`.
+- Put fixed values such as sample names, dates, IDs, measurements, counts, and file names directly in Presentation instead of adding them to the catalog.
+- Put source text for translatable UI copy in the catalog. Views refer to its key, not a sentence written inline.
 - Keep user-facing text out of Domain and Data. Those layers return values or errors; Presentation chooses the localized message.
-- Use SwiftUI's string localization support (`Text("access.signIn.continueOffline")`) so Xcode can extract the key into the String Catalog.
+- Use SwiftUI's string localization support (`Text("access.sign_in.title")`) so Xcode can extract the key into the String Catalog. Keep the displayed wording in the catalog value.
 - Add new keys to the catalog before using them. Keep keys stable when the displayed wording changes.
 
 The app target already enables string extraction and generated catalog symbols in `project.yml`. Keep the catalog in this dedicated folder so translations can be added without searching through feature code.
+
+### Full-form alert
+
+<dl><dd>
+
+An alert is a small system dialog. `isPresented` is a `Binding<Bool>`: SwiftUI reads it to decide whether to show the alert and sets it to `false` when the alert closes. `actions` returns the buttons; `message` returns the supporting text. A button's `role` tells iOS what kind of action it is, and `action` says what to run when tapped.
+
+Write every argument on its own line. Keep `actions:` and `message:` visible instead of using trailing closures. The title is positional (unlabeled) because that is how the SwiftUI API is defined.
+
+```swift
+.alert(
+    "project.delete.title", // titleKey (unlabeled in SwiftUI's API)
+    isPresented: $isDeleteAlertShown, // Binding<Bool>
+    actions: { // Returns the alert buttons
+        Button(
+            "project.delete.confirm",
+            role: .destructive,
+            action: {
+                viewModel.delete()
+            }
+        )
+        Button(
+            "common.cancel",
+            role: .cancel,
+            action: {} // The alert closes automatically
+        )
+    },
+    message: { // Returns the supporting message
+        Text("project.delete.message")
+    }
+)
+```
+
+The strings above are localization keys. Add each key and its translated value to `Localizable.xcstrings` before using the alert in the app.
+
+</dd></dl>
 
 </dd></dl>
 

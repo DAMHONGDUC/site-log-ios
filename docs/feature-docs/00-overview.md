@@ -37,7 +37,7 @@
 | Term | Meaning | Short example |
 |---|---|---|
 | Feature | One user task and the code that supports it | Projects: create and browse projects |
-| View | A SwiftUI value that describes what appears on screen | `Text("projects.projectList.projects")` |
+| View | A SwiftUI value that describes what appears on screen | `Text("projects.project_list.projects")` |
 | ViewModel | An object that prepares screen state and handles user actions | A project list model loads rows for a screen |
 | MVVM | Model–View–ViewModel, a pattern that keeps screen state and actions outside layout code | The View draws project rows; its ViewModel loads them |
 | Clean Architecture | A way to keep business rules independent from screens and storage | A use case can work without SwiftUI |
@@ -49,7 +49,7 @@
 | Entity | A business concept that does not depend on storage or UI | `Project` |
 | DTO | A data-transfer object used at a system boundary | JSON received from a server |
 | Actor | A Swift type that protects mutable state across concurrent tasks | An upload actor serializes upload changes |
-| Localization key | A stable identifier whose visible text is translated by the app | `projects.projectList.projects` → “Projects” |
+| Localization key | A stable identifier whose visible text is translated by the app | `projects.project_list.projects` → “Projects” |
 
 </dd></dl>
 
@@ -410,7 +410,7 @@ struct SplashScreen: View {
                 VStack(spacing: DSSpacing.spacing8) {
                     Text("access.splash.error")
                         .modifier(DSTextStyle.body)
-                    Button("access.splash.tryAgain") {
+                    Button("access.splash.try_again") {
                         Task {
                             await viewModel.onAppear()
                         }
@@ -586,8 +586,8 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | Layers | Dependencies point inward; `DomainLayer` imports no frameworks |
 | Dependencies | Only well-known packages SwiftUI developers commonly use: mature, widely adopted, actively maintained, listed on [Swift Package Index](https://swiftpackageindex.com); prefer Apple frameworks; add via `project.yml`; record the choice in [§9 Decisions](#9-decisions) |
 | Constants | In dedicated `enum`s; spacing via `DSSpacing`, typography via `DSTextStyle`, and color via `DSColor` in `DesignSystem` |
-| User-facing text | Keep keys and translations in `SiteLog/Presentation/Resources/Strings/Localizable.xcstrings`; use keys from Presentation, never user-facing literals in Domain or Data |
-| Text keys | Name keys by feature and meaning, such as `access.signIn.continueOffline`; keep translated values in the catalog and do not build sentences by concatenating localized fragments. When a DesignSystem component accepts `String`, pass `String(localized: "feature.screen.component")` so it receives translated text |
+| User-facing text | Keep translatable UI copy in `SiteLog/Presentation/Resources/Strings/Localizable.xcstrings`; fixed values such as names, dates, IDs, counts, measurements, and file names stay as direct values in Presentation. Never put user-facing literals in Domain or Data |
+| Text keys | Use short `snake_case` keys named for the UI role, such as `access.sign_in.title` or `access.sign_in.description`; do not derive keys from the displayed wording. The String Catalog holds the actual translated copy. Keep fixed display values out of the catalog. Do not build sentences by concatenating localized fragments. When a DesignSystem component accepts `String`, pass `String(localized: "feature.screen.description")` so it receives translated text |
 | Current catalog status | UI text keys live in `SiteLog/Presentation/Resources/Strings/Localizable.xcstrings`; add each key there with its default-language value before using it |
 | Examples | Keep code snippets short, use explicit types, and explain one idea at a time; label pseudocode and target contracts so readers do not mistake them for current, runnable code |
 | Logging | Every action logs with data, successes included: `"Upload failed — {captureId, part: 3/12, status: 503}"` |

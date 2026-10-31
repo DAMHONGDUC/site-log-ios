@@ -15,6 +15,30 @@
 3. **Extract subviews as `struct`, not computed properties,** when the view has state or is reusable.
 4. **No `AnyView`.** Use `@ViewBuilder` or generics.
 5. **Conditional modifiers take a parameter.** Avoid wrapping modifiers in `if` (it changes the view type and loses state/animation).
+   - **Write alerts in the full, labeled form.** Put each argument on its own line; use `actions:` and `message:` closures instead of trailing-closure shorthand. Inside an alert, use `Button(_:role:action:)` and write the action closure explicitly. The title is the first unlabeled argument because SwiftUI's API declares it with `_`.
+     ```swift
+     .alert(
+         "project.delete.title", // titleKey (the API uses an unlabeled argument)
+         isPresented: $isDeleteAlertShown, // Binding<Bool>
+         actions: { // Returns the alert buttons
+             Button(
+                 "project.delete.confirm",
+                 role: .destructive,
+                 action: {
+                     viewModel.delete()
+                 }
+             )
+             Button(
+                 "common.cancel",
+                 role: .cancel,
+                 action: {} // The alert closes automatically
+             )
+         },
+         message: { // Returns the supporting message
+             Text("project.delete.message")
+         }
+     )
+     ```
 
 </dd></dl>
 
@@ -76,14 +100,14 @@
 
 <dl><dd>
 
-16. **No hard-coded display strings. All UI text must go through a key.**
+16. **Use keys for translatable UI copy; keep fixed values out of the catalog.** Put names, dates, IDs, counts, measurements, and file names directly in Presentation.
     ```swift
-    Text("devmenu.seed.title")                  // ✅ key
-    Text("Seed data")                           // ❌ hard-coded
-    String(localized: "devmenu.seed.title")     // ✅ when a String is needed
+    Text("access.sign_in.title")                    // ✅ UI copy key
+    Text(verbatim: "Riverside Tower B")             // ✅ fixed value
+    Text("Seed data")                               // ❌ hard-coded UI copy
+    String(localized: "access.sign_in.description") // ✅ when a String is needed
     ```
-17. **Name keys as `feature.screen.component`.** Never use an English sentence as a key.
-    Examples: `devmenu.seed.title`, `devmenu.seed.subtitle`, `common.cancel`.
+17. **Name keys by UI role, not by the displayed wording.** Use short `snake_case` segments, such as `access.sign_in.title`, `access.sign_in.description`, or `access.sign_in.benefit_1`. Store the real copy in the String Catalog.
 18. **No string concatenation.** Use placeholders and plurals in the String Catalog (`Localizable.xcstrings`).
     ```swift
     Text("devmenu.finished \(name)")            // ✅ placeholder
