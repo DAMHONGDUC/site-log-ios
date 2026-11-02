@@ -443,7 +443,7 @@ enum DiagnosticsConstants {
 | PlatformKit | `Packages/PlatformKit/Tests/PlatformKitTests/<Name>` | Swift Testing | Planned: upload state machine, realtime decoding, report layout, Bluetooth parsing |
 | DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding) |
 | Presentation | `SiteLogTests/Presentation` | Swift Testing | Planned: view models built on test doubles in `SiteLogTests/Doubles/` through `init`, no container |
-| Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |
+| Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F18 step 10): each screen light, dark, `accessibility3` |
 | Flows | `SiteLogUITests` | XCUITest | Planned: smoke paths only, unlock → projects → capture → report |
 | Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
 
@@ -454,7 +454,7 @@ enum DiagnosticsConstants {
    `CaptureSessionControlling`, `RandomNumberGenerator`.
 3. View model tests pass test doubles through `init`; a test that overrides a Factory registration runs inside `@Suite(.container)`, so it never leaks.
 4. A bug fix lands with the test that would have caught it.
-5. Snapshot tests are optional and come last (F16 step 10). If added, references are recorded on one
+5. Snapshot tests are optional and come last (F18 step 10). If added, references are recorded on one
    pinned simulator (iPhone 17 Pro, iOS 26.4) and re-recorded only in a commit that says why.
 
 | Coverage scope | Line coverage |

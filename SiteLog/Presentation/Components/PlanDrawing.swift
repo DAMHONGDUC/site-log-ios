@@ -1,4 +1,4 @@
-// Placeholder plan; the PDFKit viewer replaces it in F08
+// Placeholder plan; the PDFKit viewer replaces it in F11
 
 import DesignSystem
 import SwiftUI

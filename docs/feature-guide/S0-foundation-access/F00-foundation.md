@@ -2,7 +2,7 @@
 
 <dl><dd>
 
-- F00 · 26h · foundation guide. Repository files are the source of truth for code.
+- Sprint [S0](README.md) · 38h · foundation guide: app and backend. Repository files are the source of truth for code.
 
 </dd></dl>
 
@@ -17,8 +17,10 @@
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
 7. [4. DesignSystem tests](#4-designsystem-tests)
-8. [User-facing text and localization](#user-facing-text-and-localization)
-9. [Feature done](#feature-done)
+8. [5. Backend skeleton](#5-backend-skeleton)
+9. [6. Backend CI and staging](#6-backend-ci-and-staging)
+10. [User-facing text and localization](#user-facing-text-and-localization)
+11. [Feature done](#feature-done)
 
 </dd></dl>
 
@@ -26,9 +28,9 @@
 
 <dl><dd>
 
-- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem.
-- **Demo:** the app builds with zero warnings, CI is green, the DesignSystem tests pass.
-- **Specs:** [00-overview](../feature-docs/00-overview.md) (architecture, DI), [05-platform](../feature-docs/05-platform.md) (testing, CI).
+- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem, and a backend that builds, tests and deploys.
+- **Demo:** the app builds with zero warnings, CI is green, the DesignSystem tests pass; staging answers `GET /health`.
+- **Specs:** [00-overview](../../feature-docs/00-overview.md) (architecture, DI), [05-platform](../../feature-docs/05-platform.md) (testing, CI), [03-backend](../../feature-docs/03-backend.md) (stack, error contract).
 - **Already in the repository:** check the current source files before following an example. Some implementation steps below describe planned work and may not match the latest code.
 - **Code examples:** use them to understand a small idea; do not copy a full file without comparing it with the current source and project rules.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
@@ -41,8 +43,23 @@
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
 | [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `DSGallery` |
+| [5](#5-backend-skeleton) | Backend | 8h | not start | Fastify, Postgres, migrations, `/health`, error contract |
+| [6](#6-backend-ci-and-staging) | Backend | 4h | not start | Backend CI job, staging deploy |
 
-- Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–4 any time.
+- Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–6 any time in S0.
+- Contract, Local and Sync steps do not apply: F00 builds the ground the features stand on.
+
+```mermaid
+flowchart LR
+    subgraph iOS["iOS app"]
+        App["SiteLog<br/>App/ + Presentation/"] --> Pkgs["Packages<br/>Core · DomainLayer · DataLayer<br/>PlatformKit · DesignSystem"]
+    end
+    subgraph BE["Backend/"]
+        Fastify["Fastify routes"] --> PG[("Postgres 16")]
+    end
+    CI["GitHub Actions"] -->|"guards · build · fastlane test"| iOS
+    CI -->|"tsc · lint · vitest"| BE
+```
 
 </dd></dl>
 
@@ -52,6 +69,9 @@
 
 ```text
 site-log-ios/
+├── Backend/                                  # 5: package.json, src/server.ts, src/errors.ts, src/db.ts, migrations/, test/
+│   └── fly.toml                              # 6: staging app
+├── .github/workflows/backend.yml             # 6
 ├── Gemfile                                   # 2
 ├── fastlane/Appfile, Fastfile                # 2
 ├── .github/workflows/pr-checks.yml           # 2 + 3
@@ -87,10 +107,33 @@ site-log-ios/
 
 <dl><dd>
 
+#### Overview
+
+<dl><dd>
+
+- **Goal:** the app launches through one guarded, logged startup sequence.
+
+```mermaid
+flowchart LR
+    App["SiteLogApp"] --> Delegate["AppDelegate"]
+    App --> Root["RootView"]
+    Root --> Splash["SplashViewModel<br/>StartupSequence"]
+    Splash -->|".ready"| Access["access flow (F01)"]
+    Splash -->|".failed"| Error["error + Try again"]
+```
+
+- **Check:** ⌘R shows the splash, then the access flow.
+
+</dd></dl>
+
+#### Build
+
+<dl><dd>
+
 | # | Runs | File |
 |---|---|---|
 | 1 | iOS creates `SiteLogApp`; `@UIApplicationDelegateAdaptor` creates `AppDelegate` | `App/SiteLogApp.swift` |
-| 2 | `didFinishLaunching` logs “App Launched” (Firebase goes first here in F12) | `App/AppDelegate.swift` |
+| 2 | `didFinishLaunching` logs “App Launched” (Firebase goes first here in F02) | `App/AppDelegate.swift` |
 | 3 | `RootView` shows `SplashScreen` while state is `.running` | `Presentation/Root/RootView.swift` |
 | 4 | `SplashViewModel.onAppear()` runs `StartupSequence`, each step guarded and logged | `App/Startup/` |
 | 5 | `.ready` → access flow (F01) → `MainTabView`; `.failed` → error + Try again | `Presentation/Access/Splash/` |
@@ -99,13 +142,46 @@ site-log-ios/
 
 </dd></dl>
 
+</dd></dl>
+
 ## 1. Layer packages, Factory DI, AppClock
 
 <dl><dd>
 
-- **Goal:** `DomainLayer`, `DataLayer`, `PlatformKit` and `Core` as local packages, one composition root (Factory), an injectable clock, test libraries ready.
-- **Why packages:** [D09](../feature-docs/00-overview.md#d09--layers-as-local-swift-packages), [D10](../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package).
-- **Why:** [D01](../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../feature-docs/00-overview.md#d06--test-libraries).
+#### Overview
+
+<dl><dd>
+
+- **Goal:** four local packages with one-way dependencies, one composition root, a clock tests can fix.
+
+| Package / folder | Holds | Depends on |
+|---|---|---|
+| `Packages/DomainLayer` | Entities, repository protocols, use cases | nothing |
+| `Packages/DataLayer` | Repository and data source `Impl`s, models, mappers | DomainLayer, PlatformKit, Core |
+| `Packages/PlatformKit` | System services and engines | nothing app-specific |
+| `Packages/Core` | `AppLogger`, `AppClock`, crypto helpers | nothing |
+| `SiteLog/App/DI/` | `<Layer>DI.swift`: the only place that picks an `Impl` | every package |
+
+```mermaid
+flowchart TD
+    App["SiteLog app"] --> Data["DataLayer"]
+    App --> Domain["DomainLayer"]
+    Data --> Domain
+    Data --> Kit["PlatformKit"]
+    Data --> Core["Core"]
+    App --> Core
+```
+
+- **Check:** ⌘B is clean; the `FixedClock` test passes; adding DataLayer to DomainLayer fails with a cycle.
+
+</dd></dl>
+
+#### Build
+
+<dl><dd>
+
+- **Why packages:** [D09](../../feature-docs/00-overview.md#d09--layers-as-local-swift-packages), [D10](../../feature-docs/00-overview.md#d10--infrastructure-as-a-library-package).
+- **Why:** [D01](../../feature-docs/00-overview.md#d01--factory-for-dependency-injection), [D06](../../feature-docs/00-overview.md#d06--test-libraries).
 
 <details open>
 <summary><strong>1.1 project.yml — add libraries</strong></summary>
@@ -283,7 +359,7 @@ site-log-ios/
 <summary><strong>1.2 Layer packages</strong></summary>
 <dl><dd>
 
-- Each layer is a local Swift package in `Packages/` ([00-overview §4](../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
+- Each layer is a local Swift package in `Packages/` ([00-overview §4](../../feature-docs/00-overview.md#4-architecture)); the app target keeps only `App/` and `Presentation/`.
 - The package graph is the dependency rule: `DataLayer` → `DomainLayer` + `PlatformKit` + `Core`; `PlatformKit` → `Core`; `DomainLayer` and `Core` depend on nothing.
 
 | Rule | Why |
@@ -1042,14 +1118,42 @@ struct CoreDITests {
 
 </dd></dl>
 
+</dd></dl>
+
 ## 2. Fastlane test lane, PR checks
 
 <dl><dd>
 
-- **Goal:** one command (`bundle exec fastlane test`) runs the package tests (`DesignSystem`, `Core`) and the app tests; GitHub runs it on every PR.
-- **Spec:** [05 §17](../feature-docs/05-platform.md#17-cicd-and-testflight).
+#### Overview
 
-![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
+<dl><dd>
+
+- **Goal:** one command runs every test, locally and on every PR.
+
+| File | Job |
+|---|---|
+| `Gemfile` | Pins Fastlane |
+| `fastlane/Appfile`, `Fastfile` | `test` lane: packages one by one, then the app |
+| `.github/workflows/pr-checks.yml` | Runs the lane on every PR |
+
+```mermaid
+flowchart LR
+    PR["Pull request"] --> GA["GitHub Actions"] --> Lane["bundle exec fastlane test"]
+    Lane --> Pkg["package tests"]
+    Lane --> AppT["app tests"]
+```
+
+- **Check:** a PR shows the test job green.
+
+</dd></dl>
+
+#### Build
+
+<dl><dd>
+
+- **Spec:** [05 §17](../../feature-docs/05-platform.md#17-cicd-and-testflight).
+
+![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../../images/ci-cd-pipeline.svg)
 
 <details open>
 <summary><strong>2.1 Files</strong></summary>
@@ -1102,7 +1206,7 @@ gem "fastlane", "~> 2.228"
 
 <b>Think</b>
 
-- Which fastlane actions need the app’s bundle id? (Look ahead: TestFlight upload in F04.)
+- Which fastlane actions need the app’s bundle id? (Look ahead: TestFlight upload in F07.)
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -1123,7 +1227,7 @@ gem "fastlane", "~> 2.228"
 <summary><b>Code</b></summary>
 
 ```ruby
-# Bundle id of the app; signing comes from the App Store Connect API key (F04)
+# Bundle id of the app; signing comes from the App Store Connect API key (F07)
 app_identifier("app.dd.site.log")
 ```
 
@@ -1414,11 +1518,38 @@ jobs:
 
 </dd></dl>
 
+</dd></dl>
+
 ## 3. CI guards
 
 <dl><dd>
 
-- **Goal:** rules that reviews forget are checked by machine: no `print(`, layer rules, secrets, the app builds with warnings as errors.
+#### Overview
+
+<dl><dd>
+
+- **Goal:** rules a review forgets are checked by a script.
+
+| Script | Fails when |
+|---|---|
+| `Tools/CI/check-no-print.sh` | App code calls `print(` |
+| `Tools/CI/check-imports.sh` | A layer imports a layer it must not |
+| Secret scan | A key or token is committed |
+| `Tools/CI/build-strict.sh` | Any warning appears |
+
+```mermaid
+flowchart LR
+    PR["Pull request"] --> NP["no print"] --> IM["layer imports"] --> SS["secret scan"] --> BS["strict build"]
+```
+
+- **Check:** add a `print(` on a branch → CI fails; remove it → green.
+
+</dd></dl>
+
+#### Build
+
+<dl><dd>
+
 - Make each script executable once: `chmod +x Tools/CI/*.sh`.
 
 <b>File</b> · <b class="tag-new">New</b> · `Tools/CI/check-no-print.sh`
@@ -1799,7 +1930,34 @@ jobs:
 
 </dd></dl>
 
+</dd></dl>
+
 ## 4. DesignSystem tests
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** the design system is covered: hex colours parse, every component renders in light and dark.
+
+| File | Job |
+|---|---|
+| `DesignSystemTests.swift` | Hex helper behind `DSColor` |
+| `DSGallery` | Every token and component on one preview |
+
+```mermaid
+flowchart LR
+    Hex["UIColor(hex:)"] --> Test["DesignSystemTests"]
+    Comp["DS components"] --> Gallery["DSGallery<br/>light · dark"]
+```
+
+- **Check:** package tests green; `DSGallery` previews in both modes.
+
+</dd></dl>
+
+#### Build
 
 <dl><dd>
 
@@ -2019,6 +2177,93 @@ public struct DSGallery: View {
 
 </dd></dl>
 
+</dd></dl>
+
+## 5. Backend skeleton
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** a Fastify server in `Backend/` that talks to Postgres, runs migrations and answers `GET /health`.
+- **Spec:** [03-backend §2 Stack](../../feature-docs/03-backend.md#2-stack), [§10 Error contract](../../feature-docs/03-backend.md#10-error-contract)
+- Skeleton step: full code is added when this step starts.
+
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `Backend/package.json`, `tsconfig.json`, `.nvmrc` | Node 22, TypeScript, ESM; scripts `dev`, `build`, `test`, `migrate` |
+| <b class="tag-new">New</b> | `Backend/docker-compose.yml` | Local Postgres 16 |
+| <b class="tag-new">New</b> | `Backend/src/server.ts` | Fastify app, `GET /health` (checks the database) |
+| <b class="tag-new">New</b> | `Backend/src/db.ts` | `pg.Pool`, one transaction per request, released in `finally` |
+| <b class="tag-new">New</b> | `Backend/src/errors.ts` | The error contract: one JSON shape for every error |
+| <b class="tag-new">New</b> | `Backend/migrations/0001_extensions.sql` | `pgcrypto` for `gen_random_uuid()`; each feature adds its own numbered file |
+| <b class="tag-new">New</b> | `Backend/.env.example` | Every config key; `.env` is gitignored |
+| <b class="tag-new">New</b> | `Backend/test/health.test.ts` | `vitest` against a throwaway Postgres |
+
+```mermaid
+flowchart LR
+    Client["curl / iOS app"] --> Route["Fastify route"]
+    Route --> Pool["pg.Pool<br/>one transaction"]
+    Pool --> PG[("Postgres")]
+    Route -->|"any failure"| Err["error contract JSON"]
+```
+
+- **Check:** `curl localhost:3000/health` answers `{"status":"ok"}`; `npm test` is green.
+
+</dd></dl>
+
+#### Steps
+
+<dl><dd>
+
+1. `docker compose up -d`, then `npm run migrate` on the empty database.
+2. Raw parameterized SQL only, no ORM; every user query will filter `uid = $n` from F02 on.
+3. Never `400` for a transient failure: the app aborts on `400`.
+
+</dd></dl>
+
+</dd></dl>
+
+## 6. Backend CI and staging
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** every backend change is checked on a PR, and a staging server the iPhone can reach from S1 on.
+- **Spec:** [03-backend §11 Operations](../../feature-docs/03-backend.md#11-operations)
+
+| Action | File | Holds |
+|---|---|---|
+| <b class="tag-new">New</b> | `.github/workflows/backend.yml` | Ubuntu job: `tsc`, ESLint, `vitest` with a Postgres service; runs when `Backend/` changes |
+| <b class="tag-new">New</b> | `Backend/fly.toml` | Staging app; the release command runs migrations |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/Config/` | Backend base URL per build configuration |
+
+```mermaid
+flowchart LR
+    PR["PR touching Backend/"] --> Job["backend.yml<br/>tsc · lint · vitest"]
+    Main["merge to main"] --> Deploy["fly deploy staging"] --> Mig["migrations"] --> Health["GET /health"]
+```
+
+- **Check:** a PR that touches `Backend/` runs the job; `https://<staging>/health` answers from the iPhone.
+
+</dd></dl>
+
+#### Steps
+
+<dl><dd>
+
+1. Secrets live in the host's secret store, never in the repo.
+2. One database and one R2 bucket per environment.
+
+</dd></dl>
+
+</dd></dl>
+
 ## User-facing text and localization
 
 <dl><dd>
@@ -2080,6 +2325,7 @@ The strings above are localization keys. Add each key and its translated value t
 | Zero warnings | ⌘B in Xcode; `Tools/CI/build-strict.sh` |
 | All tests green | `bundle exec fastlane test` |
 | CI green | PR shows guards, lint, build, test passing |
+| Backend | `npm test` green in CI; staging answers `GET /health` |
 | Roadmap | F00 steps ticked |
 
 </dd></dl>

@@ -134,7 +134,7 @@ async function requireUser(req: FastifyRequest): Promise<{ uid: string }> {
 
 <dl><dd>
 
-- Migrations: `0001_uploads.sql`, `0002_sync_core.sql`, `0003_metadata.sql` — 16 tables + `pgmigrations`.
+- Migrations: one numbered file per feature, in build order (`0001_extensions.sql` … `0011_devices.sql`, see the feature guides) — 17 tables + `pgmigrations`.
 
 ### 5.1 `uploads`
 

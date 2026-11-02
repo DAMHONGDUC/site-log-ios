@@ -341,7 +341,7 @@ enum IssueDefaults {
 
 <dl><dd>
 
-- Module: `Packages/PlatformKit/Sources/PlatformKit/Bluetooth` · mock: `Tools/MockPeripheral/`
+- Module: `Packages/PlatformKit/Sources/PlatformKit/Bluetooth` · mock: a Debug-only peripheral screen on a second iPhone ([F13](../feature-guide/S7-checklists-devices-diagnostics/F13-devicelink.md))
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
 the reading to a `Capture`.
@@ -371,7 +371,7 @@ public struct DeviceReading: Sendable, Codable, Equatable {
   check errors on both discover callbacks, reconnect via `retrievePeripherals(withIdentifiers:)`.
 - UX: reading overlays the preview; status is a colored dot, no alerts; **never blocks capture**.
   Readings older than `measurementStaleAfter` are not attached.
-- The macOS mock scripts invalid values, disconnects and garbage bytes, and makes CI possible.
+- The iPhone mock scripts invalid values, disconnects and garbage bytes; CI covers `parse` on captured bytes. DeviceLink ships to users only after one real meter passes (feature flag).
 
 ```swift
 enum DeviceLinkConstants {

@@ -39,8 +39,8 @@
 
 | Doc | Contents |
 |---|---|
-| [ROADMAP.md](ROADMAP.md) | Features F00–F16 in order, steps per layer, hour estimates |
-| [feature-guide/](docs/feature-guide/) | One guide per feature (F00–F16): Domain → fake data → view models → real data → tests |
+| [ROADMAP.md](ROADMAP.md) | Sprints S0–S9, features F00–F18, steps with hour estimates and ticks |
+| [feature-guide/](docs/feature-guide/) | One folder per sprint, one guide per feature: contract → domain → fake data → view models → local → backend → sync → tests |
 | [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D08 |
 | [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
 | [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
@@ -132,12 +132,12 @@ site-log-ios/
 │   └── Presentation/
 ├── SiteLogUITests/
 ├── Backend/                              # Node + Postgres → 03-backend.md
-├── Tools/                                # CI/ Docs/ Hammerspoon/ MockPeripheral/ Xcode/
+├── Tools/                                # CI/ Docs/ Hammerspoon/ Xcode/
 ├── Makefile, script-tools.properties     # make targets from Packages/script-tools/ios/ios.mk
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/
 │   ├── feature-docs/                     # project specs
-│   ├── feature-guide/                    # .md guide per feature (F00–F16)
+│   ├── feature-guide/                    # S0–S9 sprint folders, one guide per feature (F00–F18)
 │   └── design/                           # design plan, mockups, app icon
 ├── ROADMAP.md
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj

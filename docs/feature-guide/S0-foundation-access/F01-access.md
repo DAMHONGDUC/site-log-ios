@@ -2,8 +2,8 @@
 
 <dl><dd>
 
-- F01 · 15h · access feature guide. Compare every code example with the current implementation before applying it; the repository is the source of truth.
-- Follow [F00 localization rules](00-foundation.md#user-facing-text-and-localization) for user-facing text.
+- Sprint [S0](README.md) · 16h · access feature guide. Compare every code example with the current implementation before applying it; the repository is the source of truth.
+- Follow [F00 localization rules](F00-foundation.md#user-facing-text-and-localization) for user-facing text.
 
 </dd></dl>
 
@@ -14,9 +14,9 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Domain — access types and use cases](#1-domain--access-types-and-use-cases)
-4. [2. Fake data — access repository in memory](#2-fake-data--access-repository-in-memory)
+4. [2. Fake data — access data sources in memory](#2-fake-data--access-data-sources-in-memory)
 5. [3. View models — wire the access screens](#3-view-models--wire-the-access-screens)
-6. [4. Real data — Keychain and Face ID](#4-real-data--keychain-and-face-id)
+6. [4. Local — Keychain and Face ID inside the data sources](#4-local--keychain-and-face-id-inside-the-data-sources)
 7. [Tests (after the feature works)](#tests-after-the-feature-works)
 8. [Feature done](#feature-done)
 
@@ -26,20 +26,33 @@
 
 <dl><dd>
 
-- **Goal:** A2 sign in, A1 Face ID lock, A3 passcode, privacy overlay, re-lock after *Lock after*, S4 app lock and S5 set passcode — on the real `AccessRepositoryImpl` from the start: in-memory values first, Keychain + Face ID in step 4.
+- **Goal:** A2 sign in, A1 Face ID lock, A3 passcode, privacy overlay, re-lock after *Lock after*, S4 app lock and S5 set passcode — on the real `AccessRepositoryImpl` from the start; its data sources hold in-memory values first, Keychain + Face ID in step 4.
 - **Demo:** first launch → Continue offline → tabs; lock on → Face ID or passcode; back after *Lock after* → locked again.
-- **Spec:** [07.2 App lock](../feature-docs/04-reporting-security.md#072-app-lock); mockups: Access board, S4, S5.
+- **Spec:** [07.2 App lock](../../feature-docs/04-reporting-security.md#072-app-lock); mockups: Access board, S4, S5.
 - **Starts from:** F00 step 1 (Factory, `AppClock`) and the skeleton screens in `Presentation/Access/`, `Settings/AppLock/`, `Settings/SetPasscode/`.
-- **No fake repository:** step 2 writes the real repository with in-memory values; step 4 swaps its insides, never the type. Test doubles live only in test targets.
+- **No fake repository:** step 2 writes the real repository over data sources that hold in-memory values; step 4 swaps the data sources' insides, never a type. Test doubles live only in test targets.
+- **Device only:** app lock never leaves the phone, so Contract, Backend and Sync are `—`.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-domain--access-types-and-use-cases) | Domain | 1h | not start | `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases |
-| [2](#2-fake-data--access-repository-in-memory) | Fake data | 1h | not start | `AccessRepositoryImpl` on in-memory values, registrations, dev menu seed / delete |
+| [2](#2-fake-data--access-data-sources-in-memory) | Fake data | 2h | not start | Real `AccessRepositoryImpl` over in-memory data sources, registrations, dev menu seed / delete |
 | [3](#3-view-models--wire-the-access-screens) | View models | 5h | not start | `RootViewModel` + one view model per screen, wired into the skeleton |
-| [4](#4-real-data--keychain-and-face-id) | Real data | 8h | not start | Keychain, `UserDefaults`, Face ID inside `AccessRepositoryImpl` |
+| [4](#4-local--keychain-and-face-id-inside-the-data-sources) | Local | 8h | not start | Keychain, `UserDefaults`, Face ID inside the data sources |
+| — | Contract · Backend · Sync | — | — | Device only |
+
+```mermaid
+flowchart LR
+    Root["RootViewModel"] --> Screens["A1 · A2 · A3 · S4 · S5"]
+    Screens --> UC["Access use cases"]
+    UC --> Repo["AccessRepositoryImpl"]
+    Repo --> ADS["AccessLocalDataSourceImpl"]
+    Repo --> BDS["BiometricLocalDataSourceImpl"]
+    ADS --> Store[("memory → Keychain, UserDefaults")]
+    BDS --> Face["always matches → Face ID"]
+```
 
 <details open>
 <summary><strong>Flow</strong></summary>
@@ -69,14 +82,17 @@ Packages/
 │   ├── Entities/Access/                                                   # 1: AccessSetting, PasscodeCheck, AccessError
 │   ├── Repositories/                                                      # 1: AccessRepository
 │   └── UseCases/Access/, UseCases/DevData/                                # 1: one file per use case · 2: dev menu use cases
-├── DataLayer/Sources/DataLayer/Repositories/                               # 2: AccessRepositoryImpl (in memory · 4: real storage)
-├── DataLayer/Sources/DataLayer/DataSources/Local/Keychain/                  # 4: AccessLocalDataSource, AccessLocalDataSourceImpl
+├── DataLayer/Sources/DataLayer/Repositories/AccessRepositoryImpl.swift       # 2: real from the start, never changes after
+├── DataLayer/Sources/DataLayer/DataSources/Local/Access/                    # 2: AccessLocalDataSource + Impl in memory · 4: Keychain, UserDefaults
+├── DataLayer/Sources/DataLayer/DataSources/Local/Biometrics/                # 2: BiometricLocalDataSource + Impl, always matches · 4: PlatformKit
+├── DataLayer/Sources/DataLayer/Models/Local/AccessSettingModel.swift        # 2
+├── DataLayer/Sources/DataLayer/Mappers/AccessSettingMapper.swift            # 2
 ├── PlatformKit/Sources/PlatformKit/Biometrics/                              # 4: BiometricAuthenticating, BiometricAuthenticator
 ├── Core/Sources/Core/Crypto/PasscodeHasher.swift                            # 4: PBKDF2-SHA256
 └── Core/Sources/Core/Logger/AppLogger.swift                                 # 2: access category
 SiteLog/
 ├── App/
-│   └── DI/RepositoriesDI.swift, UseCasesDI.swift   # 2: access registrations + dev menu use cases (Debug only)
+│   └── DI/DataSourcesDI.swift, RepositoriesDI.swift, UseCasesDI.swift   # 2: access registrations + dev menu use cases (Debug only) · 4: PlatformDI
 └── Presentation/
     ├── DevMenu/DevMenuViewModel.swift, ResetAppAction.swift   # 2: dev menu on use cases
     ├── Root/RootView.swift, RootViewModel.swift      # 3
@@ -87,6 +103,34 @@ SiteLog/
 </dd></dl>
 
 ## 1. Domain — access types and use cases
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** the access vocabulary in Domain: settings, passcode result, errors, one repository protocol, one use case per action.
+
+| File | Holds |
+|---|---|
+| `Entities/Access/AccessSetting.swift` | Welcome seen, lock on, Face ID on, *Lock after* |
+| `Entities/Access/PasscodeCheck.swift` | `.correct` · `.wrong(triesLeft:)` · `.lockedOut(wait:)` |
+| `Entities/Access/AccessError.swift` | `.storageUnavailable` · `.biometricsUnavailable` |
+| `Repositories/AccessRepository.swift` | Protocol; every method returns `Result<…, AccessError>` |
+| `UseCases/Access/` | Load, save, mark welcome, check passcode, set passcode, unlock with Face ID |
+
+```mermaid
+flowchart LR
+    UC["6 use cases"] --> Proto["AccessRepository<br/>protocol"]
+    Proto --> Types["AccessSetting · PasscodeCheck · AccessError"]
+```
+
+- **Check:** ⌘B; DomainLayer imports nothing.
+
+</dd></dl>
+
+#### Build
 
 <dl><dd>
 
@@ -249,7 +293,7 @@ public enum AccessError: Error, Sendable {
 
 <b>File</b> · <b class="tag-new">New</b> · `Packages/DomainLayer/Sources/DomainLayer/Repositories/AccessRepository.swift`
 
-<b>Explain</b> · What the access flow needs from storage; `AccessRepositoryImpl` implements it, in memory now, Keychain in step 4.
+<b>Explain</b> · What the access flow needs from storage; `AccessRepositoryImpl` implements it, over data sources that hold in-memory values now and Keychain in step 4.
 
 <b>Think</b>
 
@@ -490,7 +534,46 @@ public struct UnlockWithBiometricsUseCase: Sendable {
 
 </dd></dl>
 
-## 2. Fake data — access repository in memory
+</dd></dl>
+
+## 2. Fake data — access data sources in memory
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** the real `AccessRepositoryImpl` — rules, mapping, `catch` → `Result`, logs — over two data sources that hold in-memory values.
+- **Rule:** fake data lives only in the data source `Impl`s; step 4 replaces their insides and nothing else.
+- **Already in the repo:** `AccessRepositoryImpl` still holds the values itself; this step moves them into the data sources.
+
+| Layer | File | Job |
+|---|---|---|
+| Core | `Logger/AppLogger.swift` | `access` log category |
+| Data · model | `Models/Local/AccessSettingModel.swift` | Stored shape of the settings |
+| Data · data source | `DataSources/Local/Access/AccessLocalDataSource.swift` + `Impl` | Settings, passcode, wrong tries — in memory |
+| Data · data source | `DataSources/Local/Biometrics/BiometricLocalDataSource.swift` + `Impl` | Face ID that always matches after 0.5 s |
+| Data · mapper | `Mappers/AccessSettingMapper.swift` | Model ↔ entity |
+| Data · repository | `Repositories/AccessRepositoryImpl.swift` | Real: tries and lockout, mapping, errors, logs |
+| Domain | `UseCases/DevData/` | Reset and seed for the dev menu |
+| App | `App/DI/DataSourcesDI.swift`, `RepositoriesDI.swift`, `UseCasesDI.swift` | Register each type once |
+| Presentation | `DevMenu/` | Seed data, Delete all data |
+
+```mermaid
+flowchart LR
+    UC["Access use cases"] --> Repo["AccessRepositoryImpl<br/>real"]
+    Repo --> Map["AccessSettingMapper"]
+    Repo --> ADS["AccessLocalDataSourceImpl<br/>in memory"]
+    Repo --> BDS["BiometricLocalDataSourceImpl<br/>always matches"]
+    Dev["Dev menu"] --> DevUC["Reset / Seed use cases"] --> Repo
+```
+
+- **Check:** ⌘B is clean; dev menu → Delete all data brings back first launch.
+
+</dd></dl>
+
+#### Build
 
 <dl><dd>
 
@@ -539,30 +622,279 @@ public enum AppLogger {
 - Remove `public` from `access` and build: which files fail, and in which modules? Put it back.
 - Open Console.app, filter on subsystem `app.dd.site.log`, and watch the `Access` lines while you use A3.
 
-<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/Repositories/AccessRepositoryImpl.swift`
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/Models/Local/AccessSettingModel.swift`
 
-<b>Explain</b> · The real `AccessRepository`, for now on in-memory values: demo passcode `123456`, Face ID always matches. Step 4 moves the values to Keychain + Face ID.
+<b>Explain</b> · How the settings are stored: plain values that can become JSON in step 4. The data source speaks models, the app speaks entities.
 
 <b>Think</b>
 
-- Two checks can run at the same time. With a `class`, what could go wrong with `wrongTries += 1`? What does `actor` change?
-- What should “Delete all data” bring the app back to?
+- `AccessSetting` already exists in Domain. Why does storage get its own type?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- An actor holding the settings, the passcode and a wrong-try counter; each protocol method reads or writes them; Debug-only `resetAllData()` and `seedSampleData()` serve the dev menu.
+- A `Codable` struct with the same four facts; *Lock after* as whole seconds; the first-launch values as a `static let`.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// Stored form of the access settings; step 4 keeps it as JSON in UserDefaults
+public struct AccessSettingModel: Codable, Sendable, Equatable {
+    public var isShowWelcomeScreen: Bool
+    public var isLockOn: Bool
+    public var isFaceIdOn: Bool
+    public var lockAfterSeconds: Int
+
+    public init(
+        isShowWelcomeScreen: Bool,
+        isLockOn: Bool,
+        isFaceIdOn: Bool,
+        lockAfterSeconds: Int
+    ) {
+        self.isShowWelcomeScreen = isShowWelcomeScreen
+        self.isLockOn = isLockOn
+        self.isFaceIdOn = isFaceIdOn
+        self.lockAfterSeconds = lockAfterSeconds
+    }
+
+    // First launch: welcome not seen, lock on, Face ID on, re-lock after 10 seconds
+    public static let firstLaunch = AccessSettingModel(
+        isShowWelcomeScreen: false,
+        isLockOn: true,
+        isFaceIdOn: true,
+        lockAfterSeconds: 10
+    )
+}
+```
+
+</details>
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Access/AccessLocalDataSource.swift`
+
+<b>Explain</b> · What the access flow needs from storage. It `throws`: real storage can fail, and the repository decides what a failure means.
+
+<b>Think</b>
+
+- Why `verifyPasscode` instead of `loadPasscode`? What would the repository do with a stored hash?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Load and save the settings, check and save the passcode, load and save the wrong-try counter, delete everything.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// Storage for the access flow; returns stored models, never entities
+public protocol AccessLocalDataSource: Sendable {
+    func loadSetting() async throws -> AccessSettingModel
+    func saveSetting(model: AccessSettingModel) async throws
+    func verifyPasscode(inputPasscode: String) async throws -> Bool
+    func savePasscode(newPasscode: String) async throws
+    func loadWrongTries() async throws -> Int
+    func saveWrongTries(count: Int) async throws
+    func deleteAll() async throws
+}
+```
+
+</details>
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Access/AccessLocalDataSourceImpl.swift`
+
+<b>Explain</b> · The real data source type, for now on in-memory values: demo passcode `123456`. Step 4 replaces its insides with Keychain and `UserDefaults`.
+
+<b>Think</b>
+
+- Two checks can run at the same time. With a `class`, what could go wrong with the counter? What does `actor` change?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- An actor holding three values; each method reads or writes one of them; `deleteAll()` puts back the first-launch values.
 
 </details>
 
 <details open>
 <summary><b>Hint 2 · APIs</b></summary>
 
-- `public actor … : AccessRepository`, `public init() {}`, `public func` for every method the app calls; `import Core`, `import DomainLayer`.
-- An actor method satisfies an `async` requirement without writing `async`.
-- `private static let firstLaunch`, `try await Task.sleep(for:)` in `do/catch`, `AppLogger.access.error`.
+- `public actor … : AccessLocalDataSource`, `public init() {}`.
+- A method that never throws still satisfies an `async throws` requirement.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+// In-memory values until step 4 moves them to Keychain and UserDefaults; same type, same methods
+public actor AccessLocalDataSourceImpl: AccessLocalDataSource {
+    private static let demoPasscode = "123456"
+
+    private var setting = AccessSettingModel.firstLaunch
+    private var passcode = AccessLocalDataSourceImpl.demoPasscode
+    private var wrongTries = 0
+
+    // An actor's default init is internal; App/DI needs this one
+    public init() {}
+
+    public func loadSetting() -> AccessSettingModel {
+        return setting
+    }
+
+    public func saveSetting(model: AccessSettingModel) {
+        setting = model
+    }
+
+    public func verifyPasscode(inputPasscode: String) -> Bool {
+        return inputPasscode == passcode
+    }
+
+    public func savePasscode(newPasscode: String) {
+        passcode = newPasscode
+    }
+
+    public func loadWrongTries() -> Int {
+        return wrongTries
+    }
+
+    public func saveWrongTries(count: Int) {
+        wrongTries = count
+    }
+
+    public func deleteAll() {
+        setting = AccessSettingModel.firstLaunch
+        passcode = AccessLocalDataSourceImpl.demoPasscode
+        wrongTries = 0
+    }
+}
+```
+
+</details>
+
+<b>Try</b>
+
+- Kill the app and reopen: the passcode and settings are back to first launch. Which step makes them survive, and which file does it change?
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Biometrics/` (2 files)
+
+<b>Explain</b> · Face ID behind a data source. For now it waits half a second and matches; step 4 calls PlatformKit's `BiometricAuthenticator` inside the same type.
+
+| File | Holds |
+|---|---|
+| `BiometricLocalDataSource.swift` | Protocol: `authenticate() async throws -> Bool` |
+| `BiometricLocalDataSourceImpl.swift` | Always matches after 0.5 s |
+
+<details>
+<summary><b>Code</b></summary>
+
+`BiometricLocalDataSource.swift`
+
+```swift
+// Face ID for the access flow
+public protocol BiometricLocalDataSource: Sendable {
+    func authenticate() async throws -> Bool
+}
+```
+
+`BiometricLocalDataSourceImpl.swift`
+
+```swift
+// Until step 4: Face ID takes half a second, then always matches
+public struct BiometricLocalDataSourceImpl: BiometricLocalDataSource {
+    public init() {}
+
+    public func authenticate() async throws -> Bool {
+        try await Task.sleep(for: .milliseconds(500))
+        return true
+    }
+}
+```
+
+</details>
+
+---
+
+<b>File</b> · <b class="tag-new">New</b> · `Packages/DataLayer/Sources/DataLayer/Mappers/AccessSettingMapper.swift`
+
+<b>Explain</b> · Turns the stored model into the Domain entity and back, so neither side knows the other's shape.
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Two `static` functions; seconds ↔ `Duration`.
+
+</details>
+
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+import DomainLayer
+
+// Stored model ↔ Domain entity for the access settings
+enum AccessSettingMapper {
+    static func toEntity(model: AccessSettingModel) -> AccessSetting {
+        let setting = AccessSetting(
+            isShowWelcomeScreen: model.isShowWelcomeScreen,
+            isLockOn: model.isLockOn,
+            isFaceIdOn: model.isFaceIdOn,
+            lockAfterTime: .seconds(model.lockAfterSeconds)
+        )
+        return setting
+    }
+
+    static func toModel(setting: AccessSetting) -> AccessSettingModel {
+        let seconds = Int(setting.lockAfterTime.components.seconds)
+        let model = AccessSettingModel(
+            isShowWelcomeScreen: setting.isShowWelcomeScreen,
+            isLockOn: setting.isLockOn,
+            isFaceIdOn: setting.isFaceIdOn,
+            lockAfterSeconds: seconds
+        )
+        return model
+    }
+}
+```
+
+</details>
+
+---
+
+<b>File</b> · <b class="tag-replace">Replace</b> · `Packages/DataLayer/Sources/DataLayer/Repositories/AccessRepositoryImpl.swift`
+
+<b>Explain</b> · The real repository, final from today: counts wrong tries, decides lockout, maps models, turns every thrown error into `.failure(AccessError)` and logs it. It holds no values.
+
+<b>Think</b>
+
+- Step 4 swaps memory for Keychain. Which lines of this file change then? (Answer: none.)
+- What should “Delete all data” bring the app back to?
+
+<details open>
+<summary><b>Hint 1 · Idea</b></summary>
+
+- Each method: `do` → call the data source → map → `.success`; `catch` → log → `.failure`.
+- The tries rule (5 free tries, then 60 s) lives here, not in the data source.
+
+</details>
+
+<details open>
+<summary><b>Hint 2 · APIs</b></summary>
+
+- `public actor … : AccessRepository`, `private let accessLocalDataSource: any AccessLocalDataSource`.
+- `AppLogger.access.error("… \(error.localizedDescription)")` in every `catch`.
 - `#if DEBUG extension AccessRepositoryImpl { … }` for `resetAllData()` / `seedSampleData()`.
-- Memory never fails, so step 2 always returns `.success(…)`; `.failure` arrives with Keychain in step 4.
 
 </details>
 
@@ -572,37 +904,24 @@ public enum AppLogger {
 ```swift
 import Core
 import DomainLayer
-import os
 
 public actor AccessRepositoryImpl: AccessRepository {
-    private static let firstLaunch = AccessSetting(/* first-launch values */)
+    private let accessLocalDataSource: any AccessLocalDataSource
+    private let biometricLocalDataSource: any BiometricLocalDataSource
 
-    private var settings = AccessRepositoryImpl.firstLaunch
-    private var passcode = "123456"
-    private let freeTries = 5
-    private var wrongTries = 0
+    public init(/* both data sources */) { }
 
-    public init() {}
-
-    public func loadAccessSetting() -> Result<AccessSetting, AccessError> { }
-    public func saveAccessSetting(newSetting: AccessSetting) -> Result<Void, AccessError> { }
-    public func markWelcomeScreen() -> Result<Void, AccessError> { }
-
-    public func checkPasscode(inputPasscode: String) -> Result<PasscodeCheck, AccessError> {
-        // right → reset the counter, .success(.correct)
-        // wrong → count it, .success(.wrong(triesLeft:)) or .success(.lockedOut(wait:))
+    public func loadAccessSetting() async -> Result<AccessSetting, AccessError> {
+        // do: load the model, map it, .success · catch: log, .failure(.storageUnavailable)
     }
 
-    public func setPasscode(newPasscode: String) -> Result<Void, AccessError> { }
-    public func unlockWithBiometrics() async -> Result<Bool, AccessError> { /* sleep 0.5 s, .success(true) */ }
-}
+    public func checkPasscode(inputPasscode: String) async -> Result<PasscodeCheck, AccessError> {
+        // right → reset the counter, .correct
+        // wrong → count it, .wrong(triesLeft:) or .lockedOut(wait:)
+    }
 
-#if DEBUG
-extension AccessRepositoryImpl {
-    public func resetAllData() { /* back to first launch */ }
-    public func seedSampleData() { /* welcome seen */ }
+    // … the other methods, same shape
 }
-#endif
 ```
 
 </details>
@@ -613,91 +932,128 @@ extension AccessRepositoryImpl {
 ```swift
 import Core
 import DomainLayer
-import os
 
-// In-memory values for now; step 4 moves them to Keychain + Face ID, same type and methods.
+// Real from the start: rules, mapping and errors live here; values live in the data sources
 public actor AccessRepositoryImpl: AccessRepository {
-    // First-launch values: welcome not seen, lock on, Face ID on, re-lock after 10 seconds
-    private static let firstLaunch = AccessSetting(
-        isShowWelcomeScreen: false,
-        isLockOn: true,
-        isFaceIdOn: true,
-        lockAfterTime: .seconds(10)
-    )
+    private static let freeTries = 5
+    private static let lockoutWait: Duration = .seconds(60)
 
-    private var settings = AccessRepositoryImpl.firstLaunch
-    // Demo passcode until step 4
-    private var passcode = "123456"
-    private let freeTries = 5
-    private var wrongTries = 0
+    private let accessLocalDataSource: any AccessLocalDataSource
+    private let biometricLocalDataSource: any BiometricLocalDataSource
 
-    // An actor's default init is internal; App/DI needs this one
-    public init() {}
-
-    public func loadAccessSetting() -> Result<AccessSetting, AccessError> {
-        return .success(settings)
+    public init(
+        accessLocalDataSource: any AccessLocalDataSource,
+        biometricLocalDataSource: any BiometricLocalDataSource
+    ) {
+        self.accessLocalDataSource = accessLocalDataSource
+        self.biometricLocalDataSource = biometricLocalDataSource
     }
 
-    public func saveAccessSetting(newSetting: AccessSetting) -> Result<Void, AccessError> {
-        settings = newSetting
-        return .success(())
-    }
-
-    public func markWelcomeScreen() -> Result<Void, AccessError> {
-        settings.isShowWelcomeScreen = true
-        return .success(())
-    }
-
-    public func checkPasscode(inputPasscode: String) -> Result<PasscodeCheck, AccessError> {
-        if inputPasscode == passcode {
-            wrongTries = 0
-            return .success(.correct)
+    public func loadAccessSetting() async -> Result<AccessSetting, AccessError> {
+        do {
+            let model = try await accessLocalDataSource.loadSetting()
+            let setting = AccessSettingMapper.toEntity(model: model)
+            return .success(setting)
+        } catch {
+            AppLogger.access.error("Load access setting failed: \(error.localizedDescription)")
+            return .failure(.storageUnavailable)
         }
-
-        wrongTries += 1
-        let triesLeft = freeTries - wrongTries
-
-        if triesLeft > 0 {
-            return .success(.wrong(triesLeft: triesLeft))
-        }
-
-        return .success(.lockedOut(wait: .seconds(60)))
     }
 
-    public func setPasscode(newPasscode: String) -> Result<Void, AccessError> {
-        passcode = newPasscode
-        wrongTries = 0
-        return .success(())
+    public func saveAccessSetting(newSetting: AccessSetting) async -> Result<Void, AccessError> {
+        do {
+            let model = AccessSettingMapper.toModel(setting: newSetting)
+            try await accessLocalDataSource.saveSetting(model: model)
+            AppLogger.access.info("Access setting saved")
+            return .success(())
+        } catch {
+            AppLogger.access.error("Save access setting failed: \(error.localizedDescription)")
+            return .failure(.storageUnavailable)
+        }
+    }
+
+    public func markWelcomeScreen() async -> Result<Void, AccessError> {
+        do {
+            var model = try await accessLocalDataSource.loadSetting()
+            model.isShowWelcomeScreen = true
+            try await accessLocalDataSource.saveSetting(model: model)
+            return .success(())
+        } catch {
+            AppLogger.access.error("Mark welcome screen failed: \(error.localizedDescription)")
+            return .failure(.storageUnavailable)
+        }
+    }
+
+    public func checkPasscode(inputPasscode: String) async -> Result<PasscodeCheck, AccessError> {
+        do {
+            let isCorrect = try await accessLocalDataSource.verifyPasscode(inputPasscode: inputPasscode)
+
+            // Right passcode: start counting again
+            if isCorrect {
+                try await accessLocalDataSource.saveWrongTries(count: 0)
+                return .success(.correct)
+            }
+
+            // Wrong passcode: count it
+            let wrongTries = try await accessLocalDataSource.loadWrongTries() + 1
+            try await accessLocalDataSource.saveWrongTries(count: wrongTries)
+
+            let triesLeft = AccessRepositoryImpl.freeTries - wrongTries
+            if triesLeft > 0 {
+                return .success(.wrong(triesLeft: triesLeft))
+            }
+
+            AppLogger.access.info("Passcode locked out")
+            return .success(.lockedOut(wait: AccessRepositoryImpl.lockoutWait))
+        } catch {
+            AppLogger.access.error("Check passcode failed: \(error.localizedDescription)")
+            return .failure(.storageUnavailable)
+        }
+    }
+
+    public func setPasscode(newPasscode: String) async -> Result<Void, AccessError> {
+        do {
+            try await accessLocalDataSource.savePasscode(newPasscode: newPasscode)
+            try await accessLocalDataSource.saveWrongTries(count: 0)
+            AppLogger.access.info("Passcode changed")
+            return .success(())
+        } catch {
+            AppLogger.access.error("Set passcode failed: \(error.localizedDescription)")
+            return .failure(.storageUnavailable)
+        }
     }
 
     public func unlockWithBiometrics() async -> Result<Bool, AccessError> {
-        // Until step 4: Face ID takes half a second, then always matches
         do {
-            try await Task.sleep(for: .milliseconds(500))
+            let isMatched = try await biometricLocalDataSource.authenticate()
+            return .success(isMatched)
         } catch {
-            AppLogger.access.error("Face ID sleep cancelled")
-            return .success(false)
+            AppLogger.access.error("Face ID failed: \(error.localizedDescription)")
+            return .failure(.biometricsUnavailable)
         }
-
-        return .success(true)
     }
 }
 
 // Dev menu only
 #if DEBUG
-extension AccessRepositoryImpl {
-    // Delete all data → back to first launch
-    public func resetAllData() {
-        settings = AccessRepositoryImpl.firstLaunch
-        passcode = "123456"
-        wrongTries = 0
-    }
+    extension AccessRepositoryImpl {
+        // Delete all data → back to first launch
+        public func resetAllData() async {
+            do {
+                try await accessLocalDataSource.deleteAll()
+            } catch {
+                AppLogger.devMenu.error("Reset access data failed: \(error.localizedDescription)")
+            }
+        }
 
-    // Seed data → a returning user: welcome seen, lock on
-    public func seedSampleData() {
-        settings.isShowWelcomeScreen = true
+        // Seed data → a returning user: welcome seen, lock on
+        public func seedSampleData() async {
+            let result = await markWelcomeScreen()
+            if case .failure = result {
+                AppLogger.devMenu.error("Seed access data failed")
+            }
+        }
     }
-}
 #endif
 ```
 
@@ -705,8 +1061,8 @@ extension AccessRepositoryImpl {
 
 <b>Try</b>
 
-- Type 5 wrong passcodes, then the right one. Does it unlock? Should it? Note what step 4 must do differently.
-- Kill the app and reopen: the passcode and settings are back to first launch. Which step makes them survive?
+- Type 5 wrong passcodes, then the right one. Does it unlock? Should it? Note what the lockout needs before the right passcode works again.
+- Make `AccessLocalDataSourceImpl.loadSetting()` throw once. Which screen shows, and which log line explains it?
 
 ---
 
@@ -768,27 +1124,58 @@ public struct SeedAccessDataUseCase {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DI/RepositoriesDI.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/App/DI/DataSourcesDI.swift`
 
-<b>Explain</b> · Registers the access repository once, as its protocol. The composition root has one file per layer.
-
-<b>Think</b>
-
-- Why is the repository `.singleton` but the use cases are not?
-- Why is `App/DI/` the only app folder that imports `DataLayer`?
+<b>Explain</b> · Registers both data sources once, as their protocols. Step 4 keeps these registrations; only what they build inside changes.
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
 
-- Register the repository once, as the protocol, singleton.
+- `.singleton`: the in-memory values must be the same everywhere the app asks for them.
 
 </details>
 
+<details>
+<summary><b>Code</b></summary>
+
+```swift
+import DataLayer
+import FactoryKit
+
+extension Container {
+    // MARK: - Access
+
+    var accessLocalDataSource: Factory<any AccessLocalDataSource> {
+        self { AccessLocalDataSourceImpl() }.singleton
+    }
+
+    var biometricLocalDataSource: Factory<any BiometricLocalDataSource> {
+        self { BiometricLocalDataSourceImpl() }.singleton
+    }
+}
+```
+
+</details>
+
+<b>Try</b>
+
+- Remove `.singleton` from `accessLocalDataSource`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
+
+---
+
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/App/DI/RepositoriesDI.swift`
+
+<b>Explain</b> · Registers the access repository once, as its protocol, built from the two data sources. The composition root has one file per layer.
+
+<b>Think</b>
+
+- Why is `App/DI/` the only app folder that imports `DataLayer`?
+
 <details open>
-<summary><b>Hint 2 · APIs</b></summary>
+<summary><b>Hint 1 · APIs</b></summary>
 
 - `import DataLayer`, `import DomainLayer`, `import FactoryKit`.
-- `Factory<any AccessRepository>`, `self { AccessRepositoryImpl() }.singleton`.
+- `self { AccessRepositoryImpl(accessLocalDataSource: self.accessLocalDataSource(), …) }.singleton`.
 
 </details>
 
@@ -802,7 +1189,13 @@ import FactoryKit
 
 extension Container {
     var accessRepository: Factory<any AccessRepository> {
-        self { AccessRepositoryImpl() }.singleton
+        self {
+            AccessRepositoryImpl(
+                accessLocalDataSource: self.accessLocalDataSource(),
+                biometricLocalDataSource: self.biometricLocalDataSource()
+            )
+        }
+        .singleton
     }
 }
 ```
@@ -811,7 +1204,7 @@ extension Container {
 
 ---
 
-<b>File</b> · <b class="tag-new">New</b> · `SiteLog/App/DI/UseCasesDI.swift`
+<b>File</b> · <b class="tag-edit">Edit</b> · `SiteLog/App/DI/UseCasesDI.swift`
 
 <b>Explain</b> · One factory per use case, grouped by feature with `// MARK:`; the two dev menu use cases sit under `#if DEBUG`.
 
@@ -903,74 +1296,6 @@ extension Container {
 
 </details>
 
-<details>
-<summary><b>Code</b></summary>
-
-```swift
-import Core
-import DataLayer
-import DomainLayer
-import FactoryKit
-
-// Composition root: the only place that knows which implementation backs each protocol.
-// Data sources and stateful services are .singleton; use cases are created fresh (unscoped).
-extension Container {
-    // MARK: - Shared services
-
-    var clock: Factory<any AppClock> {
-        self { SystemClock() }.singleton
-    }
-
-    // MARK: - Access
-
-    var accessRepository: Factory<any AccessRepository> {
-        self { AccessRepositoryImpl() }.singleton
-    }
-
-    var loadAccessSettingUseCase: Factory<LoadAccessSettingUseCase> {
-        self { LoadAccessSettingUseCase(repository: self.accessRepository()) }
-    }
-
-    var saveAccessSettingUseCase: Factory<SaveAccessSettingUseCase> {
-        self { SaveAccessSettingUseCase(repository: self.accessRepository()) }
-    }
-
-    var markWelcomeScreenUseCase: Factory<MarkWelcomeScreenUseCase> {
-        self { MarkWelcomeScreenUseCase(repository: self.accessRepository()) }
-    }
-
-    var checkPasscodeUseCase: Factory<CheckPasscodeUseCase> {
-        self { CheckPasscodeUseCase(repository: self.accessRepository()) }
-    }
-
-    var setPasscodeUseCase: Factory<SetPasscodeUseCase> {
-        self { SetPasscodeUseCase(repository: self.accessRepository()) }
-    }
-
-    var unlockWithBiometricsUseCase: Factory<UnlockWithBiometricsUseCase> {
-        self { UnlockWithBiometricsUseCase(repository: self.accessRepository()) }
-    }
-
-    // MARK: - Dev menu (Debug only)
-
-    #if DEBUG
-    var resetAllAccessDataUseCase: Factory<ResetAllAccessDataUseCase> {
-        self { ResetAllAccessDataUseCase(repository: self.accessRepository()) }
-    }
-
-    var seedAccessDataUseCase: Factory<SeedAccessDataUseCase> {
-        self { SeedAccessDataUseCase(repository: self.accessRepository()) }
-    }
-    #endif
-}
-```
-
-</details>
-
-<b>Try</b>
-
-- Remove `.singleton` from `accessRepository`, run, type a wrong passcode twice: does *tries left* go down? Explain why not, then put it back.
-
 ---
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/DevMenu/DevMenuViewModel.swift`
@@ -979,7 +1304,7 @@ extension Container {
 
 <b>Think</b>
 
-- F02 adds projects. How does Delete all data wipe them too, without the dev menu view changing?
+- F03 adds projects. How does Delete all data wipe them too, without the dev menu view changing?
 
 <details open>
 <summary><b>Hint 1 · Idea</b></summary>
@@ -1092,7 +1417,41 @@ final class DevMenuViewModel {
 
 </dd></dl>
 
+</dd></dl>
+
 ## 3. View models — wire the access screens
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** every access screen gets a view model; `RootViewModel` alone decides which phase shows.
+
+| Screen | View model | Job |
+|---|---|---|
+| Root | `RootViewModel` | Phase: sign in → locked → unlocked; re-lock after *Lock after* |
+| A2 Sign in | `SignInViewModel` | Continue offline; sign-in buttons log until F02 |
+| A1 Face ID | `FaceIDLockViewModel` | Face ID, fall back to A3 |
+| A3 Passcode | `PasscodeUnlockViewModel` | Keypad, tries left, lockout |
+| S4 App lock | `AppLockViewModel` | Lock on, Face ID, *Lock after* |
+| S5 Set passcode | `SetPasscodeViewModel` | Enter twice, save |
+
+```mermaid
+stateDiagram-v2
+    [*] --> SignIn: first launch
+    SignIn --> Unlocked: Continue offline, lock off
+    SignIn --> Locked: lock on
+    Locked --> Unlocked: Face ID or passcode
+    Unlocked --> Locked: back after Lock after
+```
+
+- **Check:** the 3.8 table runs top to bottom.
+
+</dd></dl>
+
+#### Build
 
 <dl><dd>
 
@@ -1316,7 +1675,7 @@ final class RootViewModel {
 
 <b>File</b> · <b class="tag-new">New</b> · `SiteLog/Presentation/Access/SignIn/SignInViewModel.swift`
 
-<b>Explain</b> · A2 actions: sign-in stubs until F12, and Continue offline.
+<b>Explain</b> · A2 actions: sign-in stubs until F02, and Continue offline.
 
 <b>Think</b>
 
@@ -1351,7 +1710,7 @@ final class SignInViewModel {
 
     init(markWelcomeScreenUseCase: MarkWelcomeScreenUseCase, onFinished: @escaping () -> Void) { }
 
-    func signInWithAppleTapped() { /* log only, F12 */ }
+    func signInWithAppleTapped() { /* log only, F02 */ }
     func continueWithEmailTapped() { /* log only */ }
     func continueOfflineTapped() async { /* use case, then onFinished() */ }
 }
@@ -1380,7 +1739,7 @@ final class SignInViewModel {
     }
 
     func signInWithAppleTapped() {
-        // Real sign-in comes in F12 (Firebase Auth)
+        // Real sign-in comes in F02 (Firebase Auth)
         AppLogger.access.info("Sign in with Apple tapped - not built yet")
     }
 
@@ -2451,30 +2810,51 @@ final class SetPasscodeViewModel {
 
 </dd></dl>
 
-## 4. Real data — Keychain and Face ID
+</dd></dl>
+
+## 4. Local — Keychain and Face ID inside the data sources
 
 <dl><dd>
 
-- **Goal:** `AccessRepositoryImpl` keeps its type and methods, but its values move from memory to Keychain, `UserDefaults` and Face ID; screens, view models and use cases do not change.
-- **Spec:** [07.2](../feature-docs/04-reporting-security.md#072-app-lock)
+#### Overview
+
+<dl><dd>
+
+- **Goal:** the two data source `Impl`s keep their type and methods; their insides move to Keychain, `UserDefaults` and Face ID. The repository, use cases, view models and screens do not change.
+- **Spec:** [07.2](../../feature-docs/04-reporting-security.md#072-app-lock)
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `DataLayer/DataSources/Local/Keychain/AccessLocalDataSource.swift` | Protocol: read / write settings, passcode hash, lockout counter; returns records, never entities |
-| <b class="tag-new">New</b> | `DataLayer/DataSources/Local/Keychain/AccessLocalDataSourceImpl.swift` | Settings in `UserDefaults`; passcode hash and lockout counter in Keychain, `.whenUnlockedThisDeviceOnly` |
 | <b class="tag-new">New</b> | `Core/Crypto/PasscodeHasher.swift` | `public`: PBKDF2-SHA256 with a 16-byte random salt; compare without storing the passcode |
 | <b class="tag-new">New</b> | `PlatformKit/Biometrics/BiometricAuthenticator.swift` | `BiometricAuthenticating` protocol + `LAContext` type, biometry-change detection |
-| <b class="tag-replace">Replace</b> | `DataLayer/Repositories/AccessRepositoryImpl.swift` | Same type and methods: calls `AccessLocalDataSource` and `BiometricAuthenticating`, maps records to entities, catches their errors → `.failure(AccessError)`; `reset()` clears them |
-| <b class="tag-edit">Edit</b> | `App/DI/DataSourcesDI.swift`, `PlatformDI.swift`, `RepositoriesDI.swift` | Registers the data source and the authenticator, passes them to `AccessRepositoryImpl(…)` |
+| <b class="tag-replace">Replace</b> | `DataLayer/DataSources/Local/Access/AccessLocalDataSourceImpl.swift` | Settings as JSON in `UserDefaults`; passcode hash and wrong tries in Keychain, `.whenUnlockedThisDeviceOnly` |
+| <b class="tag-replace">Replace</b> | `DataLayer/DataSources/Local/Biometrics/BiometricLocalDataSourceImpl.swift` | Calls `BiometricAuthenticating`; its errors are thrown up to the repository |
+| <b class="tag-edit">Edit</b> | `App/DI/PlatformDI.swift`, `DataSourcesDI.swift` | Register the authenticator, pass it to the data source; the registered types stay |
+| — | `DataLayer/Repositories/AccessRepositoryImpl.swift` | Unchanged |
+
+```mermaid
+flowchart LR
+    Repo["AccessRepositoryImpl<br/>unchanged"] --> ADS["AccessLocalDataSourceImpl"]
+    ADS --> UD[("UserDefaults<br/>settings")]
+    ADS --> KC[("Keychain<br/>hash · wrong tries")]
+    ADS --> Hash["PasscodeHasher<br/>Core"]
+    Repo --> BDS["BiometricLocalDataSourceImpl"]
+    BDS --> Auth["BiometricAuthenticator<br/>PlatformKit"] --> LA["LAContext"]
+```
+
+- **Check:** relaunch keeps the passcode, settings and lockout; `git diff` shows no change under `Repositories/` or `Presentation/`.
+
+</dd></dl>
 
 #### Steps
 
 <dl><dd>
 
 1. Add `INFOPLIST_KEY_NSFaceIDUsageDescription` in `project.yml`, run `xcodegen`.
-2. Lockout counter survives relaunch; biometry change turns Face ID off.
-3. Forgot passcode: device passcode check (`LAContext` `.deviceOwnerAuthentication`), then S5.
-4. Register the data source in `DataSourcesDI`, the authenticator in `PlatformDI`, pass both in `RepositoriesDI`; no other registration changes.
+2. `AccessLocalDataSourceImpl` hashes in `savePasscode` and compares in `verifyPasscode`; the wrong-try counter survives relaunch.
+3. Biometry change: the authenticator reports it, `BiometricLocalDataSourceImpl` throws, the repository's existing `catch` returns `.biometricsUnavailable`, A1 falls back to A3.
+4. Forgot passcode: device passcode check (`LAContext` `.deviceOwnerAuthentication`), then S5 — a new method through every layer, not a swap.
+5. Register the authenticator in `PlatformDI`, pass it in `DataSourcesDI`; no other registration changes.
 
 </dd></dl>
 
@@ -2483,6 +2863,7 @@ final class SetPasscodeViewModel {
 <dl><dd>
 
 - Relaunch keeps the passcode, settings and lockout
+- No file outside `DataSources/`, `Core/Crypto/`, `PlatformKit/Biometrics/` and `App/DI/` changed (forgot passcode aside)
 
 </dd></dl>
 
@@ -2641,7 +3022,8 @@ struct PasscodeUnlockViewModelTests {
 
 - `RootViewModel`: lock off → unlocked; Face ID off → passcode; *Lock after* reached → locked (fixed clock)
 - `SetPasscodeViewModel`: mismatch returns to *enter*; match calls `setPasscode`
-- `AccessRepositoryImpl` (DataLayer tests, real storage under a test Keychain service): hash round-trip, wrong passcode rejected, lockout survives relaunch, biometry change turns Face ID off
+- `AccessRepositoryImpl` over test-double data sources (`DataLayerTests/Doubles/`): 5 wrong tries → locked out; a throwing data source → `.storageUnavailable`
+- `AccessLocalDataSourceImpl` under a test Keychain service: hash round-trip, wrong passcode rejected, lockout survives relaunch
 
 </dd></dl>
 
