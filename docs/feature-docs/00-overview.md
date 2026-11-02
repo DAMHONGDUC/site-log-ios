@@ -115,7 +115,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Realtime | Hand-written `URLSessionWebSocketTask` channel ([D04](#d04--websocket-realtime-channel)) |
 | Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([D05](#d05--kingfisher-for-remote-images)) |
 | Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([D07](#d07--firebase-crashlytics)) |
-| Tests | Swift Testing, `FactoryTesting`; swift-snapshot-testing optional, last (F16) ([testing](05-platform.md#testing-strategy)) |
+| Tests | Swift Testing, `FactoryTesting`; swift-snapshot-testing optional, last (F18) ([testing](05-platform.md#testing-strategy)) |
 | Tooling | XcodeGen, SwiftLint, swift-format, Fastlane, GitHub Actions |
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
 | Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
@@ -300,11 +300,10 @@ site-log-ios/
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
 ├── Tools/Hammerspoon/                # format-on-save config for Xcode
-├── Tools/MockPeripheral/             # macOS BLE simulator
 ├── Backend/                          # Node + Postgres → 03-backend.md
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/feature-docs/                # project specs
-├── docs/feature-guide/               # step-by-step guide per feature (F00–F16)
+├── docs/feature-guide/               # step-by-step guides: one folder per sprint (S0–S9), one guide per feature (F00–F18)
 ├── docs/design/                      # design plan, mockups, app icon
 └── project.yml                       # XcodeGen
 ```
@@ -629,12 +628,17 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 
 **Adding a feature**
 
-1. Domain: entity, repository protocol, use cases.
-2. Fake data: the real repository (`<Noun>RepositoryImpl` in `DataLayer/Repositories/`) on in-memory values, registered once in `App/DI/RepositoriesDI.swift`. No separate fake repository; the dev menu resets / seeds it through Debug-only `resetAllData()` / `seedSampleData()` on the repository protocol and `UseCases/DevData/` use cases.
-3. View models wired into the screens, running on those in-memory values.
-4. Real data: replace the repository's insides with data sources (`DataSources/Local/`, `Remote/`), models (`Models/Local/`, `Remote/`), mappers, and PlatformKit for system services; same type, same registration.
+- Steps and sprint order: [feature-guide/README.md](../feature-guide/README.md#how-every-feature-runs).
+
+1. Contract: DTOs, sync table columns and endpoint shapes, shared by app and backend.
+2. Domain: sync-ready entities (`UUID` id, `updatedAt`, `deletedAt`, `syncState`), repository protocol, use cases.
+3. Fake data: the real repository (`<Noun>RepositoryImpl` in `DataLayer/Repositories/`) — rules, mapping, `catch` → `Result`, logs — over data source `Impl`s (`DataSources/Local/`, `Remote/`) that hold in-memory values. Fake data never lives in a repository. Each type is registered once in `App/DI/`; the dev menu resets / seeds through Debug-only `resetAllData()` / `seedSampleData()` on the repository protocol and `UseCases/DevData/` use cases.
+4. View models wired into the screens; the feature runs end to end with Continue offline.
+5. Local: replace the data source `Impl`s' insides with SwiftData, Keychain, files and PlatformKit; same types, same registrations, repository unchanged.
+6. Backend: migration, route, validation, backend tests.
+7. Sync: the local data source becomes syncable (or a remote data source switches to `HTTPClient`); signed in, a second device sees the change.
    Test doubles live only in test targets (`SiteLogTests/Doubles/`, `Packages/<Name>/Tests/`).
-5. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
+8. Tests once the feature works end to end; schema change → new `SchemaV{n}` + migration test.
 
 </dd></dl>
 
@@ -735,7 +739,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 
 - **Consequences:**
   - Full control of retry, priority, Wi-Fi policy, URL refresh.
-  - Largest block of work (F04 `UploadKit` steps) and the most test surface: state machine,
+  - Largest block of work (F06–F07 `UploadKit` steps) and the most test surface: state machine,
     `MockTransport` scripting 503/403/timeouts, kill-and-relaunch tests.
 
 </dd></dl>
@@ -819,12 +823,12 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 - Strategy: [05 § Testing](05-platform.md#testing-strategy)
 
 - **Context:** domain logic and view models need fast tests on CI without a device; a guard against
-  visual regressions on screens is useful but optional, so it waits for the last feature (F16).
+  visual regressions on screens is useful but optional, so it waits for the last feature (F18).
 
 | Need | Library |
 |---|---|
 | Unit tests | Swift Testing (`@Test`, `#expect`) |
-| View snapshots (optional, F16) | [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) 1.x |
+| View snapshots (optional, F18) | [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) 1.x |
 | DI isolation | `FactoryTesting` — `@Suite(.container)` |
 | UI flows | XCUITest, smoke paths only |
 
@@ -834,7 +838,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | ViewInspector | Tests view internals; breaks on SwiftUI changes |
 | Quick/Nimble | Extra DSL on top of Swift Testing |
 
-- **Consequences:** no snapshot library until F16 step 10; if added, references are committed and
+- **Consequences:** no snapshot library until F18 step 10; if added, references are committed and
   recorded on one pinned simulator model and OS.
 
 </dd></dl>
@@ -1123,7 +1127,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | Keep `NavigationLink { View() }` | Views build other features’ views; no single place for deep links |
 
 - **Consequences:**
-  - Deep links (F14) map a URL to a tab and a route, then push on that tab’s coordinator.
+  - Deep links (F16) map a URL to a tab and a route, then push on that tab’s coordinator.
   - A sheet that opens a full screen dismisses itself, then pushes on the tab’s coordinator.
   - With view models, routes keep ids; the destination builds the view model from `Container.shared` (D14).
 
