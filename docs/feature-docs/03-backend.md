@@ -248,7 +248,7 @@ sequenceDiagram
     loop parts 1..12
         App->>R2: PUT part → 200 + ETag
     end
-    Note over App: killed; relaunch hours later, reconcile
+    Note over App: killed, relaunch hours later, reconcile
     App->>R2: PUT part 13 → 403 (.urlExpired, no budget spent)
     App->>BE: POST /parts/refresh {13..30}
     loop parts 13..30

@@ -263,7 +263,7 @@ flowchart LR
 sequenceDiagram
     participant API as /sync/push
     participant PG as Postgres
-    API->>PG: begin; set constraints all deferred
+    API->>PG: begin, set constraints all deferred
     API->>PG: update sync_state set last_rev = last_rev + 1 (row lock)
     API->>PG: insert … on conflict do update where older
     API->>PG: commit
