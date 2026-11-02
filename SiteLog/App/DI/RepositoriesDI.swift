@@ -4,6 +4,12 @@ import FactoryKit
 
 extension Container {
     var accessRepository: Factory<any AccessRepository> {
-        self { AccessRepositoryImpl() }.singleton
+        self {
+            AccessRepositoryImpl(
+                accessLocalDataSource: self.accessLocalDataSource(),
+                biometricLocalDataSource: self.biometricLocalDataSource()
+            )
+        }
+        .singleton
     }
 }
