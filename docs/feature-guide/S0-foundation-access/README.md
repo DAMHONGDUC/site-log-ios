@@ -58,8 +58,8 @@ flowchart LR
 | F00.2 | Fastlane `test` lane, PR checks | CI | 5 | not start |
 | F00.3 | CI guards | CI | 4 | not start |
 | F00.4 | DesignSystem tests | Tests | 3 | not start |
-| F00.5 | Backend skeleton: Fastify, Postgres, `/health`, error contract | Backend | 8 | not start |
-| F00.6 | Backend CI and staging deploy | Backend | 4 | not start |
+| F00.5 | [site-log-be S0](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md): setup, API skeleton, AWS staging | Backend | 11 | not start |
+| F00.6 | Backend base URL per build configuration, local-network ATS | Config | 1 | not start |
 | F01.1 | Access types and use cases | Domain | 1 | not start |
 | F01.2 | Repository + data sources in memory | Fake data | 2 | not start |
 | F01.3 | Access view models (split: root · A1–A3 · S4–S5) | View models | 5 | not start |
@@ -72,7 +72,7 @@ flowchart LR
 <dl><dd>
 
 - [ ] App: zero warnings, `bundle exec fastlane test` green, CI green on a PR
-- [ ] Backend: `vitest` green in CI; staging answers `GET /health`
+- [ ] Backend ([site-log-be S0](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md)): CI green; staging answers `GET /health` from the iPhone
 - [ ] Offline demo runs on a real device; relaunch keeps the passcode, settings and lockout
 - [ ] F00 and F01 tests written and green
 

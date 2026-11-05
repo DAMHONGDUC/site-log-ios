@@ -17,7 +17,7 @@
 4. [2. Domain — upload events](#2-domain--upload-events)
 5. [3. Fake data — events on a timer](#3-fake-data--events-on-a-timer)
 6. [4. View models — live state on the Sync tab](#4-view-models--live-state-on-the-sync-tab)
-7. [5. Backend — channel and verification worker](#5-backend--channel-and-verification-worker)
+7. [5. Backend — in site-log-be](#5-backend--in-site-log-be)
 8. [6. Sync — WebSocket client](#6-sync--websocket-client)
 9. [Tests (after the feature works)](#tests-after-the-feature-works)
 10. [Feature done](#feature-done)
@@ -31,7 +31,7 @@
 - **Goal:** an observation-only channel tells the app what the server has confirmed; a worker re-reads every object and flips it to `verified` or `mismatch`.
 - **Demo — offline:** no channel: the Sync tab is only slower, never red.
 - **Demo — signed in:** uploads turn “verified” as events arrive; a tampered object shows as a mismatch; `/verify` shows the new state.
-- **Spec:** [10 Realtime channel](../../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [03-backend §8–9](../../feature-docs/03-backend.md#8-integrity)
+- **Spec:** [10 Realtime channel](../../feature-docs/02-upload-sync.md#10-realtime-progress-channel), [03-backend §9](../../feature-docs/03-backend.md#9-realtime-channel)
 - **Starts from:** F06–F07 (upload store) and F10 (`/verify`).
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs). Local is `—`: events only move existing upload jobs forward.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
@@ -42,7 +42,7 @@
 | [2](#2-domain--upload-events) | Domain | 1h | not start | `UploadEvent`, `RealtimeRepository` |
 | [3](#3-fake-data--events-on-a-timer) | Fake data | 1h | not start | Real `RealtimeRepositoryImpl` over a timer data source |
 | [4](#4-view-models--live-state-on-the-sync-tab) | View models | 2h | not start | Live state on U1 |
-| [5](#5-backend--channel-and-verification-worker) | Backend | 8h | not start | `/ws`, verify worker, abandoned-upload job |
+| [5](#5-backend--in-site-log-be) | Backend | 8h | not start | site-log-be F15: `/ws`, verify worker, abandoned uploads |
 | [6](#6-sync--websocket-client) | Sync | 8h | not start | `URLSessionWebSocketTask` inside the data source |
 | — | Local | — | — | Events update the F06 upload store |
 
@@ -61,7 +61,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/src/ws.ts, workers/verify.ts, jobs/abandoned.ts                  # 5
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Entities/Uploads/UploadEvent.swift   # 2
 ├── DomainLayer/Sources/DomainLayer/Repositories/RealtimeRepository.swift  # 2
@@ -189,7 +188,7 @@ flowchart LR
 
 </dd></dl>
 
-## 5. Backend — channel and verification worker
+## 5. Backend — in site-log-be
 
 <dl><dd>
 
@@ -197,23 +196,26 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the server pushes state; a worker proves each stored object matches its hash. Split into tasks: ws · worker · job.
-- **Spec:** [03-backend §8–9](../../feature-docs/03-backend.md#9-websocket)
+- **Goal:** the server pushes upload state; a worker proves every stored file's hash.
+- **Built in:** [F15 Realtime](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F15-realtime.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§9 Realtime channel](../../feature-docs/03-backend.md#9-realtime-channel).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/src/ws.ts` | `@fastify/websocket`; auth in the first message; per-user subscription |
-| <b class="tag-new">New</b> | `Backend/src/workers/verify.ts` | Streams the object from R2, recomputes SHA-256, flips `registered` → `verified` / `mismatch` |
-| <b class="tag-new">New</b> | `Backend/src/jobs/abandoned.ts` | Aborts `created` uploads older than 7 days |
+| `WS /ws`: `auth`, `subscribe`, `ping` | `RealtimeClient` connects in the foreground while uploads are unsynced | A `snapshot` arrives first |
+| `jobCompleted` (`verified` false, then true), `jobFailed` | Advance jobs only; trust only a matching `sha256` | Photos turn "verified" without polling |
 
 ```mermaid
-flowchart LR
-    Complete["upload completed"] --> Worker["verify worker"] --> R2[("R2 object")]
-    Worker -->|"match"| V["verified"] --> WS["/ws jobCompleted"]
-    Worker -->|"mismatch"| M["mismatch"] --> WS2["/ws jobFailed(integrity)"]
+sequenceDiagram
+    participant App
+    participant WS as site-log-be /ws
+    App->>WS: auth, subscribe
+    WS-->>App: snapshot
+    WS-->>App: jobCompleted (verified)
 ```
 
-- **Check:** `vitest`: the worker flips state; `/verify` shows it.
+- **Check:** 50 uploads reach "verified" through events; with the channel off they still finish, only slower.
 
 </dd></dl>
 
@@ -266,8 +268,7 @@ stateDiagram-v2
 
 **5. Backend**
 
-- Worker flips `verified` or raises `integrity`
-- `/verify` shows the new state
+- In site-log-be: `test/ws.test.ts`, `test/worker.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F15-realtime.md#tests))
 
 **6. Sync**
 

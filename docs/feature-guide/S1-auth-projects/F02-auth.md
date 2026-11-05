@@ -18,7 +18,7 @@
 5. [3. Fake data — auth data sources in memory](#3-fake-data--auth-data-sources-in-memory)
 6. [4. View models — sign in, account, sign out](#4-view-models--sign-in-account-sign-out)
 7. [5. Local — Firebase Auth inside the data source](#5-local--firebase-auth-inside-the-data-source)
-8. [6. Backend — requireUser and account deletion](#6-backend--requireuser-and-account-deletion)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [Tests (after the feature works)](#tests-after-the-feature-works)
 10. [Feature done](#feature-done)
 
@@ -31,7 +31,7 @@
 - **Goal:** Sign in with Apple or email next to Continue offline; every backend call carries a fresh ID token; the account can be deleted.
 - **Demo — offline:** Continue offline still works; Settings › Account offers sign-in.
 - **Demo — signed in:** A2 → Sign in with Apple → tabs; relaunch in airplane mode goes straight in; a call without a token gets `401`.
-- **Spec:** [08.1 Offline-first and auth](../../feature-docs/02-upload-sync.md#081-offline-first-and-auth), [03-backend §4 Auth](../../feature-docs/03-backend.md#4-auth)
+- **Spec:** [08.1 Offline-first and auth](../../feature-docs/02-upload-sync.md#081-offline-first-and-auth), [03-backend §5 Auth and account](../../feature-docs/03-backend.md#5-auth-and-account)
 - **Starts from:** F01 (`SignInViewModel` with logging stubs) and the skeleton `Settings/Account/`.
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs). Sync is `—`: auth has no synced table.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
@@ -43,7 +43,7 @@
 | [3](#3-fake-data--auth-data-sources-in-memory) | Fake data | 1h | not start | Real `AuthRepositoryImpl` over in-memory data sources |
 | [4](#4-view-models--sign-in-account-sign-out) | View models | 4h | not start | A2 sign-in, Account, sign out, delete account |
 | [5](#5-local--firebase-auth-inside-the-data-source) | Local | 10h | not start | Firebase Auth, `HTTPClient` with token and 401 refresh |
-| [6](#6-backend--requireuser-and-account-deletion) | Backend | 4h | not start | `requireUser`, `DELETE /account` |
+| [6](#6-backend--in-site-log-be) | Backend | 4h | not start | site-log-be F02: `requireUser`, `DELETE /account` |
 | — | Sync | — | — | No synced table |
 
 ```mermaid
@@ -64,8 +64,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/src/auth.ts                                                  # 6: requireUser (firebase-admin, checkRevoked)
-Backend/src/routes/account.ts                                        # 6: DELETE /account
 Packages/
 ├── DomainLayer/Sources/DomainLayer/
 │   ├── Entities/Auth/                                               # 2: AuthUser, AuthError
@@ -112,7 +110,7 @@ sequenceDiagram
     BE-->>App: 200 or 401
 ```
 
-- **Check:** both shapes are written down before step 3; the error body matches the [error contract](../../feature-docs/03-backend.md#10-error-contract).
+- **Check:** both shapes are written down before step 3; the error body matches the [error contract](../../feature-docs/03-backend.md#3-errors-and-retries).
 
 </dd></dl>
 
@@ -266,7 +264,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — requireUser and account deletion
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -274,32 +272,31 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** every user route knows the caller's `uid`; the account can be wiped.
-- **Spec:** [03-backend §3–4](../../feature-docs/03-backend.md#4-auth)
+- **Goal:** every call carries a fresh ID token; the backend answers `401` without one and can delete the whole account.
+- **Built in:** [F02 Auth](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F02-auth.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§2 Calling](../../feature-docs/03-backend.md#2-calling-the-api) · [§3 Errors](../../feature-docs/03-backend.md#3-errors-and-retries) · [§5 Auth and account](../../feature-docs/03-backend.md#5-auth-and-account).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/src/auth.ts` | `requireUser`: `verifyIdToken(token, true)`; failures → `401` |
-| <b class="tag-new">New</b> | `Backend/src/routes/account.ts` | `DELETE /account`: storage objects first, then rows in one transaction; idempotent |
-| <b class="tag-edit">Edit</b> | `Backend/.env.example` | Firebase service-account keys (secret store only) |
+| `requireUser` on every route | `HTTPClient` adds `Authorization: Bearer`; one shared 401 refresh | A call with the token removed → `401 missing_token` |
+| `DELETE /account` | Reauthenticate, call it, show the counts, wipe local data | The user is gone in Firebase; the next call is `401` |
 
 ```mermaid
-flowchart LR
-    Req["request"] --> RU["requireUser"]
-    RU -->|"no / bad token"| E401["401"]
-    RU -->|"uid"| Route["route: every query filters uid"]
-    Del["DELETE /account"] --> R2["delete R2 objects"] --> Rows["delete rows, one transaction"]
+sequenceDiagram
+    participant App
+    participant API as site-log-be
+    participant FB as Firebase
+    App->>API: request + Bearer ID token
+    API->>FB: verifyIdToken (checkRevoked)
+    alt valid
+        API-->>App: 200
+    else bad or revoked
+        API-->>App: 401 → refresh once, retry
+    end
 ```
 
-- **Check:** `vitest`: no token → `401`, revoked token → `401`, second delete → same counts.
-
-</dd></dl>
-
-#### Steps
-
-<dl><dd>
-
-1. Each later feature that adds a table adds it to the account deletion in its backend step.
+- **Check:** signed in against local or staging, every call succeeds; with the token removed, `401`.
 
 </dd></dl>
 
@@ -320,8 +317,7 @@ flowchart LR
 
 **6. Backend**
 
-- Expired / revoked token → 401
-- `DELETE /account` twice → same body
+- In site-log-be: `test/auth.test.ts`, `test/account.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F02-auth.md#tests))
 
 </dd></dl>
 

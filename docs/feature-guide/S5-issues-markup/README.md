@@ -54,14 +54,14 @@ flowchart LR
 | F08.3 | Repositories + data sources in memory | Fake data | 3 | not start |
 | F08.4 | Issues screens (split: sheet · list · detail · verification) | View models | 7 | not start |
 | F08.5 | SwiftData, on-device dictation (split: storage · dictation) | Local | 8 | not start |
-| F08.6 | Migration `0006_issues.sql` | Backend | 2 | not start |
+| F08.6 | [site-log-be F08](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F08-issues.md): `0005_issues.sql` | Backend | 2 | not start |
 | F08.7 | Issues, issue captures, phrases join sync | Sync | 2 | not start |
 | F09.1 | Annotation row | Contract | 1 | not start |
 | F09.2 | Annotation types | Domain | 1 | not start |
 | F09.3 | Repository + data sources in memory | Fake data | 1 | not start |
 | F09.4 | Markup and stamp screens | View models | 4 | not start |
 | F09.5 | Vector rendering (split: layer · stamp) | Local | 7 | not start |
-| F09.6 | Migration `0007_annotations.sql` | Backend | 1 | not start |
+| F09.6 | [site-log-be F09](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F09-annotations.md): `0006_annotations.sql` | Backend | 1 | not start |
 | F09.7 | Annotations sync; trusted time from the server clock | Sync | 7 | not start |
 
 </dd></dl>

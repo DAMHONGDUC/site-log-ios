@@ -18,7 +18,7 @@
 5. [3. Fake data — token data source in memory](#3-fake-data--token-data-source-in-memory)
 6. [4. View models — permission and settings](#4-view-models--permission-and-settings)
 7. [5. Local — push registration and routing](#5-local--push-registration-and-routing)
-8. [6. Backend — devices and APNs](#6-backend--devices-and-apns)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — token to the backend](#7-sync--token-to-the-backend)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--token-data-source-in-memory) | Fake data | 1h | not start | Real `PushRepositoryImpl` over an in-memory token data source |
 | [4](#4-view-models--permission-and-settings) | View models | 2h | not start | Permission moment, notification row |
 | [5](#5-local--push-registration-and-routing) | Local | 4h | not start | Push capability, token, URL scheme, router |
-| [6](#6-backend--devices-and-apns) | Backend | 3h | not start | `0011_devices.sql`, `POST /devices`, APNs send |
+| [6](#6-backend--in-site-log-be) | Backend | 3h | not start | site-log-be F16: `POST /devices`, APNs send |
 | [7](#7-sync--token-to-the-backend) | Sync | 2h | not start | Token registered through `HTTPClient` |
 
 ```mermaid
@@ -62,7 +62,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0011_devices.sql, src/routes/devices.ts, src/push.ts   # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Entities/DeepLinks/DeepLink.swift     # 2: pure parser
 ├── DomainLayer/Sources/DomainLayer/Repositories/PushRepository.swift     # 2
@@ -220,7 +219,7 @@ sequenceDiagram
 
 </dd></dl>
 
-## 6. Backend — devices and APNs
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -228,21 +227,27 @@ sequenceDiagram
 
 <dl><dd>
 
-- **Goal:** store tokens per user and send a push when the worker verifies a session's uploads.
+- **Goal:** the app registers its APNs token; the server pushes once when a session is fully verified.
+- **Built in:** [F16 Push](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§10 Push registration](../../feature-docs/03-backend.md#10-push-registration).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0011_devices.sql` | `devices (uid, token, environment)` |
-| <b class="tag-new">New</b> | `Backend/src/routes/devices.ts` | `POST /devices` |
-| <b class="tag-new">New</b> | `Backend/src/push.ts` | APNs send with a token-based key from the secret store |
-| <b class="tag-edit">Edit</b> | `Backend/src/routes/account.ts` | Devices join the account deletion |
+| `POST /devices`, `DELETE /devices/:token` | Register after sign-in and on token change (`sandbox` in Debug); remove on sign-out | Row exists for the token |
+| Push: `aps.alert`, `deepLink`, `account` | Route `sitelog://session/<id>`; ignore a foreign `account` | Tap opens the session, even from a cold launch |
 
 ```mermaid
-flowchart LR
-    Worker["verify worker"] -->|"session verified"| Push["push.ts"] --> APNs["APNs"]
+sequenceDiagram
+    participant App
+    participant API as site-log-be
+    participant APNs
+    App->>API: POST /devices {token}
+    API->>APNs: push (session verified)
+    APNs-->>App: notification → deep link
 ```
 
-- **Check:** `vitest` with a mocked APNs client.
+- **Check:** a real iPhone gets "Uploads verified" and opens the session.
 
 </dd></dl>
 

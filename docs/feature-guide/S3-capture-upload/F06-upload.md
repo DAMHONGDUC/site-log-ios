@@ -18,7 +18,7 @@
 5. [3. Fake data — upload store in memory](#3-fake-data--upload-store-in-memory)
 6. [4. View models — wire the Sync tab](#4-view-models--wire-the-sync-tab)
 7. [5. Local — upload store on SwiftData](#5-local--upload-store-on-swiftdata)
-8. [6. Backend — begin and idempotent complete](#6-backend--begin-and-idempotent-complete)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — background single PUT](#7-sync--background-single-put)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -32,7 +32,7 @@
 - **Goal:** files under 5 MB reach storage through a background `URLSession`, survive suspension, and get a server-confirmed hash. Large files and resume are F07.
 - **Demo — offline:** airplane mode → captures wait on the Sync tab with a plain reason; nothing is red.
 - **Demo — signed in:** network back → photos upload; kill the app mid-way → they still finish; the server's hash matches.
-- **Spec:** [04 Upload engine](../../feature-docs/02-upload-sync.md#04-upload-engine), [03-backend §3, §6, §7.3](../../feature-docs/03-backend.md#3-endpoints)
+- **Spec:** [04 Upload engine](../../feature-docs/02-upload-sync.md#04-upload-engine), [03-backend §7](../../feature-docs/03-backend.md#7-uploads)
 - **Starts from:** F02 (`HTTPClient`, token) and F05 (hashed media files).
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs). Upload talks to its own endpoints, so step 7 swaps the transport, not a sync table.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--upload-store-in-memory) | Fake data | 2h | not start | `UploadStoreImpl` in memory; real `UploadRepositoryImpl` |
 | [4](#4-view-models--wire-the-sync-tab) | View models | 6h | not start | Sync tab, today's files |
 | [5](#5-local--upload-store-on-swiftdata) | Local | 4h | not start | Upload store on SwiftData |
-| [6](#6-backend--begin-and-idempotent-complete) | Backend | 8h | not start | Begin (single mode), idempotent `complete`, key rules |
+| [6](#6-backend--in-site-log-be) | Backend | 8h | not start | site-log-be F06: begin, `complete`, abort, media URLs |
 | [7](#7-sync--background-single-put) | Sync | 14h | not start | Background session, state machine, backoff |
 
 ```mermaid
@@ -53,7 +53,7 @@ flowchart LR
     Repo --> Store["UploadStoreImpl<br/>memory → SwiftData"]
     Repo --> Kit["UploadCoordinator<br/>PlatformKit/UploadKit"]
     Kit -->|"begin · complete"| BE["Backend"]
-    Kit -->|"PUT bytes"| R2[("R2")]
+    Kit -->|"PUT bytes"| S3[("S3")]
 ```
 
 </dd></dl>
@@ -63,7 +63,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/src/routes/uploads.ts, src/keys.ts, migrations/0005_uploads.sql   # 6
 Packages/PlatformKit/Sources/PlatformKit/UploadKit/                       # uses nothing from the rest of the app
 ├── UploadStore.swift, UploadJobRecord.swift                              # 2
 ├── UploadStateMachine.swift                                              # 7
@@ -99,12 +98,12 @@ SiteLog/
 sequenceDiagram
     participant App
     participant BE as Backend
-    participant R2
+    participant S3
     App->>BE: POST /uploads
     BE-->>App: single PUT URL (1 h)
-    App->>R2: PUT bytes
+    App->>S3: PUT bytes
     App->>BE: POST /complete
-    BE->>R2: HeadObject
+    BE->>S3: HeadObject
     BE-->>App: remoteKey + code
 ```
 
@@ -223,7 +222,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — begin and idempotent complete
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -231,31 +230,31 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** sign uploads only for the caller's own keys; `complete` can be called any number of times.
-- **Spec:** [03-backend §3–4, §7.3](../../feature-docs/03-backend.md#73-idempotent-complete)
+- **Goal:** files go straight to S3 with presigned URLs; `complete` returns a verification code and can be retried safely.
+- **Built in:** [F06 Upload](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F06-upload.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§7 Uploads](../../feature-docs/03-backend.md#7-uploads).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0005_uploads.sql` | `uploads` from spec §5.1 |
-| <b class="tag-new">New</b> | `Backend/src/keys.ts` | Strict key regex `{uid}/{project}/{session}/{capture}.{ext}`; no `..`, no absolute paths |
-| <b class="tag-new">New</b> | `Backend/src/routes/uploads.ts` | Begin (single mode), `complete` with `HeadObject`, idempotent |
+| `POST /uploads` | `PresignedURLProvider` begins with key, size, type, hash | Answer `mode: single` with a URL |
+| Presigned `PUT` to S3 | Background upload with `Content-Type` = the type sent | S3 `200` |
+| `POST /uploads/:id/complete` | Retries until `200`; stores `remoteKey` and `verificationCode` | The code appears under the photo |
+| `DELETE /uploads/:id`, `POST /media/urls` | Cancel; show remote photos on a second device | The photo opens on device B |
 
 ```mermaid
-flowchart LR
-    Begin["POST /uploads"] --> Key["keys.ts<br/>uid prefix"] --> Sign["presign PUT, 1 h"]
-    Complete["POST /complete"] --> Head["HeadObject"] --> Upsert["update … coalesce(code)"]
+sequenceDiagram
+    participant App
+    participant API as site-log-be
+    participant S3
+    App->>API: POST /uploads
+    API-->>App: uploadId, url
+    App->>S3: PUT bytes
+    App->>API: complete
+    API-->>App: remoteKey, verificationCode
 ```
 
-- **Check:** `complete` twice → identical `200` body; a key under another uid → rejected.
-
-</dd></dl>
-
-#### Steps
-
-<dl><dd>
-
-1. Presign locally with `s3-request-presigner`; one R2 bucket per environment.
-2. Never `400` for a transient condition.
+- **Check:** a photo taken on a phone signed in to staging lands in the staging bucket and shows "registered {code}".
 
 </dd></dl>
 
@@ -322,9 +321,7 @@ stateDiagram-v2
 
 **6. Backend**
 
-- Migrations on empty and seeded databases
-- Key prefix (`other-uid/`, `../`, absolute)
-- Concurrent duplicate `complete`
+- In site-log-be: `test/uploads.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F06-upload.md#tests))
 
 **7. Sync**
 

@@ -44,7 +44,7 @@
 | [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D08 |
 | [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
 | [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
-| [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend: Node, Postgres, sync, WebSocket |
+| [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend API: what the app calls; the server lives in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](docs/feature-docs/04-reporting-security.md) | 05 PDF and CSV export · 07 Security and audit log |
 | [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
 | [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; [mockups](docs/design/mockups/index.html) |
@@ -131,7 +131,6 @@ site-log-ios/
 ├── SiteLogTests/                         # app tests; package tests live in each package
 │   └── Presentation/
 ├── SiteLogUITests/
-├── Backend/                              # Node + Postgres → 03-backend.md
 ├── Tools/                                # CI/ Docs/ Hammerspoon/ Xcode/
 ├── Makefile, script-tools.properties     # make targets from Packages/script-tools/ios/ios.mk
 ├── fastlane/  .github/workflows/  Gemfile

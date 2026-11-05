@@ -56,7 +56,7 @@ sequenceDiagram
 | F04.3 | Engine over an in-memory outbox and server (split: queue · push · pull · conflicts · deletes) | Fake data | 18 | not start |
 | F04.4 | Sync tab status, account view models | View models | 3 | not start |
 | F04.5 | Outbox and cursor in SwiftData; F03 data sources write outbox rows | Local | 6 | not start |
-| F04.6 | `/sync/pull`, `/sync/push` on `sync_state` | Backend | 8 | not start |
+| F04.6 | [site-log-be F04](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S2-sync-engine/F04-sync.md): `sync_state`, `/sync/pull`, `/sync/push` | Backend | 8 | not start |
 | F04.7 | Remote data source on `HTTPClient`, two-device convergence | Sync | 7 | not start |
 
 </dd></dl>
@@ -67,7 +67,7 @@ sequenceDiagram
 
 - [ ] Offline: edits survive relaunch in the queue
 - [ ] Signed in: two devices converge; deletes propagate; a session never moves back a state
-- [ ] Two-client convergence test runs in CI against a throwaway Postgres
+- [ ] [site-log-be F04](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S2-sync-engine/F04-sync.md) tests green (the server side of convergence)
 - [ ] F04 tests written and green
 
 </dd></dl>

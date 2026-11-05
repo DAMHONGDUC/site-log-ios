@@ -52,14 +52,14 @@ flowchart LR
 | F10.3 | Repositories + data sources in memory | Fake data | 2 | not start |
 | F10.4 | Report flow screens | View models | 4 | not start |
 | F10.5 | CSV, PDF, audit chain (split: CSV · layout render · integrity footer · audit chain) | Local | 21 | not start |
-| F10.6 | `0008_report_branding.sql`, `GET /verify/:code` | Backend | 4 | not start |
+| F10.6 | [site-log-be F10](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F10-reports-verify.md): `0007_report_branding.sql`, `GET /verify/:code` | Backend | 4 | not start |
 | F10.7 | Branding syncs | Sync | 2 | not start |
 | F11.1 | Plan sheet row, plan file key | Contract | 1 | not start |
 | F11.2 | Plan types and pin use cases | Domain | 1 | not start |
 | F11.3 | Repository + data sources in memory | Fake data | 1 | not start |
 | F11.4 | Plans screens | View models | 5 | not start |
 | F11.5 | Import, tiles, pins (split: import · tiles · pins) | Local | 9 | not start |
-| F11.6 | `0009_plan_sheets.sql` | Backend | 2 | not start |
+| F11.6 | [site-log-be F11](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F11-plans.md): `0008_plan_sheets.sql` | Backend | 2 | not start |
 | F11.7 | Plan sheets sync, plan files upload | Sync | 2 | not start |
 
 </dd></dl>

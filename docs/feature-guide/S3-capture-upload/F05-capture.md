@@ -18,7 +18,7 @@
 5. [3. Fake data — camera and media in memory](#3-fake-data--camera-and-media-in-memory)
 6. [4. View models — wire the camera](#4-view-models--wire-the-camera)
 7. [5. Local — camera, disk, SHA-256](#5-local--camera-disk-sha-256)
-8. [6. Backend — captures table](#6-backend--captures-table)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — captures join the engine](#7-sync--captures-join-the-engine)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--camera-and-media-in-memory) | Fake data | 2h | not start | Real `CameraRepositoryImpl` over a bundled photo and in-memory media |
 | [4](#4-view-models--wire-the-camera) | View models | 3h | not start | Camera and review screens |
 | [5](#5-local--camera-disk-sha-256) | Local | 14h | not start | `AVCaptureSession`, files on disk, streamed SHA-256 |
-| [6](#6-backend--captures-table) | Backend | 2h | not start | `0004_captures.sql` |
+| [6](#6-backend--in-site-log-be) | Backend | 2h | not start | site-log-be F05: `0003_captures.sql` |
 | [7](#7-sync--captures-join-the-engine) | Sync | 1h | not start | Captures syncable, insert-only |
 
 ```mermaid
@@ -63,7 +63,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0004_captures.sql                                   # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/
 │   ├── Repositories/CameraRepository.swift                            # 2
@@ -105,7 +104,7 @@ flowchart LR
     Contract --> SQL["0004_captures.sql"]
 ```
 
-- **Check:** DTO fields match the [captures columns](../../feature-docs/03-backend.md#53-metadata-tables).
+- **Check:** DTO fields match the [captures columns](../../feature-docs/03-backend.md#63-synced-tables).
 
 </dd></dl>
 
@@ -249,7 +248,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — captures table
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -257,12 +256,14 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the server table for capture rows.
+- **Goal:** capture rows sync; evidence fields can never change on the server.
+- **Built in:** [F05 Captures](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F05-captures.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0004_captures.sql` | `captures`; coordinates paired; unique `(project_id, sha256)` where live |
-| <b class="tag-edit">Edit</b> | `Backend/src/sync/tables.ts`, `routes/account.ts` | Allow the table in push and pull; join the account deletion |
+| Table `captures`, frozen evidence columns | Push the full row; `remoteKey`, `verificationCode`, `excludedFromReport` may change later | Pulled capture on a second device has the same `sha256` |
 
 ```mermaid
 erDiagram
@@ -270,7 +271,7 @@ erDiagram
     locations ||--o{ captures : at
 ```
 
-- **Check:** a second live capture with the same hash in one project is rejected.
+- **Check:** a capture made offline syncs; a changed hash on the device is ignored by the server.
 
 </dd></dl>
 

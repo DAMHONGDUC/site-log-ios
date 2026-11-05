@@ -18,7 +18,7 @@
 5. [3. Fake data — data sources in memory](#3-fake-data--data-sources-in-memory)
 6. [4. View models — wire the Issues screens](#4-view-models--wire-the-issues-screens)
 7. [5. Local — SwiftData and dictation](#5-local--swiftdata-and-dictation)
-8. [6. Backend — issue tables](#6-backend--issue-tables)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — issues join the engine](#7-sync--issues-join-the-engine)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--data-sources-in-memory) | Fake data | 3h | not start | Real repositories over in-memory data sources |
 | [4](#4-view-models--wire-the-issues-screens) | View models | 7h | not start | Sheet, list, detail, verification camera, outcome |
 | [5](#5-local--swiftdata-and-dictation) | Local | 8h | not start | SwiftData, on-device speech |
-| [6](#6-backend--issue-tables) | Backend | 2h | not start | `0006_issues.sql` |
+| [6](#6-backend--in-site-log-be) | Backend | 2h | not start | site-log-be F08: `0005_issues.sql` |
 | [7](#7-sync--issues-join-the-engine) | Sync | 2h | not start | Three tables syncable |
 
 ```mermaid
@@ -63,7 +63,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0006_issues.sql                                     # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/
 │   ├── Entities/Issues/                                               # 2: Issue, IssuePairing, Phrase
@@ -263,7 +262,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — issue tables
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -271,21 +270,24 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** server tables for the three rows.
+- **Goal:** issues, their photos and phrases sync; pins are all-or-nothing.
+- **Built in:** [F08 Issues](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F08-issues.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0006_issues.sql` | `issues`, `issue_captures`, `phrases` (unique `(uid, text)` where live) |
-| <b class="tag-edit">Edit</b> | `Backend/src/sync/tables.ts`, `routes/account.ts` | Allow in sync; join the account deletion |
+| Tables `issues`, `issue_captures`, `phrases` | Full rows; `dueDate` as `YYYY-MM-DD` | An issue with two photos appears on device B |
+| Natural keys on `issue_captures` and `phrases` | Adopt `serverRow` when `superseded` (the id may differ) | The same phrase typed on two devices ends as one |
 
 ```mermaid
-flowchart LR
-    SQL["0006_issues.sql"] --> T1["issues"]
-    SQL --> T2["issue_captures"]
-    SQL --> T3["phrases"]
+erDiagram
+    locations ||--o{ issues : at
+    issues ||--o{ issue_captures : photos
+    captures ||--o{ issue_captures : in
 ```
 
-- **Check:** a pin outside 0…1 is rejected.
+- **Check:** issues sync both ways; a half pin is rejected (`invalid_row:23514`).
 
 </dd></dl>
 

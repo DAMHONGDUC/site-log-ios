@@ -18,7 +18,7 @@
 5. [3. Fake data — data sources in memory](#3-fake-data--data-sources-in-memory)
 6. [4. View models — wire the Projects screens](#4-view-models--wire-the-projects-screens)
 7. [5. Local — SwiftData](#5-local--swiftdata)
-8. [6. Backend — project tables](#6-backend--project-tables)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [Tests (after the feature works)](#tests-after-the-feature-works)
 10. [Feature done](#feature-done)
 
@@ -31,7 +31,7 @@
 - **Goal:** projects, sessions and locations end to end on the device, with every field the sync engine (F04) needs.
 - **Demo — offline:** project → 80 generated locations → walkthrough, all in airplane mode and kept after relaunch.
 - **Demo — signed in:** the same flow; the backend has the tables. Data starts moving between devices in F04.
-- **Spec:** [01](../../feature-docs/01-field-work.md#01-projects-sessions-locations), [00 §3 Data model](../../feature-docs/00-overview.md#3-data-model), [03-backend §5.3](../../feature-docs/03-backend.md#53-metadata-tables)
+- **Spec:** [01](../../feature-docs/01-field-work.md#01-projects-sessions-locations), [00 §3 Data model](../../feature-docs/00-overview.md#3-data-model), [03-backend §6.3](../../feature-docs/03-backend.md#63-synced-tables)
 - **Starts from:** the skeleton screens (~30% of Figma) that read `App/Fakes/FakeData.swift`.
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs). Sync is done in F04: these are its first tables.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
@@ -43,7 +43,7 @@
 | [3](#3-fake-data--data-sources-in-memory) | Fake data | 2h | not start | Real repositories over in-memory data sources |
 | [4](#4-view-models--wire-the-projects-screens) | View models | 10h | not start | Wire the Projects screens |
 | [5](#5-local--swiftdata) | Local | 15h | not start | SwiftData models, data sources, schema versioning |
-| [6](#6-backend--project-tables) | Backend | 3h | not start | `0002_projects.sql` |
+| [6](#6-backend--in-site-log-be) | Backend | 3h | not start | site-log-be F03: `0001_projects.sql` |
 | — | Sync | — | — | Done in F04 |
 
 ```mermaid
@@ -61,7 +61,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0002_projects.sql                                 # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/                                  # 2: Entities/Projects/, Repositories/, UseCases/Projects/
 ├── DataLayer/Sources/DataLayer/
@@ -276,7 +275,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — project tables
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -284,13 +283,15 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the server tables for the three rows, ready for F04 to fill.
-- **Spec:** [03-backend §5.3](../../feature-docs/03-backend.md#53-metadata-tables)
+- **Goal:** the server tables for projects, locations and sessions exist before F04 syncs them.
+- **Built in:** [F03 Projects](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F03-projects.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0002_projects.sql` | `projects`, `locations`, `sessions` with `uid`, `rev`, `client_updated_at`, `deleted_at`, index `(uid, rev)` |
-| <b class="tag-edit">Edit</b> | `Backend/src/routes/account.ts` | The three tables join the account deletion |
+| Tables `projects`, `locations`, `sessions` | DTOs in `DataLayer/Models/Remote/` with the same fields | Field names match [site-log-be 01-api §6.3](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/01-api.md#63-synced-tables) |
+| Foreign keys include `uid`; codes unique per project while live | Ids made by the app (`UUID`) | Nothing to call yet: sync is F04 |
 
 ```mermaid
 erDiagram
@@ -299,16 +300,7 @@ erDiagram
     locations ||--o{ locations : parent
 ```
 
-- **Check:** migration runs on an empty and on a seeded database; a second live location with the same code is rejected.
-
-</dd></dl>
-
-#### Steps
-
-<dl><dd>
-
-1. Every FK is `deferrable initially deferred`.
-2. Uniques use `where deleted_at is null`.
+- **Check:** the DTOs compile against the documented fields; staging ran `0001_projects.sql`.
 
 </dd></dl>
 
@@ -338,7 +330,7 @@ erDiagram
 
 **6. Backend**
 
-- Migration on empty and seeded databases
+- In site-log-be: `test/projects.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F03-projects.md#tests))
 
 </dd></dl>
 

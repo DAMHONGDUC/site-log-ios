@@ -2,7 +2,7 @@
 
 <dl><dd>
 
-- Work runs **by sprint**: 2 weeks each, 1 developer, ~60h. Inside a sprint, a feature's app and backend work go together.
+- Work runs **by sprint**: 2 weeks each, 1 developer, ~60h. Inside a sprint, a feature's app and backend work go together; the backend is built in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) and its rows here link to its guides.
 - Specs: [docs/feature-docs](docs/feature-docs/); guides: [docs/feature-guide](docs/feature-guide/README.md), one folder per sprint, one guide per feature.
 - This file owns the ticks. Each sprint's `README.md` holds its overview; each guide holds the steps.
 
@@ -91,8 +91,8 @@ flowchart TD
 - [ ] **F00.2** - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
 - [ ] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
 - [ ] **F00.4** - [Tests] - [3h] - DesignSystem: hex test, `DSGallery`
-- [ ] **F00.5** - [Backend] - [8h] - Fastify, Postgres, migrations, `/health`, error contract
-- [ ] **F00.6** - [Backend] - [4h] - Backend CI job, staging deploy
+- [ ] **F00.5** - [Backend] - [11h] - [site-log-be S0](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md): setup, API skeleton, AWS staging
+- [ ] **F00.6** - [Config] - [1h] - Backend base URL per build configuration, local-network ATS
 
 **F01 — Access and app lock · 16h** · [guide](docs/feature-guide/S0-foundation-access/F01-access.md)
 
@@ -118,7 +118,7 @@ flowchart TD
 - [ ] **F02.3** - [Fake data] - [1h] - Real `AuthRepositoryImpl` over in-memory data sources
 - [ ] **F02.4** - [View models] - [4h] - A2 sign-in, Account, sign out, delete account
 - [ ] **F02.5** - [Local] - [10h] - Firebase Auth, `HTTPClient` with token and one 401 refresh
-- [ ] **F02.6** - [Backend] - [4h] - `requireUser`, `DELETE /account`
+- [ ] **F02.6** - [Backend] - [4h] - [site-log-be F02](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F02-auth.md): `requireUser`, `DELETE /account`
 
 **F03 — Projects, sessions, locations · 35h** · [guide](docs/feature-guide/S1-auth-projects/F03-projects.md)
 
@@ -127,7 +127,7 @@ flowchart TD
 - [ ] **F03.3** - [Fake data] - [2h] - Real repositories over in-memory data sources
 - [ ] **F03.4** - [View models] - [10h] - Wire the Projects screens
 - [ ] **F03.5** - [Local] - [15h] - SwiftData models, data sources, schema versioning
-- [ ] **F03.6** - [Backend] - [3h] - `0002_projects.sql`
+- [ ] **F03.6** - [Backend] - [3h] - [site-log-be F03](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F03-projects.md): `0001_projects.sql`
 - [ ] Tests written and green (after the features work)
 
 </dd></dl>
@@ -146,7 +146,7 @@ flowchart TD
 - [ ] **F04.3** - [Fake data] - [18h] - Real engine over an in-memory outbox and server
 - [ ] **F04.4** - [View models] - [3h] - Sync tab status, account
 - [ ] **F04.5** - [Local] - [6h] - Outbox and cursor in SwiftData; F03 data sources write outbox rows
-- [ ] **F04.6** - [Backend] - [8h] - `sync_state`, `/sync/pull`, `/sync/push`
+- [ ] **F04.6** - [Backend] - [8h] - [site-log-be F04](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S2-sync-engine/F04-sync.md): `sync_state`, `/sync/pull`, `/sync/push`
 - [ ] **F04.7** - [Sync] - [7h] - Remote data source on `HTTPClient`, two-device convergence
 - [ ] Tests written and green (after the feature works)
 
@@ -166,7 +166,7 @@ flowchart TD
 - [ ] **F05.3** - [Fake data] - [2h] - Real `CameraRepositoryImpl` over a bundled photo and in-memory media
 - [ ] **F05.4** - [View models] - [3h] - Camera and review screens
 - [ ] **F05.5** - [Local] - [14h] - `AVCaptureSession`, files on disk, streamed SHA-256
-- [ ] **F05.6** - [Backend] - [2h] - `0004_captures.sql`
+- [ ] **F05.6** - [Backend] - [2h] - [site-log-be F05](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F05-captures.md): `0003_captures.sql`
 - [ ] **F05.7** - [Sync] - [1h] - Captures syncable, insert-only
 
 **F06 — Upload (single PUT) · 36h** · [guide](docs/feature-guide/S3-capture-upload/F06-upload.md)
@@ -176,7 +176,7 @@ flowchart TD
 - [ ] **F06.3** - [Fake data] - [2h] - `UploadStoreImpl` in memory; real `UploadRepositoryImpl`
 - [ ] **F06.4** - [View models] - [6h] - Sync tab, today's files
 - [ ] **F06.5** - [Local] - [4h] - Upload store on SwiftData
-- [ ] **F06.6** - [Backend] - [8h] - Begin (single mode), idempotent `complete`, key rules
+- [ ] **F06.6** - [Backend] - [8h] - [site-log-be F06](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F06-upload.md): begin, idempotent `complete`, abort, media URLs
 - [ ] **F06.7** - [Sync] - [14h] - Background session, state machine, backoff
 - [ ] Tests written and green (after the features work)
 
@@ -192,7 +192,7 @@ flowchart TD
 **F07 — Resumable upload · 47h** · [guide](docs/feature-guide/S4-resumable-upload/F07-resumable-upload.md)
 
 - [ ] **F07.1** - [Contract] - [1h] - Multipart plan, refresh, abort DTOs
-- [ ] **F07.2** - [Backend] - [6h] - Multipart begin, `/parts/refresh`, `DELETE /uploads/:id`
+- [ ] **F07.2** - [Backend] - [6h] - [site-log-be F07](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S4-resumable-upload/F07-multipart.md): multipart begin, `/parts/refresh`, abort
 - [ ] **F07.3** - [Sync] - [14h] - Chunk planner, part upload, complete
 - [ ] **F07.4** - [Sync] - [8h] - Kill and relaunch reconciliation
 - [ ] **F07.5** - [Sync] - [5h] - Wi-Fi only, dedupe by hash, URL refresh
@@ -216,7 +216,7 @@ flowchart TD
 - [ ] **F08.3** - [Fake data] - [3h] - Real repositories over in-memory data sources
 - [ ] **F08.4** - [View models] - [7h] - Sheet, list, detail, verification camera, outcome
 - [ ] **F08.5** - [Local] - [8h] - SwiftData, on-device speech
-- [ ] **F08.6** - [Backend] - [2h] - `0006_issues.sql`
+- [ ] **F08.6** - [Backend] - [2h] - [site-log-be F08](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F08-issues.md): `0005_issues.sql`
 - [ ] **F08.7** - [Sync] - [2h] - Three tables syncable
 
 **F09 — Markup and stamps · 22h** · [guide](docs/feature-guide/S5-issues-markup/F09-markup.md)
@@ -226,7 +226,7 @@ flowchart TD
 - [ ] **F09.3** - [Fake data] - [1h] - Real `AnnotationRepositoryImpl` over in-memory data sources
 - [ ] **F09.4** - [View models] - [4h] - Markup editor, stamp preview
 - [ ] **F09.5** - [Local] - [7h] - Layer rendering, stamped derivative
-- [ ] **F09.6** - [Backend] - [1h] - `0007_annotations.sql`
+- [ ] **F09.6** - [Backend] - [1h] - [site-log-be F09](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F09-annotations.md): `0006_annotations.sql`
 - [ ] **F09.7** - [Sync] - [7h] - Annotations syncable; clock offset from the server
 - [ ] Tests written and green (after the features work)
 
@@ -246,7 +246,7 @@ flowchart TD
 - [ ] **F10.3** - [Fake data] - [2h] - Real repositories; sample PDF, in-memory branding and audit
 - [ ] **F10.4** - [View models] - [4h] - Builder, branding, signatures, preview
 - [ ] **F10.5** - [Local] - [21h] - CSV writer, PDF renderer, audit storage and key
-- [ ] **F10.6** - [Backend] - [4h] - `0008_report_branding.sql`, `GET /verify/:code`
+- [ ] **F10.6** - [Backend] - [4h] - [site-log-be F10](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F10-reports-verify.md): `0007_report_branding.sql`, `GET /verify/:code`
 - [ ] **F10.7** - [Sync] - [2h] - Branding syncable
 
 **F11 — Floor plans and pins · 21h** · [guide](docs/feature-guide/S6-reports-plans/F11-plans.md)
@@ -256,7 +256,7 @@ flowchart TD
 - [ ] **F11.3** - [Fake data] - [1h] - Real `PlanRepositoryImpl` over in-memory data sources
 - [ ] **F11.4** - [View models] - [5h] - List, viewer, pin preview, import
 - [ ] **F11.5** - [Local] - [9h] - Hashed plan files, PDFKit tiles, pin persistence
-- [ ] **F11.6** - [Backend] - [2h] - `0009_plan_sheets.sql`
+- [ ] **F11.6** - [Backend] - [2h] - [site-log-be F11](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F11-plans.md): `0008_plan_sheets.sql`
 - [ ] **F11.7** - [Sync] - [2h] - Sheets syncable; files through the upload queue
 - [ ] Tests written and green (after the features work)
 
@@ -276,7 +276,7 @@ flowchart TD
 - [ ] **F12.3** - [Fake data] - [1h] - Real `ChecklistRepositoryImpl` over in-memory data sources
 - [ ] **F12.4** - [View models] - [4h] - Picker, run, done
 - [ ] **F12.5** - [Local] - [4h] - Built-ins seeded on SwiftData; results
-- [ ] **F12.6** - [Backend] - [2h] - `0010_checklists.sql`
+- [ ] **F12.6** - [Backend] - [2h] - [site-log-be F12](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S7-checklists/F12-checklists.md): `0009_checklists.sql`
 - [ ] **F12.7** - [Sync] - [1h] - Four tables syncable
 
 **F13 — DeviceLink (BLE meters) · 18h** · [guide](docs/feature-guide/S7-checklists-devices-diagnostics/F13-devicelink.md)
@@ -313,7 +313,7 @@ flowchart TD
 - [ ] **F15.2** - [Domain] - [1h] - `UploadEvent`, `RealtimeRepository`
 - [ ] **F15.3** - [Fake data] - [1h] - Real `RealtimeRepositoryImpl` over a timer data source
 - [ ] **F15.4** - [View models] - [2h] - Live state on U1
-- [ ] **F15.5** - [Backend] - [8h] - `/ws`, verify worker, abandoned-upload job
+- [ ] **F15.5** - [Backend] - [8h] - [site-log-be F15](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F15-realtime.md): `/ws`, verify worker, abandoned uploads
 - [ ] **F15.6** - [Sync] - [8h] - `URLSessionWebSocketTask` inside the data source
 
 **F16 — Push and deep links · 14h** · [guide](docs/feature-guide/S8-realtime-push-quality/F16-push-deeplinks.md)
@@ -323,7 +323,7 @@ flowchart TD
 - [ ] **F16.3** - [Fake data] - [1h] - Real `PushRepositoryImpl` over an in-memory token data source
 - [ ] **F16.4** - [View models] - [2h] - Permission moment, notification row
 - [ ] **F16.5** - [Local] - [4h] - Push capability, token, URL scheme, router
-- [ ] **F16.6** - [Backend] - [3h] - `0011_devices.sql`, `POST /devices`, APNs send
+- [ ] **F16.6** - [Backend] - [3h] - [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, APNs
 - [ ] **F16.7** - [Sync] - [2h] - Token registered through `HTTPClient`
 
 **F17 — Accessibility and performance · 14h** · [guide](docs/feature-guide/S8-realtime-push-quality/F17-accessibility-performance.md)
@@ -353,7 +353,7 @@ flowchart TD
 - [ ] **F18.8** - [UI] - [5h] - Dark mode; empty, error, offline states; real imagery
 - [ ] **F18.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
 - [ ] **F18.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing); not counted in the 54h
-- [ ] **F18.11** - [Backend] - [6h] - Production deploy, tombstone purge, backups, alerts
+- [ ] **F18.11** - [Backend] - [6h] - [site-log-be F18](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S9-release/F18-production.md): production, purge, alarms, backups
 
 </dd></dl>
 

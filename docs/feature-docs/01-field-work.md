@@ -578,7 +578,7 @@ struct TrustedTimestamp: Codable, Sendable {
 <dl><dd>
 
 - On upload completion the backend records the hash and returns a short code.
-- Printed under each image; resolvable at `GET /verify/:code` ([03-backend.md](03-backend.md#3-endpoints)).
+- Printed under each image; resolvable at `GET /verify/:code` ([03-backend §8](03-backend.md#8-verify)).
 
 | State | Meaning | Report wording |
 |---|---|---|

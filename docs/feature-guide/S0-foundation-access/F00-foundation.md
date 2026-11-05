@@ -17,8 +17,8 @@
 5. [2. Fastlane test lane, PR checks](#2-fastlane-test-lane-pr-checks)
 6. [3. CI guards](#3-ci-guards)
 7. [4. DesignSystem tests](#4-designsystem-tests)
-8. [5. Backend skeleton](#5-backend-skeleton)
-9. [6. Backend CI and staging](#6-backend-ci-and-staging)
+8. [5. Backend — in site-log-be](#5-backend--in-site-log-be)
+9. [6. Backend URL per build configuration](#6-backend-url-per-build-configuration)
 10. [User-facing text and localization](#user-facing-text-and-localization)
 11. [Feature done](#feature-done)
 
@@ -28,9 +28,9 @@
 
 <dl><dd>
 
-- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem, and a backend that builds, tests and deploys.
+- **Goal:** what every feature builds on — layer packages, DI, CI, DesignSystem, and the backend URL per build configuration. The backend itself is built in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) the same sprint.
 - **Demo:** the app builds with zero warnings, CI is green, the DesignSystem tests pass; staging answers `GET /health`.
-- **Specs:** [00-overview](../../feature-docs/00-overview.md) (architecture, DI), [05-platform](../../feature-docs/05-platform.md) (testing, CI), [03-backend](../../feature-docs/03-backend.md) (stack, error contract).
+- **Specs:** [00-overview](../../feature-docs/00-overview.md) (architecture, DI), [05-platform](../../feature-docs/05-platform.md) (testing, CI), [03-backend](../../feature-docs/03-backend.md) (backend API, error contract).
 - **Already in the repository:** check the current source files before following an example. Some implementation steps below describe planned work and may not match the latest code.
 - **Code examples:** use them to understand a small idea; do not copy a full file without comparing it with the current source and project rules.
 - **How to use:** per file, answer **Think** first, write the file, open **Hint 1 → 3** one at a time only when stuck, check against **Code**, then do **Try**.
@@ -43,8 +43,8 @@
 | [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
 | [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
 | [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `DSGallery` |
-| [5](#5-backend-skeleton) | Backend | 8h | not start | Fastify, Postgres, migrations, `/health`, error contract |
-| [6](#6-backend-ci-and-staging) | Backend | 4h | not start | Backend CI job, staging deploy |
+| [5](#5-backend--in-site-log-be) | Backend | 11h | not start | site-log-be S0: setup, API skeleton, AWS staging |
+| [6](#6-backend-url-per-build-configuration) | Config | 1h | not start | Backend base URL per build configuration, local-network ATS |
 
 - Order: step 1 first (every feature needs DI). F01 can start right after step 1; steps 2–6 any time in S0.
 - Contract, Local and Sync steps do not apply: F00 builds the ground the features stand on.
@@ -54,11 +54,11 @@ flowchart LR
     subgraph iOS["iOS app"]
         App["SiteLog<br/>App/ + Presentation/"] --> Pkgs["Packages<br/>Core · DomainLayer · DataLayer<br/>PlatformKit · DesignSystem"]
     end
-    subgraph BE["Backend/"]
-        Fastify["Fastify routes"] --> PG[("Postgres 16")]
+    subgraph BE["site-log-be (own repo)"]
+        API["Fastify API on AWS"] --> PG[("Postgres 16")]
     end
     CI["GitHub Actions"] -->|"guards · build · fastlane test"| iOS
-    CI -->|"tsc · lint · vitest"| BE
+    App -->|"API_BASE_URL per configuration"| API
 ```
 
 </dd></dl>
@@ -69,14 +69,11 @@ flowchart LR
 
 ```text
 site-log-ios/
-├── Backend/                                  # 5: package.json, src/server.ts, src/errors.ts, src/db.ts, migrations/, test/
-│   └── fly.toml                              # 6: staging app
-├── .github/workflows/backend.yml             # 6
 ├── Gemfile                                   # 2
 ├── fastlane/Appfile, Fastfile                # 2
 ├── .github/workflows/pr-checks.yml           # 2 + 3
 ├── Tools/CI/                                 # 3: check-no-print, check-imports, build-strict
-├── project.yml                               # 1: local packages, Factory
+├── project.yml                               # 1: local packages, Factory; 6: API_BASE_URL, Info.plist
 ├── Packages/
 │   ├── Core/                                 # 1: Clock/ (AppClock, SystemClock), Logger/; Tests/CoreTests
 │   ├── DomainLayer/                          # 1: empty layer folders, filled from F01
@@ -2179,7 +2176,7 @@ public struct DSGallery: View {
 
 </dd></dl>
 
-## 5. Backend skeleton
+## 5. Backend — in site-log-be
 
 <dl><dd>
 
@@ -2187,30 +2184,55 @@ public struct DSGallery: View {
 
 <dl><dd>
 
-- **Goal:** a Fastify server in `Backend/` that talks to Postgres, runs migrations and answers `GET /health`.
-- **Spec:** [03-backend §2 Stack](../../feature-docs/03-backend.md#2-stack), [§10 Error contract](../../feature-docs/03-backend.md#10-error-contract)
+- **Goal:** the backend exists, deploys itself, and staging answers `GET /health` before any feature needs it.
+- **Built in:** [S0 backend](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md): [F00a Setup](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/F00a-setup.md) · [F00b API skeleton](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/F00b-api-skeleton.md) · [F00c AWS staging](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/F00c-aws-staging.md) — separate repository; nothing to write in this repo.
+- **API:** [03-backend](../../feature-docs/03-backend.md): conventions, error contract, environments.
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
+
+| Backend piece | The app | Check from the app |
+|---|---|---|
+| `GET /health` | Reachability; the `Date` header feeds the trusted clock | Safari on the iPhone opens `https://api-staging.<domain>/health` → `{"status":"ok"}` |
+| Error contract `{ "error": { "code", "message" } }` | `HTTPClient` maps status codes ([03-backend §3](../../feature-docs/03-backend.md#3-errors-and-retries)) | — |
+| Staging on AWS (EC2, RDS, S3) | Debug and TestFlight builds point at it (step 6) | — |
+
+```mermaid
+flowchart LR
+    Phone["iPhone / simulator"] -->|"HTTPS"| Caddy["api-staging.&lt;domain&gt;"]
+    Caddy --> API["site-log-be API"] --> RDS[("Postgres")]
+```
+
+- **Check:** staging `/health` answers from the iPhone.
+
+</dd></dl>
+
+</dd></dl>
+
+## 6. Backend URL per build configuration
+
+<dl><dd>
+
+#### Overview
+
+<dl><dd>
+
+- **Goal:** each build configuration knows its backend; Debug can reach a backend running on the Mac.
+- **Spec:** [03-backend §1](../../feature-docs/03-backend.md#1-where-it-lives), [§12](../../feature-docs/03-backend.md#12-testing-against-a-local-backend)
 - Skeleton step: full code is added when this step starts.
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/package.json`, `tsconfig.json`, `.nvmrc` | Node 22, TypeScript, ESM; scripts `dev`, `build`, `test`, `migrate` |
-| <b class="tag-new">New</b> | `Backend/docker-compose.yml` | Local Postgres 16 |
-| <b class="tag-new">New</b> | `Backend/src/server.ts` | Fastify app, `GET /health` (checks the database) |
-| <b class="tag-new">New</b> | `Backend/src/db.ts` | `pg.Pool`, one transaction per request, released in `finally` |
-| <b class="tag-new">New</b> | `Backend/src/errors.ts` | The error contract: one JSON shape for every error |
-| <b class="tag-new">New</b> | `Backend/migrations/0001_extensions.sql` | `pgcrypto` for `gen_random_uuid()`; each feature adds its own numbered file |
-| <b class="tag-new">New</b> | `Backend/.env.example` | Every config key; `.env` is gitignored |
-| <b class="tag-new">New</b> | `Backend/test/health.test.ts` | `vitest` against a throwaway Postgres |
+| <b class="tag-edit">Edit</b> | `project.yml` → target `SiteLog` → `settings.configs` | `API_BASE_URL`: Debug `https://api-staging.<domain>` (or `http://localhost:3000` while testing locally), Release `https://api.<domain>` |
+| <b class="tag-edit">Edit</b> | `project.yml` → target `SiteLog` → `info` | Info.plist file `SiteLog/App/Config/Info.plist` (excluded from the synced sources): `APIBaseURL = $(API_BASE_URL)`, `NSAppTransportSecurity.NSAllowsLocalNetworking = YES`, `NSLocalNetworkUsageDescription` |
+| <b class="tag-new">New</b> | `SiteLog/App/Config/AppConfig.swift` | Reads `APIBaseURL` once at start; fails loudly if missing |
+| <b class="tag-edit">Edit</b> | `SiteLog/App/DI/` | Passes the URL to `HTTPClient` through `init` (data sources never read `AppConfig`) |
 
 ```mermaid
 flowchart LR
-    Client["curl / iOS app"] --> Route["Fastify route"]
-    Route --> Pool["pg.Pool<br/>one transaction"]
-    Pool --> PG[("Postgres")]
-    Route -->|"any failure"| Err["error contract JSON"]
+    Yml["project.yml<br/>API_BASE_URL per config"] -->|"xcodegen"| Plist["Info.plist<br/>APIBaseURL"]
+    Plist --> Config["AppConfig"] --> DI["App/DI"] --> HTTP["HTTPClient(baseURL:)"]
 ```
 
-- **Check:** `curl localhost:3000/health` answers `{"status":"ok"}`; `npm test` is green.
+- **Check:** a Debug build logs the staging URL at start; with `http://localhost:3000` and the backend running on the Mac, the simulator reaches `/health`.
 
 </dd></dl>
 
@@ -2218,47 +2240,9 @@ flowchart LR
 
 <dl><dd>
 
-1. `docker compose up -d`, then `npm run migrate` on the empty database.
-2. Raw parameterized SQL only, no ORM; every user query will filter `uid = $n` from F02 on.
-3. Never `400` for a transient failure: the app aborts on `400`.
-
-</dd></dl>
-
-</dd></dl>
-
-## 6. Backend CI and staging
-
-<dl><dd>
-
-#### Overview
-
-<dl><dd>
-
-- **Goal:** every backend change is checked on a PR, and a staging server the iPhone can reach from S1 on.
-- **Spec:** [03-backend §11 Operations](../../feature-docs/03-backend.md#11-operations)
-
-| Action | File | Holds |
-|---|---|---|
-| <b class="tag-new">New</b> | `.github/workflows/backend.yml` | Ubuntu job: `tsc`, ESLint, `vitest` with a Postgres service; runs when `Backend/` changes |
-| <b class="tag-new">New</b> | `Backend/fly.toml` | Staging app; the release command runs migrations |
-| <b class="tag-edit">Edit</b> | `SiteLog/App/Config/` | Backend base URL per build configuration |
-
-```mermaid
-flowchart LR
-    PR["PR touching Backend/"] --> Job["backend.yml<br/>tsc · lint · vitest"]
-    Main["merge to main"] --> Deploy["fly deploy staging"] --> Mig["migrations"] --> Health["GET /health"]
-```
-
-- **Check:** a PR that touches `Backend/` runs the job; `https://<staging>/health` answers from the iPhone.
-
-</dd></dl>
-
-#### Steps
-
-<dl><dd>
-
-1. Secrets live in the host's secret store, never in the repo.
-2. One database and one R2 bucket per environment.
+1. Put the URL in build settings, not an `.xcconfig`: in `.xcconfig`, `//` starts a comment and cuts `https://`.
+2. `NSAllowsLocalNetworking` only allows local hosts (`localhost`, `*.local`, unqualified names); it is not `NSAllowsArbitraryLoads` and passes App Review.
+3. Run `xcodegen` after every `project.yml` change.
 
 </dd></dl>
 

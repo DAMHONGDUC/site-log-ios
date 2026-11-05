@@ -37,7 +37,7 @@ flowchart LR
     Capture --> Queue["UploadStoreImpl"]
     Queue --> Kit["UploadKit<br/>background URLSession"]
     Kit -->|"POST /uploads · complete"| BE["Backend"]
-    Kit -->|"PUT bytes"| R2[("R2")]
+    Kit -->|"PUT bytes"| S3[("S3")]
 ```
 
 </dd></dl>
@@ -53,14 +53,14 @@ flowchart LR
 | F05.3 | Repository + capture data source on a bundled photo | Fake data | 2 | not start |
 | F05.4 | Camera view models | View models | 3 | not start |
 | F05.5 | Camera, disk, SHA-256 (split: camera · files · hash) | Local | 14 | not start |
-| F05.6 | Migration `0004_captures.sql` | Backend | 2 | not start |
+| F05.6 | [site-log-be F05](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F05-captures.md): `0003_captures.sql` | Backend | 2 | not start |
 | F05.7 | Captures join sync | Sync | 1 | not start |
 | F06.1 | Begin / complete payloads | Contract | 1 | not start |
 | F06.2 | UploadKit API and job types | Domain | 1 | not start |
 | F06.3 | `UploadStoreImpl` in memory | Fake data | 2 | not start |
 | F06.4 | Sync tab view models | View models | 6 | not start |
 | F06.5 | Upload store on SwiftData | Local | 4 | not start |
-| F06.6 | `POST /uploads`, idempotent `complete` (split: begin · complete) | Backend | 8 | not start |
+| F06.6 | [site-log-be F06](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F06-upload.md): begin, idempotent `complete`, abort, media URLs | Backend | 8 | not start |
 | F06.7 | Background single PUT, state machine, backoff (split: 3 tasks) | Sync | 14 | not start |
 
 </dd></dl>

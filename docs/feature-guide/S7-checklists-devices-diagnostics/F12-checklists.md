@@ -18,7 +18,7 @@
 5. [3. Fake data — data sources in memory](#3-fake-data--data-sources-in-memory)
 6. [4. View models — wire the Checklists screens](#4-view-models--wire-the-checklists-screens)
 7. [5. Local — templates and results](#5-local--templates-and-results)
-8. [6. Backend — checklist tables](#6-backend--checklist-tables)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — checklists join the engine](#7-sync--checklists-join-the-engine)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--data-sources-in-memory) | Fake data | 1h | not start | Real `ChecklistRepositoryImpl` over in-memory data sources |
 | [4](#4-view-models--wire-the-checklists-screens) | View models | 4h | not start | Picker, run, done |
 | [5](#5-local--templates-and-results) | Local | 4h | not start | Built-ins seeded on SwiftData; results |
-| [6](#6-backend--checklist-tables) | Backend | 2h | not start | `0010_checklists.sql` |
+| [6](#6-backend--in-site-log-be) | Backend | 2h | not start | site-log-be F12: `0009_checklists.sql` |
 | [7](#7-sync--checklists-join-the-engine) | Sync | 1h | not start | Four tables syncable |
 
 ```mermaid
@@ -61,7 +61,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0010_checklists.sql                                  # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Entities/Checklists/, UseCases/Checklists/   # 2
 ├── DataLayer/Sources/DataLayer/
@@ -213,7 +212,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — checklist tables
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -221,19 +220,24 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the four server tables.
+- **Goal:** templates, runs and answers sync; one live answer per item.
+- **Built in:** [F12 Checklists](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S7-checklists/F12-checklists.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0010_checklists.sql` | Four tables; template FKs `on delete restrict`; unique `(run_id, template_item_id)` |
-| <b class="tag-edit">Edit</b> | `Backend/src/sync/tables.ts`, `routes/account.ts` | Allow in sync; account deletion |
+| Four checklist tables | Push templates and items before runs and results | A run made on A shows complete on B |
+| Natural key `(runId, templateItemId)` | Adopt the stored answer when `superseded` | Two devices answering the same item end with one answer |
 
 ```mermaid
-flowchart LR
-    SQL["0010_checklists.sql"] --> T["templates · items · runs · results"]
+erDiagram
+    checklist_templates ||--o{ checklist_template_items : has
+    checklist_runs ||--o{ checklist_results : has
+    checklist_results |o--o| issues : raises
 ```
 
-- **Check:** a second result for the same item in a run is rejected.
+- **Check:** a failed item that raised an issue syncs both rows.
 
 </dd></dl>
 

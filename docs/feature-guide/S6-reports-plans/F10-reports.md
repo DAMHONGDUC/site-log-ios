@@ -18,7 +18,7 @@
 5. [3. Fake data — data sources in memory](#3-fake-data--data-sources-in-memory)
 6. [4. View models — wire the report flow](#4-view-models--wire-the-report-flow)
 7. [5. Local — CSV, PDF, audit chain](#5-local--csv-pdf-audit-chain)
-8. [6. Backend — branding and verify](#6-backend--branding-and-verify)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — branding](#7-sync--branding)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -32,7 +32,7 @@
 - **Goal:** a signed, branded PDF and a CSV from one session snapshot; every sensitive action written to an HMAC-chained audit log.
 - **Demo — offline:** session → report builder → branding → two signatures → PDF + CSV shared in airplane mode; the audit chain verifies at launch.
 - **Demo — signed in:** branding appears on the second device; the code printed in the PDF resolves at `GET /verify/:code`.
-- **Spec:** [05 Export](../../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07.3 Audit log](../../feature-docs/04-reporting-security.md#073-audit-log), [03-backend §3](../../feature-docs/03-backend.md#3-endpoints)
+- **Spec:** [05 Export](../../feature-docs/04-reporting-security.md#05-pdf-and-spreadsheet-export), [07.3 Audit log](../../feature-docs/04-reporting-security.md#073-audit-log), [03-backend §8](../../feature-docs/03-backend.md#8-verify)
 - **Starts from:** F08 and F09 (issues, pairs, markup) and the skeleton `Presentation/Reports/`.
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs).
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--data-sources-in-memory) | Fake data | 2h | not start | Real repositories; sample PDF, in-memory branding and audit |
 | [4](#4-view-models--wire-the-report-flow) | View models | 4h | not start | Builder, branding, signatures, preview |
 | [5](#5-local--csv-pdf-audit-chain) | Local | 21h | not start | CSV writer, PDF renderer, audit storage and key |
-| [6](#6-backend--branding-and-verify) | Backend | 4h | not start | `0008_report_branding.sql`, `GET /verify/:code` |
+| [6](#6-backend--in-site-log-be) | Backend | 4h | not start | site-log-be F10: branding table, `GET /verify/:code` |
 | [7](#7-sync--branding) | Sync | 2h | not start | Branding syncable |
 
 ```mermaid
@@ -63,7 +63,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0008_report_branding.sql, src/routes/verify.ts          # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/
 │   ├── Entities/Reports/                                                  # 2: SessionSnapshot, ReportOptions, ReportBranding, Signature, ReportPage, AuditEntry
@@ -225,7 +224,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — branding and verify
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -233,23 +232,23 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the branding table and a public, rate-limited verify endpoint.
-- **Spec:** [03-backend §3](../../feature-docs/03-backend.md#3-endpoints)
+- **Goal:** branding is shared by the user's devices; codes printed in reports can be checked by anyone.
+- **Built in:** [F10 Reports, verify](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F10-reports-verify.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§8 Verify](../../feature-docs/03-backend.md#8-verify) · [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0008_report_branding.sql` | `report_branding (uid pk, …)` + sync columns |
-| <b class="tag-new">New</b> | `Backend/src/routes/verify.ts` | `GET /verify/:code`, no auth, rate limited per IP; unknown codes `404` after the same delay as a hit |
-| <b class="tag-edit">Edit</b> | `Backend/src/sync/tables.ts`, `routes/account.ts` | Allow in sync; join the account deletion |
+| Table `report_branding` (one per user) | Push full row; adopt the stored one when `superseded` | Branding set on A appears on B |
+| `GET /verify/:code` | Print the code under each photo and `projectRef` in the header | Safari opens the code from a real PDF |
 
 ```mermaid
 flowchart LR
-    Anyone["anyone with the PDF"] --> Verify["GET /verify/:code"]
-    Verify -->|"hit"| Facts["facts only"]
-    Verify -->|"miss, same delay"| N404["404"]
+    PDF["PDF: registered K7M2QX9HTP"] --> V["GET /verify/:code"]
+    V --> F["sha256, size, times, state"]
 ```
 
-- **Check:** a code from F06's `complete` resolves; a random code answers `404` in the same time.
+- **Check:** a code from an exported PDF resolves on staging.
 
 </dd></dl>
 
@@ -299,7 +298,7 @@ flowchart LR
 
 **6. Backend**
 
-- Verify rate limit; same delay for hit and miss
+- In site-log-be: `test/verify.test.ts`, `test/branding.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F10-reports-verify.md#tests))
 
 </dd></dl>
 

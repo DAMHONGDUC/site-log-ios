@@ -18,7 +18,7 @@
 5. [3. Fake data — engine over in-memory data sources](#3-fake-data--engine-over-in-memory-data-sources)
 6. [4. View models — sync status and account](#4-view-models--sync-status-and-account)
 7. [5. Local — outbox and cursor in SwiftData](#5-local--outbox-and-cursor-in-swiftdata)
-8. [6. Backend — pull and push](#6-backend--pull-and-push)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — real server, two devices](#7-sync--real-server-two-devices)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -32,7 +32,7 @@
 - **Goal:** one engine that moves every synced table between devices; projects, sessions and locations (F03) go first.
 - **Demo — offline:** edits queue in an outbox; the Sync tab says how many are waiting; relaunch keeps them.
 - **Demo — signed in:** two devices on one account converge within one interval; deletes propagate; an exported session never reopens.
-- **Spec:** [08.2 Protocol](../../feature-docs/02-upload-sync.md#082-protocol), [08.3 Client engine](../../feature-docs/02-upload-sync.md#083-client-engine), [03-backend §5.2, §7](../../feature-docs/03-backend.md#7-sync)
+- **Spec:** [08.2 Protocol](../../feature-docs/02-upload-sync.md#082-protocol), [08.3 Client engine](../../feature-docs/02-upload-sync.md#083-client-engine), [03-backend §6](../../feature-docs/03-backend.md#6-sync)
 - **Starts from:** F02 (ID token, `HTTPClient`) and F03 (first syncable tables).
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs). The engine is built against an in-memory server in step 3, so most of the logic is done before the backend exists.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown · <b class="tag-replace">Replace</b> overwrite the whole file.
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--engine-over-in-memory-data-sources) | Fake data | 18h | not start | Real engine over an in-memory outbox and an in-memory server |
 | [4](#4-view-models--sync-status-and-account) | View models | 3h | not start | Sync tab status, account |
 | [5](#5-local--outbox-and-cursor-in-swiftdata) | Local | 6h | not start | Outbox and cursor in SwiftData; F03 data sources write outbox rows |
-| [6](#6-backend--pull-and-push) | Backend | 8h | not start | `sync_state`, `/sync/pull`, `/sync/push` |
+| [6](#6-backend--in-site-log-be) | Backend | 8h | not start | site-log-be F04: `/sync/pull`, `/sync/push` |
 | [7](#7-sync--real-server-two-devices) | Sync | 7h | not start | Remote data source on `HTTPClient`, two-device convergence |
 
 ```mermaid
@@ -64,8 +64,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0003_sync_state.sql                                   # 6
-Backend/src/routes/sync.ts                                               # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/
 │   ├── Entities/Sync/SyncStatus.swift, SyncError.swift                  # 2
@@ -242,7 +240,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — pull and push
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -250,35 +248,29 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** gap-free, commit-ordered revisions per user; last write wins in SQL.
-- **Spec:** [03-backend §5.2, §7](../../feature-docs/03-backend.md#52-sync_state)
+- **Goal:** delta sync with per-user revisions; the server decides last write wins in SQL.
+- **Built in:** [F04 Sync](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S2-sync-engine/F04-sync.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§6 Sync](../../feature-docs/03-backend.md#6-sync).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0003_sync_state.sql` | `sync_state (uid, last_rev)` |
-| <b class="tag-new">New</b> | `Backend/src/routes/sync.ts` | Pull: per table `rev > since`, capped; push: one transaction, deferred constraints, LWW |
-| <b class="tag-new">New</b> | `Backend/src/sync/tables.ts` | Allowed tables and columns; F03's three first |
+| `POST /sync/pull` | `SyncEngineImpl` pulls from the stored cursor until `hasMore` is false | A project from device A appears on B |
+| `POST /sync/push` | Batches of ≤ 200 full rows, parents first; adopts `serverRow` on `superseded` | An older offline edit loses and shows the server's value |
+| `resyncRequired` | Full resync from `0` | Cursor older than 90 days (forced in a test) |
 
 ```mermaid
 sequenceDiagram
-    participant API as /sync/push
-    participant PG as Postgres
-    API->>PG: begin, set constraints all deferred
-    API->>PG: update sync_state set last_rev = last_rev + 1 (row lock)
-    API->>PG: insert … on conflict do update where older
-    API->>PG: commit
+    participant A as device A
+    participant API as site-log-be
+    participant B as device B
+    A->>API: push (clientUpdatedAt)
+    API-->>A: applied, serverRev
+    B->>API: pull since
+    API-->>B: changes, nextRev
 ```
 
-- **Check:** `vitest`: stale cursor → `resyncRequired`; a losing write returns `superseded` with the stored row.
-
-</dd></dl>
-
-#### Steps
-
-<dl><dd>
-
-1. Every statement filters `uid = $1`.
-2. Nightly purge of tombstones older than 90 days is S9 operations.
+- **Check:** the iOS two-device demo passes against a local backend, then staging.
 
 </dd></dl>
 
@@ -298,7 +290,7 @@ sequenceDiagram
 |---|---|---|
 | <b class="tag-replace">Replace</b> | `DataSources/Remote/Sync/SyncRemoteDataSourceImpl.swift` | `POST /sync/pull`, `/sync/push` through `HTTPClient` |
 | <b class="tag-edit">Edit</b> | `App/DI/DataSourcesDI.swift` | Pass `HTTPClient`; registered type stays |
-| <b class="tag-new">New</b> | `Backend/test/convergence.test.ts` | Two clients against one throwaway Postgres |
+| <b class="tag-check">Check</b> | site-log-be `test/sync.test.ts` | The server's side of convergence (newer wins, tombstones, monotonic state) is tested there |
 
 ```mermaid
 flowchart LR
@@ -332,8 +324,7 @@ flowchart LR
 
 **6. Backend**
 
-- Stale cursor → `resyncRequired`
-- Constraints reject bad rows
+- In site-log-be: `test/sync.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S2-sync-engine/F04-sync.md#tests))
 
 **7. Sync**
 

@@ -32,7 +32,7 @@
 ```mermaid
 flowchart LR
     Planner["ChunkPlanner<br/>8 MiB parts"] --> Coord["UploadCoordinator"]
-    Coord -->|"PUT part"| R2[("R2")]
+    Coord -->|"PUT part"| S3[("S3")]
     Coord -->|"refresh · complete · abort"| BE["Backend"]
     Launch["Cold launch"] --> Rec["Reconciler<br/>reattach · cancel · reset"]
     Rec --> Coord
@@ -48,7 +48,7 @@ flowchart LR
 | Task | Step | Layer | Hours | Status |
 |---|---|---|---|---|
 | F07.1 | Multipart plan, refresh, abort payloads | Contract | 1 | not start |
-| F07.2 | Multipart, `/parts/refresh`, `DELETE /uploads/:id` | Backend | 6 | not start |
+| F07.2 | [site-log-be F07](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S4-resumable-upload/F07-multipart.md): multipart begin, `/parts/refresh`, abort | Backend | 6 | not start |
 | F07.3 | Multipart and resume (split: planner · upload · complete) | Sync | 14 | not start |
 | F07.4 | Kill and relaunch reconciliation | Sync | 8 | not start |
 | F07.5 | Wi-Fi only, dedupe by hash, URL refresh | Sync | 5 | not start |

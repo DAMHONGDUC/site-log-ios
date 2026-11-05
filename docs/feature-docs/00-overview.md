@@ -111,14 +111,14 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Crypto | CryptoKit + iOS Data Protection, keys in Keychain |
 | External devices | CoreBluetooth |
 | Transport | Hand-written background `URLSession` engine ([D02](#d02--hand-written-upload-engine)) |
-| Object storage | Cloudflare R2, S3 multipart + presigned URLs |
+| Object storage | Amazon S3, multipart + presigned URLs |
 | Realtime | Hand-written `URLSessionWebSocketTask` channel ([D04](#d04--websocket-realtime-channel)) |
 | Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([D05](#d05--kingfisher-for-remote-images)) |
 | Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([D07](#d07--firebase-crashlytics)) |
 | Tests | Swift Testing, `FactoryTesting`; swift-snapshot-testing optional, last (F18) ([testing](05-platform.md#testing-strategy)) |
 | Tooling | XcodeGen, SwiftLint, swift-format, Fastlane, GitHub Actions |
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
-| Backend | Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL, hand-written sync ([03](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
+| Backend | Separate repo [site-log-be](https://github.com/DAMHONGDUC/site-log-be): Node 24 + TypeScript + Fastify, PostgreSQL 16 on AWS, raw SQL, hand-written sync ([03 API](03-backend.md), [D03](#d03--node--postgresql-backend-hand-written-sync)) |
 
 - This table records the selected target stack. A dependency is part of the app only after it appears
   in [`project.yml`](../../project.yml).
@@ -300,7 +300,6 @@ site-log-ios/
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
 ├── Tools/Hammerspoon/                # format-on-save config for Xcode
-├── Backend/                          # Node + Postgres → 03-backend.md
 ├── fastlane/  .github/workflows/  Gemfile
 ├── docs/feature-docs/                # project specs
 ├── docs/feature-guide/               # step-by-step guides: one folder per sprint (S0–S9), one guide per feature (F00–F18)
@@ -553,7 +552,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | `<tmp>/upload-parts/` | `.completeUnlessOpen` | No |
 | SwiftData store | `.complete` | Metadata |
 
-- Media is excluded from iCloud backup (`isExcludedFromBackup`). R2 holds the remote media copy; the
+- Media is excluded from iCloud backup (`isExcludedFromBackup`). S3 holds the remote media copy; the
   local store remains authoritative for local app state.
 - The DB stores relative paths.
 
@@ -567,7 +566,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 |---|---|---|
 | `project.yml` | Repository root | Yes; current XcodeGen source of truth |
 | `GoogleService-Info.plist`, environment `.xcconfig` files, backend URL and bucket | Planned under `SiteLog/App/Config/` | Keep secrets out of Git; add CI injection when Firebase/backend integration is implemented |
-| R2 access keys | Backend configuration | Never in the app; backend is specified in [03-backend.md](03-backend.md) |
+| AWS credentials, bucket names | Backend (site-log-be) configuration | Never in the app; the app only gets presigned URLs ([03-backend.md](03-backend.md)) |
 
 - Current project has one `SiteLog` scheme with Debug and Release configurations. Additional
   environments and schemes are future work; CI status is in [17](05-platform.md#17-cicd-and-testflight).
@@ -650,7 +649,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 |---|---|
 | [01-field-work.md](01-field-work.md) | 01 Projects, sessions, locations · 02 Capture · 03 Issues and before-after pairing · 06 DeviceLink · 11 Floor plans · 12 Annotation and trusted time · 13 Checklists |
 | [02-upload-sync.md](02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime channel |
-| [03-backend.md](03-backend.md) | 14 Backend |
+| [03-backend.md](03-backend.md) | 14 Backend API (client guide); the server: [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](04-reporting-security.md) | 05 PDF and spreadsheet export · 07 Security and audit log |
 | [05-platform.md](05-platform.md) | 09 Diagnostics · 17 CI/CD and TestFlight · 18 Push and deep links · 19 Instruments |
 
@@ -725,7 +724,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 
 - Spec: [04](02-upload-sync.md#04-upload-engine)
 
-- **Context:** a session produces 150–250 files and several GB that must reach R2 through network
+- **Context:** a session produces 150–250 files and several GB that must reach S3 through network
   loss, suspension, termination, reboot and URL expiry — the product's core claim.
 - **Decision:** `UploadKit`, in-house, on a background `URLSessionConfiguration`: own job store
   protocol, state machine, S3 multipart with resume, jittered backoff, relaunch reconciliation.
@@ -750,9 +749,9 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 
 - Specs: [08](02-upload-sync.md#08-auth-and-sync), [14](03-backend.md)
 
-- **Context:** the backend signs R2 URLs, countersigns hashes, owns all metadata, serves delta sync
+- **Context:** the backend signs S3 URLs, countersigns hashes, owns all metadata, serves delta sync
   to several devices, pushes job state. Firebase already covers identity and crashes.
-- **Decision:** Node 22 + TypeScript + Fastify, PostgreSQL 16, raw SQL. Sync: cursor-based delta pull,
+- **Decision:** Node + TypeScript + Fastify, PostgreSQL 16, raw SQL, in its own repository [site-log-be](https://github.com/DAMHONGDUC/site-log-be) on AWS (EC2 + Docker Compose, RDS, S3; its decisions B01–B08). Sync: cursor-based delta pull,
   batched push, tombstones with a purge window, LWW per field, monotonic session state, offline
   mutation queue in SwiftData.
 
@@ -765,7 +764,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 - **Consequences:**
   - Offline persistence, delete propagation, listener fan-out are ours (tombstones, `pg_notify`).
   - ~1800–2500 lines of TypeScript; a two-device convergence test.
-  - Hosting, migrations, backups operated by us.
+  - Hosting, migrations, backups operated by us: [site-log-be · AWS and operations](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/04-aws-operations.md).
 
 </dd></dl>
 
@@ -798,7 +797,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 
 <dl><dd>
 
-- **Context:** a second device shows photos from R2 via presigned GET; lists show hundreds of
+- **Context:** a second device shows photos from S3 via presigned GET; lists show hundreds of
   thumbnails. Caching, downsampling, cancellation, prefetch are commodity problems.
 - **Decision:** [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x (`KFImage`) with
   `DownsamplingImageProcessor` to cell size and a bounded disk cache. Local originals always read

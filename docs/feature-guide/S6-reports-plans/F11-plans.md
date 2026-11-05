@@ -18,7 +18,7 @@
 5. [3. Fake data — data sources in memory](#3-fake-data--data-sources-in-memory)
 6. [4. View models — wire the Plans screens](#4-view-models--wire-the-plans-screens)
 7. [5. Local — import, tiles, pins](#5-local--import-tiles-pins)
-8. [6. Backend — plan sheets table](#6-backend--plan-sheets-table)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — plan sheets and plan files](#7-sync--plan-sheets-and-plan-files)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--data-sources-in-memory) | Fake data | 1h | not start | Real `PlanRepositoryImpl` over in-memory data sources |
 | [4](#4-view-models--wire-the-plans-screens) | View models | 5h | not start | List, viewer, pin preview, import |
 | [5](#5-local--import-tiles-pins) | Local | 9h | not start | Hashed plan files, PDFKit tiles, pin persistence |
-| [6](#6-backend--plan-sheets-table) | Backend | 2h | not start | `0009_plan_sheets.sql` |
+| [6](#6-backend--in-site-log-be) | Backend | 2h | not start | site-log-be F11: `0008_plan_sheets.sql` |
 | [7](#7-sync--plan-sheets-and-plan-files) | Sync | 2h | not start | Sheets syncable; files through the upload queue |
 
 ```mermaid
@@ -63,7 +63,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0009_plan_sheets.sql                                  # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Entities/Plans/, UseCases/Plans/     # 2: PlanSheet, Pin (NormalizedPoint)
 ├── DataLayer/Sources/DataLayer/
@@ -219,7 +218,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — plan sheets table
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -227,20 +226,23 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the server table and plan file keys.
+- **Goal:** plan sheets sync; plan files upload under the plan key; pins point at real sheets.
+- **Built in:** [F11 Plans](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F11-plans.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§7.1 Keys](../../feature-docs/03-backend.md#71-keys) · [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0009_plan_sheets.sql` | `plan_sheets` + sync columns |
-| <b class="tag-edit">Edit</b> | `Backend/src/keys.ts`, `sync/tables.ts`, `routes/account.ts` | Plan key shape; allow in sync; account deletion |
+| Table `plan_sheets` | Push after the project | A sheet imported on A shows on B |
+| Plan key `{uid}/{project}/plans/{sheet}.{ext}` | Upload the PDF or image with that key | Upload completes with a code |
 
 ```mermaid
-flowchart LR
-    SQL["0009_plan_sheets.sql"] --> T["plan_sheets"]
-    Keys["keys.ts"] --> Plan["…/plans/{sheet}.{ext}"]
+erDiagram
+    projects ||--o{ plan_sheets : has
+    plan_sheets ||--o{ issues : pin
 ```
 
-- **Check:** a plan key under another uid is rejected.
+- **Check:** a plan sheet and an issue pinned to it sync to the second device.
 
 </dd></dl>
 
@@ -264,7 +266,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     Import["import on A"] --> Row["plan_sheets row"] --> Sync["/sync/push"] --> B["B pulls row"]
-    Import --> Up["upload queue"] --> R2[("R2")] --> B
+    Import --> Up["upload queue"] --> S3[("S3")] --> B
 ```
 
 - **Check:** a sheet imported on A opens on B with its pins.

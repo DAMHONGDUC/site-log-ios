@@ -14,7 +14,7 @@
 1. [Overview](#overview)
 2. [Target structure](#target-structure)
 3. [1. Contract — multipart, refresh, abort](#1-contract--multipart-refresh-abort)
-4. [2. Backend — multipart routes](#2-backend--multipart-routes)
+4. [2. Backend — in site-log-be](#2-backend--in-site-log-be)
 5. [3. Sync — multipart and resume](#3-sync--multipart-and-resume)
 6. [4. Sync — kill and relaunch reconciliation](#4-sync--kill-and-relaunch-reconciliation)
 7. [5. Sync — Wi-Fi only, dedupe, URL refresh](#5-sync--wi-fi-only-dedupe-url-refresh)
@@ -32,14 +32,14 @@
 - **Goal:** files over 5 MB upload in 8 MiB parts and resume part by part after a kill, an expired URL or airplane mode; the first TestFlight build ships.
 - **Demo — offline:** 200 files queued in airplane mode, retry budget untouched; Wi-Fi only on cellular sends zero bytes.
 - **Demo — signed in:** 200 files / 2 GB finish with a kill in the middle; TestFlight installs on a real device.
-- **Spec:** [04.2](../../feature-docs/02-upload-sync.md#042-protocol), [04.5](../../feature-docs/02-upload-sync.md#045-policy), [03-backend §6](../../feature-docs/03-backend.md#6-flows), [17 CI/CD](../../feature-docs/05-platform.md#17-cicd-and-testflight)
+- **Spec:** [04.2](../../feature-docs/02-upload-sync.md#042-protocol), [04.5](../../feature-docs/02-upload-sync.md#045-policy), [03-backend §7](../../feature-docs/03-backend.md#7-uploads), [17 CI/CD](../../feature-docs/05-platform.md#17-cicd-and-testflight)
 - **Starts from:** F06. Domain, fake data, view models and the store are already built, so this feature starts at the contract and goes straight to the backend and transport.
 - **File tags:** <b class="tag-new">New</b> create the file · <b class="tag-edit">Edit</b> change only the part shown.
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | [1](#1-contract--multipart-refresh-abort) | Contract | 1h | not start | Multipart plan, refresh, abort DTOs |
-| [2](#2-backend--multipart-routes) | Backend | 6h | not start | Multipart begin, `/parts/refresh`, `DELETE /uploads/:id` |
+| [2](#2-backend--in-site-log-be) | Backend | 6h | not start | site-log-be F07: multipart begin, `/parts/refresh`, abort |
 | [3](#3-sync--multipart-and-resume) | Sync | 14h | not start | Chunk planner, part upload, complete |
 | [4](#4-sync--kill-and-relaunch-reconciliation) | Sync | 8h | not start | Reattach · cancel · reset at launch |
 | [5](#5-sync--wi-fi-only-dedupe-url-refresh) | Sync | 5h | not start | Policy and proactive refresh |
@@ -49,7 +49,7 @@
 ```mermaid
 flowchart LR
     Planner["ChunkPlanner<br/>8 MiB"] --> Coord["UploadCoordinator"]
-    Coord -->|"PUT part"| R2[("R2")]
+    Coord -->|"PUT part"| S3[("S3")]
     Coord -->|"refresh · complete · abort"| BE["Backend"]
     Launch["cold launch"] --> Rec["Reconciler"] --> Coord
 ```
@@ -61,7 +61,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/src/routes/uploads.ts                                       # 2: multipart, refresh, abort
 Packages/PlatformKit/Sources/PlatformKit/UploadKit/
 ├── ChunkPlanner.swift, PartFileWriter.swift                        # 3
 └── Reconciler.swift                                                # 4
@@ -93,13 +92,13 @@ fastlane/Fastfile, .github/workflows/testflight.yml                 # 7
 sequenceDiagram
     participant App
     participant BE as Backend
-    participant R2
+    participant S3
     App->>BE: POST /uploads (240 MiB)
     BE-->>App: 30 × 8 MiB part URLs
-    App->>R2: PUT parts 1..12
+    App->>S3: PUT parts 1..12
     Note over App: killed, relaunch hours later
     App->>BE: refresh 13..30
-    App->>R2: PUT parts 13..30
+    App->>S3: PUT parts 13..30
     App->>BE: complete (30 ETags)
 ```
 
@@ -109,7 +108,7 @@ sequenceDiagram
 
 </dd></dl>
 
-## 2. Backend — multipart routes
+## 2. Backend — in site-log-be
 
 <dl><dd>
 
@@ -117,21 +116,30 @@ sequenceDiagram
 
 <dl><dd>
 
-- **Goal:** multipart begin, URL refresh and abort, all scoped to the caller.
-- **Spec:** [03-backend §3](../../feature-docs/03-backend.md#3-endpoints)
+- **Goal:** files from 5 MiB upload in 8 MiB parts that survive a kill; expired part URLs are refreshed.
+- **Built in:** [F07 Multipart](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S4-resumable-upload/F07-multipart.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§7.2 Begin](../../feature-docs/03-backend.md#72-begin-and-put) · [§7.3 Complete](../../feature-docs/03-backend.md#73-complete) · [§7.4 Refresh, abort](../../feature-docs/03-backend.md#74-refresh-abort-media).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `Backend/src/routes/uploads.ts` | `CreateMultipartUpload`, `/parts/refresh`, `CompleteMultipartUpload`, `DELETE` with orphan cleanup |
+| Multipart answer of `POST /uploads` | `ChunkPlanner` follows `partSizeBytes`; one temp file per part | `mode: multipart` for a video |
+| `POST /uploads/:id/parts/refresh` | After a long kill or any S3 `403`, no retry budget used | A killed upload finishes hours later |
+| `complete` with every part's ETag | Sends all parts once, in any order | Code appears; no part sent twice |
 
 ```mermaid
-flowchart LR
-    Begin["begin ≥ 5 MiB"] --> CMU["CreateMultipartUpload"]
-    Refresh["/parts/refresh"] --> Sign["presign requested parts"]
-    Abort["DELETE"] --> AMU["AbortMultipartUpload"]
+sequenceDiagram
+    participant App
+    participant API as site-log-be
+    participant S3
+    App->>S3: PUT part 13 → 403 (expired)
+    App->>API: parts/refresh {13..30}
+    API-->>App: new URLs
+    App->>S3: PUT parts 13..30
+    App->>API: complete {30 ETags}
 ```
 
-- **Check:** an aborted job cannot complete; refresh returns exactly the requested parts.
+- **Check:** kill the app mid-video, relaunch later: it finishes against staging without re-sending done parts.
 
 </dd></dl>
 
@@ -298,9 +306,7 @@ flowchart LR
 
 **2. Backend**
 
-- Mode at 4.9 / 5 / 5.1 MB
-- Aborted job cannot complete
-- Refresh returns exactly the requested parts
+- In site-log-be: `test/multipart.test.ts` ([its tests](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S4-resumable-upload/F07-multipart.md#tests))
 
 **3–6. Sync**
 

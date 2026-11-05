@@ -42,7 +42,7 @@ flowchart LR
 
 | Sprint | Features | Hours | Ships |
 |---|---|---|---|
-| [S0](S0-foundation-access/README.md) | F00 Foundation (app + backend) · F01 Access and app lock | 54 | |
+| [S0](S0-foundation-access/README.md) | F00 Foundation · F01 Access and app lock | 54 | |
 | [S1](S1-auth-projects/README.md) | F02 Auth · F03 Projects, sessions, locations | 56 | |
 | [S2](S2-sync-engine/README.md) | F04 Sync engine | 45 | |
 | [S3](S3-capture-upload/README.md) | F05 Capture · F06 Upload | 60 | |
@@ -55,6 +55,7 @@ flowchart LR
 
 - Every sprint ends with a build that runs **offline** (Continue offline) and **signed in** (from S1 on).
 - Hours are dev-hours for one developer new to Swift, learning included; backend hours are estimates.
+- The backend has its own repository and guides, same sprints and feature numbers: [site-log-be guides](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/README.md). What the app calls: [03-backend](../feature-docs/03-backend.md).
 
 </dd></dl>
 
@@ -68,7 +69,7 @@ flowchart LR
     D --> F["3 Fake data<br/>data source Impl in memory"]
     F --> V["4 View models<br/>offline path works"]
     V --> L["5 Local<br/>real storage"]
-    L --> B["6 Backend<br/>migration, endpoint"]
+    L --> B["6 Backend<br/>site-log-be"]
     B --> S["7 Sync<br/>signed-in path works"]
     S --> T["Tests<br/>after it works"]
 ```
@@ -80,9 +81,9 @@ flowchart LR
 | 3 Fake data | Real `<Feature>RepositoryImpl` over data source `Impl`s that hold in-memory values | Repository maps, catches, logs; dev menu seeds and resets |
 | 4 View models | One view model per screen, wired into the skeleton | The feature runs end to end with **Continue offline** |
 | 5 Local | Data source `Impl` insides → SwiftData, Keychain, files, PlatformKit | Relaunch keeps everything; nothing above the data source changed |
-| 6 Backend | Migration, route, validation, backend tests | `vitest` green against a throwaway Postgres |
+| 6 Backend | Built in [site-log-be](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/README.md) the same sprint: migration, route, tests | Its guide is done; the app reaches it locally or on staging |
 | 7 Sync | The local data source adopts `SyncableLocalDataSource` and writes outbox rows; the table joins `/sync/pull` and `/sync/push` | Signed in: a second device sees the change |
-| Tests | Tests listed in the guide | `bundle exec fastlane test` and backend tests green |
+| Tests | Tests listed in the guide | `bundle exec fastlane test` green (site-log-be runs its own) |
 
 - A step that does not apply is marked `—` in the guide's step table (for example: app lock has no backend).
 - From S2 on, a feature's sync step only makes its table syncable and registers it in `App/DI/SyncTablesDI.swift`; the engine is F04.
@@ -128,7 +129,7 @@ flowchart LR
 
 | New | Feature | Old |
 |---|---|---|
-| F00 | Foundation (+ backend skeleton, was F04 step 3.1) | F00 |
+| F00 | Foundation (backend skeleton now in site-log-be S0) | F00 |
 | F01 | Access and app lock | F01 |
 | F02 | Auth (sign-in part of old F12) | F12 |
 | F03 | Projects, sessions, locations | F02 |

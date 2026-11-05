@@ -25,7 +25,7 @@
 11. [8. Dark mode, states, imagery](#8-dark-mode-states-imagery)
 12. [9. Accessibility re-check and submission](#9-accessibility-re-check-and-submission)
 13. [10. Optional — Snapshot tests](#10-optional--snapshot-tests)
-14. [11. Backend — operations](#11-backend--operations)
+14. [11. Backend — in site-log-be](#11-backend--in-site-log-be)
 15. [Feature done](#feature-done)
 
 </dd></dl>
@@ -54,7 +54,7 @@
 | [8](#8-dark-mode-states-imagery) | UI | 5h | not start | Dark mode, empty/error/offline states, imagery |
 | [9](#9-accessibility-re-check-and-submission) | Release | 6h | not start | Accessibility re-check, listing, submission |
 | [10](#10-optional--snapshot-tests) | Tests | 6h | optional | Snapshot tests for `DSGallery` and every screen |
-| [11](#11-backend--operations) | Backend | 6h | not start | Production deploy, tombstone purge, backups, alerts |
+| [11](#11-backend--in-site-log-be) | Backend | 6h | not start | site-log-be F18: production, purge, alarms, backups |
 
 ```mermaid
 flowchart LR
@@ -486,7 +486,7 @@ flowchart LR
 
 </dd></dl>
 
-## 11. Backend — operations
+## 11. Backend — in site-log-be
 
 <dl><dd>
 
@@ -494,23 +494,24 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the backend is ready for real users: production deploy, nightly purge, backups, alerts.
-- **Spec:** [03-backend §11 Operations](../../feature-docs/03-backend.md#11-operations)
+- **Goal:** the App Store build talks to production: separate data, watched, backed up.
+- **Built in:** [F18 Production](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S9-release/F18-production.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§1 Where it lives](../../feature-docs/03-backend.md#1-where-it-lives).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/src/jobs/purge.ts` | Nightly: tombstones older than 90 days |
-| <b class="tag-edit">Edit</b> | `Backend/fly.toml`, `.github/workflows/backend.yml` | Production app; deploy on a `v*` tag after staging |
-| — | Host settings | Daily Postgres backup with a restore test; alerts on 5xx rate and `/health` |
+| `https://api.<domain>`, Firebase `sitelog-prod` | Release configuration uses both | The Release build signs in and syncs against prod |
+| APNs `production` | Release registers `production` tokens | A TestFlight build receives a push |
+| `DELETE /account` on prod | Account deletion in-app (App Store rule) | Works on the Release build |
 
 ```mermaid
 flowchart LR
-    Tag["v* tag"] --> Staging["staging"] --> Prod["production"]
-    Cron["nightly"] --> Purge["purge tombstones"]
-    Backup["daily backup"] --> Restore["restore test"]
+    Debug["Debug"] --> Stg["api-staging"]
+    Release["Release / App Store"] --> Prod["api (prod)"]
 ```
 
-- **Check:** a restore of last night's backup opens; an induced 5xx burst sends an alert.
+- **Check:** the App Store build works end to end against production.
 
 </dd></dl>
 

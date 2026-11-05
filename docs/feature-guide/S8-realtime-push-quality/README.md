@@ -51,14 +51,14 @@ flowchart LR
 | F15.2 | Upload events, realtime repository | Domain | 1 | not start |
 | F15.3 | Repository + data source on a timer | Fake data | 1 | not start |
 | F15.4 | Live state on the Sync tab | View models | 2 | not start |
-| F15.5 | `/ws`, verification worker, abandoned uploads (split: ws · worker · job) | Backend | 8 | not start |
+| F15.5 | [site-log-be F15](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F15-realtime.md): `/ws`, verify worker, abandoned uploads | Backend | 8 | not start |
 | F15.6 | WebSocket client inside the data source (split: client · reconnect) | Sync | 8 | not start |
 | F16.1 | Push payload, device token call | Contract | 1 | not start |
 | F16.2 | Deep link parser | Domain | 1 | not start |
 | F16.3 | Repository + token data source in memory | Fake data | 1 | not start |
 | F16.4 | Permission moment, notification settings | View models | 2 | not start |
 | F16.5 | Push registration, URL scheme, router | Local | 4 | not start |
-| F16.6 | `0011_devices.sql`, `POST /devices`, APNs send | Backend | 3 | not start |
+| F16.6 | [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, APNs | Backend | 3 | not start |
 | F16.7 | Token sent through `HTTPClient` | Sync | 2 | not start |
 | F17.1 | Accessibility pass (split: access + projects · capture + issues · reports + settings) | Polish | 8 | not start |
 | F17.2 | Instruments budgets, privacy manifest, feedback | Release | 6 | not start |

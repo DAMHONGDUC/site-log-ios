@@ -266,7 +266,7 @@ struct AuditEntry: Codable, Sendable {
 | Never log user text | Log `issueID`, not `issue.detail` (names, unit and phone numbers) |
 | Crashlytics and analytics | IDs and enums only; no free text, no GPS |
 | Logger | `os.Logger`, `privacy: .private` by default; no `print` |
-| Secrets | `GoogleService-Info.plist` and endpoints written by CI; `.xcconfig` per env, `.example` committed; R2 keys only on the backend |
+| Secrets | `GoogleService-Info.plist` and endpoints written by CI; `.xcconfig` per env, `.example` committed; AWS credentials only on the backend |
 | Privacy | GPS disclosed in onboarding and disableable; `PrivacyInfo.xcprivacy` declares location, device ID, crash data; account deletion is immediate locally, within 30 days on the server |
 
 ```swift

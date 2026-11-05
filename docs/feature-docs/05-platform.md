@@ -445,7 +445,7 @@ enum DiagnosticsConstants {
 | Presentation | `SiteLogTests/Presentation` | Swift Testing | Planned: view models built on test doubles in `SiteLogTests/Doubles/` through `init`, no container |
 | Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F18 step 10): each screen light, dark, `accessibility3` |
 | Flows | `SiteLogUITests` | XCUITest | Planned: smoke paths only, unlock → projects → capture → report |
-| Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
+| Backend | [site-log-be](https://github.com/DAMHONGDUC/site-log-be) `test/` | vitest | Its own CI; run next to the app: [03-backend §12](03-backend.md#12-testing-against-a-local-backend) |
 
 **Rules**
 

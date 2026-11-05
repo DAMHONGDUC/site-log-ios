@@ -2,7 +2,7 @@
 
 <dl><dd>
 
-- How bytes and metadata leave the device and reach other devices. Server side: [03-backend.md](03-backend.md).
+- How bytes and metadata leave the device and reach other devices. What the app calls: [03-backend.md](03-backend.md); the server itself: [site-log-be](https://github.com/DAMHONGDUC/site-log-be).
 - These are target specifications. The upload, sync, and realtime implementations are planned work;
   code samples define contracts and are not drop-in implementations.
 
@@ -47,7 +47,7 @@
 
 - Module: `Packages/PlatformKit/Sources/PlatformKit/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
 
-**Goal:** move 150–250 files and several GB to R2, surviving network loss, suspension, termination,
+**Goal:** move 150–250 files and several GB to S3, surviving network loss, suspension, termination,
 reboot and presigned-URL expiry.
 
 ### 04.1 Boundary
@@ -78,7 +78,7 @@ public protocol UploadStore: Sendable {
 
 <dl><dd>
 
-- The backend never touches bytes. Endpoints: [03-backend.md §3](03-backend.md#3-endpoints).
+- The backend never touches bytes. Endpoints: [03-backend.md §7](03-backend.md#7-uploads).
 
 | Step | Call | Returns |
 |---|---|---|
@@ -88,8 +88,8 @@ public protocol UploadStore: Sendable {
 | 4 | `POST /uploads/:id/parts/refresh {numbers}` | Fresh URLs — **mandatory** after a long kill |
 | 5 | `DELETE /uploads/:id` | Abort |
 
-- Mode from `byteSize`: under 5 MiB single PUT, else multipart with uniform 8 MiB parts (R2 requires
-  equal non-final parts, so `ChunkPlanner` splits by fixed size).
+- Mode from `byteSize`: under 5 MiB single PUT, else multipart with uniform 8 MiB parts (S3 needs every
+  part but the last to be at least 5 MiB; one fixed size keeps `ChunkPlanner` simple). The backend picks the mode.
 - Every call carries a Firebase ID token; the key prefix must match its uid.
 
 </dd></dl>
@@ -252,7 +252,7 @@ delta protocol.
 |---|---|
 | Firebase Auth (Sign in with Apple, email) | Firestore, in any role |
 | Cursor-based delta pull, batched push, tombstones, LWW | Multi-user sharing, real-time co-editing, SSO |
-| Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to R2 |
+| Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to S3 |
 | Account deletion | |
 
 - Without Firestore, three things are ours: offline persistence (SwiftData mutation queue), delete
@@ -286,7 +286,7 @@ POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
 
 - **Revisions, not timestamps:** each row has a server-assigned `rev` from a per-user counter
   incremented in the write transaction, so it is gap-free and commit-ordered
-  ([03-backend.md §7](03-backend.md#7-sync)).
+  ([03-backend.md §6](03-backend.md#6-sync)).
 - Conflicts: `captures`, `issue_captures` insert-only (UUIDs cannot conflict); everything else LWW on
   `clientUpdatedAt`, tie-broken by `id`; `checklist_results` per `(run, item)`;
   **`sessions.state` monotonic** (`draft < active < closed < exported`) so an offline device cannot
@@ -324,7 +324,7 @@ enum SyncConstants {
   never per write.
 - `superseded` is not a failure: adopt `serverRow`.
 - Every cycle logs `{pulled, pushed, superseded, elapsedMs, cursor}`.
-- **Account deletion:** in-app → reauthenticate → `DELETE /account` (server removes R2 objects and
+- **Account deletion:** in-app → reauthenticate → `DELETE /account` (server removes S3 objects and
   rows) → local store, Keychain, media; numbers shown first; final audit entry.
 
 | Risk | Handling |

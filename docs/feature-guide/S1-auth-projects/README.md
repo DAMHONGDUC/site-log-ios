@@ -59,13 +59,13 @@ flowchart LR
 | F02.3 | `AuthRemoteDataSourceImpl` in memory | Fake data | 1 | not start |
 | F02.4 | Sign in, account, sign out view models | View models | 4 | not start |
 | F02.5 | Firebase Auth inside the data source (split: Apple · email · token) | Local | 10 | not start |
-| F02.6 | `requireUser`, `DELETE /account` | Backend | 4 | not start |
+| F02.6 | [site-log-be F02](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F02-auth.md): `requireUser`, `DELETE /account` | Backend | 4 | not start |
 | F03.1 | Project, session, location contract | Contract | 1 | not start |
 | F03.2 | Sync-ready entities, protocols, use cases | Domain | 4 | not start |
 | F03.3 | Repositories + data sources in memory | Fake data | 2 | not start |
 | F03.4 | Projects view models (split: list · detail · survey · bulk) | View models | 10 | not start |
 | F03.5 | SwiftData models, schema, data sources (split: models · data sources · schema) | Local | 15 | not start |
-| F03.6 | Migration `0002_projects.sql` | Backend | 3 | not start |
+| F03.6 | [site-log-be F03](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F03-projects.md): `0001_projects.sql` | Backend | 3 | not start |
 
 </dd></dl>
 

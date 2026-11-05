@@ -53,7 +53,7 @@ flowchart LR
 | F12.3 | Repository + data sources in memory | Fake data | 1 | not start |
 | F12.4 | Checklists screens | View models | 4 | not start |
 | F12.5 | Built-in templates and results on SwiftData | Local | 4 | not start |
-| F12.6 | `0010_checklists.sql` | Backend | 2 | not start |
+| F12.6 | [site-log-be F12](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S7-checklists/F12-checklists.md): `0009_checklists.sql` | Backend | 2 | not start |
 | F12.7 | Checklist tables join sync | Sync | 1 | not start |
 | F13.1 | Mock meter profile: service, characteristic, bytes | Contract | 1 | not start |
 | F13.2 | DeviceLink types | Domain | 1 | not start |

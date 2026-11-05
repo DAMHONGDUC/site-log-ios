@@ -18,7 +18,7 @@
 5. [3. Fake data — data sources in memory](#3-fake-data--data-sources-in-memory)
 6. [4. View models — wire markup and stamp](#4-view-models--wire-markup-and-stamp)
 7. [5. Local — vector rendering](#5-local--vector-rendering)
-8. [6. Backend — annotations table](#6-backend--annotations-table)
+8. [6. Backend — in site-log-be](#6-backend--in-site-log-be)
 9. [7. Sync — annotations and trusted time](#7-sync--annotations-and-trusted-time)
 10. [Tests (after the feature works)](#tests-after-the-feature-works)
 11. [Feature done](#feature-done)
@@ -44,7 +44,7 @@
 | [3](#3-fake-data--data-sources-in-memory) | Fake data | 1h | not start | Real `AnnotationRepositoryImpl` over in-memory data sources |
 | [4](#4-view-models--wire-markup-and-stamp) | View models | 4h | not start | Markup editor, stamp preview |
 | [5](#5-local--vector-rendering) | Local | 7h | not start | Layer rendering, stamped derivative |
-| [6](#6-backend--annotations-table) | Backend | 1h | not start | `0007_annotations.sql` |
+| [6](#6-backend--in-site-log-be) | Backend | 1h | not start | site-log-be F09: `0006_annotations.sql` |
 | [7](#7-sync--annotations-and-trusted-time) | Sync | 7h | not start | Annotations syncable; clock offset from the server |
 
 ```mermaid
@@ -62,7 +62,6 @@ flowchart LR
 <dl><dd>
 
 ```text
-Backend/migrations/0007_annotations.sql                                  # 6
 Packages/
 ├── DomainLayer/Sources/DomainLayer/Entities/Annotation/                 # 2: AnnotationShape, NormalizedPoint, TrustedTimestamp
 ├── DataLayer/Sources/DataLayer/
@@ -219,7 +218,7 @@ flowchart LR
 
 </dd></dl>
 
-## 6. Backend — annotations table
+## 6. Backend — in site-log-be
 
 <dl><dd>
 
@@ -227,19 +226,21 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** the server table for layers.
+- **Goal:** the markup layer of a photo syncs as JSON.
+- **Built in:** [F09 Annotations](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F09-annotations.md) — same sprint, separate repository; nothing to write in this repo.
+- **API this feature uses:** [§6.3 Synced tables](../../feature-docs/03-backend.md#63-synced-tables).
+- **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
-| Action | File | Holds |
+| Backend piece | The app | Check from the app |
 |---|---|---|
-| <b class="tag-new">New</b> | `Backend/migrations/0007_annotations.sql` | `annotations (capture_id pk, shapes jsonb)` + sync columns |
-| <b class="tag-edit">Edit</b> | `Backend/src/sync/tables.ts`, `routes/account.ts` | Allow in sync; join the account deletion |
+| Table `annotations`, `id` = capture id | Push after the capture; `shapes` as a JSON array | An arrow drawn on A shows on B |
 
 ```mermaid
-flowchart LR
-    SQL["0007_annotations.sql"] --> T["annotations"]
+erDiagram
+    captures ||--o| annotations : "same id"
 ```
 
-- **Check:** migration on empty and seeded databases.
+- **Check:** shapes round-trip unchanged.
 
 </dd></dl>
 

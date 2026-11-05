@@ -55,7 +55,7 @@ flowchart LR
 | F18.8 | Dark mode, empty / error / offline states, imagery | UI | 5 | not start |
 | F18.9 | Accessibility re-check, listing, submission | Release | 6 | not start |
 | F18.10 | Optional: snapshot tests (not counted) | Tests | 6 | optional |
-| F18.11 | Production deploy, purge, backups, alerts | Backend | 6 | not start |
+| F18.11 | [site-log-be F18](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S9-release/F18-production.md): production, purge, alarms, backups | Backend | 6 | not start |
 
 </dd></dl>
 
