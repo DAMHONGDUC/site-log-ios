@@ -21,6 +21,11 @@ final class NavigationCoordinator {
     }
 }
 
+extension NavigationCoordinator {
+    // Used only outside a NavigationStack (previews); created once instead of on every read
+    static let fallback = NavigationCoordinator()
+}
+
 extension EnvironmentValues {
-    @Entry var coordinator = NavigationCoordinator()
+    @Entry var coordinator: NavigationCoordinator = .fallback
 }
