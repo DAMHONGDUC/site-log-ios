@@ -55,9 +55,11 @@
 		23F8B2AE9C0EA29929223AB8 /* 01-field-work.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "01-field-work.md"; sourceTree = "<group>"; };
 		2507C2EEAEBC175D001AED43 /* F10-reports.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F10-reports.md"; sourceTree = "<group>"; };
 		28845DE08569E1C0F4D9B331 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
+		3158839FC5F1274FF177BFA9 /* deploy_backend.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = deploy_backend.sh; sourceTree = "<group>"; };
 		33BE132C1812B34246285ED8 /* upload_ipa.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = upload_ipa.sh; sourceTree = "<group>"; };
 		33C1E91E8132908B17CC58F9 /* .swift-format */ = {isa = PBXFileReference; path = ".swift-format"; sourceTree = "<group>"; };
 		349D19974283FDB0DB321593 /* F16-push-deeplinks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F16-push-deeplinks.md"; sourceTree = "<group>"; };
+		34F5CAE86F420699F2D03E45 /* android_build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = android_build.sh; sourceTree = "<group>"; };
 		34FB39010F292720B1ADF77D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		37CB60B0F0A316F464D9506E /* F00-foundation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F00-foundation.md"; sourceTree = "<group>"; };
 		3897FFFB71EFED33DEC8FBA6 /* F04-sync-engine.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F04-sync-engine.md"; sourceTree = "<group>"; };
@@ -69,12 +71,14 @@
 		4034CCC34C86992BE3FF4F82 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		4062AE2D59156E4E49049A87 /* swiftui-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "swiftui-rules.md"; sourceTree = "<group>"; };
 		42E117CC01310213F02250D5 /* F17-accessibility-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F17-accessibility-performance.md"; sourceTree = "<group>"; };
+		46C6F6FC727C73F9451904BC /* react_native.mk */ = {isa = PBXFileReference; path = react_native.mk; sourceTree = "<group>"; };
 		47A98ACE570C4E3B3E6F3848 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		481F629DD7508CE23DFEB031 /* tasks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tasks.json; sourceTree = "<group>"; };
 		493D1A354595C27138CCCFF1 /* reset_xcode.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = reset_xcode.sh; sourceTree = "<group>"; };
 		4A63839935D3E719B916C7DC /* F08-issues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F08-issues.md"; sourceTree = "<group>"; };
 		4BD784D300C2D57CBB77CBED /* round_icon_corners.dart */ = {isa = PBXFileReference; path = round_icon_corners.dart; sourceTree = "<group>"; };
 		4D1921DA58B339735774CC57 /* app-icon-dark.svg */ = {isa = PBXFileReference; path = "app-icon-dark.svg"; sourceTree = "<group>"; };
+		4F066165E7A913C4976A5967 /* ruby.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ruby.sh; sourceTree = "<group>"; };
 		53897337D3C1058962362E9C /* flutter.mk */ = {isa = PBXFileReference; path = flutter.mk; sourceTree = "<group>"; };
 		5516F2BFCFB1BE161F513D53 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		55443BAB643613E8E48239AF /* F09-markup.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F09-markup.md"; sourceTree = "<group>"; };
@@ -83,6 +87,7 @@
 		59ECE5A3CA31A110540197E5 /* init.lua */ = {isa = PBXFileReference; path = init.lua; sourceTree = "<group>"; };
 		5AD0C910EB8272791258E0D2 /* markdown-preview.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "markdown-preview.css"; sourceTree = "<group>"; };
 		5B12C2C02BAFDD3B2BD999C3 /* F11-plans.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F11-plans.md"; sourceTree = "<group>"; };
+		5B72D00F49331C62DCB0CB69 /* commands.mk */ = {isa = PBXFileReference; path = commands.mk; sourceTree = "<group>"; };
 		5D18F4EE8C2B946317F43D62 /* 00-design-plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-design-plan.md"; sourceTree = "<group>"; };
 		5F3C8FAC582D03345DF63C0F /* check-no-print.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "check-no-print.sh"; sourceTree = "<group>"; };
 		5FB96206F20F929D04596D79 /* DataLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DataLayer; path = Packages/DataLayer; sourceTree = SOURCE_ROOT; };
@@ -94,11 +99,13 @@
 		623F3DD3B6F17C1F14168586 /* 02-upload-sync.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "02-upload-sync.md"; sourceTree = "<group>"; };
 		62AF0BCA04EBEC57E446377A /* F14-diagnostics.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F14-diagnostics.md"; sourceTree = "<group>"; };
 		67F8CD215CAC07552ECE6001 /* strip_icon_marker.dart */ = {isa = PBXFileReference; path = strip_icon_marker.dart; sourceTree = "<group>"; };
+		6A138A652D11D044AF8A5ED9 /* release_android.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release_android.sh; sourceTree = "<group>"; };
 		6A30FA5A7033C3731379EABB /* 00-overview.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "00-overview.md"; sourceTree = "<group>"; };
 		6B244EF1F0B74757AB50F783 /* .gitignore */ = {isa = PBXFileReference; path = .gitignore; sourceTree = "<group>"; };
 		6C3E3968304C179E18B430C4 /* SiteLogUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SiteLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C59D64E988A1F1949FFD4F8 /* analyze_code.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = analyze_code.sh; sourceTree = "<group>"; };
 		6CD3E96A47AB3401C9567F67 /* F01-access.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F01-access.md"; sourceTree = "<group>"; };
+		72F6A062630C67BE7ADB294D /* release_ios.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release_ios.sh; sourceTree = "<group>"; };
 		7501BD2F08552E2C03960F29 /* .gitattributes */ = {isa = PBXFileReference; path = .gitattributes; sourceTree = "<group>"; };
 		75B6437BA08BB74A55D8BBAB /* ADOPTION_SPEC.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ADOPTION_SPEC.md; sourceTree = "<group>"; };
 		76D514EFCE9EA5BE0D33F13B /* preview.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = preview.html; sourceTree = "<group>"; };
@@ -125,12 +132,14 @@
 		996ACABF2736DF00709F85D2 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
 		9ABA5F700E63DEDD5E72D9DA /* app-icon-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon-dark.png"; sourceTree = "<group>"; };
 		9DF89B6367A1EC4737159A31 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9E34A17FBB47C0890BCB4E5B /* common.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = common.sh; sourceTree = "<group>"; };
 		9F92BA6BFB920CCEDB98081E /* ios.mk */ = {isa = PBXFileReference; path = ios.mk; sourceTree = "<group>"; };
 		A4B612E3598D516CA6B1C3EE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A9B9CC6CD42DC7660F521AA7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AB841D0C22E49593F1D62522 /* preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = preview.png; sourceTree = "<group>"; };
 		AD386344CF81DAFEEBB07CFB /* app-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "app-icon.png"; sourceTree = "<group>"; };
 		AD5895BCB844AAD7607EEF88 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ADEBED25161893FE3F4802D4 /* COMMANDS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = COMMANDS.md; sourceTree = "<group>"; };
 		AE04F1637B4E0C5A0E65BDB4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AE12B7DA7CCD9688C1F33993 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		B06E96414E2DA09289C89827 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -140,15 +149,18 @@
 		B49AD455DCC78C208C588365 /* F02-auth.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F02-auth.md"; sourceTree = "<group>"; };
 		BD7F4CEAEEABA478D9FC9DC6 /* android.mk */ = {isa = PBXFileReference; path = android.mk; sourceTree = "<group>"; };
 		C1EBA1F6A90E0E9767078A81 /* release_output.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release_output.sh; sourceTree = "<group>"; };
+		C45DCF487200E2F32A93ED62 /* run_app.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = run_app.sh; sourceTree = "<group>"; };
 		C4A53DB62D557CC1F05F999B /* generate_code.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate_code.sh; sourceTree = "<group>"; };
 		C8A4BA87B7E21251886A263F /* space_free_copy.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = space_free_copy.sh; sourceTree = "<group>"; };
 		CA3079F8ADB060B314F36A4C /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		CBA37277AD1DCCF0DC9215EE /* common.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = common.sh; sourceTree = "<group>"; };
 		CDA1C022516A9FC5A6FE1196 /* PlatformKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PlatformKit; path = Packages/PlatformKit; sourceTree = SOURCE_ROOT; };
 		CFBBC5F78D396BDDB60AA3D2 /* F06-upload.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F06-upload.md"; sourceTree = "<group>"; };
+		CFFDAACDAF80679A04A4B1C4 /* set_up.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = set_up.sh; sourceTree = "<group>"; };
 		D1CABAB41BE45A51D75AA265 /* .gitmodules */ = {isa = PBXFileReference; path = .gitmodules; sourceTree = "<group>"; };
 		D75D5125D6F8F2806AA0B833 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D78A183D2C158A5DC821CC8B /* run_tests.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = run_tests.sh; sourceTree = "<group>"; };
+		D8E2D33795BB1C2ED74272F1 /* Fastfile */ = {isa = PBXFileReference; path = Fastfile; sourceTree = "<group>"; };
 		DCA4470BC33DB6BD64190F2E /* DomainLayer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DomainLayer; path = Packages/DomainLayer; sourceTree = SOURCE_ROOT; };
 		DF03107FFA646689FD4CD0B0 /* project.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = project.sh; sourceTree = "<group>"; };
 		DF25872F42F6F2FAE5F9B5CA /* build_ipa.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_ipa.sh; sourceTree = "<group>"; };
@@ -157,6 +169,7 @@
 		E30B2A2F6A6568FFF445A36A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E3CB5867DE2270610BD87342 /* Gemfile.lock */ = {isa = PBXFileReference; path = Gemfile.lock; sourceTree = "<group>"; };
 		E501A03FD345691A0A48AC76 /* ___FILEBASENAME___.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "___FILEBASENAME___.swift"; sourceTree = "<group>"; };
+		E6D8BEB6841CFDF5F2D737C7 /* env.example */ = {isa = PBXFileReference; path = env.example; sourceTree = "<group>"; };
 		EC6FF8E04051F71410547E06 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Packages/Core; sourceTree = SOURCE_ROOT; };
 		F0D19FCFBA693CEAFA6D9024 /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignSystem; path = Packages/DesignSystem; sourceTree = SOURCE_ROOT; };
 		F312F03E20FBC9CEE2FF7848 /* pr-checks.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "pr-checks.yml"; sourceTree = "<group>"; };
@@ -473,13 +486,16 @@
 				75B6437BA08BB74A55D8BBAB /* ADOPTION_SPEC.md */,
 				6C59D64E988A1F1949FFD4F8 /* analyze_code.sh */,
 				DF25872F42F6F2FAE5F9B5CA /* build_ipa.sh */,
+				3158839FC5F1274FF177BFA9 /* deploy_backend.sh */,
 				1ACD50D562F5DD0E58426C45 /* deploy_firebase.sh */,
 				53897337D3C1058962362E9C /* flutter.mk */,
 				3E1BEA201C79755961778CF0 /* generate_app_icon.sh */,
 				C4A53DB62D557CC1F05F999B /* generate_code.sh */,
 				990365CFEBA94F62292502EA /* MIGRATE_FROM_SYSTEM_DESIGN.md */,
 				80BE9799143E913F5B5595A7 /* prepare_env.sh */,
+				6A138A652D11D044AF8A5ED9 /* release_android.sh */,
 				60CBD32FB54856B2DFCE1DF2 /* release_ios.sh */,
+				C45DCF487200E2F32A93ED62 /* run_app.sh */,
 				D78A183D2C158A5DC821CC8B /* run_tests.sh */,
 				F764EF7A765C448ECF89F274 /* set_up.sh */,
 				3B2C511AB2F86DBA5AC8E071 /* strip_icon_marker.sh */,
@@ -511,6 +527,8 @@
 			isa = PBXGroup;
 			children = (
 				9FCDBAF27969FB5A6E06C3A3 /* lib */,
+				ADEBED25161893FE3F4802D4 /* COMMANDS.md */,
+				5B72D00F49331C62DCB0CB69 /* commands.mk */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -585,6 +603,7 @@
 		957134B967061AF52872CD30 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				34F5CAE86F420699F2D03E45 /* android_build.sh */,
 				CBA37277AD1DCCF0DC9215EE /* common.sh */,
 			);
 			path = lib;
@@ -626,6 +645,7 @@
 				0460EFD76136A9C9BD207B43 /* log.sh */,
 				DF03107FFA646689FD4CD0B0 /* project.sh */,
 				C1EBA1F6A90E0E9767078A81 /* release_output.sh */,
+				4F066165E7A913C4976A5967 /* ruby.sh */,
 				C8A4BA87B7E21251886A263F /* space_free_copy.sh */,
 			);
 			path = lib;
@@ -681,6 +701,14 @@
 			path = "feature-docs";
 			sourceTree = "<group>";
 		};
+		BE3C72E0AD85994B121F62E4 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				9E34A17FBB47C0890BCB4E5B /* common.sh */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
 		C124A4A1FDE991ED9F4222CC /* .vscode */ = {
 			isa = PBXGroup;
 			children = (
@@ -720,11 +748,24 @@
 				70900B8E238E4B034852A243 /* common */,
 				6076097970B2F112B90D8480 /* flutter */,
 				1EC5C8B000BCB058A854599F /* ios */,
+				D99756D21AD8AB90871A7920 /* react_native */,
 				FAF16F17C7188C1A8794B798 /* .git */,
 				7501BD2F08552E2C03960F29 /* .gitattributes */,
 				D75D5125D6F8F2806AA0B833 /* README.md */,
 			);
 			path = "script-tools";
+			sourceTree = "<group>";
+		};
+		D99756D21AD8AB90871A7920 /* react_native */ = {
+			isa = PBXGroup;
+			children = (
+				EFA1979808FB733185BC3502 /* fastlane */,
+				BE3C72E0AD85994B121F62E4 /* lib */,
+				46C6F6FC727C73F9451904BC /* react_native.mk */,
+				72F6A062630C67BE7ADB294D /* release_ios.sh */,
+				CFFDAACDAF80679A04A4B1C4 /* set_up.sh */,
+			);
+			path = react_native;
 			sourceTree = "<group>";
 		};
 		DFF05906E49F66F8E3D49ECE /* Struct.xctemplate */ = {
@@ -747,6 +788,15 @@
 				CDA1C022516A9FC5A6FE1196 /* PlatformKit */,
 			);
 			path = Packages;
+			sourceTree = "<group>";
+		};
+		EFA1979808FB733185BC3502 /* fastlane */ = {
+			isa = PBXGroup;
+			children = (
+				E6D8BEB6841CFDF5F2D737C7 /* env.example */,
+				D8E2D33795BB1C2ED74272F1 /* Fastfile */,
+			);
+			path = fastlane;
 			sourceTree = "<group>";
 		};
 		FC7637DF678009864FD60581 /* Templates */ = {
