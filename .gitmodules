@@ -1,0 +1,3 @@
+[submodule "Tools/script-tools"]
+	path = Packages/script-tools
+	url = https://github.com/DAMHONGDUC/script-tools

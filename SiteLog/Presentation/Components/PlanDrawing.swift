@@ -1,6 +1,6 @@
-// Placeholder plan; the PDFKit viewer replaces it in F08
+// Placeholder plan; the PDFKit viewer replaces it in F11
 
-import SystemDesign
+import DesignSystem
 import SwiftUI
 
 struct PlanDrawing: View {
@@ -10,15 +10,18 @@ struct PlanDrawing: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .topLeading) {
-                SDColor.plan
+                DSColor.plan
                     .overlay {
-                        Text("Floor plan")
-                            .foregroundStyle(SDColor.textTertiary)
+                        Text("components.plan_drawing.floor_plan")
+                            .foregroundStyle(DSColor.textTertiary)
                     }
 
                 ForEach(pins) { pin in
                     PlanPinView(pin: pin)
-                        .position(x: proxy.size.width * pin.positionX, y: proxy.size.height * pin.positionY)
+                        .position(
+                            x: proxy.size.width * pin.positionX,
+                            y: proxy.size.height * pin.positionY
+                        )
                         .onTapGesture {
                             onPinTap(pin)
                         }
@@ -33,26 +36,26 @@ struct PlanPinView: View {
 
     var body: some View {
         Text(String(pin.number))
-            .font(SDFont.footnote.bold())
-            .foregroundStyle(Color.white)
-            .frame(width: 28, height: 28)
+            .modifier(DSTextStyle.footnoteBold)
+            .foregroundStyle(DSColor.onMedia)
+            .frame(width: DSSpacing.spacing28, height: DSSpacing.spacing28)
             .background(color, in: Circle())
-            .frame(width: SDSize.minTapTarget, height: SDSize.minTapTarget)
+            .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
             .contentShape(Rectangle())
     }
 
     private var color: Color {
         switch pin.severity {
         case .critical:
-            return SDColor.critical
+            return DSColor.critical
         case .major:
-            return SDColor.major
+            return DSColor.major
         case .minor:
-            return SDColor.minor
+            return DSColor.minor
         case .resolved:
-            return SDColor.success
+            return DSColor.success
         case .waiting:
-            return SDColor.waiting
+            return DSColor.waiting
         }
     }
 }

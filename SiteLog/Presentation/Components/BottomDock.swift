@@ -1,4 +1,4 @@
-import SystemDesign
+import DesignSystem
 import SwiftUI
 
 private struct BottomDockModifier<Dock: View>: ViewModifier {
@@ -7,14 +7,14 @@ private struct BottomDockModifier<Dock: View>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+            .safeAreaInset(edge: .bottom, spacing: DSSpacing.spacing0) {
                 VStack {
                     dock
                 }
-                .padding()
+                .padding(DSSpacing.spacing16)
                 .background {
                     if showsBackground {
-                        SDColor.raised
+                        DSColor.raised
                             .ignoresSafeArea()
                     }
                 }
@@ -23,7 +23,10 @@ private struct BottomDockModifier<Dock: View>: ViewModifier {
 }
 
 extension View {
-    func bottomDock<Dock: View>(showsBackground: Bool = true, @ViewBuilder _ dock: () -> Dock) -> some View {
+    func bottomDock<Dock: View>(
+        showsBackground: Bool = true,
+        @ViewBuilder _ dock: () -> Dock
+    ) -> some View {
         modifier(BottomDockModifier(showsBackground: showsBackground, dock: dock()))
     }
 }

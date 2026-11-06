@@ -29,14 +29,16 @@ settings:
     Release:
       VALIDATE_PRODUCT: YES
 packages:
-  SystemDesign:
-    path: Packages/SystemDesign
+  DesignSystem:
+    path: Packages/DesignSystem
   Core:
     path: Packages/Core
   DomainLayer:
     path: Packages/DomainLayer
   DataLayer:
     path: Packages/DataLayer
+  PlatformKit:
+    path: Packages/PlatformKit
   Inject:
     url: https://github.com/krzysztofzablocki/Inject
     from: 1.6.0
@@ -48,15 +50,22 @@ fileGroups:
   - fastlane
   - README.md
   - ROADMAP.md
+  - CLAUDE.md
   - .gitignore
   - .gitattributes
+  - .gitmodules
   - .swift-format
   - .swiftlint.yml
   - project.yml
+  - Makefile
+  - script-tools.properties
   - Gemfile
+  - Gemfile.lock
   - .vscode
   - .github
   - Tools
+  # git submodule of shell scripts; not a Swift package, so listed as files
+  - Packages/script-tools
 targets:
   SiteLog:
     type: application
@@ -68,11 +77,15 @@ targets:
         # .gitkeep only keeps empty folders in git; never part of the build
         excludes:
           - "**/.gitkeep"
+          - Presentation/Resources/Strings/Localizable.xcstrings
+      - path: SiteLog/Presentation/Resources/Strings/Localizable.xcstrings
+        group: Localization
     dependencies:
-      - package: SystemDesign
+      - package: DesignSystem
       - package: Core
       - package: DomainLayer
       - package: DataLayer
+      - package: PlatformKit
       - package: Inject
       - package: Factory
         product: FactoryKit

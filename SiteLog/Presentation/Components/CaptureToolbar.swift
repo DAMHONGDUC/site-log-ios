@@ -1,4 +1,4 @@
-import SystemDesign
+import DesignSystem
 import SwiftUI
 
 struct CaptureToolbar<Left: View, Right: View>: View {
@@ -14,18 +14,21 @@ struct CaptureToolbar<Left: View, Right: View>: View {
 
             Button(action: onCapture) {
                 Image(systemName: "camera")
-                    .foregroundStyle(SDColor.onHiVis)
-                    .frame(width: SDSize.captureButton, height: SDSize.captureButton)
-                    .background(SDColor.hiVis, in: Circle())
+                    .foregroundStyle(DSColor.onHiVis)
+                    .frame(
+                        width: DSSpacing.spacing68,
+                        height: DSSpacing.spacing68
+                    )
+                    .background(DSColor.hiVis, in: Circle())
             }
-            .accessibilityLabel("Capture")
+            .accessibilityLabel("components.capture_toolbar.capture")
 
             Spacer()
 
             right
         }
-        .padding()
-        .background(SDColor.raised)
+        .padding(DSSpacing.spacing16)
+        .background(DSColor.raised)
     }
 }
 
@@ -37,19 +40,23 @@ struct ToolbarSideLabel: View {
         VStack {
             Image(systemName: systemImage)
             Text(title)
-                .font(SDFont.caption)
+                .modifier(DSTextStyle.caption)
         }
-        .foregroundStyle(SDColor.textPrimary)
+        .foregroundStyle(DSColor.textPrimary)
     }
 }
 
 #Preview {
     VStack {
         Spacer()
-        CaptureToolbar {} left: {
-            Text("End")
+        CaptureToolbar {
+        } left: {
+            Text("components.capture_toolbar.end")
         } right: {
-            ToolbarSideLabel(systemImage: "map", title: "Plan")
+            ToolbarSideLabel(
+                systemImage: "map",
+                title: String(localized: "components.capture_toolbar.plan")
+            )
         }
     }
 }

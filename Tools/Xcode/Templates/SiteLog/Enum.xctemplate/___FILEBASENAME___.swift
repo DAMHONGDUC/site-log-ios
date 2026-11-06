@@ -1,0 +1,2 @@
+enum ___FILEBASENAMEASIDENTIFIER___ {
+}

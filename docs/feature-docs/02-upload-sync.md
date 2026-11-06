@@ -2,7 +2,9 @@
 
 <dl><dd>
 
-- How bytes and metadata leave the device and reach other devices. Server side: [03-backend.md](03-backend.md).
+- How bytes and metadata leave the device and reach other devices. What the app calls: [03-backend.md](03-backend.md); the server itself: [site-log-be](https://github.com/DAMHONGDUC/site-log-be).
+- These are target specifications. The upload, sync, and realtime implementations are planned work;
+  code samples define contracts and are not drop-in implementations.
 
 | Path | Carries | Spec |
 |---|---|---|
@@ -10,6 +12,8 @@
 | Delta sync | Metadata | [08](#08-auth-and-sync) |
 | WebSocket | Server-side job state | [10](#10-realtime-progress-channel) |
 | BLE | Measuring tools only | [06](01-field-work.md#06-devicelink-ble-measuring-tools) |
+
+> Code blocks below are contract sketches, not standalone Swift files; referenced records are defined by the target data model.
 
 </dd></dl>
 
@@ -20,8 +24,20 @@
 - [04 Upload engine](#04-upload-engine) — boundary, protocol, background constraints, state machine, policy
 - [08 Auth and sync](#08-auth-and-sync) — offline-first and auth, protocol, client engine
 - [10 Realtime progress channel](#10-realtime-progress-channel)
+- [Beginner terms](#beginner-terms)
 
 ---
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **Presigned URL:** a temporary address that grants permission to upload one object. Example: the app sends photo bytes directly to storage using that address.
+- **ETag:** a storage receipt for an uploaded part. The app sends the receipts when it completes a multipart upload.
+- **Idempotent:** repeating the same request has the same result as sending it once. Example: retrying `complete` does not create a second file.
+- **Cursor:** a marker for where the next sync page begins. **Tombstone:** a small deletion record sent during sync so another device also removes the item.
 
 </dd></dl>
 
@@ -29,9 +45,9 @@
 
 <dl><dd>
 
-- Module: `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
+- Module: `Packages/PlatformKit/Sources/PlatformKit/UploadKit` — standalone, uses nothing else from SiteLog ([D02](00-overview.md#d02--hand-written-upload-engine))
 
-**Goal:** move 150–250 files and several GB to R2, surviving network loss, suspension, termination,
+**Goal:** move 150–250 files and several GB to S3, surviving network loss, suspension, termination,
 reboot and presigned-URL expiry.
 
 ### 04.1 Boundary
@@ -52,7 +68,7 @@ public protocol UploadStore: Sendable {
 ```
 
 - The app implements it over SwiftData in `Persistence`.
-- `UploadKit` ships `InMemoryUploadStore`: the state machine is testable with no app, DB or network.
+- `UploadKit` tests use `InMemoryUploadStore`, a test double in the test target: the state machine is testable with no app, DB or network.
 - Files: `UploadCoordinator` (actor, entry point), `UploadStateMachine` (pure), `ChunkPlanner`,
   `PresignedURLProvider`, `BackgroundSessionDelegate`.
 
@@ -62,7 +78,7 @@ public protocol UploadStore: Sendable {
 
 <dl><dd>
 
-- The backend never touches bytes. Endpoints: [03-backend.md §3](03-backend.md#3-endpoints).
+- The backend never touches bytes. Endpoints: [03-backend.md §7](03-backend.md#7-uploads).
 
 | Step | Call | Returns |
 |---|---|---|
@@ -72,8 +88,8 @@ public protocol UploadStore: Sendable {
 | 4 | `POST /uploads/:id/parts/refresh {numbers}` | Fresh URLs — **mandatory** after a long kill |
 | 5 | `DELETE /uploads/:id` | Abort |
 
-- Mode from `byteSize`: under 5 MB single PUT, else multipart with uniform 8 MB parts (R2 requires
-  equal non-final parts, so `ChunkPlanner` splits by fixed size).
+- Mode from `byteSize`: under 5 MiB single PUT, else multipart with uniform 8 MiB parts (S3 needs every
+  part but the last to be at least 5 MiB; one fixed size keeps `ChunkPlanner` simple). The backend picks the mode.
 - Every call carries a Firebase ID token; the key prefix must match its uid.
 
 </dd></dl>
@@ -115,12 +131,29 @@ pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → com
 
 ```swift
 public struct UploadStateMachine {
-    public enum Event { case planned([UploadPartRecord]), partSucceeded(Int, etag: String),
-        partFailed(Int, FailureReason), urlsRefreshed([UploadPartRecord]),
-        networkBecameAvailable, completed(remoteKey: String), cancelledByUser }
-    public enum Effect { case enqueuePart(Int), refreshURLs([Int]), callComplete([Int: String]),
-        scheduleRetry(Int, after: TimeInterval), deleteTempFile(Int), abort(FailureReason) }
-    public func reduce(state: UploadJobState, event: Event) -> (UploadJobState, [Effect])
+    public enum Event {
+        case planned([UploadPartRecord])
+        case partSucceeded(Int, etag: String)
+        case partFailed(Int, FailureReason)
+        case urlsRefreshed([UploadPartRecord])
+        case networkBecameAvailable
+        case completed(remoteKey: String)
+        case cancelledByUser
+    }
+
+    public enum Effect {
+        case enqueuePart(Int)
+        case refreshURLs([Int])
+        case callComplete([Int: String])
+        case scheduleRetry(Int, after: TimeInterval)
+        case deleteTempFile(Int)
+        case abort(FailureReason)
+    }
+
+    public func reduce(
+        state: UploadJobState,
+        event: Event
+    ) -> (UploadJobState, [Effect])
 }
 ```
 
@@ -208,7 +241,7 @@ public enum UploadConstants {
 
 <dl><dd>
 
-- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
+- Modules: `SiteLog/Presentation/Sync`, `DataLayer` (sync engine), `Packages/PlatformKit/Sources/PlatformKit/Networking` ([D03](00-overview.md#d03--node--postgresql-backend-hand-written-sync))
 
 **Goal:** sign in once, work fully offline, sync all metadata across devices over a hand-written
 delta protocol.
@@ -219,7 +252,7 @@ delta protocol.
 |---|---|
 | Firebase Auth (Sign in with Apple, email) | Firestore, in any role |
 | Cursor-based delta pull, batched push, tombstones, LWW | Multi-user sharing, real-time co-editing, SSO |
-| Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to R2 |
+| Offline mutation queue in SwiftData | Media in the sync protocol — bytes go to S3 |
 | Account deletion | |
 
 - Without Firestore, three things are ours: offline persistence (SwiftData mutation queue), delete
@@ -253,7 +286,7 @@ POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
 
 - **Revisions, not timestamps:** each row has a server-assigned `rev` from a per-user counter
   incremented in the write transaction, so it is gap-free and commit-ordered
-  ([03-backend.md §7](03-backend.md#7-sync)).
+  ([03-backend.md §6](03-backend.md#6-sync)).
 - Conflicts: `captures`, `issue_captures` insert-only (UUIDs cannot conflict); everything else LWW on
   `clientUpdatedAt`, tie-broken by `id`; `checklist_results` per `(run, item)`;
   **`sessions.state` monotonic** (`draft < active < closed < exported`) so an offline device cannot
@@ -271,7 +304,7 @@ POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
 <dl><dd>
 
 ```swift
-actor MetadataSyncEngine {          // Data/; triggered by use cases
+actor SyncEngineImpl {          // Data/; triggered by use cases
     func sync() async throws        // pull, push, pull again if serverRev advanced
     func enqueue(_ mutation: Mutation) async
     func fullResync() async throws
@@ -291,7 +324,7 @@ enum SyncConstants {
   never per write.
 - `superseded` is not a failure: adopt `serverRow`.
 - Every cycle logs `{pulled, pushed, superseded, elapsedMs, cursor}`.
-- **Account deletion:** in-app → reauthenticate → `DELETE /account` (server removes R2 objects and
+- **Account deletion:** in-app → reauthenticate → `DELETE /account` (server removes S3 objects and
   rows) → local store, Keychain, media; numbers shown first; final audit entry.
 
 | Risk | Handling |
@@ -333,7 +366,7 @@ enum SyncConstants {
 
 <dl><dd>
 
-- Module: `Packages/DataLayer/Sources/DataLayer/DataSources/Remote/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
+- Module: `Packages/PlatformKit/Sources/PlatformKit/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
 
 **Goal:** learn what the server knows first — assembly done, hash checked, mismatch — without
 polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; never controls `UploadKit`.

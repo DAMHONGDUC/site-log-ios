@@ -1,10 +1,4 @@
-//
-//  RootView.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 30/9/26.
-//
-
+import DesignSystem
 import Inject
 import SwiftUI
 
@@ -12,7 +6,7 @@ struct RootView: View {
     @ObserveInjection var inject
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var startupVM = StartupViewModel(
+    @State private var splashVM = SplashViewModel(
         sequence: StartupSequence(steps: [])
     )
 
@@ -25,11 +19,11 @@ struct RootView: View {
 
     var body: some View {
         Group {
-            switch startupVM.state {
+            switch splashVM.state {
             case .ready:
                 accessFlow
             case .running, .failed:
-                StartupView(viewModel: startupVM)
+                SplashScreen(viewModel: splashVM)
             }
         }
         .overlay {
@@ -38,37 +32,45 @@ struct RootView: View {
                 PrivacyOverlayView()
             }
         }
+        .modifier(DSTextStyle.body)
         .enableInjection()
     }
 
     @ViewBuilder private var accessFlow: some View {
         switch accessStep {
         case .signIn:
-            SignInView {
+            SignInScreen {
                 accessStep = .faceIDLock
             } onContinueOffline: {
                 accessStep = .faceIDLock
             }
         case .faceIDLock:
-            FaceIDLockView {
+            FaceIDLockScreen {
                 accessStep = .unlocked
             } onEnterPasscode: {
                 accessStep = .passcode
             }
         case .passcode:
-            PasscodeUnlockView { _ in
+            PasscodeUnlockScreen { _ in
                 accessStep = .unlocked
             }
         case .unlocked:
             #if DEBUG
-            MainTabView()
-                // Dev menu reset
-                .environment(\.resetApp, ResetAppAction {
-                    accessStep = .signIn
-                })
+                MainTabView()
+                    // Dev menu reset
+                    .environment(
+                        \.resetApp,
+                        ResetAppAction {
+                            accessStep = .signIn
+                        }
+                    )
             #else
-            MainTabView()
+                MainTabView()
             #endif
         }
     }
+}
+
+#Preview {
+    RootView()
 }

@@ -1,149 +1,180 @@
 #if DEBUG
 
-import Core
-import SystemDesign
-import Inject
-import os
-import SwiftUI
+    import Core
+    import DesignSystem
+    import FactoryKit
+    import Inject
+    import os
+    import SwiftUI
 
-struct DevMenuSection: View {
-    @ObserveInjection var inject
-    @Environment(\.resetApp) private var resetApp
+    struct DevMenuSection: View {
+        @ObserveInjection var inject
+        @Environment(\.resetApp) private var resetApp
 
-    var actions: any DevDataActions = NoopDevDataActions()
-
-    enum PendingAction: String {
-        case reset = "Reset the app"
-        case deleteAll = "Delete all data"
-    }
-
-    @State private var pendingAction: PendingAction?
-    @State private var isWorking = false
-    @State private var lastResult: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: SDSpacing.tiny) {
-            SDSectionHeader(title: "Debug")
-
-            actionRow(
-                title: "Seed data",
-                subtitle: "Add sample projects, sessions and issues",
-                systemImage: "tray.and.arrow.down"
-            ) {
-                run(name: "Seed data") {
-                    await actions.seedData()
-                }
-            }
-            SDDivider()
-
-            actionRow(
-                title: "Delete all data",
-                subtitle: "Remove every project, photo and setting",
-                systemImage: "trash",
-                isDestructive: true
-            ) {
-                pendingAction = .deleteAll
-            }
-            SDDivider()
-
-            actionRow(
-                title: "Reset the app",
-                subtitle: "Delete all data, then start again from onboarding",
-                systemImage: "arrow.counterclockwise",
-                isDestructive: true
-            ) {
-                pendingAction = .reset
-            }
-
-            if let lastResult {
-                Text(lastResult)
-                    .font(SDFont.footnote)
-                    .foregroundStyle(SDColor.textSecondary)
-                    .padding(.horizontal, SDSpacing.regular)
-                    .padding(.top, SDSpacing.medium)
-            }
-        }
-        .disabled(isWorking)
-        .overlay {
-            if isWorking {
-                ProgressView()
-            }
-        }
-        .alert(
-            "\(pendingAction?.rawValue ?? "")?",
-            isPresented: isConfirmShown,
-            presenting: pendingAction
-        ) { action in
-            Button(action.rawValue, role: .destructive) {
-                confirm(action)
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: { _ in
-            Text("This can’t be undone.")
-        }
-        .enableInjection()
-    }
-
-    private func actionRow(
-        title: String,
-        subtitle: String,
-        systemImage: String,
-        isDestructive: Bool = false,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            SDListRow(title: title, subtitle: subtitle) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 20))
-                    .foregroundStyle(isDestructive ? SDColor.critical : SDColor.textPrimary)
-                    .frame(width: 26)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var isConfirmShown: Binding<Bool> {
-        Binding(
-            get: { pendingAction != nil },
-            set: { isShown in
-                if !isShown {
-                    pendingAction = nil
-                }
-            }
+        @State private var viewModel = DevMenuViewModel(
+            resetAllAccessDataUseCase: Container.shared.resetAllAccessDataUseCase(),
+            seedAccessDataUseCase: Container.shared.seedAccessDataUseCase()
         )
-    }
 
-    private func confirm(_ action: PendingAction) {
-        switch action {
-        case .deleteAll:
-            run(name: "Delete all data") {
-                await actions.deleteAllData()
+        enum PendingAction: String {
+            case reset = "devmenu.action.reset"
+            case deleteAll = "devmenu.action.delete_all"
+
+            var title: String {
+                NSLocalizedString(rawValue, comment: "")
             }
-        case .reset:
-            run(name: "Reset the app") {
-                await actions.deleteAllData()
-            } then: {
-                resetApp()
+        }
+
+        @State private var pendingAction: PendingAction?
+        @State private var isWorking = false
+        @State private var lastResult: String?
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                DSSectionHeader(title: String(localized: "devmenu.dev_menu_section.debug"))
+
+                actionRow(
+                    title: String(localized: "devmenu.action.seed_data"),
+                    subtitle: String(localized: "devmenu.action.seed_data_description"),
+                    systemImage: "tray.and.arrow.down"
+                ) {
+                    run(name: String(localized: "devmenu.action.seed_data")) {
+                        await viewModel.seedData()
+                    }
+                }
+                DSDivider()
+
+                actionRow(
+                    title: String(localized: "devmenu.action.delete_all"),
+                    subtitle: String(localized: "devmenu.action.delete_all_description"),
+                    systemImage: "trash",
+                    isDestructive: true
+                ) {
+                    pendingAction = .deleteAll
+                }
+                DSDivider()
+
+                actionRow(
+                    title: String(localized: "devmenu.action.reset"),
+                    subtitle: String(localized: "devmenu.action.reset_description"),
+                    systemImage: "arrow.counterclockwise",
+                    isDestructive: true
+                ) {
+                    pendingAction = .reset
+                }
+
+                if let lastResult {
+                    Text(lastResult)
+                        .modifier(DSTextStyle.footnote)
+                        .foregroundStyle(DSColor.textSecondary)
+                        .padding(.horizontal, DSSpacing.spacing16)
+                        .padding(.top, DSSpacing.spacing12)
+                }
+            }
+            .disabled(isWorking)
+            .overlay {
+                if isWorking {
+                    ProgressView()
+                }
+            }
+            .alert(
+                confirmationTitle,
+                isPresented: isConfirmShown,
+                presenting: pendingAction
+            ) { action in
+                Button(action.title, role: .destructive) {
+                    confirm(action)
+                }
+                Button("devmenu.dev_menu_section.cancel", role: .cancel) {}
+            } message: { _ in
+                Text("devmenu.dev_menu_section.this_can_t_be_undone")
+            }
+            .enableInjection()
+        }
+
+        private func actionRow(
+            title: String,
+            subtitle: String,
+            systemImage: String,
+            isDestructive: Bool = false,
+            action: @escaping () -> Void
+        ) -> some View {
+            Button(action: action) {
+                DSListRow(
+                    title: title,
+                    subtitle: subtitle,
+                    leading: {
+                        Image(systemName: systemImage)
+                            .modifier(DSTextStyle.iconMedium)
+                            .foregroundStyle(isDestructive ? DSColor.critical : DSColor.textPrimary)
+                            .frame(width: DSSpacing.spacing26)
+                    }
+                )
+            }
+            .buttonStyle(.plain)
+        }
+
+        private var confirmationTitle: String {
+            guard let pendingAction else { return "" }
+            return String.localizedStringWithFormat(
+                String(localized: "devmenu.confirm_action"),
+                pendingAction.title
+            )
+        }
+
+        private var isConfirmShown: Binding<Bool> {
+            Binding(
+                get: { pendingAction != nil },
+                set: { isShown in
+                    if !isShown {
+                        pendingAction = nil
+                    }
+                }
+            )
+        }
+
+        private func confirm(_ action: PendingAction) {
+            switch action {
+            case .deleteAll:
+                run(name: String(localized: "devmenu.action.delete_all")) {
+                    await viewModel.deleteAllData()
+                }
+            case .reset:
+                run(
+                    name: String(localized: "devmenu.action.reset"),
+                    work: {
+                        await viewModel.deleteAllData()
+                    },
+                    then: {
+                        resetApp()
+                    }
+                )
+            }
+        }
+
+        private func run(
+            name: String,
+            work: @escaping () async -> Void,
+            then finish: @escaping () -> Void = {}
+        ) {
+            AppLogger.devMenu.info("Start - \(name, privacy: .public)")
+            isWorking = true
+
+            Task {
+                await work()
+                isWorking = false
+                lastResult = String.localizedStringWithFormat(
+                    String(localized: "devmenu.action_finished"),
+                    name
+                )
+                AppLogger.devMenu.info("Done - \(name, privacy: .public)")
+                finish()
             }
         }
     }
 
-    private func run(name: String, work: @escaping () async -> Void, then finish: @escaping () -> Void = {}) {
-        AppLogger.devMenu.info("Start - \(name, privacy: .public)")
-        isWorking = true
-
-        Task {
-            await work()
-            isWorking = false
-            lastResult = "\(name) finished"
-            AppLogger.devMenu.info("Done - \(name, privacy: .public)")
-            finish()
-        }
+    #Preview {
+        DevMenuSection()
     }
-}
-
-#Preview {
-    DevMenuSection()
-}
 
 #endif

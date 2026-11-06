@@ -5,6 +5,10 @@
 - What the supervisor does on site: organize the walk, capture, log and verify issues, pin them on
   plans, mark up photos, run checklists, read measuring tools.
 - Architecture and data model: [00-overview.md](00-overview.md).
+- These are feature specifications. They describe intended behavior; use the source tree to check
+  what is implemented today and the matching feature guide for implementation steps.
+
+> Code blocks below show small API or data-model sketches. A sketch omits neighboring feature types unless it says it is a complete file.
 
 </dd></dl>
 
@@ -21,8 +25,20 @@
 | [11](#11-floor-plans-and-issue-pins) | Floor plans and issue pins |
 | [12](#12-annotation-and-verifiable-stamps) | Annotation, stamps, dictation, trusted time, verification code |
 | [13](#13-checklist-templates) | Checklist templates |
+- [Beginner terms](#beginner-terms)
 
 ---
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **Offline-first:** save work on the iPhone before relying on a network. Example: a room note stays saved in airplane mode.
+- **Hash:** a fixed-size fingerprint of file bytes. Example: SHA-256 can show whether a saved video changed.
+- **BLE:** Bluetooth Low Energy, a short-range connection used by measuring tools. Example: read a laser meter measurement nearby.
+- **Glossary note:** `AVAssetWriter` writes video to a file; `jetsam` is iOS stopping an app that uses too much memory; `RSSI` is a rough Bluetooth signal-strength reading.
 
 </dd></dl>
 
@@ -56,7 +72,7 @@ Project list → [+] New project → Project detail: [Sessions] [Locations] [Pla
 
 ```swift
 struct LocationRow: Identifiable, Sendable {
-    let id: PersistentIdentifier
+    let id: UUID
     let code: String
     let captureCount: Int
     let openIssueCount: Int
@@ -100,7 +116,7 @@ enum LocationTemplateLimits {
 
 <dl><dd>
 
-- Module: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture`
+- Modules: `Packages/PlatformKit/Sources/PlatformKit/Camera`, `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage`
 
 **Goal:** one `AVCaptureSession` for photo, video and audio without teardown; every file hashed
 before it reaches the DB.
@@ -148,16 +164,27 @@ idle → configuring → ready → capturingPhoto → ready
 | `sha256` | Streamed from the closed file | Always present |
 
 ```swift
+import CryptoKit
+import Foundation
+
 func sha256(ofFileAt url: URL) throws -> String {
     let handle = try FileHandle(forReadingFrom: url)
-    defer { try? handle.close() }
     var hasher = SHA256()
-    while let chunk = try handle.read(upToCount: HashConstants.streamingChunkBytes), !chunk.isEmpty {
+
+    while let chunk = try handle.read(upToCount: HashConstants.streamingChunkBytes),
+          !chunk.isEmpty
+    {
         hasher.update(data: chunk)
     }
-    return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+
+    try handle.close()
+    let digest = hasher.finalize()
+    return digest.map { String(format: "%02x", $0) }.joined()
 }
 ```
+
+`HashConstants.streamingChunkBytes` is declared in the same feature module. The function propagates
+read and close errors to its caller; the repository boundary logs the failure.
 
 - Stream in chunks: `Data(contentsOf:)` on a 1.5 GB video triggers jetsam.
 - Files: `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup.
@@ -182,7 +209,7 @@ enum CaptureConstants {
 }
 enum PreRecordConstants {
     static let segmentDuration: TimeInterval = 3
-    static let segmentCount: Int = 11
+    static let segmentCount: Int = 10
     static let minBatteryLevel: Float = 0.20
 }
 enum HashConstants { static let streamingChunkBytes: Int = 1_048_576 }
@@ -314,7 +341,7 @@ enum IssueDefaults {
 
 <dl><dd>
 
-- Module: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/DeviceLink` · mock: `Tools/MockPeripheral/`
+- Module: `Packages/PlatformKit/Sources/PlatformKit/Bluetooth` · mock: a Debug-only peripheral screen on a second iPhone ([F13](../feature-guide/S7-checklists-devices-diagnostics/F13-devicelink.md))
 
 **Goal:** scan → connect → read a laser distance or moisture meter (Bosch GLM, Leica Disto) → attach
 the reading to a `Capture`.
@@ -344,7 +371,7 @@ public struct DeviceReading: Sendable, Codable, Equatable {
   check errors on both discover callbacks, reconnect via `retrievePeripherals(withIdentifiers:)`.
 - UX: reading overlays the preview; status is a colored dot, no alerts; **never blocks capture**.
   Readings older than `measurementStaleAfter` are not attached.
-- The macOS mock scripts invalid values, disconnects and garbage bytes, and makes CI possible.
+- The iPhone mock scripts invalid values, disconnects and garbage bytes; CI covers `parse` on captured bytes. DeviceLink ships to users only after one real meter passes (feature flag).
 
 ```swift
 enum DeviceLinkConstants {
@@ -387,24 +414,33 @@ enum DeviceLinkConstants {
 
 <dl><dd>
 
-- Modules: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Plans`, `SiteLog/Presentation/Plans`
+- Modules: `Packages/PlatformKit/Sources/PlatformKit/Rendering` (tiles), `Packages/DataLayer/Sources/DataLayer/DataSources/Local/FileStorage` (plan files), `SiteLog/Presentation/Plans`
 
 **Goal:** import a floor plan, pin issues at exact coordinates, print a pin map per sheet.
 
 - Out: DWG/CAD, measuring, plan editing.
 
 ```swift
-@Model final class PlanSheet {
-    var id: UUID; var project: Project; var name: String
-    var sourceFileURL: URL        // relative
-    var pageIndex: Int; var pixelSize: CGSize
-    var sha256: String            // plans are evidence too
-    var location: Location?
+import SwiftData
+
+@Model
+final class PlanSheetModel {
+    var id: UUID
+    var project: ProjectModel
+    var name: String
+    var sourceFileURL: URL
+    var pageIndex: Int
+    var pixelSize: CGSize
+    var sha256: String
+    var location: LocationModel?
 }
 
-@Model final class PlanPin {
-    var id: UUID; var sheet: PlanSheet; var issue: Issue
-    var normalizedPoint: NormalizedPoint  // Domain type, 0…1 on both axes
+@Model
+final class PlanPinModel {
+    var id: UUID
+    var sheet: PlanSheetModel
+    var issue: IssueModel
+    var normalizedPoint: NormalizedPoint
     var createdAt: Date
 }
 ```
@@ -462,7 +498,7 @@ enum PlanConstants {
 
 <dl><dd>
 
-- Modules: `Packages/DataLayer/Sources/DataLayer/DataSources/Local/Capture` (rendering), `DomainLayer` (models)
+- Modules: `Packages/PlatformKit/Sources/PlatformKit/Rendering` (stamped copies), `DomainLayer` (models)
 
 **Rule:** the original file is never touched; markup is a separate layer; stamps are a derived copy.
 
@@ -542,7 +578,7 @@ struct TrustedTimestamp: Codable, Sendable {
 <dl><dd>
 
 - On upload completion the backend records the hash and returns a short code.
-- Printed under each image; resolvable at `GET /verify/:code` ([03-backend.md](03-backend.md#3-endpoints)).
+- Printed under each image; resolvable at `GET /verify/:code` ([03-backend §8](03-backend.md#8-verify)).
 
 | State | Meaning | Report wording |
 |---|---|---|
@@ -601,15 +637,47 @@ retyping.
 - Out: weighted scoring, branching, regulatory libraries.
 
 ```swift
-@Model final class ChecklistTemplate { var id: UUID; var name: String; var appliesTo: LocationKind?
-    var items: [ChecklistTemplateItem]; var isBuiltIn: Bool; var usageCount: Int }
-@Model final class ChecklistTemplateItem { var id: UUID; var order: Int; var text: String
-    var defaultSeverity: IssueSeverity; var requiresPhotoOnFail: Bool }
-@Model final class ChecklistRun { var id: UUID; var template: ChecklistTemplate; var session: Session
-    var location: Location; var startedAt: Date; var completedAt: Date?; var results: [ChecklistResult] }
-@Model final class ChecklistResult { var id: UUID; var templateItem: ChecklistTemplateItem
-    var outcome: ChecklistOutcome   // .pass / .fail / .notApplicable / .unanswered
-    var note: String; var issue: Issue?; var answeredAt: Date? }
+import SwiftData
+
+@Model
+final class ChecklistTemplateModel {
+    var id: UUID
+    var name: String
+    var appliesTo: LocationKind?
+    var items: [ChecklistTemplateItemModel]
+    var isBuiltIn: Bool
+    var usageCount: Int
+}
+
+@Model
+final class ChecklistTemplateItemModel {
+    var id: UUID
+    var order: Int
+    var text: String
+    var defaultSeverity: IssueSeverity
+    var requiresPhotoOnFail: Bool
+}
+
+@Model
+final class ChecklistRunModel {
+    var id: UUID
+    var template: ChecklistTemplateModel
+    var session: SessionModel
+    var location: LocationModel
+    var startedAt: Date
+    var completedAt: Date?
+    var results: [ChecklistResultModel]
+}
+
+@Model
+final class ChecklistResultModel {
+    var id: UUID
+    var templateItem: ChecklistTemplateItemModel
+    var outcome: ChecklistOutcome
+    var note: String
+    var issue: IssueModel?
+    var answeredAt: Date?
+}
 ```
 
 - A run stores its own results; editing a template never rewrites completed runs.

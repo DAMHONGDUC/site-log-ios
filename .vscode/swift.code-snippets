@@ -34,5 +34,45 @@
       "    }",
       "}"
     ]
+  },
+  "Swift Struct": {
+    "scope": "swift",
+    "prefix": "struct",
+    "description": "struct named after the file (same as the Xcode SiteLog Struct template)",
+    "body": [
+      "struct ${1:${TM_FILENAME_BASE}} {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Swift Class": {
+    "scope": "swift",
+    "prefix": "class",
+    "description": "final class named after the file (same as the Xcode SiteLog Class template)",
+    "body": [
+      "final class ${1:${TM_FILENAME_BASE}} {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Swift Enum": {
+    "scope": "swift",
+    "prefix": "enum",
+    "description": "enum named after the file (same as the Xcode SiteLog Enum template)",
+    "body": [
+      "enum ${1:${TM_FILENAME_BASE}} {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Swift Protocol": {
+    "scope": "swift",
+    "prefix": "protocol",
+    "description": "protocol named after the file (same as the Xcode SiteLog Protocol template)",
+    "body": [
+      "protocol ${1:${TM_FILENAME_BASE}} {",
+      "    $0",
+      "}"
+    ]
   }
 }

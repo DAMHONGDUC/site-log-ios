@@ -1,11 +1,4 @@
-//
-//  MainTabView.swift
-//  SiteLog
-//
-//  Created by Duc Dam Dev on 1/10/26.
-//
-
-import SystemDesign
+import DesignSystem
 import Inject
 import SwiftUI
 
@@ -14,30 +7,30 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            Tab("Projects", systemImage: "folder") {
-                NavigationStack {
-                    ProjectListView()
+            Tab("maintab.main_tab_view.projects", systemImage: "folder") {
+                CoordinatedStack {
+                    ProjectListScreen()
                 }
             }
-            Tab("Issues", systemImage: "exclamationmark.triangle") {
-                NavigationStack {
-                    IssueListView()
+            Tab("maintab.main_tab_view.issues", systemImage: "exclamationmark.triangle") {
+                CoordinatedStack {
+                    IssueListScreen()
                 }
             }
             // Fake count until the issues view model
             .badge(2)
-            Tab("Sync", systemImage: "arrow.triangle.2.circlepath") {
-                NavigationStack {
-                    UploadStatusView()
+            Tab("maintab.main_tab_view.sync", systemImage: "arrow.triangle.2.circlepath") {
+                CoordinatedStack {
+                    UploadStatusScreen()
                 }
             }
-            Tab("Settings", systemImage: "gearshape") {
-                NavigationStack {
-                    SettingsView()
+            Tab("maintab.main_tab_view.settings", systemImage: "gearshape") {
+                CoordinatedStack {
+                    SettingsScreen()
                 }
             }
         }
-        .tint(SDColor.textPrimary)
+        .tint(DSColor.textPrimary)
         .enableInjection()
     }
 }

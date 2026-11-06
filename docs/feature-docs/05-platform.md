@@ -4,6 +4,10 @@
 
 - Everything around the features: dev tooling, diagnostics, testing, release pipeline,
   notifications and deep links, profiling.
+- Dev setup and the current CI workflow describe existing tooling. Diagnostics, release automation,
+  push, and profiling sections define target work unless they say otherwise.
+
+> Commands and snippets are complete only when labeled as runnable; configuration examples are small fragments of their surrounding files.
 
 </dd></dl>
 
@@ -21,6 +25,20 @@
 | [19](#19-performance-profiling-with-instruments) | Performance profiling with Instruments |
 
 ---
+
+- [Beginner terms](#beginner-terms)
+
+</dd></dl>
+
+## Beginner terms
+
+<dl><dd>
+
+- **XcodeGen:** a tool that creates the Xcode project from `project.yml`; edit the YAML source, then regenerate the project.
+- **CI:** automated checks that run on a server when code changes. Example: CI builds the app and runs lint.
+- **SwiftLint / swift-format:** tools that report style issues / format Swift code consistently.
+- **Coverage:** the share of executable code reached by tests; high coverage alone does not prove a feature works.
+- **TestFlight:** Apple's service for distributing pre-release app builds to testers.
 
 </dd></dl>
 
@@ -90,9 +108,9 @@ flowchart LR
 | `project.yml` owns | Key |
 |---|---|
 | Team, versions, Swift 6 concurrency flags | `settings.base` |
-| Local packages (`SystemDesign`, `Core`, `DomainLayer`, `DataLayer`) and remote ones (`Factory`, `Inject`, later `Kingfisher`, `Firebase`, optional `swift-snapshot-testing` in F16) | `packages` |
+| Local packages (`DesignSystem`, `Core`, `DomainLayer`, `DataLayer`, `PlatformKit`) and current remote ones (`Factory`, `Inject`); planned dependencies are recorded in the relevant decision | `packages` |
 | Which products each target links | `targets.<name>.dependencies` |
-| App target, bundle id, iOS 18.6 | `targets.SiteLog` |
+| App target, bundle id, iOS 18.6 minimum deployment target | `targets.SiteLog` |
 | SwiftLint build phase | `targets.SiteLog.postBuildScripts` |
 | Hot reload flags, Debug only | `targets.SiteLog.settings.configs.Debug` |
 | Shared `SiteLog` scheme, `INJECTION_PROJECT_ROOT` | `schemes.SiteLog` |
@@ -128,7 +146,8 @@ flowchart LR
 | `lineLength` | `100` | Shared limit; SwiftLint's `line_length` is off |
 | `indentation.spaces` | `4` | Xcode default |
 | `respectsExistingLineBreaks` | `true` | SwiftUI modifier chains stay multi-line |
-| `lineBreakBeforeEachArgument` | `false` | Arguments stay on one line when they fit |
+| `lineBreakBeforeEachArgument` | `true` | Fits on one line → one line; otherwise one argument per line, `)` on its own line |
+| `prioritizeKeepingFunctionOutputTogether` | `true` | Wraps the arguments, keeps `) -> T {` on one line (SwiftLint `opening_brace`) |
 | `multiElementCollectionTrailingCommas` | `true` | Cleaner diffs |
 | `OrderedImports` | on | Imports sorted |
 
@@ -202,14 +221,21 @@ flowchart LR
 
 | Shortcut | Inserts | File |
 |---|---|---|
-| `view` | SwiftUI view with Inject hot reload | `<Screen>View.swift` |
+| `view` | SwiftUI view with Inject hot reload | `<Name>Screen.swift` (any view) |
 | `viewvm` | `@Observable` view model (`State` enum, `onAppear()`) | `<Screen>ViewModel.swift` |
+| `struct` / `class` / `enum` / `protocol` | Type named after the file (`final class`) | Any |
 
 - VS Code: [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets), in the repo.
 - Xcode: user snippets live in `~/Library/Developer/Xcode/UserData/CodeSnippets/`, per machine.
   New machine: Library (⇧⌘L) → `{}` → select the code → right-click → **Create Code Snippet**,
   completion `view` / `viewvm`, availability Top Level.
 - Use: new empty file → type the shortcut → Return → Tab between placeholders; ⌃⌘E renames all uses.
+- Type named after the file:
+  - VS Code: type `struct` (or `public struct`) → first suggestion → name = file name.
+  - Xcode: snippets cannot read the file name, so use the file templates in
+    [`Tools/Xcode/Templates/SiteLog/`](../../Tools/Xcode/Templates/SiteLog/).
+    Install once: `cp -R Tools/Xcode/Templates/SiteLog ~/Library/Developer/Xcode/Templates/File\ Templates/`, restart Xcode.
+    Use: ⌘N → section **SiteLog** → Struct / Class / Enum / Protocol → type the file name.
 
 </dd></dl>
 
@@ -219,11 +245,11 @@ flowchart LR
 
 | File | Purpose |
 |---|---|
-| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save, 100-column ruler, SweetPad scheme, `xcodegen` autogenerate off (synced folders), Debug Console in expression mode |
+| [`.vscode/settings.json`](../../.vscode/settings.json) | swift-format on save, snippets first in suggestions, 100-column ruler, SweetPad scheme, `xcodegen` autogenerate off (synced folders), Debug Console in expression mode |
 | [`.vscode/launch.json`](../../.vscode/launch.json) | **Run SiteLog (simulator)** (CodeLLDB): build, run, Restart rebuilds, Stop kills the app |
 | [`.vscode/sitelog_sim.py`](../../.vscode/sitelog_sim.py) | In LLDB: build, install, `simctl launch --wait-for-debugger`, attach by pid, stream app logs |
 | [`.vscode/tasks.json`](../../.vscode/tasks.json) | `sitelog: build`: manual build with full output (F5 does not use it) |
-| [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets) | `view` / `viewvm` |
+| [`.vscode/swift.code-snippets`](../../.vscode/swift.code-snippets) | `view` / `viewvm` / `struct` / `class` / `enum` / `protocol` |
 
 | Task | How |
 |---|---|
@@ -273,6 +299,7 @@ keybindings): Command Palette → **Preferences: Open Keyboard Shortcuts (JSON)*
 
 | Symptom | Fix |
 |---|---|
+| Xcode stuck: stale index, package resolution loops, odd build errors | `make reset-xcode` (DerivedData, `build/`, package caches, regenerate, reopen); `make deep-reset-xcode` also clears the global SwiftPM cache |
 | "No such module" / no completion in VS Code | Build once, regenerate build server config, restart LSP |
 | New file not visible in Xcode | It must sit inside `SiteLog/`, `SiteLogTests/` or `SiteLogUITests/` |
 | `Multiple commands produce … .gitkeep` | A new `.gitkeep` is not excluded yet: `xcodegen generate` |
@@ -409,24 +436,25 @@ enum DiagnosticsConstants {
 
 | Layer | Target | Tool | What |
 |---|---|---|---|
-| Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Every use case and pure domain service; no device, no frameworks |
+| Domain | `Packages/DomainLayer/Tests/DomainLayerTests` | Swift Testing | Planned: use cases and pure domain services; no device, no frameworks |
 | Core | `Packages/Core/Tests/CoreTests` | Swift Testing | Clock, logger helpers |
-| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Mappers (DTO ↔ entity), repository impls over in-memory SwiftData |
-| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Local|Remote>/<Name>` | Swift Testing | `UploadKit` state machine with `MockTransport`, `Realtime` decoding, `Reporting` layout |
-| SystemDesign | `Packages/SystemDesign/Tests` | Swift Testing | Tokens (hex decoding) |
-| Presentation | `SiteLogTests/Presentation` | Swift Testing + `FactoryTesting` | View models against fakes |
-| Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F16 step 10): each screen light, dark, `accessibility3` |
-| Flows | `SiteLogUITests` | XCUITest | Smoke paths only: unlock → projects → capture → report |
-| Backend | `Backend/test` | vitest | See [03-backend §12](03-backend.md#12-done-and-tests) |
+| Data | `Packages/DataLayer/Tests/DataLayerTests` | Swift Testing | Planned: mappers and repository implementations |
+| Data sources | `Packages/DataLayer/Tests/DataLayerTests/DataSources/<Name>` | Swift Testing | Planned: persistence and Keychain data sources |
+| PlatformKit | `Packages/PlatformKit/Tests/PlatformKitTests/<Name>` | Swift Testing | Planned: upload state machine, realtime decoding, report layout, Bluetooth parsing |
+| DesignSystem | `Packages/DesignSystem/Tests` | Swift Testing | Tokens (hex decoding) |
+| Presentation | `SiteLogTests/Presentation` | Swift Testing | Planned: view models built on test doubles in `SiteLogTests/Doubles/` through `init`, no container |
+| Screens | `SiteLogTests/Snapshots` | swift-snapshot-testing | Optional, last (F18 step 10): each screen light, dark, `accessibility3` |
+| Flows | `SiteLogUITests` | XCUITest | Planned: smoke paths only, unlock → projects → capture → report |
+| Backend | [site-log-be](https://github.com/DAMHONGDUC/site-log-be) `test/` | vitest | Its own CI; run next to the app: [03-backend §12](03-backend.md#12-testing-against-a-local-backend) |
 
 **Rules**
 
 1. Scoped: a change runs the tests of the folder it touched plus `DomainLayer` (`-only-testing:`), not the full suite.
 2. No real network, clock, camera or Bluetooth in unit tests; inject `AppClock`, `UploadTransport`,
    `CaptureSessionControlling`, `RandomNumberGenerator`.
-3. Every Factory override happens inside `@Suite(.container)`, so tests never leak registrations.
+3. View model tests pass test doubles through `init`; a test that overrides a Factory registration runs inside `@Suite(.container)`, so it never leaks.
 4. A bug fix lands with the test that would have caught it.
-5. Snapshot tests are optional and come last (F16 step 10). If added, references are recorded on one
+5. Snapshot tests are optional and come last (F18 step 10). If added, references are recorded on one
    pinned simulator (iPhone 17 Pro, iOS 26.4) and re-recorded only in a commit that says why.
 
 | Coverage scope | Line coverage |
@@ -437,9 +465,8 @@ enum DiagnosticsConstants {
 | View models | ≥ 70% |
 | Views | No line target |
 
-- CI reports coverage per folder; a PR that lowers a target fails.
-- Example: `SiteLogTests/Access/PasscodeUnlockViewModelTests.swift` (view model + `FactoryTesting`)
-  — full code in [F00 guide](../feature-guide/00-foundation.md).
+- Coverage values above are future targets. Fastlane enables coverage collection for current test
+  runs, but coverage thresholds and automatic per-folder failure checks are not configured yet.
 
 ---
 
@@ -449,58 +476,35 @@ enum DiagnosticsConstants {
 
 <dl><dd>
 
-- Modules: `fastlane/`, `.github/workflows/`
+- Current CI is defined in [`.github/workflows/pr-checks.yml`](../../.github/workflows/pr-checks.yml).
+- `fastlane/Fastfile` currently contains one lane: `test`.
 
-**Goal**
+### Current workflow
 
-- Every PR proves lint, builds, unit tests, coverage ([Testing](#testing-strategy)).
-- A tag becomes a TestFlight build with no manual Xcode step.
-- No certificates or keys stored in CI; App Store review submission stays manual.
+<dl><dd>
 
-| Lane | Does |
-|---|---|
-| `test` | `xcodegen`, tests of every package that has them (`SystemDesign`, `Core`), app unit tests on the simulator, coverage per folder |
-| `beta` | Release archive, upload dSYMs to Crashlytics, upload to TestFlight without waiting |
-| `release` | Same, waits for processing |
-
-| Workflow | Trigger | Runs |
+| Trigger | Runner | Work |
 |---|---|---|
-| PR checks | PR, push to `main` | `swiftlint --strict`, lane `test` |
-| TestFlight | tag `v*`, manual | lane `beta`, in the protected `testflight` environment |
+| Pull request or push to `main` | Ubuntu | Import and `print` guards, Gitleaks, strict SwiftLint |
+| After guards and lint pass | Self-hosted macOS | `Tools/CI/build-strict.sh`, then `bundle exec fastlane test` |
 
-![CI/CD pipeline: guards and lint, then build, then fastlane test; a v* tag runs fastlane beta](../images/ci-cd-pipeline.svg)
+The `test` lane generates the Xcode project, tests `DesignSystem` and `Core`, then runs app unit tests
+in `SiteLogTests`. It collects coverage, but no coverage thresholds are enforced. UI tests are not in
+the lane. There is no nightly or TestFlight workflow yet.
 
-**Runners** — private repo, so hosted macOS minutes bill at 10× (≈200 per month).
+</dd></dl>
 
-| Runner | When | Jobs |
-|---|---|---|
-| Ubuntu (hosted) | Every push | `DomainLayer` purity, Presentation imports, `UploadKit`/`Realtime` boundary, `print(` grep, `gitleaks`, SwiftLint; backend `vitest` + `tsc` + ESLint + migrations on a throwaway Postgres |
-| Self-hosted dev Mac | Every PR | App build, zero warnings (`build-strict.sh`); lane `test` |
-| Self-hosted dev Mac | Nightly | App without `Realtime`; full suite |
-| Hosted macOS | Disabled | Fallback only |
+### Planned release workflow
 
-- Self-hosting is safe only because the repo is private.
+<dl><dd>
 
-**Signing and versions**
+- Add a protected TestFlight environment and a release lane when signing credentials and release
+  steps are ready. Store credentials in CI secrets and remove temporary credential files after use.
+- Keep App Store review submission manual.
+- Update this section only after a workflow exists and its run confirms the behavior. Do not treat a
+  tag, nightly run, coverage gate, or release lane as available before then.
 
-- Xcode-managed signing: `-allowProvisioningUpdates` + App Store Connect API key (`ASC_KEY_ID`,
-  `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`, App Manager role), written to a temp file, deleted after the build.
-- Build number = latest TestFlight + 1; `MARKETING_VERSION` in `project.yml`, bumped by hand.
-- Release: `git tag v1.0.0 && git push origin v1.0.0`.
-
-**Risks**
-
-- Fork PRs never see secrets (environment-scoped)
-- Tags serialize build numbers
-- Pin the runner's Xcode on the first mismatch
-
-**Done**
-
-- A SwiftLint warning, a compiler warning or a failing test fails the PR
-- Pushing `v0.0.1` produces a TestFlight build with no local step
-- The repo holds no `.p8`, certificate or profile
-
----
+</dd></dl>
 
 </dd></dl>
 
@@ -521,7 +525,7 @@ shared `DeepLink` type; a link during cold launch is not lost.
   state comes from the local store.
 - Authorization is requested at a moment that makes sense, not blindly at first launch; the token is
   logged truncated, replaceable, and re-sent when it changes.
-- Routing: `URL / push → parser → router (pending) → view consumes and navigates`. The router
+- Routing: `URL / push → parser → router (pending) → tab + <Feature>Route pushed on that tab’s NavigationCoordinator` (D19). The router
   **holds** the destination until a view consumes it (cold launch), consuming clears it, and a deleted
   target lands on a safe screen.
 - Setup: Push capability, `aps-environment`, `sitelog` URL scheme and `remote-notification`

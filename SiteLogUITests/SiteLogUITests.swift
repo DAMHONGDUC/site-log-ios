@@ -1,10 +1,3 @@
-//
-//  SiteLogUITests.swift
-//  SiteLogUITests
-//
-//  Created by Duc Dam Dev on 19/9/26.
-//
-
 import XCTest
 
 final class SiteLogUITests: XCTestCase {

@@ -1,0 +1,209 @@
+// P3 · Project overview
+
+import DesignSystem
+import Inject
+import SwiftUI
+
+struct ProjectDetailScreen: View {
+    @ObserveInjection var inject
+    @Environment(\.coordinator) private var coordinator
+
+    let project: FakeProject
+
+    enum Section: String, CaseIterable {
+        case sessions = "projects.section.sessions"
+        case locations = "projects.section.locations"
+        case plans = "projects.section.plans"
+    }
+
+    @State private var section: Section = .sessions
+    @State private var isStartSessionShown = false
+    @State private var isPlanImportShown = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+                header
+
+                ProjectSectionPicker(selection: $section)
+
+                switch section {
+                case .sessions:
+                    sessionsContent
+                case .locations:
+                    locationsContent
+                case .plans:
+                    PlanListScreen()
+                }
+            }
+            .padding(.bottom, DSSpacing.spacing16)
+        }
+        .background(DSColor.canvas)
+        .navigationTitle(project.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu("projects.project_detail.more", systemImage: "ellipsis") {
+                    Button("projects.project_detail.new_walkthrough", systemImage: "figure.walk") {
+                        isStartSessionShown = true
+                    }
+                    Button("projects.project_detail.import_a_plan", systemImage: "doc.badge.plus") {
+                        isPlanImportShown = true
+                    }
+                }
+            }
+        }
+        .bottomDock {
+            dock
+        }
+        .sheet(isPresented: $isStartSessionShown) {
+            StartSessionScreen()
+                .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $isPlanImportShown) {
+            PlanImportScreen()
+                .presentationDetents([.medium])
+        }
+        .enableInjection()
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading) {
+            Text(project.name)
+                .modifier(DSTextStyle.largeTitle)
+            Text(
+                String.localizedStringWithFormat(
+                    String(localized: "projects.project_detail.client_and_area"),
+                    project.client,
+                    project.area
+                )
+            )
+            .modifier(DSTextStyle.subhead)
+            .foregroundStyle(DSColor.textSecondary)
+        }
+        .padding(.horizontal, DSSpacing.spacing16)
+    }
+
+    @ViewBuilder private var dock: some View {
+        switch section {
+        case .sessions:
+            Button("projects.project_detail.resume_walkthrough") {
+                coordinator.push(ProjectsRoute.survey)
+            }
+            .buttonStyle(.sd(.primary))
+        case .locations:
+            Button("projects.project_detail.add_rooms_in_bulk") {
+                coordinator.push(ProjectsRoute.bulkLocations)
+            }
+            .buttonStyle(.sd(.primary))
+        case .plans:
+            Button {
+                isPlanImportShown = true
+            } label: {
+                Label("projects.project_detail.import_a_plan2", systemImage: "doc.badge.plus")
+            }
+            .buttonStyle(.sd(.secondary))
+        }
+    }
+
+    private var sessionsContent: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+            Text(verbatim: "14 open issues, 2 of them overdue. Last full walkthrough on 12 Aug with Hanh.")
+                .modifier(DSTextStyle.body)
+                .foregroundStyle(DSColor.textSecondary)
+                .padding(.horizontal, DSSpacing.spacing16)
+
+            VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                DSSectionHeader(
+                    title: String(localized: "projects.project_detail.sessions"),
+                    trailing: String(FakeData.sessions.count)
+                )
+
+                ForEach(FakeData.sessions) { session in
+                    Button {
+                        if session.isLive {
+                            coordinator.push(ProjectsRoute.survey)
+                        } else {
+                            coordinator.push(ProjectsRoute.endSession)
+                        }
+                    } label: {
+                        sessionRow(session)
+                    }
+                    .buttonStyle(.plain)
+
+                    DSDivider()
+                }
+            }
+        }
+    }
+
+    private func sessionRow(_ session: FakeSession) -> some View {
+        DSListRow(title: session.title, subtitle: session.summary, showsChevron: true) {
+            if session.isLive {
+                DSLiveDot()
+            } else {
+                DSColor.clear
+                    .frame(width: DSSpacing.spacing10, height: DSSpacing.spacing10)
+            }
+        } trailing: {
+            if session.hasPDF {
+                DSFileTag(text: "PDF")
+            }
+        }
+    }
+
+    private var locationsContent: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
+            ForEach(FakeData.units) { unit in
+                VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                    DSSectionHeader(title: unit.name, trailing: "\(unit.rooms.count) rooms")
+
+                    ForEach(unit.rooms) { room in
+                        Button {
+                            coordinator.push(ProjectsRoute.room(roomID: room.id))
+                        } label: {
+                            DSListRow(title: room.name, showsChevron: true)
+                        }
+                        .buttonStyle(.plain)
+
+                        DSDivider()
+                    }
+                }
+            }
+
+            Button {
+                coordinator.push(ProjectsRoute.cloneTree)
+            } label: {
+                Text("projects.project_detail.copy_rooms_action")
+                    .modifier(DSTextStyle.subheadSemibold)
+                    .underline()
+                    .foregroundStyle(DSColor.textPrimary)
+            }
+            .padding(.horizontal, DSSpacing.spacing16)
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ProjectDetailScreen(project: FakeData.projects[0])
+    }
+}
+
+private struct ProjectSectionPicker: View {
+    @Binding var selection: ProjectDetailScreen.Section
+
+    var body: some View {
+        Picker("projects.project_detail.section", selection: $selection) {
+            ForEach(ProjectDetailScreen.Section.allCases, id: \.self) { section in
+                Text(NSLocalizedString(section.rawValue, comment: "")).tag(section)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal, DSSpacing.spacing16)
+    }
+}
+
+#Preview("Project sections") {
+    ProjectSectionPicker(selection: .constant(.sessions))
+}

@@ -13,10 +13,10 @@ if [ -n "$domain_imports" ]; then
   failed=1
 fi
 
-# Rule 2: Presentation never imports DataLayer (the app links it only for App/AppDependencies.swift)
-data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import DataLayer$' SiteLog/Presentation --include='*.swift' || true)
+# Rule 2: Presentation never imports DataLayer or PlatformKit (the app links them only for App/)
+data_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DataLayer|PlatformKit)$' SiteLog/Presentation --include='*.swift' || true)
 if [ -n "$data_imports" ]; then
-  echo "Presentation may not import DataLayer; use Domain use cases. Found:"
+  echo "Presentation may not import DataLayer or PlatformKit; use Domain use cases. Found:"
   echo "$data_imports"
   failed=1
 fi
@@ -26,6 +26,14 @@ direct_access=$(grep -rnE '^[[:space:]]*import (SwiftData|CoreData)$|ModelContex
 if [ -n "$direct_access" ]; then
   echo "Presentation may not use SwiftData, ModelContext or URLSession. Found:"
   echo "$direct_access"
+  failed=1
+fi
+
+# Rule 4: PlatformKit is a library: it never imports DomainLayer or DataLayer (D16)
+infra_imports=$(grep -rnE '^[[:space:]]*(@testable[[:space:]]+)?import (DomainLayer|DataLayer)$' Packages/PlatformKit/Sources --include='*.swift' || true)
+if [ -n "$infra_imports" ]; then
+  echo "PlatformKit is a library and may not import DomainLayer or DataLayer. Found:"
+  echo "$infra_imports"
   failed=1
 fi
 

@@ -1,4 +1,4 @@
-import SystemDesign
+import DesignSystem
 import SwiftUI
 
 struct CameraTopBar: View {
@@ -7,22 +7,22 @@ struct CameraTopBar: View {
 
     var body: some View {
         HStack {
-            Button("Close", systemImage: "chevron.down", action: onClose)
+            Button("components.camera_controls.close", systemImage: "chevron.down", action: onClose)
                 .labelStyle(.iconOnly)
-                .frame(width: SDSize.minTapTarget, height: SDSize.minTapTarget)
+                .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
 
             Spacer()
 
             Text(title)
-                .font(SDFont.subhead)
+                .modifier(DSTextStyle.subhead)
 
             Spacer()
 
-            Button("Flash", systemImage: "bolt.slash") {}
+            Button("components.camera_controls.flash", systemImage: "bolt.slash") {}
                 .labelStyle(.iconOnly)
-                .frame(width: SDSize.minTapTarget, height: SDSize.minTapTarget)
+                .frame(width: DSSpacing.spacing44, height: DSSpacing.spacing44)
         }
-        .foregroundStyle(Color.white)
+        .foregroundStyle(DSColor.onMedia)
         .padding(.horizontal)
     }
 }
@@ -33,38 +33,41 @@ struct CameraBottomBar<Side: View>: View {
     let onThumbnail: () -> Void
     @ViewBuilder let side: Side
 
-    private let modes = ["VIDEO", "PHOTO", "CHECK"]
+    private let modes = [
+        "components.camera.mode.video", "components.camera.mode.photo",
+        "components.camera.mode.check",
+    ]
 
     var body: some View {
-        VStack(spacing: SDSpacing.regular) {
-            Picker("Mode", selection: $mode) {
+        VStack(spacing: DSSpacing.spacing16) {
+            Picker("components.camera_controls.mode", selection: $mode) {
                 ForEach(modes, id: \.self) { item in
-                    Text(item).tag(item)
+                    Text(NSLocalizedString(item, comment: "")).tag(item)
                 }
             }
             .pickerStyle(.segmented)
 
             HStack {
                 Button(action: onThumbnail) {
-                    SitePhotoThumb(size: SDSize.minTapTarget)
+                    SitePhotoThumb(size: DSSpacing.spacing44)
                 }
 
                 Spacer()
 
                 Button(action: onShutter) {
                     Circle()
-                        .fill(Color.white)
-                        .frame(width: 70, height: 70)
+                        .fill(DSColor.onMedia)
+                        .frame(width: DSSpacing.spacing70, height: DSSpacing.spacing70)
                 }
-                .accessibilityLabel("Take photo")
+                .accessibilityLabel("components.camera_controls.take_photo")
 
                 Spacer()
 
                 side
             }
         }
-        .foregroundStyle(Color.white)
-        .padding()
+        .foregroundStyle(DSColor.onMedia)
+        .padding(DSSpacing.spacing16)
     }
 }
 
@@ -78,7 +81,7 @@ struct CameraSideButton: View {
             VStack {
                 Image(systemName: systemImage)
                 Text(title)
-                    .font(SDFont.caption)
+                    .modifier(DSTextStyle.caption)
             }
         }
     }

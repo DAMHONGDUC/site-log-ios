@@ -1,0 +1,2 @@
+struct ___FILEBASENAMEASIDENTIFIER___ {
+}
