@@ -75,7 +75,7 @@ private struct ReportOptionsList: View {
     @State private var included: [String: Bool] = [:]
 
     private let options: [ReportOption] = [
-        ReportOption(titleKey: "reports.options.cover_and_summary", detailKey: nil),
+        ReportOption(titleKey: "reports.options.cover_and_summary", detail: nil),
         ReportOption(
             titleKey: "reports.options.pins_on_each_plan",
             detail: "2 sheets"
@@ -125,7 +125,9 @@ private struct ReportOptionRow: View {
 
     private var isIncluded: Binding<Bool> {
         Binding(
-            get: { included[option.id] ?? (option.id != "reports.options.issues_open_over14_days") },
+            get: {
+                included[option.id] ?? (option.id != "reports.options.issues_open_over14_days")
+            },
             set: { included[option.id] = $0 }
         )
     }
