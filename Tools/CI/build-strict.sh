@@ -15,8 +15,9 @@ xcodegen generate
 xcodebuild clean build -project SiteLog.xcodeproj -scheme SiteLog -destination "$destination" \
   -derivedDataPath "$derived_data" -quiet > "$log" 2>&1
 
-# Warnings (compiler + SwiftLint) in our files only (SiteLog/, Packages/), each listed once
-warnings=$(grep -E '/(SiteLog|Packages)/[^:]+:[0-9]+:[0-9]+: warning: ' "$log" | sort -u || true)
+# Warnings (compiler + SwiftLint) in our files only (SiteLog/, Packages/), each listed once.
+# Paths come absolute or relative to the project, so match both.
+warnings=$(grep -E '(^|/)(SiteLog|Packages)/[^:]+:[0-9]+:[0-9]+: warning: ' "$log" | sort -u || true)
 if [ -n "$warnings" ]; then
   echo "Warnings are not allowed:"
   echo "$warnings"
