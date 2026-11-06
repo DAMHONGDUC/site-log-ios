@@ -77,8 +77,11 @@
                     ProgressView()
                 }
             }
-            .alert(confirmationTitle, isPresented: isConfirmShown, presenting: pendingAction) {
-                action in
+            .alert(
+                confirmationTitle,
+                isPresented: isConfirmShown,
+                presenting: pendingAction
+            ) { action in
                 Button(action.title, role: .destructive) {
                     confirm(action)
                 }

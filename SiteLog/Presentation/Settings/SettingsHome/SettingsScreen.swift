@@ -13,9 +13,9 @@ struct SettingsScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.spacing24) {
-                Button(action: {
+                Button {
                     coordinator.push(SettingsRoute.account)
-                }) {
+                } label: {
                     DSListRow(
                         title: FakeData.inspector,
                         subtitle: "Synced 2 minutes ago · iPhone and iPad",
@@ -46,9 +46,9 @@ struct SettingsScreen: View {
                 VStack(spacing: DSSpacing.spacing0) {
                     link(NSLocalizedString("settings.settings.diagnostics", comment: ""), value: nil, to: DiagnosticsRoute.export)
                     DSDivider()
-                    Button(action: {
+                    Button {
                         isDeleteAlertShown = true
-                    }) {
+                    } label: {
                         Text("settings.settings.delete_account")
                             .modifier(DSTextStyle.body)
                             .foregroundStyle(DSColor.critical)
@@ -81,9 +81,9 @@ struct SettingsScreen: View {
     }
 
     private func link(_ title: String, value: String?, to route: some Hashable) -> some View {
-        Button(action: {
+        Button {
             coordinator.push(route)
-        }) {
+        } label: {
             DSListRow(title: title, value: value, showsChevron: true)
         }
         .buttonStyle(.plain)

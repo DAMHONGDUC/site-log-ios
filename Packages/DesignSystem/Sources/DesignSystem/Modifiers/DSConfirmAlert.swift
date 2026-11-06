@@ -1,35 +1,45 @@
-//
-//  ConfirmAlert.swift
-//  DesignSystem
-//
-//  Created by Duc Dam Dev on 23/10/26.
-//
-
 import SwiftUI
 
+// The four texts of a confirm alert, grouped so the modifier stays short.
+public struct DSConfirmAlertText {
+    public let title: LocalizedStringKey
+    public let description: LocalizedStringKey
+    public let confirmText: LocalizedStringKey
+    public let cancelText: LocalizedStringKey
+
+    public init(
+        title: LocalizedStringKey,
+        description: LocalizedStringKey,
+        confirmText: LocalizedStringKey,
+        cancelText: LocalizedStringKey
+    ) {
+        self.title = title
+        self.description = description
+        self.confirmText = confirmText
+        self.cancelText = cancelText
+    }
+}
+
 private struct DSConfirmAlertView: ViewModifier {
-    let title: LocalizedStringKey
-    let description: LocalizedStringKey
-    let confirmText: LocalizedStringKey
-    let cancelText: LocalizedStringKey
+    let text: DSConfirmAlertText
     let onConfirm: () -> Void
     let onCancel: () -> Void
     let isPresented: Binding<Bool>
 
     func body(content: Content) -> some View {
         content.alert(
-            title,
+            text.title,
             isPresented: isPresented,
             actions: {
                 Button(
-                    confirmText,
+                    text.confirmText,
                     role: .destructive,
                     action: {
                         onConfirm()
                     }
                 )
                 Button(
-                    cancelText,
+                    text.cancelText,
                     role: .cancel,
                     action: {
                         onCancel()
@@ -37,7 +47,7 @@ private struct DSConfirmAlertView: ViewModifier {
                 )
             },
             message: {
-                Text(description)
+                Text(text.description)
             }
         )
     }
@@ -45,20 +55,14 @@ private struct DSConfirmAlertView: ViewModifier {
 
 extension View {
     public func confirmAlert(
-        title: LocalizedStringKey,
-        description: LocalizedStringKey,
-        confirmText: LocalizedStringKey,
-        cancelText: LocalizedStringKey,
+        _ text: DSConfirmAlertText,
+        isPresented: Binding<Bool>,
         onConfirm: @escaping () -> Void,
-        onCancel: @escaping () -> Void = {},
-        isPresented: Binding<Bool>
+        onCancel: @escaping () -> Void = {}
     ) -> some View {
         return self.modifier(
             DSConfirmAlertView(
-                title: title,
-                description: description,
-                confirmText: confirmText,
-                cancelText: cancelText,
+                text: text,
                 onConfirm: onConfirm,
                 onCancel: onCancel,
                 isPresented: isPresented
