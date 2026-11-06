@@ -39,10 +39,10 @@
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
 | 0 | Tooling | 8h | done | Xcode project, XcodeGen, SwiftLint, hot reload, entry point |
-| [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | not start | Layer packages, Factory DI, `AppClock`, test libraries |
-| [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | not start | Fastlane `test` lane, GitHub Actions PR checks |
-| [3](#3-ci-guards) | CI | 4h | not start | CI guards: no `print(`, layer rules, secret scan, strict build |
-| [4](#4-designsystem-tests) | Tests | 3h | not start | Hex test, `DSGallery` |
+| [1](#1-layer-packages-factory-di-appclock) | Architecture | 6h | done | Layer packages, Factory DI, `AppClock`, test libraries |
+| [2](#2-fastlane-test-lane-pr-checks) | CI | 5h | done | Fastlane `test` lane, GitHub Actions PR checks |
+| [3](#3-ci-guards) | CI | 4h | done | CI guards: no `print(`, layer rules, secret scan, strict build |
+| [4](#4-designsystem-tests) | Tests | 3h | done | Hex test, `DSGallery` |
 | [5](#5-backend--in-site-log-be) | Backend | 11h | not start | site-log-be S0: setup, API skeleton, AWS staging |
 | [6](#6-backend-url-per-build-configuration) | Config | 1h | not start | Backend base URL per build configuration, local-network ATS |
 

@@ -37,9 +37,9 @@
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-domain--access-types-and-use-cases) | Domain | 1h | not start | `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases |
-| [2](#2-fake-data--access-data-sources-in-memory) | Fake data | 2h | not start | Real `AccessRepositoryImpl` over in-memory data sources, registrations, dev menu seed / delete |
-| [3](#3-view-models--wire-the-access-screens) | View models | 5h | not start | `RootViewModel` + one view model per screen, wired into the skeleton |
+| [1](#1-domain--access-types-and-use-cases) | Domain | 1h | done | `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases |
+| [2](#2-fake-data--access-data-sources-in-memory) | Fake data | 2h | done | Real `AccessRepositoryImpl` over in-memory data sources, registrations, dev menu seed / delete |
+| [3](#3-view-models--wire-the-access-screens) | View models | 5h | in progress | `RootViewModel` + one view model per screen, wired into the skeleton |
 | [4](#4-local--keychain-and-face-id-inside-the-data-sources) | Local | 8h | not start | Keychain, `UserDefaults`, Face ID inside the data sources |
 | — | Contract · Backend · Sync | — | — | Device only |
 

@@ -70,7 +70,7 @@ flowchart TD
 
 | | |
 |---|---|
-| Total | 10 sprints, 19 features ≈ 520 hours (`F00.0` done, 8h) |
+| Total | 10 sprints, 19 features ≈ 520 hours (`F00.0`–`F00.4`, `F01.1`–`F01.2` done, 29h) |
 | Releases | TestFlight #1 end of S4, TestFlight #2 end of S7, App Store end of S9 |
 | UI skeleton | Done 2026-10-08: every screen at ~30% of Figma on `FakeData`, debug dev menu in Settings |
 | Goal | App Store release with the full scope; no feature is dropped |
@@ -87,17 +87,17 @@ flowchart TD
 **F00 — Foundation · 38h** · [guide](docs/feature-guide/S0-foundation-access/F00-foundation.md)
 
 - [x] **F00.0** - [Tooling] - [8h] - Xcode project, XcodeGen, SwiftLint, hot reload, entry point
-- [ ] **F00.1** - [Architecture] - [6h] - Layer packages (incl. `PlatformKit`), Factory DI, injected `AppClock`, test libraries
-- [ ] **F00.2** - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
-- [ ] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
-- [ ] **F00.4** - [Tests] - [3h] - DesignSystem: hex test, `DSGallery`
+- [x] **F00.1** - [Architecture] - [6h] - Layer packages (incl. `PlatformKit`), Factory DI, injected `AppClock`, test libraries
+- [x] **F00.2** - [CI] - [5h] - Fastlane `test` lane and GitHub Actions PR checks
+- [x] **F00.3** - [CI] - [4h] - CI guards: layer rules, zero warnings, no `print(`, secret scan
+- [x] **F00.4** - [Tests] - [3h] - DesignSystem: hex test, `DSGallery`
 - [ ] **F00.5** - [Backend] - [11h] - [site-log-be S0](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md): setup, API skeleton, AWS staging
 - [ ] **F00.6** - [Config] - [1h] - Backend base URL per build configuration, local-network ATS
 
 **F01 — Access and app lock · 16h** · [guide](docs/feature-guide/S0-foundation-access/F01-access.md)
 
-- [ ] **F01.1** - [Domain] - [1h] - `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases
-- [ ] **F01.2** - [Fake data] - [2h] - Real `AccessRepositoryImpl` over in-memory data sources, registrations, dev menu
+- [x] **F01.1** - [Domain] - [1h] - `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases
+- [x] **F01.2** - [Fake data] - [2h] - Real `AccessRepositoryImpl` over in-memory data sources, registrations, dev menu
 - [ ] **F01.3** - [View models] - [5h] - `RootViewModel`, A1–A3, S4, S5 view models wired into the skeleton
 - [ ] **F01.4** - [Local] - [8h] - Keychain, `UserDefaults`, Face ID inside the data sources
 - [ ] Tests written and green (after the features work)

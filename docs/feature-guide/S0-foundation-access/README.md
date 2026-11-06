@@ -54,15 +54,15 @@ flowchart LR
 | Task | Step | Layer | Hours | Status |
 |---|---|---|---|---|
 | F00.0 | Entry point, XcodeGen, SwiftLint | Tooling | 8 | done |
-| F00.1 | Layer packages, Factory DI, `AppClock` | Architecture | 6 | not start |
-| F00.2 | Fastlane `test` lane, PR checks | CI | 5 | not start |
-| F00.3 | CI guards | CI | 4 | not start |
-| F00.4 | DesignSystem tests | Tests | 3 | not start |
+| F00.1 | Layer packages, Factory DI, `AppClock` | Architecture | 6 | done |
+| F00.2 | Fastlane `test` lane, PR checks | CI | 5 | done |
+| F00.3 | CI guards | CI | 4 | done |
+| F00.4 | DesignSystem tests | Tests | 3 | done |
 | F00.5 | [site-log-be S0](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md): setup, API skeleton, AWS staging | Backend | 11 | not start |
 | F00.6 | Backend base URL per build configuration, local-network ATS | Config | 1 | not start |
-| F01.1 | Access types and use cases | Domain | 1 | not start |
-| F01.2 | Repository + data sources in memory | Fake data | 2 | not start |
-| F01.3 | Access view models (split: root · A1–A3 · S4–S5) | View models | 5 | not start |
+| F01.1 | Access types and use cases | Domain | 1 | done |
+| F01.2 | Repository + data sources in memory | Fake data | 2 | done |
+| F01.3 | Access view models (split: root · A1–A3 · S4–S5) | View models | 5 | in progress |
 | F01.4 | Keychain, `UserDefaults`, Face ID inside the data sources (split: storage · biometrics) | Local | 8 | not start |
 
 </dd></dl>
