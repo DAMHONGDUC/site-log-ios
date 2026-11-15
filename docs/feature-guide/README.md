@@ -3,7 +3,7 @@
 <dl><dd>
 
 - Step-by-step guides, grouped by sprint: one folder per sprint, one guide per feature.
-- 1 developer · 2-week sprints (~60h) · 10 sprints · ~520h. Progress is ticked in [ROADMAP.md](../../ROADMAP.md).
+- 1 developer · 2-week sprints (~60h) · 10 sprints · ~520h. Progress is ticked in [ROADMAP.md](../ROADMAP.md).
 - Specs live in [feature-docs/](../feature-docs/); a guide links the spec section it builds.
 
 </dd></dl>
@@ -117,7 +117,7 @@ flowchart LR
 4. **Task size 2–6h:** a step above 6h is split into tasks when you start it; ~12–20 tasks per sprint.
 5. **Tests after the feature works** end to end, never while a step is half built.
 6. **Visual finish waits for F18:** until then a step changes layout only when a view model needs it.
-7. **Tick the box** in [ROADMAP.md](../../ROADMAP.md) and the guide's status in the commit that finishes the step.
+7. **Tick the box** in [ROADMAP.md](../ROADMAP.md) and the guide's status in the commit that finishes the step.
 
 </dd></dl>
 
