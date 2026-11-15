@@ -262,3 +262,112 @@ flowchart TD
 
 </dd></dl>
 
+## S7 — Checklists, DeviceLink, diagnostics · TestFlight #2 · 49h
+
+<dl><dd>
+
+- Demo: a checklist Fail opens one issue; a reading from the second iPhone (mock meter) shows on the camera; diagnostics and cleanup; TestFlight #2.
+- Overview: [S7](feature-guide/S7-checklists-devices-diagnostics/README.md)
+
+**F12 — Checklists · 14h** · [guide](feature-guide/S7-checklists-devices-diagnostics/F12-checklists.md)
+
+- [ ] **F12.1** - [Contract] - [1h] - Template, item, run, result DTOs
+- [ ] **F12.2** - [Domain] - [1h] - Types; answer use case (Fail → issue)
+- [ ] **F12.3** - [Fake data] - [1h] - Real `ChecklistRepositoryImpl` over in-memory data sources
+- [ ] **F12.4** - [View models] - [4h] - Picker, run, done
+- [ ] **F12.5** - [Local] - [4h] - Built-ins seeded on SwiftData; results
+- [ ] **F12.6** - [Backend] - [2h] - [site-log-be F12](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S7-checklists/F12-checklists.md): `0009_checklists.sql`
+- [ ] **F12.7** - [Sync] - [1h] - Four tables syncable
+
+**F13 — DeviceLink (BLE meters) · 18h** · [guide](feature-guide/S7-checklists-devices-diagnostics/F13-devicelink.md)
+
+- [ ] **F13.1** - [Contract] - [1h] - Mock meter profile: service, characteristic, bytes
+- [ ] **F13.2** - [Domain] - [1h] - `DeviceReading`, `DeviceLinkRepository`
+- [ ] **F13.3** - [Fake data] - [1h] - Real `DeviceLinkRepositoryImpl` over a scripted data source
+- [ ] **F13.4** - [View models] - [3h] - Settings › Devices, camera overlay
+- [ ] **F13.5** - [Local] - [8h] - `DeviceLinkManager`, vendor profiles, data source over them
+- [ ] **F13.6** - [Mock] - [3h] - Debug-only mock meter on the second iPhone
+- [ ] **F13.7** - [Release] - [1h] - Feature flag, off for users until a real meter passes
+
+**F14 — Diagnostics · 17h** · [guide](feature-guide/S7-checklists-devices-diagnostics/F14-diagnostics.md)
+
+- [ ] **F14.1** - [Domain] - [1h] - Integrity result, storage breakdown, device flags
+- [ ] **F14.2** - [Fake data] - [1h] - Real `DiagnosticsRepositoryImpl` over fixed values
+- [ ] **F14.3** - [View models] - [2h] - U3, storage cleanup
+- [ ] **F14.4** - [Local] - [8h] - Real checks, cleanup, bundle, Crashlytics
+- [ ] **F14.5** - [Release] - [5h] - Instruments pass and TestFlight #2
+- [ ] Tests written and green (after the features work)
+
+</dd></dl>
+
+## S8 — Realtime, push, accessibility · 49h
+
+<dl><dd>
+
+- Demo: live “verified” on the Sync tab; push and cold-launch links open their target; VoiceOver walk; budgets met.
+- Overview: [S8](feature-guide/S8-realtime-push-quality/README.md)
+
+**F15 — Realtime progress and verification · 21h** · [guide](feature-guide/S8-realtime-push-quality/F15-realtime.md)
+
+- [ ] **F15.1** - [Contract] - [1h] - WebSocket messages
+- [ ] **F15.2** - [Domain] - [1h] - `UploadEvent`, `RealtimeRepository`
+- [ ] **F15.3** - [Fake data] - [1h] - Real `RealtimeRepositoryImpl` over a timer data source
+- [ ] **F15.4** - [View models] - [2h] - Live state on U1
+- [ ] **F15.5** - [Backend] - [8h] - [site-log-be F15](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F15-realtime.md): `/ws`, verify worker, abandoned uploads
+- [ ] **F15.6** - [Sync] - [8h] - `URLSessionWebSocketTask` inside the data source
+
+**F16 — Push and deep links · 14h** · [guide](feature-guide/S8-realtime-push-quality/F16-push-deeplinks.md)
+
+- [ ] **F16.1** - [Contract] - [1h] - Push payload with `deepLink`; `POST /devices`
+- [ ] **F16.2** - [Domain] - [1h] - Pure `DeepLink` parser
+- [ ] **F16.3** - [Fake data] - [1h] - Real `PushRepositoryImpl` over an in-memory token data source
+- [ ] **F16.4** - [View models] - [2h] - Permission moment, notification row
+- [ ] **F16.5** - [Local] - [4h] - Push capability, token, URL scheme, router
+- [ ] **F16.6** - [Backend] - [3h] - [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, APNs
+- [ ] **F16.7** - [Sync] - [2h] - Token registered through `HTTPClient`
+
+**F17 — Accessibility and performance · 14h** · [guide](feature-guide/S8-realtime-push-quality/F17-accessibility-performance.md)
+
+- [ ] **F17.1** - [Polish] - [8h] - Accessibility pass
+- [ ] **F17.2** - [Release] - [6h] - Budgets, privacy manifest, feedback
+- [ ] Tests written and green (after the features work)
+
+</dd></dl>
+
+## S9 — UI finish and App Store · 54h
+
+<dl><dd>
+
+- Demo: every screen next to its Figma frame, light and dark; production backend; build submitted.
+- Overview: [S9](feature-guide/S9-release/README.md)
+
+**F18 — UI finish and App Store · 54h** · [guide](feature-guide/S9-release/F18-ui-finish.md)
+
+- [ ] **F18.1** - [UI] - [6h] - Components to Figma
+- [ ] **F18.2** - [UI] - [3h] - Figma S1: access screens
+- [ ] **F18.3** - [UI] - [6h] - Figma S2–S3: projects, sessions, rooms
+- [ ] **F18.4** - [UI] - [6h] - Figma S4–S5: camera, capture review, issues
+- [ ] **F18.5** - [UI] - [5h] - Figma S6–S7: markup, stamp, plans
+- [ ] **F18.6** - [UI] - [6h] - Figma S8–S9: checklists, reports
+- [ ] **F18.7** - [UI] - [5h] - Figma S10–S11: sync, diagnostics, settings
+- [ ] **F18.8** - [UI] - [5h] - Dark mode; empty, error, offline states; real imagery
+- [ ] **F18.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
+- [ ] **F18.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing); not counted in the 54h
+- [ ] **F18.11** - [Backend] - [6h] - [site-log-be F18](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S9-release/F18-production.md): production, purge, alarms, backups
+
+</dd></dl>
+
+## Rules
+
+<dl><dd>
+
+1. One sprint at a time, in the order above; a sprint is done when its demo runs on a real device, offline and signed in, and its tests pass.
+2. Before a sprint or a step, read its overview (table, bullets, diagram) and try to build from it alone; open the guide's code only when stuck.
+3. Each step ends with something runnable, never "half a screen".
+4. No fake repositories: fake data lives only in data source `Impl`s; going real changes data source insides, not types. Test doubles only in test targets.
+5. Tests come after a feature works end to end; no tests while a step is still being built.
+6. Visual work to Figma waits for `F18`; until then a step changes layout only when a view model needs it.
+7. A step above 6h is split into 2–6h tasks when you start it.
+8. Tick the box in the same commit that finishes the step.
+
+</dd></dl>
