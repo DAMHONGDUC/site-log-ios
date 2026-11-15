@@ -523,15 +523,16 @@ shared `DeepLink` type; a link during cold launch is not lost.
 
 - Format `sitelog://<route>/<id>` (`session/42`, `issue/7`); wrong scheme, unknown route or missing
   id is ignored and logged. The parser is pure; ids are opaque data.
-- Payload `{ "aps": { "alert": {…} }, "deepLink": "sitelog://issue/42" }` carries a destination only;
+- Delivery: Firebase Cloud Messaging → APNs ([D21](00-overview.md#d21--firebase-cloud-messaging-for-push)); the APNs key is uploaded to the Firebase project, never shipped.
+- Payload `{ "aps": { "alert": {…} }, "deepLink": "sitelog://issue/42", "account": "…" }` carries a destination only;
   state comes from the local store.
-- Authorization is requested at a moment that makes sense, not blindly at first launch; the token is
-  logged truncated, replaceable, and re-sent when it changes.
+- Authorization is requested at a moment that makes sense, not blindly at first launch.
+- Token: APNs token → `Messaging.messaging().apnsToken`; the FCM token from `MessagingDelegate` goes to `POST /devices`, logged truncated, re-sent when it changes.
 - Routing: `URL / push → parser → router (pending) → tab + <Feature>Route pushed on that tab’s NavigationCoordinator` (D19). The router
   **holds** the destination until a view consumes it (cold launch), consuming clears it, and a deleted
   target lands on a safe screen.
-- Setup: Push capability, `aps-environment`, `sitelog` URL scheme and `remote-notification`
-  background mode in `project.yml`. Simulator: `xcrun simctl push booted app.dd.site.log
+- Setup: `FirebaseMessaging` product, Push capability, `aps-environment`, `sitelog` URL scheme,
+  `remote-notification` background mode and `FirebaseAppDelegateProxyEnabled = NO` in `project.yml`. Simulator: `xcrun simctl push booted app.dd.site.log
   payload.json`, `xcrun simctl openurl booted sitelog://session/42`.
 
 **Risks**

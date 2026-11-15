@@ -296,12 +296,14 @@ GET /verify/K7M2QX9HTP      (no token)
 <dl><dd>
 
 ```text
-POST /devices { "token": "<APNs hex>", "environment": "sandbox" | "production" }   → { "registered": true }
-DELETE /devices/:token                                                          → { "removed": true }
+POST /devices { "token": "<FCM registration token>", "platform": "ios" }   → { "registered": true }
+DELETE /devices/:token                                                   → { "removed": true }
 ```
 
-- Register after sign-in and on every token change; remove on sign-out. Debug = `sandbox`, TestFlight and App Store = `production`.
-- The server pushes once when the last upload of a session is verified: `aps.alert`, `deepLink` (`sitelog://session/<id>`), `account` (hash of the uid — ignore if it is not the signed-in user).
+- Push goes through Firebase Cloud Messaging ([D21](00-overview.md#d21--firebase-cloud-messaging-for-push)); the APNs key lives in the Firebase project.
+- `token` = `Messaging.messaging().token` (FCM), never the raw APNs token; no sandbox / production field: FCM reads it from the token.
+- Register after sign-in and on every token refresh (`MessagingDelegate`); remove on sign-out.
+- The server pushes once when the last upload of a session is verified: system alert + data `deepLink` (`sitelog://session/<id>`), `account` (hash of the uid — ignore if it is not the signed-in user).
 
 </dd></dl>
 

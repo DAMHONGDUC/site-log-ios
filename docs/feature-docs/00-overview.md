@@ -25,7 +25,7 @@
 6. [Infrastructure](#6-infrastructure)
 7. [Conventions](#7-conventions)
 8. [Feature specs](#8-feature-specs)
-9. [Decisions](#9-decisions) — D01–D20, why each library, engine and package split
+9. [Decisions](#9-decisions) — D01–D21, why each library, engine and package split
 10. [Beginner glossary](#beginner-glossary) — common SwiftUI and architecture terms
 
 </dd></dl>
@@ -114,7 +114,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Object storage | Amazon S3, multipart + presigned URLs |
 | Realtime | Hand-written `URLSessionWebSocketTask` channel ([D04](#d04--websocket-realtime-channel)) |
 | Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([D05](#d05--kingfisher-for-remote-images)) |
-| Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([D07](#d07--firebase-crashlytics)) |
+| Auth / crash / push | Firebase iOS SDK 12.x: Auth, Crashlytics, Messaging — **no Firestore** ([D07](#d07--firebase-crashlytics), [D21](#d21--firebase-cloud-messaging-for-push)) |
 | Tests | Swift Testing, `FactoryTesting`; swift-snapshot-testing optional, last (F18) ([testing](05-platform.md#testing-strategy)) |
 | Tooling | XcodeGen, SwiftLint, swift-format, Fastlane, GitHub Actions |
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
@@ -133,7 +133,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 |---|---|
 | Firebase Storage, third-party upload libraries | The transfer engine is the core of the product |
 | `UIImagePickerController` / `PhotosPicker` | A hash only means something for a file the app produced |
-| Firebase touching file bytes or data | Identity and crash reporting only |
+| Firebase touching file bytes or data | Identity, crash reporting and push only |
 | Burning annotations into original pixels | Destroys the hash |
 | RFIs, scheduling, budgets, CAD, real-time multi-user editing, cloud AI defect detection | Different product, or indefensible in a dispute |
 
@@ -687,8 +687,9 @@ struct SplashScreen: View {
 | [D18](#d18--dev-menu-data-through-use-cases) | Dev menu data through use cases | Accepted |
 | [D19](#d19--feature-routes-and-a-coordinator-per-stack) | Feature routes and a coordinator per stack | Accepted |
 | [D20](#d20--di-files-split-by-layer) | DI files split by layer | Accepted |
+| [D21](#d21--firebase-cloud-messaging-for-push) | Firebase Cloud Messaging for push | Accepted |
 
-- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D20 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D20 2026-10-14, D21 2026-11-15. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
@@ -958,7 +959,7 @@ struct SplashScreen: View {
     - They return DTOs / records and their own errors, never entities; repositories map.
   - `Packages/PlatformKit`: system services and standalone engines on system APIs; uses `Core` only.
     - `Permissions/`, `Camera/` (AVFoundation), `Bluetooth/` (CoreBluetooth), `Biometrics/` (LocalAuthentication), `Speech/`.
-    - `Rendering/` (PDF, CSV, PDF / image tiles, stamped copies), `Device/` (disk, battery, thermal), `Push/` (APNs), `CrashReporting/` (Crashlytics).
+    - `Rendering/` (PDF, CSV, PDF / image tiles, stamped copies), `Device/` (disk, battery, thermal), `Push/` (APNs registration, FCM token), `CrashReporting/` (Crashlytics).
     - Standalone engines on system APIs: `Networking/` (`HTTPClient`), `UploadKit/` (background `URLSession`), `Realtime/` (WebSocket).
   - Direction: `DataLayer` → `PlatformKit` → `Core`.
 
@@ -1152,6 +1153,27 @@ struct SplashScreen: View {
 - **Consequences:**
   - Adding a feature edits `RepositoriesDI` and `UseCasesDI` (its DevData use cases under `#if DEBUG`).
   - Only `App/DI/` imports `DataLayer` and `PlatformKit` for registration.
+
+</dd></dl>
+
+### D21 — Firebase Cloud Messaging for push
+
+<dl><dd>
+
+- **Context:** iOS and Android both need "uploads verified" pushes; the backend sent APNs itself (HTTP/2, JWT, `.p8` key in SSM) and Android would need a second sender.
+- **Decision:** both apps use Firebase Cloud Messaging; iOS adds the `FirebaseMessaging` product and registers the FCM token.
+  - The APNs key is uploaded to each Firebase project (`sitelog-dev`, `sitelog-prod`); FCM forwards iOS pushes to APNs.
+  - `POST /devices { token, platform }`; no sandbox / production field.
+  - Swizzling off (`FirebaseAppDelegateProxyEnabled = NO`): `AppDelegate` hands the APNs token to `Messaging` itself.
+
+| Rejected | Why not |
+|---|---|
+| Direct APNs from the backend | A second sender next to FCM for Android; `.p8` key on the server |
+| OneSignal or another push vendor | A new vendor next to Firebase, which already handles identity |
+
+- **Consequences:**
+  - The app links one more Firebase product; push still lives in `PlatformKit/Push/`, wrapped by `PushRemoteDataSourceImpl`.
+  - Backend: [site-log-be B09](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/00-overview.md#b09--firebase-cloud-messaging-for-push).
 
 </dd></dl>
 
