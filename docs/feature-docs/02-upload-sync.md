@@ -124,7 +124,7 @@ public protocol UploadStore: Sendable {
 
 <dl><dd>
 
-```
+```text
 pending → planning → uploading ⇄ waitingForURL / waitingForNetwork → completing → synced
                          └────────────► failed (retry budget exhausted only)
 ```
@@ -278,7 +278,7 @@ delta protocol.
 
 <dl><dd>
 
-```
+```text
 POST /sync/pull  { since: <rev>, limit }        → { changes: {table: [rows]}, nextRev, hasMore }
 POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
                                                 → { results: [{ id, status: applied|superseded, serverRow? }], serverRev }
@@ -368,8 +368,9 @@ enum SyncConstants {
 
 - Module: `Packages/PlatformKit/Sources/PlatformKit/Realtime` ([D04](00-overview.md#d04--websocket-realtime-channel))
 
-**Goal:** learn what the server knows first — assembly done, hash checked, mismatch — without
-polling 243 jobs. An **observation** channel on `URLSessionWebSocketTask`; never controls `UploadKit`.
+**Goal:** learn what the server knows first (assembly done, hash checked, mismatch) without polling 243 jobs.
+
+- An **observation** channel on `URLSessionWebSocketTask`; never controls `UploadKit`.
 
 **Boundary**
 

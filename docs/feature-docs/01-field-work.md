@@ -57,7 +57,7 @@ one-handed.
 | Bulk generation from a template; cloning a tree from another project | Excel/CAD import |
 | Closing and reopening sessions | |
 
-```
+```text
 Project list → [+] New project → Project detail: [Sessions] [Locations] [Plans]
   → [+] Start session → Survey screen: locations + capture/issue badges
       → Select location → Capture (02) / Checklist (13) / Plan (11)
@@ -132,7 +132,7 @@ before it reaches the DB.
 
 <dl><dd>
 
-```
+```text
 AVCaptureSession
 ├── inputs:  video (back/front), audio (mic)
 ├── outputs: AVCapturePhotoOutput → photos
@@ -183,8 +183,8 @@ func sha256(ofFileAt url: URL) throws -> String {
 }
 ```
 
-`HashConstants.streamingChunkBytes` is declared in the same feature module. The function propagates
-read and close errors to its caller; the repository boundary logs the failure.
+- `HashConstants.streamingChunkBytes` lives in the same feature module.
+- Read and close errors go to the caller; the repository logs the failure.
 
 - Stream in chunks: `Data(contentsOf:)` on a 1.5 GB video triggers jetsam.
 - Files: `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup.
@@ -265,7 +265,7 @@ shoot verification, render the pair in the PDF.
 
 <dl><dd>
 
-```
+```text
 Log:     Capture → shoot → [Attach issue] → sheet (description, severity=Major,
          assignee, due, 🎤 dictate · 🔊 voice note · 📍 pin) → Save → back to camera
 Verify:  New session → location → banner "3 open issues from 12 Aug" → issue

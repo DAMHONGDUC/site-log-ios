@@ -328,7 +328,7 @@ to diagnose; cleanup can never delete anything not yet uploaded.
 
 <dl><dd>
 
-```
+```text
 Session 05 Sep — Ánh Dương Tower
 ████████████░░░░  187/243 files · 1.8 GB / 2.4 GB · ~6 min remaining
 ⚠ 4 waiting: Waiting for WiFi (3) · Waiting for a new upload link (1)
@@ -488,9 +488,11 @@ enum DiagnosticsConstants {
 | Pull request or push to `main` | Ubuntu | Import and `print` guards, Gitleaks, strict SwiftLint |
 | After guards and lint pass | Self-hosted macOS | `Tools/CI/build-strict.sh`, then `bundle exec fastlane test` |
 
-The `test` lane generates the Xcode project, tests `DesignSystem` and `Core`, then runs app unit tests
-in `SiteLogTests`. It collects coverage, but no coverage thresholds are enforced. UI tests are not in
-the lane. There is no nightly or TestFlight workflow yet.
+| `test` lane | Detail |
+|---|---|
+| Steps | Generate the Xcode project → test `DesignSystem` and `Core` → app unit tests in `SiteLogTests` |
+| Coverage | Collected; no threshold |
+| Not covered | UI tests; no nightly or TestFlight workflow yet |
 
 </dd></dl>
 
@@ -561,8 +563,10 @@ shared `DeepLink` type; a link during cold launch is not lost.
 
 - Tooling only; signposts live next to the code they measure.
 
-**Goal:** know the real cost of the upload queue, the socket and capture before testers do; every
-performance claim has a measurement behind it. Always a real device, Release build.
+**Goal:** know the real cost of the upload queue, the socket and capture before testers do.
+
+- Every performance claim has a measurement behind it.
+- Always a real device, Release build.
 
 | Question | Template |
 |---|---|

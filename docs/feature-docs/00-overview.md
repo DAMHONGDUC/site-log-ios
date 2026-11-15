@@ -4,7 +4,7 @@
 
 - Product, market, data model, architecture, data flows, infrastructure, conventions.
 - Feature specs live in five files ([§8](#8-feature-specs)); spec numbers `01`–`19` are stable and
-  used by [ROADMAP.md](../../ROADMAP.md), which also owns the build order.
+  used by [ROADMAP.md](../ROADMAP.md), which also owns the build order.
 - This is the approved target design, not a claim that every feature or dependency is implemented.
   `project.yml` and source files show the current implementation; feature guides show the build steps.
 - **Suggested reading order:** read this overview first, then the feature spec you need, then its
@@ -63,7 +63,7 @@
 | Deliverable | Signed PDF inspection report |
 | Users | Site supervisors, subcontractors, apartment handover teams |
 
-```
+```text
 Create project → start session → walk floors/rooms, capture + log issues
 → reach WiFi, background upload → export signed PDF report
 ```
@@ -178,7 +178,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 
 <dl><dd>
 
-```
+```text
 Project
  ├ PlanSheet                                → 11
  ├ ChecklistTemplate                        → 13
@@ -257,7 +257,7 @@ flowchart LR
     P --> D["DomainLayer package<br/>entities, use cases, repository protocols"]
     Data --> D
     Data --> I["PlatformKit package (system services)<br/>Permissions · Camera · Bluetooth · Biometrics · Speech<br/>Rendering · Device · Push · CrashReporting<br/>Networking · UploadKit · Realtime"]
-    P --> C["Core package<br/>logger, clock"]
+    P --> C["Core package<br/>logger, clock, crypto"]
     Data --> C
     I --> C
 ```
@@ -266,7 +266,7 @@ flowchart LR
 
 <dl><dd>
 
-```
+```text
 site-log-ios/
 ├── SiteLog/                          # app target: composition root + Presentation
 │   ├── App/                          # composition root: may use everything
@@ -288,14 +288,14 @@ site-log-ios/
 │   ├── DomainLayer/                  # Entities/<Feature>/ Repositories/ (all boundary protocols) UseCases/<Feature>/ — Foundation only
 │   ├── DataLayer/                    # Repositories/ DataSources/ Models/ Mappers/ — uses DomainLayer + PlatformKit + Core
 │   │                                 #   Models/Local/: SwiftData @Model + Schema/ · Models/Remote/: DTOs
-│   │                                 #   DataSources/Local/:  Persistence/ (SwiftData) Keychain/ FileStorage/ — protocol + Impl only
+│   │                                 #   DataSources/Local/:  one folder per area — Access/ Biometrics/ Persistence/ (SwiftData) Keychain/ FileStorage/ … — protocol + Impl only
 │   │                                 #   DataSources/Remote/: <Noun>RemoteDataSource + Impl over PlatformKit engines; Auth/ (Firebase)
-│   ├── PlatformKit/               # system services, like an outside library — uses Core only
+│   ├── PlatformKit/                  # system services, like an outside library — uses Core only
 │   │                                 #   Permissions/ Camera/ Bluetooth/ Biometrics/ Speech/
 │   │                                 #   Rendering/ (PDF, CSV, PDF / image tiles, stamps) Device/ Push/ CrashReporting/
 │   │                                 #   Networking/ (HTTP client) UploadKit/ Realtime/ (standalone engines)
 │   ├── Core/                         # Logger/AppLogger, Clock/AppClock + SystemClock, Crypto/ (PasscodeHasher, FileHasher); no business logic
-│   └── DesignSystem/                 # Tokens/ Components/ (UI only)
+│   └── DesignSystem/                 # Tokens/ Components/ Modifiers/ (UI only)
 ├── SiteLogTests/                     # app tests: Presentation/ (package tests live in each package)
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
@@ -436,13 +436,14 @@ struct SplashScreen: View {
 }
 ```
 
-This is the current splash screen pattern: the View receives its ViewModel through `init`, renders its state, and starts async work with `.task`. Real feature screens receive use cases through their ViewModel initializer; `Container.shared` is resolved at the composition boundary ([D14](#d14--view-models-take-use-cases-through-init)).
+- Splash pattern: the View gets its ViewModel through `init`, renders its state, starts async work in `.task`.
+- Feature screens pass use cases to the ViewModel `init`; `Container.shared` resolves them at the composition boundary ([D14](#d14--view-models-take-use-cases-through-init)).
 
 | Rule | Detail |
 |---|---|
 | Scope | PlatformKit services and stateful services `.singleton`; use cases unscoped |
 | Resolution | View models take use cases through `init` and never import `FactoryKit`; the view resolves them with `Container.shared` ([D14](#d14--view-models-take-use-cases-through-init)) |
-| Previews | The registered repositories; Debug `seed()` gives them sample data |
+| Previews | The registered repositories; Debug `seedSampleData()` gives them sample data |
 | Tests | View models: built directly on test doubles, no container; registrations: `@Suite(.container)` from `FactoryTesting` |
 | Injected seams | Repositories, `AppClock`, `UploadStore`, `UploadTransport`, `CaptureSessionControlling`, `RandomNumberGenerator` |
 

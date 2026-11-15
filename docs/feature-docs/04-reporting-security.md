@@ -86,7 +86,7 @@ struct ReportBranding: Codable, Sendable {
 - `UIGraphicsPDFRenderer`: no third-party library, no WebView printing (HTML→PDF with 200 images
   gives blank pages).
 
-```
+```text
 Session → SessionSnapshot (one fetch) → LayOutReportUseCase (Domain, pure) → [ReportPage]
         → ReportRepositoryImpl maps to [PDFPageLayout]
         → PDFPageRenderer (PlatformKit, UIKit, one autoreleasepool per page) → temp file → atomic move → share
@@ -210,8 +210,7 @@ never leaked into logs or analytics.
 | Unlock with Face ID | On / Off; hidden when the device has no biometrics | On once a passcode is set |
 | Lock after | Immediately · 1 minute · 5 minutes · 15 minutes · 1 hour | 5 minutes |
 
-These are the intended product defaults. The current in-memory access repository uses temporary
-sample settings; update those values when implementing the persistent access data source.
+- Product defaults; `AccessLocalDataSourceImpl` keeps in-memory sample values until the persistent step replaces them.
 
 | Rule | Detail |
 |---|---|
