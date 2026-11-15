@@ -149,7 +149,7 @@
 
 <dl><dd>
 
-- Design runs ahead of the features in [ROADMAP](../../ROADMAP.md).
+- Design runs ahead of the features in [ROADMAP](../ROADMAP.md).
 - UI skeleton (~30% of Figma, every screen on fake data) — done 2026-10-08.
 - Each feature (F01–F15) wires its skeleton screens to view models; the finish to Figma, dark mode pass and
   empty/error/offline states are F16, last.
