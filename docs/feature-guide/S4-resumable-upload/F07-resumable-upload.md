@@ -29,7 +29,7 @@
 
 <dl><dd>
 
-- **Goal:** files over 5 MB upload in 8 MiB parts and resume part by part after a kill, an expired URL or airplane mode; the first TestFlight build ships.
+- **Goal:** files from 5 MiB upload in 8 MiB parts and resume part by part after a kill, an expired URL or airplane mode; the first TestFlight build ships.
 - **Demo — offline:** 200 files queued in airplane mode, retry budget untouched; Wi-Fi only on cellular sends zero bytes.
 - **Demo — signed in:** 200 files / 2 GB finish with a kill in the middle; TestFlight installs on a real device.
 - **Spec:** [04.2](../../feature-docs/02-upload-sync.md#042-protocol), [04.5](../../feature-docs/02-upload-sync.md#045-policy), [03-backend §7](../../feature-docs/03-backend.md#7-uploads), [17 CI/CD](../../feature-docs/05-platform.md#17-cicd-and-testflight)
