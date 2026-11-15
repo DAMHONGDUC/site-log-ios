@@ -2260,15 +2260,25 @@ flowchart LR
 - Use SwiftUI's string localization support (`Text("access.sign_in.title")`) so Xcode can extract the key into the String Catalog. Keep the displayed wording in the catalog value.
 - Add new keys to the catalog before using them. Keep keys stable when the displayed wording changes.
 
-The app target already enables string extraction and generated catalog symbols in `project.yml`. Keep the catalog in this dedicated folder so translations can be added without searching through feature code.
+- `project.yml` already turns on string extraction and generated catalog symbols.
+- Keep the catalog in this folder: translators never search feature code.
 
 ### Full-form alert
 
 <dl><dd>
 
-An alert is a small system dialog. `isPresented` is a `Binding<Bool>`: SwiftUI reads it to decide whether to show the alert and sets it to `false` when the alert closes. `actions` returns the buttons; `message` returns the supporting text. A button's `role` tells iOS what kind of action it is, and `action` says what to run when tapped.
+| Part | Meaning |
+|---|---|
+| Alert | Small system dialog |
+| `isPresented` | `Binding<Bool>`: SwiftUI reads it to show the alert, sets it to `false` on close |
+| `actions` | The buttons |
+| `message` | Supporting text |
+| Button `role` | Kind of action (`.destructive`, `.cancel`) |
+| Button `action` | What runs on tap |
 
-Write every argument on its own line. Keep `actions:` and `message:` visible instead of using trailing closures. The title is positional (unlabeled) because that is how the SwiftUI API is defined.
+- One argument per line.
+- Keep `actions:` and `message:` labels; no trailing closures.
+- The title has no label: SwiftUI's API defines it that way.
 
 ```swift
 .alert(
