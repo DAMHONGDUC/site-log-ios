@@ -49,7 +49,6 @@ fileGroups:
   - docs
   - fastlane
   - README.md
-  - ROADMAP.md
   - CLAUDE.md
   - .gitignore
   - .gitattributes
