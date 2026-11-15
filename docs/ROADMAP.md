@@ -318,12 +318,12 @@ flowchart TD
 
 **F16 — Push and deep links · 14h** · [guide](feature-guide/S8-realtime-push-quality/F16-push-deeplinks.md)
 
-- [ ] **F16.1** - [Contract] - [1h] - Push payload with `deepLink`; `POST /devices`
+- [ ] **F16.1** - [Contract] - [1h] - Push payload with `deepLink`; `POST /devices` with the FCM token
 - [ ] **F16.2** - [Domain] - [1h] - Pure `DeepLink` parser
 - [ ] **F16.3** - [Fake data] - [1h] - Real `PushRepositoryImpl` over an in-memory token data source
 - [ ] **F16.4** - [View models] - [2h] - Permission moment, notification row
-- [ ] **F16.5** - [Local] - [4h] - Push capability, token, URL scheme, router
-- [ ] **F16.6** - [Backend] - [3h] - [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, APNs
+- [ ] **F16.5** - [Local] - [4h] - Push capability, `FirebaseMessaging` token, URL scheme, router
+- [ ] **F16.6** - [Backend] - [3h] - [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, FCM sender
 - [ ] **F16.7** - [Sync] - [2h] - Token registered through `HTTPClient`
 
 **F17 — Accessibility and performance · 14h** · [guide](feature-guide/S8-realtime-push-quality/F17-accessibility-performance.md)
