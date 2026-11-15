@@ -502,7 +502,7 @@ flowchart LR
 | Backend piece | The app | Check from the app |
 |---|---|---|
 | `https://api.<domain>`, Firebase `sitelog-prod` | Release configuration uses both | The Release build signs in and syncs against prod |
-| APNs `production` | Release registers `production` tokens | A TestFlight build receives a push |
+| APNs key in the `sitelog-prod` Firebase project | Release registers its FCM token with prod | A TestFlight build receives a push |
 | `DELETE /account` on prod | Account deletion in-app (App Store rule) | Works on the Release build |
 
 ```mermaid
