@@ -34,7 +34,7 @@
 ```mermaid
 flowchart LR
     Worker["verify worker"] -->|"verified / mismatch"| WS["WebSocket /ws"] --> Tab["Sync tab"]
-    Worker --> APNs["APNs push"] --> Router["DeepLinkRouter"] --> Screen["target screen"]
+    Worker --> FCM["FCM → APNs push"] --> Router["DeepLinkRouter"] --> Screen["target screen"]
     Safari["sitelog:// link"] --> Router
     VO["VoiceOver + Instruments"] --> All["every screen"]
 ```
@@ -57,8 +57,8 @@ flowchart LR
 | F16.2 | Deep link parser | Domain | 1 | not start |
 | F16.3 | Repository + token data source in memory | Fake data | 1 | not start |
 | F16.4 | Permission moment, notification settings | View models | 2 | not start |
-| F16.5 | Push registration, URL scheme, router | Local | 4 | not start |
-| F16.6 | [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, APNs | Backend | 3 | not start |
+| F16.5 | Push registration, FCM token, URL scheme, router | Local | 4 | not start |
+| F16.6 | [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, FCM sender | Backend | 3 | not start |
 | F16.7 | Token sent through `HTTPClient` | Sync | 2 | not start |
 | F17.1 | Accessibility pass (split: access + projects · capture + issues · reports + settings) | Polish | 8 | not start |
 | F17.2 | Instruments budgets, privacy manifest, feedback | Release | 6 | not start |

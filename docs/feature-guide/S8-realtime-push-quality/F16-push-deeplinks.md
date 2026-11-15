@@ -31,7 +31,8 @@
 
 - **Goal:** a push carries only a destination; `sitelog://<route>/<id>` is parsed once and routed, even after a cold launch; the app works fully with push denied.
 - **Demo — offline:** `xcrun simctl openurl booted sitelog://session/42` opens the session; push denied changes nothing else.
-- **Demo — signed in:** a verified upload sends a push; tapping it opens the session.
+- **Demo — signed in:** a verified upload sends a push through Firebase Cloud Messaging; tapping it opens the session.
+- **Why FCM:** [D21](../../feature-docs/00-overview.md#d21--firebase-cloud-messaging-for-push).
 - **Spec:** [18 Push and deep links](../../feature-docs/05-platform.md#18-push-notifications-and-deep-links)
 - **Starts from:** F15 (worker events) and the skeleton `Notifications/`, `DeepLinks/`.
 - **Steps:** [How every feature runs](../README.md#how-every-feature-runs).
@@ -39,20 +40,20 @@
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-contract--push-payload-and-device-token) | Contract | 1h | not start | Payload with `deepLink`; `POST /devices` |
+| [1](#1-contract--push-payload-and-device-token) | Contract | 1h | not start | Payload with `deepLink`; `POST /devices` with the FCM token |
 | [2](#2-domain--deep-link-parser) | Domain | 1h | not start | Pure `DeepLink` parser |
 | [3](#3-fake-data--token-data-source-in-memory) | Fake data | 1h | not start | Real `PushRepositoryImpl` over an in-memory token data source |
 | [4](#4-view-models--permission-and-settings) | View models | 2h | not start | Permission moment, notification row |
-| [5](#5-local--push-registration-and-routing) | Local | 4h | not start | Push capability, token, URL scheme, router |
-| [6](#6-backend--in-site-log-be) | Backend | 3h | not start | site-log-be F16: `POST /devices`, APNs send |
+| [5](#5-local--push-registration-and-routing) | Local | 4h | not start | Push capability, `FirebaseMessaging` token, URL scheme, router |
+| [6](#6-backend--in-site-log-be) | Backend | 3h | not start | site-log-be F16: `POST /devices`, FCM send |
 | [7](#7-sync--token-to-the-backend) | Sync | 2h | not start | Token registered through `HTTPClient` |
 
 ```mermaid
 flowchart LR
-    APNs["APNs"] --> Delegate["AppDelegate"] --> Parse["DeepLink parser"]
+    FCM["FCM → APNs"] --> Delegate["AppDelegate"] --> Parse["DeepLink parser"]
     Safari["sitelog:// link"] --> Parse
     Parse --> Router["DeepLinkRouter<br/>holds until consumed"] --> Screen["target screen"]
-    Token["device token"] --> Repo["PushRepositoryImpl"] --> DS["PushRemoteDataSourceImpl"] --> BE["POST /devices"]
+    Token["FCM token<br/>MessagingDelegate"] --> Repo["PushRepositoryImpl"] --> DS["PushRemoteDataSourceImpl"] --> BE["POST /devices"]
 ```
 
 </dd></dl>
@@ -69,9 +70,9 @@ Packages/
 │   ├── Models/Remote/DeviceTokenDTO.swift                                # 1
 │   ├── Repositories/PushRepositoryImpl.swift                             # 3: real from the start
 │   └── DataSources/Remote/Push/PushRemoteDataSource(+Impl)               # 3: in memory · 7: HTTPClient
-└── PlatformKit/Sources/PlatformKit/Push/                                 # 5: permission, registration
+└── PlatformKit/Sources/PlatformKit/Push/                                 # 5: permission, APNs registration, FCM token
 SiteLog/
-├── App/AppDelegate.swift                                                 # 5: token
+├── App/AppDelegate.swift                                                 # 5: APNs token → Messaging
 └── Presentation/Notifications/, DeepLinks/DeepLinkRouter.swift           # 4–5
 ```
 
@@ -89,8 +90,8 @@ SiteLog/
 
 | Shape | Fields |
 |---|---|
-| Push payload | `aps` alert, `deepLink` (`sitelog://session/<id>`), hashed account id — no names, no coordinates |
-| `POST /devices` | `token`, `environment` (`sandbox` / `production`) |
+| Push payload | `aps` alert, `deepLink` (`sitelog://session/<id>`), `account` (hashed uid) — no names, no coordinates |
+| `POST /devices` | `token` (FCM registration token), `platform: "ios"` |
 
 ```mermaid
 flowchart LR
@@ -195,9 +196,9 @@ flowchart LR
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-edit">Edit</b> | `project.yml` | Push capability, `aps-environment`, `remote-notification` mode, `sitelog` URL scheme |
-| <b class="tag-new">New</b> | `PlatformKit/Push/` | Permission and registration wrapper |
-| <b class="tag-edit">Edit</b> | `App/AppDelegate.swift` | Token → `PushRepository`; re-sent on change |
+| <b class="tag-edit">Edit</b> | `project.yml` | `FirebaseMessaging` product, Push capability, `aps-environment`, `remote-notification` mode, `sitelog` URL scheme, `FirebaseAppDelegateProxyEnabled = NO` |
+| <b class="tag-new">New</b> | `PlatformKit/Push/` | Permission, APNs registration, FCM token stream (`MessagingDelegate`) |
+| <b class="tag-edit">Edit</b> | `App/AppDelegate.swift` | APNs token → `Messaging.messaging().apnsToken`; FCM token → `PushRepository`, re-sent on refresh |
 | <b class="tag-new">New</b> | `Presentation/DeepLinks/DeepLinkRouter.swift` | Holds the destination until consumed; a deleted target lands on a safe screen |
 
 ```mermaid
@@ -227,27 +228,28 @@ sequenceDiagram
 
 <dl><dd>
 
-- **Goal:** the app registers its APNs token; the server pushes once when a session is fully verified.
+- **Goal:** the app registers its FCM token; the server pushes through FCM once when a session is fully verified.
 - **Built in:** [F16 Push](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md) — same sprint, separate repository; nothing to write in this repo.
 - **API this feature uses:** [§10 Push registration](../../feature-docs/03-backend.md#10-push-registration).
 - **Run it locally:** [local testing with iOS](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/local-testing-with-ios.md).
 
 | Backend piece | The app | Check from the app |
 |---|---|---|
-| `POST /devices`, `DELETE /devices/:token` | Register after sign-in and on token change (`sandbox` in Debug); remove on sign-out | Row exists for the token |
-| Push: `aps.alert`, `deepLink`, `account` | Route `sitelog://session/<id>`; ignore a foreign `account` | Tap opens the session, even from a cold launch |
+| `POST /devices`, `DELETE /devices/:token` | Register the FCM token after sign-in and on refresh; remove on sign-out | Row exists for the token |
+| APNs key in the `sitelog-dev` Firebase project | Nothing in the app; FCM uses it to reach APNs | A push arrives on the device |
+| Push: alert, `deepLink`, `account` | Route `sitelog://session/<id>`; ignore a foreign `account` | Tap opens the session, even from a cold launch |
 
 ```mermaid
 sequenceDiagram
     participant App
     participant API as site-log-be
-    participant APNs
-    App->>API: POST /devices {token}
-    API->>APNs: push (session verified)
-    APNs-->>App: notification → deep link
+    participant FCM as FCM → APNs
+    App->>API: POST /devices {token: "fX3k…:APA91b…", platform: "ios"}
+    API->>FCM: messaging.send (session 42 verified)
+    FCM-->>App: notification → sitelog://session/42
 ```
 
-- **Check:** a real iPhone gets "Uploads verified" and opens the session.
+- **Check:** an iPhone (or an Apple silicon simulator) gets "Uploads verified" and opens the session.
 
 </dd></dl>
 
