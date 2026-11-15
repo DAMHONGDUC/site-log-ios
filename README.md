@@ -39,15 +39,16 @@
 
 | Doc | Contents |
 |---|---|
-| [ROADMAP.md](ROADMAP.md) | Sprints S0–S9, features F00–F18, steps with hour estimates and ticks |
+| [ROADMAP.md](docs/ROADMAP.md) | Sprints S0–S9, features F00–F18, steps with hour estimates and ticks |
 | [feature-guide/](docs/feature-guide/) | One folder per sprint, one guide per feature: contract → domain → fake data → view models → local → backend → sync → tests |
-| [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D08 |
+| [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D20 |
 | [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
 | [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
 | [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend API: what the app calls; the server lives in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](docs/feature-docs/04-reporting-security.md) | 05 PDF and CSV export · 07 Security and audit log |
 | [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
 | [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; [mockups](docs/design/mockups/index.html) |
+| [swiftui-rules.md](docs/swiftui-rules.md) | SwiftUI rules: small views, state, design tokens, strings |
 
 - Docs rule: content sits indented under its title. After editing any `.md`, run `python3 Tools/Docs/indent-md.py` (wraps sections in `<dl><dd>`; safe to re-run).
 
@@ -57,10 +58,10 @@
 
 <dl><dd>
 
-- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `Core`, `DesignSystem` are local Swift packages; the app target holds `App/` and `Presentation/`.
-- Every folder below already exists (empty ones hold a `.gitkeep`); files arrive feature by feature.
+- Architecture: Clean Architecture + MVVM; `DomainLayer`, `DataLayer`, `PlatformKit`, `Core`, `DesignSystem` are local Swift packages; the app target holds `App/` and `Presentation/`.
+- Target layout: app folders already exist (empty ones hold a `.gitkeep`); package folders arrive with their first file.
 
-```
+```text
 site-log-ios/
 ├── SiteLog/                              # app target: composition root + Presentation
 │   ├── App/                              # composition root: may use every layer
@@ -73,21 +74,24 @@ site-log-ios/
 │   │   │                                 # AuditVerify, OrphanSweep
 │   │   ├── Config/                       # *.xcconfig, entitlements, GoogleService-Info.plist (CI)
 │   │   ├── Fakes/                        # UI skeleton sample data; shrinks as each feature lands
-│   │   └── Resources/                    # Assets.xcassets, Localizable.xcstrings, seeded templates
+│   │   └── Resources/                    # Assets.xcassets, seeded templates
 │   └── Presentation/                     # MVVM: View + ViewModel; 2+ screens → 1 folder / screen
 │       ├── Root/  MainTab/  Components/  Navigation/ (coordinator per stack, D19)
+│       ├── Resources/Strings/            # Localizable.xcstrings
+│       ├── DevMenu/                      # Debug only: reset / seed sample data
 │       ├── Access/                       # Splash/ SignIn/ FaceIDLock/ PasscodeUnlock/ PrivacyOverlay/
-│       ├── Projects/                     # ProjectList/ NewProject/ ProjectDetail/ StartSession/
+│       ├── Projects/                     # ProjectList/ NewProject/ ProjectDetail/ Room/ StartSession/
 │       │                                 # Survey/ BulkLocations/ CloneTree/ EndSession/
 │       ├── Capture/                      # Camera/ CaptureReview/
-│       ├── Issues/                       # IssueSheet/ IssueList/ VerificationCamera/ OutcomePicker/
+│       ├── Issues/                       # IssueSheet/ IssueList/ IssueDetail/ VerificationCamera/ OutcomePicker/
 │       ├── Annotation/                   # MarkupEditor/ StampPreview/
 │       ├── Plans/                        # PlanList/ PlanViewer/ PinPreview/ PlanImport/
-│       ├── Checklists/                   # TemplatePicker/ ChecklistRun/
+│       ├── Checklists/                   # TemplatePicker/ ChecklistRun/ ChecklistDone/
 │       ├── Reports/                      # ReportBuilder/ Branding/ SignaturePad/ PDFPreview/
-│       ├── Uploads/                      # UploadStatus/
+│       ├── Uploads/                      # UploadStatus/ UploadFiles/
 │       ├── Diagnostics/                  # DiagnosticExport/
-│       ├── Settings/                     # Account/ Devices/ AppLock/ SetPasscode/ StorageCleanup/
+│       ├── Settings/                     # SettingsHome/ Account/ Devices/ AppLock/ SetPasscode/
+│       │                                 # StorageCleanup/
 │       ├── Notifications/
 │       └── DeepLinks/
 ├── Packages/                             # local Swift packages: Sources/<Name>/ + Tests/<Name>Tests/
@@ -95,19 +99,20 @@ site-log-ios/
 │   │   └── Sources/DomainLayer/
 │   │       ├── Entities/<Feature>/       # Project, Session, Location, Capture, Issue, Annotation,
 │   │       │                             # PlanSheet, PlanPin, ChecklistTemplate/Run/Result
-│   │       ├── UseCases/<Feature>/       # <Verb><Noun>UseCase, one per file
+│   │       ├── UseCases/<Feature>/       # <Verb><Noun>UseCase, one per file; DevData/ (Debug reset / seed)
 │   │       └── Repositories/             # protocols
 │   ├── DataLayer/                        # implements Domain; uses Domain + PlatformKit + Core
 │   │   └── Sources/DataLayer/
 │   │       ├── Repositories/             # <Noun>RepositoryImpl, SyncEngineImpl
 │   │       ├── DataSources/              # protocol + impl each; return models / DTOs, never entities
-│   │       │   ├── Local/                # Persistence/ (SwiftData) Keychain/ FileStorage/
-│   │       │   └── Remote/               # <Noun>RemoteDataSource + Impl over Infra engines; Auth/ (Firebase)
+│   │       │   ├── Local/                # one folder per area: Access/ Biometrics/ Persistence/ (SwiftData)
+│   │       │   │                         # Keychain/ FileStorage/ Camera/ Speech/ …
+│   │       │   └── Remote/               # <Noun>RemoteDataSource + Impl over PlatformKit engines; Auth/ (Firebase)
 │   │       ├── Models/
 │   │       │   ├── Local/                # SwiftData @Model: <Noun>Model; Schema/ (SchemaV1…n, migration plan)
 │   │       │   └── Remote/               # backend JSON: <Noun>DTO
 │   │       └── Mappers/
-│   ├── PlatformKit/                   # system services, like an outside library; uses Core only
+│   ├── PlatformKit/                      # system services, like an outside library; uses Core only
 │   │   └── Sources/PlatformKit/
 │   │       ├── Permissions/              # camera, photos, Bluetooth, mic, notifications
 │   │       ├── Camera/                   # AVFoundation capture session
@@ -125,7 +130,8 @@ site-log-ios/
 │   ├── DesignSystem/                     # UI only: never imports Domain or app code
 │   │   ├── Sources/DesignSystem/
 │   │   │   ├── Tokens/                   # DSColor, DSTextStyle, DSSpacing
-│   │   │   └── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
+│   │   │   ├── Components/               # DSButtonStyle, DSListRow, DSChip, DSEmptyState…
+│   │   │   └── Modifiers/
 │   │   └── Tests/DesignSystemTests/
 │   └── script-tools/                     # git submodule: shared shell scripts + make targets (not a Swift package)
 ├── SiteLogTests/                         # app tests; package tests live in each package
@@ -137,8 +143,10 @@ site-log-ios/
 ├── docs/
 │   ├── feature-docs/                     # project specs
 │   ├── feature-guide/                    # S0–S9 sprint folders, one guide per feature (F00–F18)
-│   └── design/                           # design plan, mockups, app icon
-├── ROADMAP.md
+│   ├── design/                           # design plan, mockups, app icon
+│   ├── images/                           # diagrams used by the docs
+│   ├── swiftui-rules.md
+│   └── ROADMAP.md                        # sprints, features, ticks
 └── project.yml                           # XcodeGen: source of truth for SiteLog.xcodeproj
 ```
 
