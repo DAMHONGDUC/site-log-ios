@@ -524,8 +524,8 @@ shared `DeepLink` type; a link during cold launch is not lost.
 - Format `sitelog://<route>/<id>` (`session/42`, `issue/7`); wrong scheme, unknown route or missing
   id is ignored and logged. The parser is pure; ids are opaque data.
 - Delivery: Firebase Cloud Messaging → APNs ([D21](00-overview.md#d21--firebase-cloud-messaging-for-push)); the APNs key is uploaded to the Firebase project, never shipped.
-- Payload `{ "aps": { "alert": {…} }, "deepLink": "sitelog://issue/42", "account": "…" }` carries a destination only;
-  state comes from the local store.
+- Payload (FCM, `platform: "ios"`): `notification` (title, body) + data `deepLink` (`sitelog://session/<id>`), `account` (uid hash — ignore it when it is not the signed-in user); a destination only,
+  state comes from the local store. The server sends only `session` links today; `issue` links come from URLs.
 - Authorization is requested at a moment that makes sense, not blindly at first launch.
 - Token: APNs token → `Messaging.messaging().apnsToken`; the FCM token from `MessagingDelegate` goes to `POST /devices`, logged truncated, re-sent when it changes.
 - Routing: `URL / push → parser → router (pending) → tab + <Feature>Route pushed on that tab’s NavigationCoordinator` (D19). The router
