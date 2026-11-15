@@ -41,7 +41,7 @@
 |---|---|
 | [ROADMAP.md](docs/ROADMAP.md) | Sprints S0–S9, features F00–F18, steps with hour estimates and ticks |
 | [feature-guide/](docs/feature-guide/) | One folder per sprint, one guide per feature: contract → domain → fake data → view models → local → backend → sync → tests |
-| [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D20 |
+| [00-overview.md](docs/feature-docs/00-overview.md) | Product, stack, data model, architecture, conventions, decisions D01–D21 |
 | [01-field-work.md](docs/feature-docs/01-field-work.md) | 01 Projects · 02 Capture · 03 Issues · 06 DeviceLink · 11 Plans · 12 Annotation · 13 Checklists |
 | [02-upload-sync.md](docs/feature-docs/02-upload-sync.md) | 04 Upload engine · 08 Auth and sync · 10 Realtime |
 | [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend API: what the app calls; the server lives in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
@@ -121,7 +121,7 @@ site-log-ios/
 │   │       ├── Speech/                   # on-device dictation
 │   │       ├── Rendering/                # PDF + CSV, PDF / image tiles, stamped copies
 │   │       ├── Device/                   # disk, battery, thermal
-│   │       ├── Push/                     # APNs registration
+│   │       ├── Push/                     # APNs registration, FCM token (FirebaseMessaging)
 │   │       ├── CrashReporting/           # Crashlytics
 │   │       ├── Networking/               # backend HTTP client
 │   │       ├── UploadKit/                # background URLSession engine (standalone)
