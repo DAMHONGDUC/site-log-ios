@@ -92,7 +92,7 @@ SiteLog/
 
 | Shape | Fields |
 |---|---|
-| `VerifyDTO` (`GET /verify/:code`) | `sha256`, `byteSize`, `receivedAt`, `verified`, `verifiedAt`, `projectRef` — never media, URL, uid or coordinates |
+| `VerifyDTO` (`GET /verify/:code`) | `code`, `sha256`, `byteSize`, `receivedAt`, `verifyState`, `verified`, `verifiedAt`, `projectRef` — never media, URL, uid or coordinates |
 | `ReportBrandingDTO` | Company, logo key, accent, client block, footer; one row per `uid` |
 
 ```mermaid
