@@ -281,7 +281,7 @@ delta protocol.
 ```text
 POST /sync/pull  { since: <rev>, limit }        → { changes: {table: [rows]}, nextRev, hasMore }
 POST /sync/push  { mutations: [{ table, id, op, clientUpdatedAt, fields }] }
-                                                → { results: [{ id, status: applied|superseded, serverRow? }], serverRev }
+                                                → { results: [{ id, status: applied|superseded|rejected, serverRow?, reason? }], serverRev }
 ```
 
 - **Revisions, not timestamps:** each row has a server-assigned `rev` from a per-user counter
