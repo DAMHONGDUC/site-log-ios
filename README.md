@@ -15,6 +15,7 @@
 1. [Getting started](#1-getting-started)
 2. [Docs map](#2-docs-map)
 3. [Repo layout](#3-repo-layout)
+4. [Design](#4-design)
 
 </dd></dl>
 
@@ -47,7 +48,7 @@
 | [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend API: what the app calls; the server lives in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](docs/feature-docs/04-reporting-security.md) | 05 PDF and CSV export · 07 Security and audit log |
 | [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
-| [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; HTML pages for Figma ([foundations](docs/design/html/1-foundations.html), [iOS](docs/design/html/2-ios.html), [Android](docs/design/html/3-android.html)) |
+| [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; HTML pages and Figma links: [§4 Design](#4-design) |
 | [swiftui-rules.md](docs/swiftui-rules.md) | SwiftUI rules: small views, state, design tokens, strings |
 
 - Docs rule: content sits indented under its title. After editing any `.md`, run `python3 Tools/Docs/indent-md.py` (wraps sections in `<dl><dd>`; safe to re-run).
@@ -152,5 +153,23 @@ site-log-ios/
 
 - Dependencies: `App` → every package; `Presentation` → `DomainLayer`, `Core`, `DesignSystem`; `DataLayer` → `DomainLayer` + `PlatformKit` + `Core`; `PlatformKit` → `Core` only, never `DomainLayer`.
 - Layer rules: [00-overview §4](docs/feature-docs/00-overview.md#4-architecture).
+
+</dd></dl>
+
+## 4. Design
+
+<dl><dd>
+
+- Figma: [Site Log iOS Design](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design) (pages 01–03); pages 04–05 go to a second file, not imported yet ([sync log](docs/design/figma-sync/README.md)).
+- HTML pages are the source; open them through the local server, not as files: `python3 -m http.server 8765 --directory docs/design`, then `http://localhost:8765/html/<page>.html`.
+
+| Page | HTML | Figma |
+|---|---|---|
+| 01 Foundations: app icon, text styles, colours, spacing | [1-foundations.html](docs/design/html/1-foundations.html) | [01 Foundations](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=0-1) |
+| 02 iOS: 69 screens + 3 dark | [2-ios.html](docs/design/html/2-ios.html) | [02 iOS](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-2) |
+| 04 Flows: 21 flows on the iOS screens | [4-flows.html](docs/design/html/4-flows.html) | Not imported yet |
+| 05 System design: 21 components, iOS and Android | [5-system-design.html](docs/design/html/5-system-design.html) | Not imported yet |
+
+- Plan, principles, screen inventory: [00-design-plan.md](docs/design/00-design-plan.md). Android screens: [3-android.html](docs/design/html/3-android.html), Figma [03 Android](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-3).
 
 </dd></dl>
