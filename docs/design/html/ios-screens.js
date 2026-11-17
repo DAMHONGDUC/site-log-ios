@@ -217,3 +217,248 @@ screen('P7', 'Room', `
   ${toolbar(`${I('triangle-alert', 20)}Issue`, `${I('list-checks', 20)}Checklist`)}`),
 ]]);
 
+const ISSUES_ALL_BODY = `
+    ${issueChips(ISSUE_STATES.all)}
+    ${sec('Level 7', list([
+      row({ lead: thumb(3, 48), title: 'Exposed wiring at socket', sub: '7A Kitchen', trail: withAssignee('Phuc Electric', `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${sev('crit')}<span class="fn" style="color:var(--crit)">2 days late</span></div>`), chev: false }),
+      row({ lead: thumb(0, 48, 8, { crack: true }), title: 'Hairline crack by the skirting', sub: '7A Living room', trail: withAssignee('Tuan’s crew', `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${sev('major')}<span class="fn">Fri</span></div>`), chev: false }),
+      row({ lead: thumb(2, 48), title: 'Door paint scratched', sub: '7B Bedroom 1', trail: withAssignee('painters', sev('minor')), chev: false }),
+    ], 76), '3 open')}
+    ${sec('Level 8', list([
+      row({ lead: thumb(1, 48), title: 'Stain on bathroom ceiling', sub: '8C Bathroom', trail: withAssignee('AquaSeal', `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${sev('major')}<span class="fn">Wed 8 Oct</span></div>`), chev: false }),
+    ], 76), '11 open')}`;
+const ISSUES_FILTERED_BODY = () => `${issueChips(ISSUE_STATES.filtered)}${resultCount('3 of 14 open issues')}${list(ISSUES_FILTERED.map(([v, t, sub, k, late]) => row({ lead: thumb(v, 48), title: t, sub: sub.split(' · ')[0], trail: withAssignee(sub.split(' · ')[1], `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${sev(k)}<span class="fn" style="color:var(--crit)">${late}</span></div>`), chev: false })), 76)}`;
+/* ======================= Capture ======================= */
+const camTop = (label) => `<div class="cam-top"><div class="cam-btn glass">${I('chevron-down', 22, 2)}</div><div class="cam-pill glass">${label}${I('chevron-down', 14, 2)}</div><div class="cam-btn glass">${I('zap-off', 18, 2)}</div></div>`;
+const camBottom = (right) => `<div class="cam-bottom"><div class="modes"><span>VIDEO</span><span class="on">PHOTO</span><span>CHECK</span></div><div class="shutter-row"><div class="side-btn"><span class="thumb" style="width:46px;height:46px;border:2px solid #fff;border-radius:9px">${scene(0)}</span><span>4 here</span></div><div class="shutter"><i></i></div>${right || `<div class="side-btn"><span class="c glass">${I('triangle-alert', 22, 2)}</span><span>Issue</span></div>`}</div></div>`;
+G.push(['Capture & issues', 'specs 02, 03, 06', [
+screen('C1', 'Camera', `
+  ${camTop('7A · Living room')}
+  <div class="viewfinder">${scene(0, { crack: true })}<div class="focus-box"></div>
+    <div class="glass" style="position:absolute;left:16px;top:12px;border-radius:10px;padding:8px 12px;display:flex;align-items:baseline;gap:8px"><span style="font-size:28px;font-weight:600">3.42</span><span style="font-size:13px">m</span><span style="font-size:13px;opacity:.7;margin-left:4px">DISTO</span></div>
+  </div>
+  ${camBottom()}`, { dark: true, lightHome: true }),
+screen('C2', 'Log issue', `
+  ${camTop('7A · Living room')}<div class="viewfinder">${scene(0, { crack: true })}</div>${camBottom()}
+  ${sheet('New issue', `
+    <div class="hstack" style="gap:12px">${thumb(0, 52, 8, { crack: true })}<div class="grow"><div class="t-body" style="font-weight:600">1 photo</div><div class="code">10:42:18 · 7f3a…c91e</div></div><span class="link">Add</span></div>
+    ${seg(['Critical', 'Major', 'Minor'], 'Major', 'sev3')}
+    ${field('', 'Hairline crack by the skirting, about 40 cm', { focus: true, icon: 'mic' })}
+    <div class="chips" style="flex-wrap:wrap"><span class="chip">Wall crack</span><span class="chip">Ceiling stain</span><span class="chip">Loose tile</span></div>
+    <div class="hstack" style="gap:12px">${field('Assigned to', 'Tuan’s masonry crew', { style: 'flex:1' })}${field('Due', 'Fri 3 Oct', { style: 'width:112px' })}</div>
+  `, `<div class="hstack">${btn('', 'secondary', 'map-pin', { style: 'flex:0 0 50px' })}${btn('Save, next photo', 'primary')}</div>`)}`, { dark: true }),
+screen('C3', 'Re-check · ghost overlay', `
+  ${camTop('Re-check #3')}
+  <div class="viewfinder">${scene(0)}<div style="position:absolute;inset:0;opacity:.3">${scene(0, { crack: true })}</div>
+    <div class="overlay-card glass" style="top:12px"><div class="hstack" style="justify-content:space-between"><span style="font-size:13px;font-weight:600">Line up with 12 Aug</span><span style="font-size:13px;opacity:.7">30%</span></div><div style="margin-top:8px;height:3px;border-radius:2px;background:rgba(255,255,255,.25)"><div style="width:30%;height:100%;background:#fff;border-radius:2px"></div></div></div>
+  </div>
+  ${camBottom(`<div class="side-btn"><span class="c glass">${I('layers', 21, 2)}</span><span>Ghost</span></div>`)}`, { dark: true, lightHome: true }),
+screen('C4', 'Re-check outcome', `
+  ${nav({ back: 'Camera', title: 'Issue #3' })}
+  ${content(`
+    <div class="hstack" style="gap:4px;margin:0 -16px">${['12 Aug', 'Today'].map((t, i) => `<div class="grow" style="aspect-ratio:3/4;position:relative">${scene(0, { crack: i === 0 })}<span class="sev solid" style="position:absolute;left:8px;bottom:8px;padding-left:8px">${t}</span></div>`).join('')}</div>
+    <div><div class="t-bodyStrong">Hairline crack by the skirting</div><div class="meta">Tuan’s masonry crew · opened 12 Aug</div></div>
+    ${sec('Has it been fixed?', list([
+      row({ lead: `<span class="radio on">${I('check', 14, 3)}</span>`, title: 'Yes, close it', sub: 'Both photos go in the report', chev: false }),
+      row({ lead: `<span class="radio"></span>`, title: 'Not yet', sub: 'Keep it open, add today’s photo', chev: false }),
+      row({ lead: `<span class="radio"></span>`, title: 'It got worse', sub: 'Raise to Critical', chev: false }),
+    ], 50))}`, 'tight')}
+  ${dock(btn('Save', 'primary'))}`),
+screen('C5', 'Issues', `
+  ${nav({ title: 'Issues', sub: 'Riverside Tower B', leading: true, right: ['@search'] })}
+  ${content(ISSUES_ALL_BODY, 'tight')}
+  ${tabbar('Issues')}`),
+screen('C5f', 'Issues · filtered', `
+  ${nav({ title: 'Issues', sub: 'Riverside Tower B', leading: true, right: ['@search'] })}
+  ${content(ISSUES_FILTERED_BODY(), 'tight')}
+  ${tabbar('Issues')}`),
+screen('C5e', 'Issues · no match', `
+  ${nav({ title: 'Issues', sub: 'Riverside Tower B', leading: true, right: ['@search'] })}
+  ${content(`${issueChips(ISSUE_STATES.nomatch)}${empty(hero('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue on Riverside Tower B.', { extra: btn('Change filters', 'secondary', null, { sm: true }) }))}`, 'tight')}
+  ${tabbar('Issues')}`),
+screen('F1', 'Filter issues', `
+  ${nav({ title: 'Issues', sub: 'Riverside Tower B', leading: true, right: ['@search'] })}
+  ${content(ISSUES_FILTERED_BODY(), 'tight')}
+  ${filterSheet('Issues')}`),
+screen('F1s', 'Filter issues · one group (Severity)', `
+  ${nav({ title: 'Issues', sub: 'Riverside Tower B', leading: true, right: ['@search'] })}
+  ${content(ISSUES_ALL_BODY, 'tight')}
+  ${sheet('Severity', list([['crit', 'Critical', true], ['major', 'Major', true], ['minor', 'Minor', false]].map(([k, t, on]) => row({ lead: `<span class="sev ${k}"></span>`, title: t, trail: on ? `<span style="color:var(--ink)">${I('check', 22, 2.6)}</span>` : '', chev: false }))), filterActions())}`),
+screen('C6', 'Issue detail', `
+  ${nav({ back: 'Issues', right: ['@share', '@ellipsis'] })}
+  <div style="height:250px;flex:none;position:relative">${scene(0, { crack: true })}<div style="position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:8px"><i style="width:6px;height:6px;border-radius:3px;background:#fff"></i><i style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.5)"></i><i style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.5)"></i></div></div>
+  ${content(`
+    <div class="stack" style="gap:8px;padding-top:16px">${sev('major', 'Major · #3')}<div class="t-heading">Hairline crack by the skirting, about 40 cm</div></div>
+    ${list([
+      row({ title: '<span class="meta">Room</span>', trail: `<span class="t-body">7A Living room</span>`, chev: false }),
+      row({ title: '<span class="meta">Assigned to</span>', trail: assigneeLine('Tuan’s masonry crew'), chev: false }),
+      row({ title: '<span class="meta">Due</span>', trail: `<span class="t-body">Fri 3 Oct</span>`, chev: false }),
+    ])}
+    <div class="fn" style="margin-top:-12px">Opened by Hanh on 12 Aug · still open on 28 Aug</div>`, 'tight')}
+  ${dock(`<div class="hstack">${btn('Mark up', 'secondary')}${btn('Re-check now', 'primary')}</div>`)}`),
+]]);
+
+/* ======================= Markup & plans ======================= */
+G.push(['Markup & floor plans', 'specs 11, 12', [
+screen('M1', 'Markup', `
+  <div class="nav" style="color:#fff"><div class="l"><div class="gbtn glass">${I('x', 22, 2.2)}</div></div><div class="ti">Mark up</div><div class="rt"><div class="gbtn hi">${I('check', 22, 2.6)}</div></div></div>
+  <div class="viewfinder" style="margin-top:8px">${scene(0, { crack: true })}
+    <svg viewBox="0 0 393 560" style="position:absolute;inset:0;width:100%;height:100%" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M172 232 C166 280 170 330 186 366 C230 372 276 370 294 360 C300 310 296 262 286 226 C250 220 204 222 172 232Z" stroke="#FF3B30" stroke-width="4"/>
+      <path d="M58 478 C92 440 128 404 158 382" stroke="#FF3B30" stroke-width="4"/><path d="M158 382 l-20 2 m20 -2 l-5 19" stroke="#FF3B30" stroke-width="4"/>
+    </svg>
+    <span style="position:absolute;left:180px;top:196px;background:#FF3B30;color:#fff;font-size:17px;font-weight:600;padding:4px 8px;border-radius:4px">40 cm</span>
+  </div>
+  <div style="padding:16px 16px 48px;display:flex;flex-direction:column;gap:16px">
+    <div class="hstack" style="justify-content:space-between">${[['pencil', 1], ['move-up-right', 0], ['square', 0], ['type', 0], ['ruler', 0], ['undo-2', 0]].map(([i, on]) => `<span style="width:46px;height:46px;border-radius:23px;display:grid;place-items:center;${on ? 'background:#fff;color:#111' : 'color:#fff'}">${I(i, 22, 2)}</span>`).join('')}</div>
+    <div class="hstack" style="justify-content:center;gap:20px">${['#FF3B30', '#FFD400', '#FFFFFF', '#16181B'].map((c, i) => `<span style="width:24px;height:24px;border-radius:12px;background:${c};${i === 0 ? 'box-shadow:0 0 0 3px #0E0F10,0 0 0 5px #fff' : 'border:1px solid rgba(255,255,255,.3)'}"></span>`).join('')}</div>
+  </div>`, { dark: true, lightHome: true }),
+screen('M2', 'Share stamped photo', `
+  ${nav({ back: 'Issue', title: 'Share photo' })}
+  ${content(`
+    <div style="height:300px;margin:0 -16px;position:relative">${scene(0, { crack: true })}
+      <div style="position:absolute;left:0;right:0;bottom:0;background:rgba(14,15,16,.72);color:#fff;padding:8px 12px;font-family:var(--mono);font-size:11px;line-height:16px">30 Sep 2026 10:42:18 +07 · Riverside Tower B<br>Level 7 › 7A › Living room · 10.7297, 106.7215<br>Verify at sitelog.app/v/7F3K-92QD</div></div>
+    <div class="fn">Time checked against the network (within 2 s) and GPS (±6 m), so the stamp can be trusted.</div>
+    ${sec('Stamp shows', list([
+      row({ title: 'Date and time', trail: `<span class="toggle on"></span>`, chev: false }),
+      row({ title: 'Project and room', trail: `<span class="toggle on"></span>`, chev: false }),
+      row({ title: 'My markup', trail: `<span class="toggle"></span>`, chev: false }),
+    ]))}`, 'tight')}
+  ${dock(btn('Share', 'primary', 'share'))}`),
+screen('M4', 'Plan viewer', `
+  ${nav({ back: 'Plans', title: 'Level 7 architectural', right: ['@layers'] })}
+  <div class="plan">${planDrawing()}${pins()}</div>
+  ${dock(`<div class="hstack" style="justify-content:space-between">${sev('crit', '1 critical')}${sev('major', '2 major')}${sev('minor', '1 minor')}${sev('ok', '2 closed')}</div><div class="foot">Press and hold to drop a pin</div>`)}`),
+screen('M4L', 'Plan · show on plan', `
+  ${nav({ back: 'Plans', title: 'Level 7 architectural', right: ['@layers'] })}
+  <div class="plan">${planDrawing()}${pins()}</div>
+  ${sheet('Show on plan', list(PIN_LAYERS.map(([k, l, c, on]) => row({ lead: `<span class="sev ${k}"></span>`, title: l, sub: c, trail: `<span class="toggle ${on ? 'on' : ''}"></span>`, chev: false }))) + list([row({ title: 'Group nearby pins', sub: 'Below 50% zoom', trail: `<span class="toggle on"></span>`, chev: false })]), filterActions())}`),
+screen('M5', 'Pin tapped', `
+  ${nav({ back: 'Plans', title: 'Level 7 architectural', right: ['@layers'] })}
+  <div class="plan">${planDrawing()}${pins()}</div>
+  <div class="sheet" style="box-shadow:0 -8px 24px rgba(0,0,0,.08)"><div class="grab"></div><div class="sbody" style="padding-top:16px;gap:16px"><div class="hstack" style="gap:12px;align-items:flex-start">${thumb(3, 64, 8)}<div class="grow stack" style="gap:4px">${sev('crit', 'Critical · pin 1')}<div class="t-bodyStrong">Exposed wiring at socket</div><div class="hstack" style="gap:8px">${assigneeAvatar('Phuc Electric', 20)}<span class="meta">7A Kitchen · <span style="color:var(--crit)">2 days late</span></span></div></div></div><div class="hstack">${btn('Move pin', 'secondary', null, { style: 'flex:1' })}${btn('Open', 'primary', null, { style: 'flex:1' })}</div></div><div style="height:34px"></div></div>`),
+]]);
+
+/* ======================= Checklists ======================= */
+const item = (n, t, sel, o = {}) => `<div class="row" style="flex-direction:column;align-items:stretch;gap:12px;padding:16px 16px"><div class="hstack" style="align-items:flex-start;gap:12px"><span class="fn" style="width:20px;padding-top:4px">${n}</span><span class="t-body grow">${t}</span>${o.missing ? `<span class="fn" style="color:var(--major)">Needed</span>` : ''}</div><div class="ans" style="padding-left:32px"><div class="pass ${sel === 'p' ? 'on' : ''}">Pass</div><div class="fail ${sel === 'f' ? 'on' : ''}">Fail</div><div class="na ${sel === 'n' ? 'on' : ''}">N/A</div></div>${o.note ? `<div class="hstack" style="gap:12px;padding-left:32px">${thumb(0, 36, 6, { crack: true })}<span class="meta grow" style="color:var(--ink)">${o.note}</span><span class="fn">#3</span></div>` : ''}</div>`;
+G.push(['Checklists', 'spec 13', [
+screen('K1', 'Pick a checklist', `
+  ${nav({ back: 'Living room', title: 'Checklist' })}
+  ${content(`
+    <div class="search">${I('search', 18)}Search</div>
+    ${list([row({ lead: `<span class="live"></span>`, title: 'Finishing handover', sub: 'You stopped at item 15 of 22 this morning' })], 38)}
+    ${sec('Used recently', list([row({ title: 'Finishing handover', sub: '22 items' }), row({ title: 'Bathroom waterproofing', sub: '12 items' })]))}
+    ${sec('All checklists', list([row({ title: 'Sockets and switches', sub: '15 items' }), row({ title: 'Plumbing', sub: '18 items' }), row({ title: 'Doors and hardware', sub: '10 items' }), row({ title: 'Fire safety', sub: '20 items' })]), '6')}`, 'tight')}`),
+screen('K2', 'Checklist run', `
+  ${nav({ back: 'Back', title: 'Finishing handover', right: ['@ellipsis'] })}
+  ${content(`
+    <div class="stack" style="gap:8px"><div class="hstack" style="justify-content:space-between"><span class="fn">14 of 22 answered</span><span class="fn" style="color:var(--crit)">1 failed</span></div>${progress(14 / 22)}</div>
+    ${list([
+      item(12, 'Wall surface flat, no cracks', 'f', { note: 'Crack by the skirting — logged as issue' }),
+      item(13, 'Paint even, no patches', 'p'),
+      item(14, 'Floor grout even and sealed', 'n'),
+      item(15, 'Door closes smoothly and locks', null, { missing: true }),
+    ])}`, 'tight')}
+  ${dock(`${btn('Finish', 'primary', null, { disabled: true })}<div class="foot">8 items still need an answer</div>`)}`),
+screen('K3', 'Fail → issue (prefilled)', `
+  ${nav({ back: 'Back', title: 'Finishing handover' })}
+  ${sheet('New issue', `
+    <div class="fn">From checklist item 12. A photo is required.</div>
+    ${field('What’s wrong', 'Wall surface flat, no cracks')}
+    ${seg(['Critical', 'Major', 'Minor'], 'Major', 'sev3')}
+    <div class="hstack" style="gap:8px">${thumb(0, 72, 8, { crack: true })}<span style="width:72px;height:72px;border-radius:8px;border:1.5px dashed var(--line-strong);display:grid;place-items:center;color:var(--ink3)">${I('plus', 24)}</span></div>
+    ${field('Assigned to', 'Tuan’s masonry crew')}
+  `, btn('Save issue', 'primary'))}`),
+screen('K4', 'Checklist done', `
+  ${nav({ back: 'Living room' })}
+  ${content(`
+    ${hero('ok', 'check', 'Living room is done.', '19 passed, 2 failed and 1 didn’t apply. It took you 6 minutes.', { big: true })}
+    ${sec('Sent to the issue list', list([row({ title: 'Crack by the skirting', trail: withAssignee('Tuan’s masonry crew', sev('major')) }), row({ title: 'Socket cover not level', trail: withAssignee('Phuc Electric', sev('minor')) })], 38))}`)}
+  ${dock(`${btn('Next: Bedroom 1', 'primary')}${btn('Back to Level 7', 'ghost')}`)}`),
+]]);
+
+/* ======================= Reports ======================= */
+G.push(['Reports', 'spec 05', [
+screen('R1', 'Walkthrough finished', `
+  ${nav({ back: 'Level 7' })}
+  ${content(`
+    ${hero('ok', 'check', 'All 82 rooms checked', 'Tue 30 Sep · 8:12 to 14:00, just under six hours', { big: true })}
+    <div class="t-body">You took <b>112 photos</b>, logged <b>7 new issues</b> and closed <b>9</b> from last time.</div>
+    ${list([
+      row({ lead: `<span style="color:var(--ok)">${I('shield-check', 22)}</span>`, title: 'Every photo is fingerprinted', sub: 'Nothing was edited after capture', chev: false }),
+      row({ lead: `<span style="color:var(--ink2)">${I('refresh-cw', 22)}</span>`, title: 'Uploading 87 of 112', sub: 'Keeps going if you close the app', chev: false }),
+    ], 50)}`)}
+  ${dock(`${btn('Make the report', 'primary')}${btn('Later', 'ghost')}`)}`),
+screen('R2', 'Report options', `
+  ${nav({ back: 'Back', title: 'Report', right: ['!Next'] })}
+  ${content(`
+    <div class="field"><span>Group issues by</span>${seg(['Room', 'Contractor'], 'Room')}</div>
+    ${sec('Include', list([['Cover and summary', ''], ['Pins on each plan', '2 sheets'], ['Checklist results', '3 rooms'], ['Issues with photos', '7'], ['Before and after', '4 pairs'], ['Issues open over 14 days', ''], ['Signatures', '2 people']].map(([t, s], i) => row({ title: t, sub: s || null, trail: `<span class="toggle ${i === 5 ? '' : 'on'}"></span>`, chev: false }))))}`, 'tight')}
+  ${dock(`<div class="hstack">${btn('Excel', 'secondary', null, { style: 'flex:0 0 110px' })}${btn('Create PDF', 'primary')}</div>`)}`),
+screen('R3', 'Branding', `
+  ${nav({ back: 'Report', title: 'Your letterhead' })}
+  ${content(`
+    <div class="hstack" style="gap:16px"><span style="width:64px;height:64px;border-radius:12px;background:var(--ink);color:var(--on-ink);display:grid;place-items:center;font-weight:600;font-size:20px;letter-spacing:-.02em">EL</span><div class="grow"><div class="t-body" style="font-weight:600">Eastline logo.png</div><div class="meta">Shown on the cover and every page</div></div><span class="link">Change</span></div>
+    ${field('Company', 'Eastline Site Supervision Co.')}
+    ${field('Prepared for', 'Riverside Development JSC')}
+    ${field('Footer', 'Internal report — not a formal acceptance record', { area: true })}`)}
+  ${dock(btn('Save', 'primary'))}`),
+screen('R4', 'Signatures', `
+  ${nav({ back: 'Report', title: 'Sign' })}
+  ${content(`
+    ${seg(['Hanh (supervisor) ✓', 'Contractor'], 'Contractor')}
+    ${field('Name and role', 'Tran Minh, site manager')}
+    <div style="height:240px;border-radius:12px;background:var(--sunken);position:relative">
+      <svg viewBox="0 0 360 240" style="position:absolute;inset:0;width:100%;height:100%" fill="none" stroke="#16181B" stroke-width="2.4" stroke-linecap="round"><path d="M44 158 C66 72 92 66 100 128 C108 180 132 176 150 104 C158 74 176 82 184 132 C192 168 214 148 236 116 C246 104 262 110 262 126 C262 140 250 144 244 136 L310 128"/><line x1="28" y1="192" x2="332" y2="192" stroke="#CFCAC1" stroke-width="1"/></svg>
+      <span class="fn" style="position:absolute;left:28px;bottom:16px">Sign above the line</span><span class="link" style="position:absolute;right:16px;bottom:14px">Clear</span>
+    </div>
+    <div class="fn">This is a handwritten signature for internal sign-off, not a certified digital signature.</div>`, 'tight')}
+  ${dock(btn('Done', 'primary'))}`),
+screen('R5', 'PDF preview', `
+  ${nav({ back: 'Report', title: 'R-0930-07.pdf', right: ['@share'] })}
+  <div style="flex:1;background:var(--sunken);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div style="width:100%;flex:1;background:#fff;box-shadow:0 2px 10px rgba(60,48,20,.18);padding:24px;display:flex;flex-direction:column;gap:12px;color:#16181B">
+      <div class="hstack" style="justify-content:space-between"><span style="font-weight:600;font-size:13px">EASTLINE</span><span style="font-size:10px;color:#63676E">R-0930-07</span></div>
+      <div style="margin-top:16px"><div style="font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:24px">Site inspection report</div><div style="font-size:11px;color:#63676E;margin-top:4px">Riverside Tower B · 30 September 2026 · Hanh Nguyen</div></div>
+      <div style="font-size:11px;line-height:16px">7 new issues: 1 critical, 4 major, 2 minor. 9 issues from 12 Aug closed.</div>
+      <div style="height:1px;background:#E8E5E0"></div>
+      <div class="hstack" style="gap:12px;align-items:flex-start"><span style="width:110px;height:82px;overflow:hidden;flex:none">${scene(0, { crack: true })}</span><div style="font-size:11px;line-height:15px"><b>3. Hairline crack by the skirting</b><br><span style="color:#63676E">7A Living room · Tuan’s masonry crew · due 3 Oct</span></div></div>
+      <div style="margin-top:auto;font-size:9px;color:#A0A3A9;display:flex;justify-content:space-between"><span>Page 1 of 18</span><span style="font-family:var(--mono)">verify 7F3K-92QD</span></div>
+    </div>
+    <div class="fn">1 of 18</div>
+  </div>
+  ${dock(`<div class="hstack">${btn('Save to Files', 'secondary')}${btn('Send', 'primary')}</div>`)}`),
+]]);
+
+/* ======================= Sync ======================= */
+G.push(['Sync & diagnostics', 'specs 04, 09, 10', [
+screen('U1', 'Sync', `
+  ${nav({})}${lt('Sync', 'All projects on this iPhone')}
+  ${content(`
+    <div class="panel" style="gap:12px">
+      <div class="hstack" style="gap:8px"><span style="color:var(--ink)">${I('cloud-upload', 20)}</span><span class="t-bodyStrong grow">Uploading 187 of 243 files</span>${btn('Pause', 'secondary', null, { sm: true })}</div>
+      ${progress(187 / 243)}
+      <div class="fn">About 6 minutes left on this Wi-Fi. Keeps going if you close the app.</div>
+    </div>
+    ${sec('By project', list([
+      row({ lead: wsTile(0, 40, 10), title: 'Riverside Tower B<span class="tag">Current</span>', sub: '187 of 243 files · uploading', trail: ring(187 / 243) }),
+      row({ lead: wsTile(1, 40, 10), title: 'Harbor View Villas', sub: '12 videos wait for Wi-Fi', trail: sev('wait', 'Waiting') }),
+      row({ lead: `<span style="width:40px;height:40px;border-radius:10px;background:var(--sunken);color:var(--ok);display:grid;place-items:center;flex:none">${I('check', 20, 2.6)}</span>`, title: '3 projects up to date', sub: 'Northgate Warehouse, Lakeside Clinic, Saigon Pearl Lobby' }),
+    ], 68))}
+    ${sec('Needs attention', list([row({ title: '2 photos didn’t upload', sub: 'Riverside · the server rejected the checksum', trail: btn('Retry', 'secondary', null, { sm: true }), chev: false })]))}
+    <div class="foot">Last synced on this iPhone at 9:41</div>`, 'tight')}
+  ${tabbar('Sync')}`),
+screen('U2', 'Project files', `
+  ${nav({ back: 'Sync', title: 'Riverside Tower B' })}
+  ${content(`
+    ${seg(['All', 'Waiting', 'Failed', 'Done'], 'All')}
+    ${list([['IMG_0931.heic', '7A Living · 3.1 MB', 'Uploading', 'wait', 0], ['VID_0012.mov', '7A Kitchen · 412 MB', 'Needs Wi-Fi', 'wait', 3], ['VID_0013.mov', '8C Bath · 288 MB', 'Needs Wi-Fi', 'wait', 1], ['IMG_0922.heic', '7A Bedroom 1 · 2.8 MB', 'Failed', 'crit', 2], ['IMG_0921.heic', '7A Bedroom 1 · 2.9 MB', 'Done', 'ok', 0], ['IMG_0920.heic', '7A Bedroom 1 · 3.0 MB', 'Done', 'ok', 2]].map(([n, s, t, k, v]) => row({ lead: thumb(v, 44, 6), title: `<span class="code" style="color:var(--ink)">${n}</span>`, sub: s, trail: sev(k, t, k === 'crit' ? 'late' : ''), chev: false })), 72)}`)}`),
+screen('U3', 'Diagnostics', `
+  ${nav({ back: 'Settings', title: 'Diagnostics' })}
+  ${content(`
+    <div class="stack" style="gap:4px"><div class="hstack" style="gap:8px">${sev('ok', '')}<span class="t-bodyStrong">All 1,284 photos check out</span></div><div class="meta" style="padding-left:16px">Fingerprints match, nothing changed since capture. Checked 9:02.</div></div>
+    ${sec('Storage', `<div class="stack" style="gap:12px"><div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:4px"><i style="flex:41;background:var(--ink)"></i><i style="flex:16;background:var(--ok)"></i><i style="flex:43;background:var(--sunken)"></i></div><div class="fn">4.1 GB waiting to upload · 1.6 GB already backed up · 12 GB free</div></div>`)}
+    ${sec('This iPhone', list([['Background uploads', 'On'], ['Low Power Mode', 'Off'], ['Live progress', 'Polling']].map(([t, v]) => row({ title: t, trail: `<span class="val">${v}</span>`, chev: false }))))}`, 'tight')}
+  ${dock(`${btn('Free up 1.6 GB', 'secondary')}${btn('Send diagnostics to support', 'ghost')}`)}`),
+]]);
+
