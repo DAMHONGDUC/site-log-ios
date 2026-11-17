@@ -1,0 +1,169 @@
+/* iOS 26 chrome and controls (Liquid Glass): iPhone 16, 393×852 pt.
+   Bars, buttons and sheets float over the content as glass; the content runs underneath them. */
+.p-ios figure.screen { width: 393px; }
+.p-ios .phone { font-size: 17px; line-height: 24px; }
+.p-ios .sys-label { font-size: 10px; line-height: 12px; font-weight: 500; }
+
+/* ---------- Liquid Glass material ---------- */
+.p-ios { --glass: rgba(255,255,255,.62); --glass-edge: rgba(255,255,255,.95); --glass-line: rgba(0,0,0,.07); --glass-shadow: 0 8px 26px rgba(20,22,26,.14); --glass-sel: rgba(22,24,27,.07); --sheet: rgba(255,255,255,.88); }
+.p-ios .theme-dark { --glass: rgba(46,47,51,.58); --glass-edge: rgba(255,255,255,.16); --glass-line: rgba(255,255,255,.08); --glass-shadow: 0 8px 26px rgba(0,0,0,.45); --glass-sel: rgba(255,255,255,.12); --sheet: rgba(30,31,34,.9); }
+.p-ios .lg { background: var(--glass); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); box-shadow: inset 0 1px 0 var(--glass-edge), inset 0 0 0 .5px var(--glass-line), var(--glass-shadow); color: var(--ink); }
+.p-ios .gbtn { width: 44px; height: 44px; border-radius: 22px; display: grid; place-items: center; flex: none; }
+.p-ios .gcap { height: 44px; border-radius: 22px; display: flex; align-items: center; padding: 0 4px; flex: none; }
+.p-ios .gcap > .ic { width: 40px; height: 44px; display: grid; place-items: center; }
+.p-ios .gcap.txt { padding: 0 16px; font-size: 17px; font-weight: 400; }
+.p-ios .gcap.prom, .p-ios .gbtn.prom { background: var(--ink); color: var(--on-ink); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), var(--glass-shadow); font-weight: 600; }
+.p-ios .gbtn.hi { background: var(--hi); color: var(--hi-ink); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), var(--glass-shadow); }
+.p-ios .glass { background: rgba(28,28,30,.4); backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 0 0 .5px rgba(255,255,255,.18); }
+
+/* ---------- Device ---------- */
+.p-ios .phone { position: relative; width: 393px; height: 852px; background: var(--bg); color: var(--ink); border-radius: 48px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 0 1px rgba(22,24,27,.08), 0 24px 48px -24px rgba(60,48,20,.25); }
+.p-ios .phone.dark { background: #0E0F10; color: #fff; }
+.p-ios .sb { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 4px 32px 0 48px; position: relative; font-weight: 600; font-size: 17px; }
+.p-ios .sb .island { position: absolute; left: 50%; top: 11px; width: 126px; height: 37px; transform: translateX(-50%); background: #000; border-radius: 20px; }
+.p-ios .sb .r { display: flex; gap: 8px; align-items: center; }
+.p-ios .home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); z-index: 30; }
+.p-ios .dark .home, .p-ios .home.light { background: #fff; }
+
+/* ---------- Navigation: glass buttons, no bar background ---------- */
+.p-ios .nav { height: 52px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 16px; position: relative; z-index: 4; }
+.p-ios .nav .l, .p-ios .nav .rt { display: flex; align-items: center; gap: 8px; }
+.p-ios .nav .rt { justify-content: flex-end; margin-left: auto; }
+.p-ios .nav .ti { position: absolute; left: 110px; right: 110px; text-align: center; font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-ios .icon-btn { width: 44px; height: 44px; display: grid; place-items: center; }
+.p-ios .icon-btn.round { width: 36px; height: 36px; border-radius: 18px; }
+.p-ios .lt { flex: none; padding: 4px 16px 12px; }
+.p-ios .lt .sub { margin-top: 4px; }
+
+/* ---------- Project switch (workspace) ---------- */
+.p-ios .ws { height: 44px; border-radius: 22px; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; flex: none; max-width: 248px; }
+.p-ios .ws-name { font-size: 17px; line-height: 24px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.p-ios .ws .thumb { box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+.p-ios .ws-row .thumb { box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+
+/* ---------- Layout ---------- */
+.p-ios .content { flex: 1; min-height: 0; overflow: hidden; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 32px; }
+.p-ios .content.tight { gap: 20px; }
+/* Bottom actions float; a soft scroll-edge fade replaces the old bar and hairline */
+.p-ios .dock { flex: none; padding: 16px 16px 34px; margin-top: -24px; position: relative; z-index: 3; background: linear-gradient(to bottom, transparent, var(--bg) 24px); display: flex; flex-direction: column; gap: 8px; }
+.p-ios .dock.clear { background: transparent; margin-top: 0; }
+.p-ios .dock .hstack > .btn { flex: 1; }
+/* Floating toolbar: glass capsules either side of the hi-vis capture button */
+.p-ios .toolbar { position: absolute; left: 16px; right: 16px; bottom: 30px; height: 72px; z-index: 6; display: flex; align-items: center; justify-content: space-between; }
+.p-ios .toolbar .side { height: 56px; min-width: 104px; padding: 0 20px; border-radius: 28px; font-size: 17px; font-weight: 400; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.p-ios .capture { width: 72px; height: 72px; border-radius: 36px; background: var(--hi); color: var(--hi-ink); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 0 0 5px var(--glass), 0 0 0 5.5px var(--glass-line), var(--glass-shadow); }
+/* Floating tab bar: one glass capsule, the selected tab sits in a lighter pill */
+.p-ios .tabbar { position: absolute; left: 20px; right: 20px; bottom: 26px; height: 64px; border-radius: 32px; padding: 4px; z-index: 6; display: flex; }
+.p-ios .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--ink2); position: relative; border-radius: 28px; }
+.p-ios .tab.on { color: var(--ink); background: var(--glass-sel); }
+.p-ios .badge { position: absolute; top: 4px; left: 50%; margin-left: 8px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--crit); color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; }
+
+/* ---------- Buttons ---------- */
+.p-ios .btn { height: 50px; border-radius: 25px; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 17px; font-weight: 600; border: 1px solid transparent; }
+.p-ios .btn.primary { background: var(--ink); color: var(--on-ink); }
+.p-ios .btn.hi { background: var(--hi); color: var(--hi-ink); }
+.p-ios .btn.secondary { background: var(--sunken); color: var(--ink); }
+.p-ios .btn.glassy { background: var(--glass); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: inset 0 1px 0 var(--glass-edge), inset 0 0 0 .5px var(--glass-line), var(--glass-shadow); color: var(--ink); }
+.p-ios .btn.ghost { background: transparent; color: var(--ink); font-weight: 400; }
+.p-ios .btn.danger { background: transparent; color: var(--crit); }
+.p-ios .btn.sm { height: 44px; border-radius: 22px; font-size: 17px; padding: 0 16px; }
+.p-ios .btn[disabled] { opacity: .3; }
+
+/* ---------- Plain lists (no boxes) ---------- */
+.p-ios .sec-h { display: flex; justify-content: space-between; align-items: baseline; }
+.p-ios .sec-h > span { font-size: 13px; line-height: 20px; color: var(--ink2); }
+.p-ios .list { margin: 0 -16px; }
+.p-ios .row { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 12px 16px; position: relative; }
+.p-ios .row + .row::before { content: ''; position: absolute; top: 0; right: 0; left: var(--inset, 16px); height: 0.5px; background: var(--line); }
+.p-ios .row .t { color: var(--ink); }
+.p-ios .row .chev { color: var(--ink3); margin-right: -4px; }
+.p-ios .row .val { font-size: 17px; color: var(--ink2); }
+
+/* ---------- Controls ---------- */
+.p-ios .chips { display: flex; gap: 8px; }
+.p-ios .chip { height: 44px; padding: 0 16px; border-radius: 22px; background: var(--sunken); display: flex; align-items: center; gap: 4px; font-size: 17px; color: var(--ink); white-space: nowrap; }
+.p-ios .chip.on { background: var(--ink); color: var(--on-ink); }
+.p-ios .seg { display: flex; background: var(--sunken); border-radius: 22px; padding: 4px; }
+.p-ios .seg > div { flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 400; color: var(--ink); border-radius: 20px; }
+.p-ios .seg > div.on { background: var(--surface); font-weight: 600; box-shadow: 0 1px 3px rgba(40,30,10,.14), 0 0 0 0.5px rgba(0,0,0,.04); }
+.p-ios .seg.sev3 > div::before { content: ''; width: 8px; height: 8px; flex: none; border-radius: 50%; }
+.p-ios .seg.sev3 > div:nth-child(1)::before { background: var(--crit); }
+.p-ios .seg.sev3 > div:nth-child(2)::before { background: var(--major); }
+.p-ios .seg.sev3 > div:nth-child(3)::before { background: var(--minor); }
+.p-ios .field { display: flex; flex-direction: column; gap: 8px; }
+.p-ios .field > span { color: var(--ink2); }
+.p-ios .input { min-height: 46px; border-radius: 11px; background: var(--sunken); display: flex; align-items: center; padding: 0 16px; gap: 8px; border: 1.5px solid transparent; }
+.p-ios .input.focus { background: var(--surface); border-color: var(--ink); }
+.p-ios .input.area { min-height: 72px; padding-top: 12px; padding-bottom: 12px; }
+.p-ios .input .placeholder { color: var(--ink2); }
+.p-ios .caret { display: inline-block; width: 2px; height: 22px; background: #1D6FE0; margin-left: 0px; vertical-align: -5px; border-radius: 1px; }
+.p-ios .toggle { width: 64px; height: 28px; border-radius: 14px; background: #E4E2DE; position: relative; flex: none; }
+.p-ios .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 38px; height: 24px; border-radius: 12px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.15), 0 0 0 .5px rgba(0,0,0,.04); }
+.p-ios .toggle.on { background: var(--ok); }
+.p-ios .toggle.on::after { left: 24px; }
+.p-ios .radio { width: 22px; height: 22px; border-radius: 11px; border: 1.5px solid var(--line-strong); flex: none; display: grid; place-items: center; }
+.p-ios .radio.on { border-color: var(--ink); background: var(--ink); color: var(--on-ink); }
+.p-ios .search { height: 44px; border-radius: 22px; background: var(--sunken); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--ink2); font-size: 17px; }
+
+/* ---------- Keyboard ---------- */
+.p-ios .kb { flex: none; background: #DADCE1; padding: 8px 4px 0; height: 291px; display: flex; flex-direction: column; gap: 12px; }
+.p-ios .kb .kr { display: flex; gap: 8px; justify-content: center; }
+.p-ios .kb .k { width: 33px; height: 44px; border-radius: 9px; background: #fff; box-shadow: 0 1px 0 #8A8C92; display: grid; place-items: center; font-size: 22px; color: #111; }
+.p-ios .kb .k.fn { background: #ADB1BA; font-size: 15px; }
+
+/* ---------- Sheet & alert ---------- */
+.p-ios .dim { position: absolute; inset: 0; background: rgba(0,0,0,.28); z-index: 5; }
+/* Partial-height sheets float inset with the device's corner radius; a full-height sheet runs edge to edge */
+.p-ios .sheet { position: absolute; left: 8px; right: 8px; bottom: 8px; top: auto; z-index: 10; background: var(--sheet); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); color: var(--ink); border-radius: 40px; display: flex; flex-direction: column; box-shadow: inset 0 1px 0 var(--glass-edge), 0 10px 40px rgba(0,0,0,.18); }
+.p-ios .sheet.full { left: 0; right: 0; bottom: 0; border-radius: 40px 40px 0 0; background: var(--surface); }
+.p-ios .sheet .grab { width: 36px; height: 5px; border-radius: 3px; background: var(--line-strong); margin: 8px auto 0; }
+.p-ios .sheet .sh { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 20px; }
+.p-ios .sheet .sbody { padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+.p-ios .sheet .dock { background: transparent; margin-top: 0; padding: 12px 20px 24px; }
+.p-ios .sheet.full .dock { padding-bottom: 12px; }
+.p-ios .alert { position: absolute; left: 40px; width: 313px; top: 290px; z-index: 10; background: var(--sheet); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 34px; padding: 24px; display: flex; flex-direction: column; gap: 8px; color: var(--ink); box-shadow: inset 0 1px 0 var(--glass-edge), 0 10px 40px rgba(0,0,0,.2); }
+.p-ios .alert b { font-size: 17px; line-height: 24px; }
+.p-ios .alert span { font-size: 13px; line-height: 20px; }
+.p-ios .alert .aa { display: flex; gap: 12px; margin-top: 16px; }
+.p-ios .alert .aa > div { flex: 1; height: 48px; border-radius: 24px; background: var(--sunken); display: grid; place-items: center; font-size: 17px; font-weight: 600; }
+
+/* ---------- Camera ---------- */
+.p-ios .cam-top { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 12px; }
+.p-ios .cam-bottom { flex: none; padding: 16px 32px 48px; display: flex; flex-direction: column; gap: 16px; }
+
+/* Home: 16 below the app bar, 24 between the walkthrough card and the tabs */
+.p-ios .content.home-tab { padding-top: 16px; gap: 24px; }
+
+/* ---------- Home sub-tabs: own filter button; pinned under the app bar when scrolled ---------- */
+.p-ios .home-tabs { display: flex; align-items: center; gap: 8px; }
+.p-ios .home-tabs .seg { flex: 1; }
+.p-ios .fbtn { position: relative; }
+.p-ios .fbadge { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 10px; background: var(--ink); color: var(--on-ink); font-size: 13px; line-height: 20px; font-weight: 600; text-align: center; }
+.p-ios .pin-head { flex: none; position: relative; z-index: 4; padding-bottom: 12px; background: var(--glass); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); box-shadow: 0 1px 0 var(--line), 0 12px 16px -16px rgba(20,22,26,.3); }
+.p-ios .pin-head .home-tabs { padding: 4px 16px 0; }
+.p-ios .content.pinned { padding-top: 8px; gap: 16px; }
+/* The floating tab bar covers the bottom of the view: centre empty states in what stays visible */
+/* = tab bar height 64 + its 26 above the bottom - the view's own 16 bottom padding */
+.p-ios .phone:has(.tabbar) .empty { padding-bottom: calc(64px + 26px - 16px); }
+
+/* Badge on a filter icon inside a nav capsule */
+.p-ios .ic.fbtn .fbadge { top: 2px; right: 0; }
+/* A chip row wider than the screen scrolls sideways; the fade at the right edge says there is more */
+.p-ios .chips.scroll { flex-wrap: nowrap; overflow: hidden; margin-right: -16px; -webkit-mask-image: linear-gradient(to right, #000 80%, transparent); mask-image: linear-gradient(to right, #000 80%, transparent); }
+.p-ios .chips.scroll .chip { flex: none; }
+/* Outline button: secondary action next to a primary one (e.g. Clear beside Apply) */
+.p-ios .btn.outline { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+
+/* A tall sheet: the body scrolls, its buttons stay pinned at the bottom */
+.p-ios .sheet.full .sbody { flex: 1; min-height: 0; overflow: hidden; }
+
+/* Two-line app bar title: screen name over the project it belongs to */
+.p-ios .nav .ti-sub { display: block; font-size: 13px; line-height: 20px; font-weight: 400; color: var(--ink2); }
+.p-ios .nav .ti { line-height: 24px; }
+
+/* Badge on the filter chip; the chip row clips overflow, so keep the badge inside the chip */
+.p-ios .chips .fbtn .fbadge { top: 2px; right: 2px; }
+
+/* Leading app bar title (Issues): screen name over the project, at the start of the bar */
+.p-ios .nav .ti-lead { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; padding-left: 4px; }
+.p-ios .nav .ti-lead .ti-sub { display: block; font-size: 13px; line-height: 20px; font-weight: 400; letter-spacing: 0; color: var(--ink2); }
