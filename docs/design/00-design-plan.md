@@ -123,7 +123,7 @@
 
 - File: [Site Log iOS Design](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design) (free plan: 3 pages, 1 variable mode — pages 04 Flows and 05 System design
   need a paid plan or a second file).
-- Every page is built as HTML first, in [html/](html/), then imported with the html.to.design plugin.
+- Every page is built as HTML first, in [html/](html/), then rebuilt in Figma as editable layers by the scripts in [figma-sync/](figma-sync/README.md).
 
 | Page | HTML | Contents |
 |---|---|---|
@@ -134,7 +134,7 @@
 | 05 System design | [5-system-design.html](html/5-system-design.html) | 21 shared components, each with purpose, `DS…` name, properties (enum-like: `type` · `size` · `state` · slots, each with cases and a default), spec (pt / dp) and one variant row per `property.case`, iOS and Android side by side, drawn by the same CSS as the screens |
 
 - Preview locally: `python3 -m http.server 8765 --directory docs/design`, then open `http://localhost:8765/html/1-foundations.html`.
-- Import: one html.to.design import per page, from a URL the plugin can reach (the pages load `tokens.js`, `kit.js` and the CSS beside them).
+- Import: [figma-sync](figma-sync/README.md) serialises each page from the local server (the pages load `tokens.js`, `kit.js` and the CSS beside them) and rebuilds it through the Figma MCP.
 - Stand-ins in Figma: IBM Plex Sans / Mono for SF Pro / SF Mono (iOS), Inter / JetBrains Mono as shipped (Android),
   Lucide for SF Symbols and Material Symbols.
 
@@ -167,13 +167,13 @@
 
 | Page | HTML | Figma |
 |---|---|---|
-| 01 Foundations | Done | Waiting for review, then import |
-| 02 iOS | Done: 63 screens + 6 states + 3 dark | Waiting for review, then import |
-| 03 Android | Done: 63 screens + 6 states + 3 dark | Waiting for review, then import |
-| 04 Flows | Done: 21 flows | Needs a paid plan or a second file |
-| 05 System design | Done: 21 components | Needs a paid plan or a second file |
+| 01 Foundations | Done | Imported 2026-11-17 |
+| 02 iOS | Done: 63 screens + 6 states + 3 dark | Imported 2026-11-17 (app mark corners and new frame spacing still to sync) |
+| 03 Android | Done: 63 screens + 6 states + 3 dark | Imported 2026-11-17, not yet checked (same two fixes to sync) |
+| 04 Flows | Done: 21 flows | Not imported: second file, after the Figma MCP limit resets |
+| 05 System design | Done: 21 components | Not imported: second file, after the Figma MCP limit resets |
 
-- The new Figma file replaces the old one (`3Ru8x4sFZSQwlFI42wqrbH`); nothing is imported yet.
+- The new Figma file replaces the old one (`3Ru8x4sFZSQwlFI42wqrbH`). Import log, what is left and how to resume: [figma-sync/README.md](figma-sync/README.md) (stopped by the Starter plan limit, 20 MCP calls a month).
 - States designed (E1–E6): first launch, offline, first sync, sync paused, nothing open, search with recents.
 - Redesigned with the mobile-app-ui-design rules (2026-11-17): 4 sizes / 2 weights, spacing on the 4 / 8 pt grid,
   controls at least 44 pt (iOS) / 48 dp (Android), text contrast at least 4.5:1 (`text/tertiary` #868A91 and
