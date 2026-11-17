@@ -37,7 +37,7 @@
 - **Goal:** take every screen from the ~30% skeleton to Figma, on real logic, then ship to the App Store.
 - **Demo:** every screen matches Figma side by side in light and dark mode; the build is submitted for review.
 - Figma board ids (S1–S11) name design boards, not sprints.
-- **Specs:** [Design plan](../../design/00-design-plan.md), [mockups](../../design/mockups/index.html), [Figma file](https://www.figma.com/design/3Ru8x4sFZSQwlFI42wqrbH)
+- **Specs:** [Design plan](../../design/00-design-plan.md), [iOS screens](../../design/html/2-ios.html), [Figma file](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design)
 - **Starting point:** every screen on real logic (F00–F17), still at the ~30% skeleton look with placeholders.
 - **Status:** skeleton — parts, files, order, tests. Filled in when this feature starts.
 - **File tags:** <b class="tag-edit">Edit</b> change only the part shown.
