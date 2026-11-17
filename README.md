@@ -47,7 +47,7 @@
 | [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend API: what the app calls; the server lives in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](docs/feature-docs/04-reporting-security.md) | 05 PDF and CSV export · 07 Security and audit log |
 | [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
-| [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; [mockups](docs/design/mockups/index.html) |
+| [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; HTML pages for Figma ([foundations](docs/design/html/1-foundations.html), [iOS](docs/design/html/2-ios.html), [Android](docs/design/html/3-android.html)) |
 | [swiftui-rules.md](docs/swiftui-rules.md) | SwiftUI rules: small views, state, design tokens, strings |
 
 - Docs rule: content sits indented under its title. After editing any `.md`, run `python3 Tools/Docs/indent-md.py` (wraps sections in `<dl><dd>`; safe to re-run).
@@ -143,7 +143,7 @@ site-log-ios/
 ├── docs/
 │   ├── feature-docs/                     # project specs
 │   ├── feature-guide/                    # S0–S9 sprint folders, one guide per feature (F00–F18)
-│   ├── design/                           # design plan, mockups, app icon
+│   ├── design/                           # design plan, HTML pages for Figma, app icon
 │   ├── images/                           # diagrams used by the docs
 │   ├── swiftui-rules.md
 │   └── ROADMAP.md                        # sprints, features, ticks
