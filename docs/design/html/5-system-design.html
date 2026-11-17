@@ -251,3 +251,268 @@ cmp({ id: 'tag', name: 'Tag', code: 'DSTag',
     V('type', 'file', ...SM(row1('<span class="file-tag">PDF</span>', '<span class="file-tag">ZIP</span>'))),
   ] });
 
+/* 9. Avatar */
+const AV = (s) => SM(`<span class="hstack" style="gap:8px">${avatar('HN', '#C9B79C', s)}<span class="dim-note">${s}</span></span>`);
+cmp({ id: 'avatar', name: 'Avatar', code: 'DSAvatar',
+  purpose: ['A member\'s photo; without one, their initials on their colour; a typed-in subcontractor gets initials on a neutral colour.', 'Lists show the avatar only; the detail shows avatar + name.'],
+  props: [['size', 'xl · l · m · s · xs', 'm', 'xl 56 profile · l 48 You row · m 40 member row · s 24 detail line · xs 20 issue row'], ['content', 'initials · photo · typedName', 'initials', ''], ['label', 'none · name', 'none', 'name: avatar + name in one line']],
+  spec: [
+    ['Diameter', 'xl 56 · l 48 · m 40 · s 24 · xs 20', 'same'],
+    ['Initials', 'two letters, 600, white, centred both ways · xl 20 · l 17 · m 15 · s 10 · xs 9', 'same'],
+    ['content.initials', 'member colour', 'same'],
+    ['content.typedName', 'neutral #A0A3A9', 'same'],
+    ['label.name', 'size.s + gap 8 + body 17', 'same'],
+  ],
+  variants: [
+    V('size', 'xl', ...AV(56)), V('size', 'l', ...AV(48)), V('size', 'm', ...AV(40)), V('size', 's', ...AV(24)), V('size', 'xs', ...AV(20)),
+    V('content', 'photo', ...SM(wsTile(1, 40, 20))),
+    V('content', 'typedName', ...SM(assigneeAvatar('Vu Construction', 40))),
+    V('label', 'name', ...SM(assigneeLine('Tuan’s masonry crew')), 'size.s'),
+  ] });
+
+/* 10. Text field */
+cmp({ id: 'field', name: 'Text field', code: 'DSTextField',
+  purpose: ['iOS: filled field, label above. Android: outlined field, label on the border.', 'Label, value and placeholder are text parameters; an empty value shows the placeholder.'],
+  props: [['type', 'text · multiline · search', 'text', ''], ['state', 'idle · focused · disabled', 'idle', ''], ['trailing', 'none · icon', 'none', 'e.g. dictation mic'], ['help', 'none · text', 'none', 'one line under the field']],
+  spec: [
+    ['Height', 'type.text 46 · multiline 72+ · search 44', 'type.text 56 · multiline 88+ · search 56'],
+    ['Radius', '11 · search 22', '12 · search 28'],
+    ['Padding (h)', '16', '16'],
+    ['Text · label', 'body 17 · caption 13 text/secondary, 8 above', 'body 17 · caption 13 on the border'],
+    ['state.idle', 'fill bg/fill, no border', '1 px line/strong'],
+    ['state.focused', 'bg/raised, 1.5 text/primary border, caret', '2 px text/primary, label 600'],
+    ['state.disabled', 'opacity 0.30', 'opacity 0.38'],
+    ['trailing.icon', '20 text/secondary', '22 text/secondary'],
+    ['help.text', 'caption 13 text/secondary, 4 below', 'same'],
+  ],
+  variants: [
+    V('type', 'text', iField('Site address', 'Street, district'), aField('Site address', 'Street, district')),
+    V('type', 'multiline', iField('Rooms in every unit', 'Living room, Bedroom 1, Kitchen', { area: true }), aField('Rooms in every unit', 'Living room, Bedroom 1, Kitchen', { area: true })),
+    V('type', 'search', `<div class="search">${I('search', 20)}Search</div>`, `<div class="search">${I('search', 20)}Search</div>`),
+    V('state', 'focused', iField('Name', 'Riverside Tower B', { focus: true }), aField('Name', 'Riverside Tower B', { focus: true })),
+    V('state', 'disabled', `<div style="opacity:.3">${iField('Client', 'Eastline')}</div>`, `<div style="opacity:.38">${aField('Client', 'Eastline')}</div>`),
+    V('trailing', 'icon', iField('What’s wrong', 'Hairline crack', { icon: 'mic' }), aField('What’s wrong', 'Hairline crack', { icon: 'mic' })),
+    V('help', 'text', `${iField('Rooms', 'Kitchen, Bath')}<span class="fn" style="margin-top:-8px;color:var(--ink2)">Separate rooms with commas</span>`, aField('Rooms', 'Kitchen, Bath', { help: 'Separate rooms with commas' })),
+  ] });
+
+/* 11. Selection control */
+const SEL = {
+  toggle: (on) => [`<span class="toggle ${on ? 'on' : ''}"></span>`, `<span class="switch ${on ? 'on' : ''}"></span>`],
+  radio: (on) => [on ? `<span class="radio on">${I('check', 14, 3)}</span>` : '<span class="radio"></span>', `<span class="radio ${on ? 'on' : ''}"></span>`],
+  checkbox: (on) => [on ? `<span>${I('check', 22, 2.6)}</span>` : '<span style="width:22px"></span>', on ? `<span class="cbox on">${I('check', 14, 3)}</span>` : '<span class="cbox"></span>'],
+};
+const SELR = (on) => [row1(...['toggle', 'radio', 'checkbox'].map(k => SEL[k](on)[0])), row1(...['toggle', 'radio', 'checkbox'].map(k => SEL[k](on)[1]))];
+cmp({ id: 'selection', name: 'Selection control', code: 'DSSelectionControl',
+  purpose: ['toggle: a setting that applies at once.', 'radio: one of a list.', 'checkbox: several of a list (iOS draws it as a check mark at the end of the row).', 'The whole row is the touch target.'],
+  props: [['type', 'toggle · radio · checkbox', 'toggle', ''], ['state', 'off · on', 'off', '']],
+  spec: [
+    ['type.toggle', '64 × 28, thumb 38 × 24; on status/success', '52 × 32, thumb 16 → 24 with check; on text/primary'],
+    ['type.radio', '22, 1.5 line/strong; on: ink fill + white check 14', '20, 2 text/secondary; on: ink ring + 10 dot'],
+    ['type.checkbox', 'check mark 22 text/primary at the trail; off: nothing', '20 r4; on: ink fill + white check 14'],
+  ],
+  variants: [
+    V('type', 'toggle', ...SEL.toggle(false)),
+    V('type', 'radio', ...SEL.radio(false)),
+    V('type', 'checkbox', ...SEL.checkbox(false), 'iOS: off shows nothing'),
+    V('state', 'on', ...SELR(true), 'each type, on'),
+  ] });
+
+/* 12. App bar */
+const iNav = (l, t, r, lead) => `<div class="nav" style="padding:0"><div class="l">${l || ''}${lead || ''}</div>${t ? `<div class="ti">${t}</div>` : ''}<div class="rt">${r || ''}</div></div>`;
+const cap = (...ic) => `<div class="gcap lg">${ic.map(i => `<span class="ic">${I(i, 21)}</span>`).join('')}</div>`;
+const aBar = (inner) => `<div class="tab-small" style="margin:0 -16px">${inner}</div>`;
+const iBack = `<div class="gbtn lg">${I('chevron-left', 24, 2.2)}</div>`;
+const aBack = `<span class="ibtn nav-ic">${I('arrow-left', 24)}</span>`;
+cmp({ id: 'appbar', name: 'App bar', code: 'DSAppBar',
+  purpose: ['iOS 26: no bar background; back is a glass circle, actions sit in one glass capsule.', 'Android: small top app bar.', 'Title text and subtitle are parameters.'],
+  props: [['title', 'centre · leading · projectSwitch', 'centre', 'Android draws centre at the start · projectSwitch: Home only'], ['leading', 'none · back', 'none', ''], ['actions', 'none · icons · text', 'none', 'icons: 1–3 · text: one word, prominent']],
+  spec: [
+    ['Height', '52', '64'],
+    ['title.centre', 'bodyStrong 17 / 600, centred', 'heading 20 / 600 at the start'],
+    ['title.leading', 'heading 20 / 600 + caption 13 subtitle', 'same'],
+    ['title.projectSwitch', 'glass pill 44: photo 28 r8 + name 17 / 600 + chevron 16, max 248', 'photo 32 r8 + name 20 / 600 + chevron 18'],
+    ['leading.back', 'glass circle 44, chevron 24', 'icon button 48, arrow 24'],
+    ['actions.icons', 'one glass capsule 44, icon 21 in 40 slots', 'icon buttons 48, icon 22'],
+    ['actions.text', 'glass capsule, padding 16, ink fill', 'text button'],
+  ],
+  variants: [
+    V('title', 'centre', iNav('', 'Level 7', ''), aBar('<span class="ti">Level 7</span>')),
+    V('title', 'leading', iNav('', '', '', `<div class="ti-lead">Issues<span class="ti-sub">Riverside Tower B</span></div>`), aBar('<span class="ti">Issues<span class="ti-sub">Riverside Tower B</span></span>')),
+    V('title', 'projectSwitch', iNav(`<div class="ws lg">${wsTile(0, 28, 8)}<span class="ws-name">Riverside Tower B</span><span style="color:var(--ink2)">${I('chevron-down', 16, 2.4)}</span></div>`, '', ''), aBar(`<span class="ws">${wsTile(0, 32, 8)}<span class="ws-name">Riverside Tower B</span><span style="color:var(--ink2)">${I('chevron-down', 18, 2.4)}</span></span>`)),
+    V('leading', 'back', iNav(iBack, 'Level 7', ''), aBar(`${aBack}<span class="ti">Level 7</span>`)),
+    V('actions', 'icons', iNav('', 'Level 7', cap('search', 'ellipsis')), aBar(`<span class="ti">Level 7</span><span class="ibtn">${I('search', 22)}</span><span class="ibtn">${I('ellipsis-vertical', 22)}</span>`)),
+    V('actions', 'text', iNav('', 'Report', '<div class="gcap txt prom">Next</div>'), aBar('<span class="ti">Report</span><span class="tbtn">Next</span>')),
+  ] });
+
+/* 13. Tab bar */
+const DESTS = [['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']];
+const tabsI = (badge) => `${backdrop}<div class="tabbar lg">${DESTS.map(([i, l]) => `<div class="tab ${l === 'Home' ? 'on' : ''}">${I(i, 25, 2)}<span class="sys-label">${l}</span>${badge && l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+const tabsA = (badge) => `<div class="navbar" style="position:absolute;left:0;right:0;bottom:0">${DESTS.map(([i, l]) => `<div class="dest ${l === 'Home' ? 'on' : ''}"><span class="ind">${I(i, 22, 2)}</span><span class="sys-label">${l}</span>${badge && l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+cmp({ id: 'tabbar', name: 'Tab bar', code: 'DSTabBar',
+  purpose: ['Four destinations, always the same: home · issues · sync · you.', 'iOS: one floating glass capsule; content scrolls under it. Android: navigation bar with a pill indicator.'],
+  props: [['destination', 'home · issues · sync · you', '—', 'fixed list, not a variant of the bar'], ['itemState', 'unselected · selected', 'unselected', ''], ['itemBadge', 'none · count', 'none', 'issues: open-issue count']],
+  spec: [
+    ['Size', 'capsule 64 high, 20 from the sides, 26 above the bottom, r32', '80 high, full width'],
+    ['Item', 'icon 25 + label 10 / 500', 'indicator 64 × 32 r16, icon 22 + label 12 / 500'],
+    ['itemState.selected', 'lighter pill behind the item', 'indicator bg/fill, label 700'],
+    ['itemBadge.count', '18 circle severity/critical, 11 / 600', '16 circle severity/critical, 11 / 600'],
+  ],
+  variants: [
+    V('itemState', 'selected', tabsI(false), tabsA(false), 'home selected'),
+    V('itemBadge', 'count', tabsI(true), tabsA(true), 'on issues'),
+  ], bars: true });
+
+/* 14. Capture bar */
+cmp({ id: 'capture', name: 'Capture bar', code: 'DSCaptureBar',
+  purpose: ['The bottom of a live session: end · capture · plan.', 'The hi-vis capture button is the only large hi-vis element in the app.', 'No variants: the side actions are parameters (icon + label).'],
+  props: [['—', 'no variants', '—', '']],
+  spec: [
+    ['Bar', 'no background; capture centred, side capsules left and right', 'bottom app bar 80; actions 64 wide; FAB at the end'],
+    ['Capture', '72 circle accent/hi-vis, icon 30, 5 glass ring', 'FAB type.capture'],
+    ['Side actions', 'glass capsules 56 high r28, icon 20 + body 17', 'icon 22 + caption 13'],
+  ],
+  variants: [
+    V('—', 'default', `${backdrop}<div class="toolbar"><div class="side lg">${I('flag', 20)}End</div><div class="capture">${I('camera', 30, 2)}</div><div class="side lg">${I('map', 20)}Plan</div></div>`, `<div class="bab" style="position:absolute;left:0;right:0;bottom:0">${[['flag', 'End'], ['map', 'Plan']].map(([ic, l]) => `<div class="act"><span class="ibtn" style="width:40px;height:32px">${I(ic, 22)}</span><span class="t-caption" style="color:var(--ink2)">${l}</span></div>`).join('')}<span class="grow"></span><span class="fab hi">${I('camera', 26, 2)}</span></div>`),
+  ], bars: true });
+
+/* 15. FAB */
+cmp({ id: 'fab', name: 'Floating action button', code: 'DSFab',
+  purpose: ['Android only. The screen\'s main add action (New project, Import plan, Add rooms, Invite) or capture.', 'iOS puts the add action as + in the app bar actions.'],
+  props: [['type', 'capture · add', 'add', 'capture: hi-vis · add: ink'], ['size', 'regular · extended', 'regular', 'extended: icon + label']],
+  spec: [
+    ['size.regular', '—', '56, r16, icon 26'],
+    ['size.extended', '—', '56 high, r16, padding 16 / 20, icon 22 + bodyStrong 17'],
+    ['type.capture', '—', 'accent/hi-vis, icon ink'],
+    ['type.add', '—', 'text/primary fill, icon on-primary'],
+    ['Place', '—', '16 from the bottom-right corner'],
+  ],
+  variants: [
+    V('type', 'add', none, `<span class="fab ink">${I('plus', 26, 2)}</span>`),
+    V('type', 'capture', none, `<span class="fab hi">${I('camera', 26, 2)}</span>`),
+    V('size', 'extended', none, `<div style="position:absolute;inset:0"><div class="efab">${I('file-up', 22, 2.2)}Import plan</div></div>`, 'type.add'),
+  ] });
+
+/* 16. Sheet */
+const iSheet = (full, actions) => `${backdrop}<div class="sheet ${full ? 'full' : ''}" ${full ? 'style="top:16px"' : ''}><div class="grab"></div><div class="sh"><span class="h3">Severity</span><div class="gbtn lg">${I('x', 18, 2.4)}</div></div><div class="sbody" style="padding-bottom:0">${L([iRow({ lead: '<span class="sev major"></span>', title: 'Major', trail: `<span>${I('check', 22, 2.6)}</span>`, chev: false })])}</div>${full ? '<span class="grow"></span>' : ''}${actions ? `<div class="dock"><div class="hstack">${actions === 'pair' ? B('Clear', 'outline') + B('Apply') : B('Apply')}</div></div>` : '<div style="height:20px"></div>'}</div>`;
+const aSheet = (full, actions) => `${backdrop}<div class="sheet ${full ? 'full' : ''}" ${full ? 'style="top:16px"' : ''}><div class="grab"></div><div class="sh"><span class="t-heading">Severity</span><span class="ibtn">${I('x', 22, 2)}</span></div><div class="sbody" style="padding-bottom:0"><div class="list sheet-list">${aRow({ lead: `<span class="cbox on">${I('check', 14, 3)}</span>`, title: 'Major', trail: '<span class="sev major"></span>' })}</div></div>${full ? '<span class="grow"></span>' : ''}${actions ? `<div class="dock"><div class="hstack">${actions === 'pair' ? B('Clear', 'outlined') + B('Apply') : B('Apply')}</div></div>` : ''}<div style="height:24px"></div></div>`;
+cmp({ id: 'sheet', name: 'Sheet', code: 'DSSheet',
+  purpose: ['A focused task over the current screen: filters, pick a project, new issue.', 'Title and body are parameters.'],
+  props: [['detent', 'medium · large', 'medium', 'large: body scrolls, actions stay pinned'], ['actions', 'none · primary · clearApply', 'none', 'clearApply: Clear (outline) + Apply (primary), equal width']],
+  spec: [
+    ['detent.medium', 'inset 8, r40, glass bg (bg/raised 88%)', 'full width, top r28, bg/raised'],
+    ['detent.large', 'full width, top r40, bg/raised', 'top r28, from the top safe area'],
+    ['Grab handle', '36 × 5, line/strong', '32 × 4, line/strong'],
+    ['Header', '56: heading 20 / 600 + close glass 44', '52: heading 20 / 600 + close 48'],
+    ['Body padding', '20', '24'],
+    ['actions', 'Button size.regular; pair = equal width, gap 12', 'same'],
+    ['Scrim', 'black 28%', 'black 32%'],
+  ],
+  variants: [
+    V('detent', 'medium', iSheet(false), aSheet(false)),
+    V('detent', 'large', iSheet(true), aSheet(true)),
+    V('actions', 'primary', iSheet(false, 'one'), aSheet(false, 'one')),
+    V('actions', 'clearApply', iSheet(false, 'pair'), aSheet(false, 'pair')),
+  ], tall: true });
+
+/* 17. Dialog */
+const iAlert = (d) => `${backdrop}<div class="alert" style="top:40px;left:40px"><b>${d ? 'Delete your account?' : 'Leave this session?'}</b><span>${d ? 'Company records you made stay.' : 'It keeps running; you can come back.'}</span><div class="aa"><div>Cancel</div><div style="${d ? 'color:var(--crit)' : 'font-weight:600'}">${d ? 'Delete' : 'Leave'}</div></div></div>`;
+const aDialog = (d) => `${backdrop}<div class="dialog" style="top:40px"><div class="t-heading">${d ? 'Delete your account?' : 'Leave this session?'}</div><div class="t-body" style="color:var(--ink2)">${d ? 'Company records you made stay.' : 'It keeps running; you can come back.'}</div><div class="acts">${B('Cancel', 'text', { sm: true })}${d ? B('Delete', 'danger', { sm: true }) : B('Leave', 'text', { sm: true })}</div></div>`;
+cmp({ id: 'dialog', name: 'Dialog', code: 'DSDialog',
+  purpose: ['Confirms an action that cannot be undone or leaves something unfinished.', 'Title, message and button words are parameters.'],
+  props: [['type', 'default · destructive', 'default', 'destructive: confirm word in severity/critical']],
+  spec: [
+    ['Box', 'alert 313 wide, r34, padding 24', 'r28, padding 24'],
+    ['Title · message', 'bodyStrong 17 / 600 · caption 13', 'heading 20 · body 17 text/secondary'],
+    ['Buttons', 'capsules 48, side by side', 'text buttons, right-aligned'],
+  ],
+  variants: [
+    V('type', 'default', iAlert(false), aDialog(false)),
+    V('type', 'destructive', iAlert(true), aDialog(true)),
+  ], tall: true });
+
+/* 18. Panel */
+const PANELS = {
+  live: `<div class="panel"><div class="hstack"><span class="live"></span><span class="fn" style="color:var(--ink)">Walkthrough in progress · since 8:12</span></div><div><b>Level 7</b><div class="meta">37 of 82 rooms</div></div>${progress(37 / 82)}</div>`,
+  offline: `<div class="panel"><div class="hstack" style="color:var(--ink2)">${I('cloud-off', 18)}<span class="fn">Offline</span></div><div><b>12 photos wait for signal</b><div class="meta">They upload on their own.</div></div></div>`,
+  paused: `<div class="panel"><div class="hstack" style="color:var(--ink2)">${I('pause', 18)}<span class="fn">Paused · yesterday 17:40</span></div><div><b>Level 7</b><div class="meta">37 of 82 rooms</div></div>${row1(B('Resume', 'primary', { sm: true }))}</div>`,
+};
+cmp({ id: 'panel', name: 'Panel', code: 'DSPanel',
+  purpose: ['At most one card per screen, for the one thing that needs attention now.'],
+  props: [['type', 'live · offline · paused', '—', 'required']],
+  spec: [
+    ['Box', 'bg/fill, r14, padding 16, gap 8–12', 'same'],
+    ['Head', 'type.live: live dot · offline / paused: icon 18 text/secondary; caption 13', 'same'],
+    ['type.live', '+ Progress type.bar', 'same'],
+    ['type.paused', '+ Button size.small', 'same'],
+  ],
+  variants: [V('type', 'live', ...SM(PANELS.live)), V('type', 'offline', ...SM(PANELS.offline)), V('type', 'paused', ...SM(PANELS.paused))] });
+
+/* 19. Sync line */
+const syncDemo = (t, ic) => `<div class="sync-line">${I(ic, 18)}<span class="grow">${t}</span>${I('chevron-right', 16, 2.2)}</div>`;
+cmp({ id: 'sync', name: 'Sync line', code: 'DSSyncLine',
+  purpose: ['The current project\'s upload state on Home; opens its files.'],
+  props: [['state', 'uploading · waiting · done', '—', 'counts and time are parameters']],
+  spec: [
+    ['Box', 'min 44 high, r12, 1 px line/hairline, padding 12', 'same'],
+    ['Content', 'icon 18 · caption 13 · chevron 16', 'same'],
+  ],
+  variants: [
+    V('state', 'uploading', ...SM(syncDemo('56 files left to upload · about 6 min', 'cloud-upload'))),
+    V('state', 'waiting', ...SM(syncDemo('12 photos wait for signal', 'cloud-off'))),
+    V('state', 'done', ...SM(syncDemo('Everything uploaded', 'circle-check'))),
+  ] });
+
+/* 20. Progress */
+const ring = (d) => `<span class="stack" style="align-items:center;gap:4px"><span style="width:24px;height:24px;border-radius:12px;background:conic-gradient(var(--ok) ${d * 360}deg, var(--sunken) 0)"></span><span class="dim-note">${Math.round(d * 100)}%</span></span>`;
+cmp({ id: 'progress', name: 'Progress', code: 'DSProgress',
+  purpose: ['bar: counts (rooms checked, files uploaded).', 'ring: one unit or room\'s done ratio, as a row lead.', 'The value 0…1 is a parameter.'],
+  props: [['type', 'bar · ring', 'bar', '']],
+  spec: [
+    ['type.bar', '4 high, r2, track bg/fill, value text/primary', 'same'],
+    ['type.ring', '24 circle, status/success over bg/fill', 'same'],
+  ],
+  variants: [
+    V('type', 'bar', ...SM(progress(0.45))),
+    V('type', 'ring', ...SM(row1(ring(0), ring(0.4), ring(0.75), ring(1))), 'value 0 · 0.4 · 0.75 · 1'),
+  ] });
+
+/* 21. Empty state */
+const emptyDemo = (tone, ic, t, d, b) => `<div style="height:240px;display:flex">${empty(hero(tone, ic, t, d, b ? { extra: b } : {}))}</div>`;
+cmp({ id: 'empty', name: 'Empty state', code: 'DSEmptyState',
+  purpose: ['Icon, title, one sentence, at most one button, centred in the free space of the view.', 'Title and message are parameters.'],
+  props: [['type', 'neutral · ok · critical', 'neutral', 'ok: done · neutral: paused, no match · critical: failed'], ['action', 'none · button', 'none', 'Button type.secondary size.small']],
+  spec: [
+    ['Icon', '64 circle; icon 32', 'same'],
+    ['type.neutral', 'bg/fill circle, text/secondary icon', 'same'],
+    ['type.ok', 'status/success circle, white icon', 'same'],
+    ['type.critical', 'severity/critical circle, white icon', 'same'],
+    ['Title · message', 'heading 20 / 600 · body 17 text/secondary, centred', 'same'],
+    ['Gaps', 'icon → text 16 · title → message 8 · text → button 16', 'same'],
+    ['Placement', 'vertical centre of the free space, above the floating tab bar', 'vertical centre of the free space'],
+  ],
+  variants: [
+    V('type', 'neutral', ...SM(emptyDemo('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue.'))),
+    V('type', 'ok', ...SM(emptyDemo('ok', 'check', 'Nothing open', 'Hanh closed the last one today.'))),
+    V('type', 'critical', ...SM(emptyDemo('crit', 'x', 'Upload failed', 'The server rejected 2 photos.'))),
+    V('action', 'button', emptyDemo('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue.', B('Change filters', 'secondary', { sm: true })), emptyDemo('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue.', B('Change filters', 'tonal', { sm: true }))),
+  ] });
+
+/* ---------- render ---------- */
+const isDefault = (c, v) => (c.props.find(p => p[0] === v.prop) || [])[2] === v.kase;
+document.getElementById('toc').innerHTML = C.map(c => `<a href="#${c.id}">${c.name}</a>`).join('');
+document.getElementById('app').innerHTML = C.map(c => `
+  <section class="cmp" id="${c.id}">
+    <div class="cmp-head"><div><h3>${c.name}</h3><div class="code-name">${c.code}</div></div><ul>${c.purpose.map(n => `<li>${n}</li>`).join('')}</ul></div>
+    <div class="lbl">Properties</div>
+    <table class="spec props"><tr><th>Property</th><th>Cases</th><th>Default</th><th>Note</th></tr>${c.props.map(([p, cs, d, n]) => `<tr><td><code>${p}</code></td><td><code>${cs}</code></td><td><code>${d}</code></td><td>${n}</td></tr>`).join('')}</table>
+    <div class="lbl">Spec</div>
+    <table class="spec"><tr><th>Part</th><th>iOS 26 (pt)</th><th>Android (dp)</th></tr>${c.spec.map(([p, i, a]) => `<tr><td>${p}</td><td>${i}</td><td>${a === 'same' ? '<span style="color:#63676E">same as iOS</span>' : a}</td></tr>`).join('')}</table>
+    <div class="lbl">Variants · each row changes one property from the defaults</div>
+    <div class="vars"><span class="vh">property.case</span><span class="vh">iOS 26</span><span class="vh">Android</span>
+      ${c.variants.map(v => `<div class="vl"><code class="case">${v.prop}.${v.kase}</code>${isDefault(c, v) ? '<small>default</small>' : ''}${v.note ? `<small>${v.note}</small>` : ''}</div><div class="p-ios"><div class="surface ${c.bars ? 'bars' : ''} ${c.tall ? 'tall' : ''}">${v.ios}</div></div><div class="p-android"><div class="surface ${c.bars ? 'bars' : ''} ${c.tall ? 'tall' : ''}">${v.android}</div></div>`).join('')}
+    </div>
+  </section>`).join('');
+lucide.createIcons();
+</script>
+</body>
+</html>
