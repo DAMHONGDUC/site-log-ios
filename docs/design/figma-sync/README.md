@@ -49,7 +49,7 @@
 | 3 | Page 03: screenshot check against the HTML | 1–2 |
 | 4 | Create file 2 (`create_new_file`, exempt from the limit), pages 04 Flows and 05 System design: export, upload, build | 6–8 |
 | 5 | Remove the builder carrier `figx-builder` (`54:4` on page 01) when everything is built | 1 |
-| 6 | Update the status in [00-design-plan §4](../00-design-plan.md#4-status-2026-11-17) and this log | — |
+| 6 | Update the status in [00-design-plan §4](../00-design-plan.md#4-status-2026-11-17) and this log; put the file 2 page links in the README Design sections (iOS §4, Android §6), replacing "Not imported yet" | — |
 
 - About 15 calls in all: fits in one month of the Starter limit if nothing fails. Do the read-only checks last.
 - Any later change to the HTML pages makes the Figma copy stale: re-export only the changed groups and replace their frames.
