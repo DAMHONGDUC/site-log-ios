@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteLog Android Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>window.TYPE_ALIAS = { title: '.tab-large .big h1', heading: '.sec-h > b, .tab-small .ti, .h3', body: '.body, .li .t', caption: '.meta, .li .s, .fn', code: '.code', figure: '.figure' };</script>
+<script src="tokens.js"></script>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="android.css">
+</head>
+<body class="p-android">
+<header class="page-head">
+  <div class="kicker">Page 3 of 5 · Figma page “03 Android”</div>
+  <h1>SiteLog — Android</h1>
+  <p>Android compact · 412×917 dp, edge-to-edge with gesture navigation. The same screens and words as iOS, built from Material 3 parts themed by <code>SiteLogTheme</code>: top app bars with a back arrow, a navigation bar with a pill indicator, full-pill buttons, outlined text fields, tabs, segmented buttons, filter chips, bottom sheets with a drag handle, dialogs and snackbars. The capture button becomes the hi-vis FAB of a bottom app bar. Inter and JetBrains Mono ship in the app; Lucide stands in for Material Symbols. Colours and text styles: page 1.</p>
+</header>
+<main id="app"></main>
+<script src="kit.js"></script>
+<script>
+/* ---------- Android helpers ---------- */
+const sb = (o = {}) => `<div class="sb"><span>${o.time || '9:41'}</span><span class="cam"></span><span class="r">${o.noWifi ? '' : wifi('currentColor')}${signal('currentColor')}${battery('currentColor')}</span></div>`;
+const screen = (id, title, inner, o = {}) => figure(id, title, `<div class="phone ${o.dark ? 'dark' : ''}">${sb(o)}${inner}<div class="gnav ${o.over ? 'over' : ''} ${o.lightNav ? 'light' : ''}"></div></div>`, 412);
+
+const actions = (list = []) => list.map(a => { if (!a.startsWith('@')) return `<span class="tbtn">${a}</span>`; const [n, c] = a.slice(1).split('#'); return `<span class="ibtn ${c ? 'fbtn' : ''}">${I(n, 22)}${c ? `<span class="fbadge">${c}</span>` : ''}</span>`; }).join('');
+const tabSmall = (o = {}) => `<div class="tab-small">${o.lead || ''}${o.nav ? `<span class="ibtn nav-ic">${I(o.nav, 24)}</span>` : ''}<span class="ti">${o.title || ''}${o.sub ? `<span class="ti-sub">${o.sub}</span>` : ''}</span>${actions(o.actions)}</div>`;
+const tabLarge = (title, sub, o = {}) => `<div class="tab-large"><div class="tab-small">${o.lead || ''}${o.nav ? `<span class="ibtn nav-ic">${I(o.nav, 24)}</span>` : ''}<span class="ti"></span>${actions(o.actions)}</div><div class="big"><h1>${title}</h1>${sub ? `<div class="sub t-caption" style="color:var(--ink2)">${sub}</div>` : ''}</div></div>`;
+const content = (h, cls = '') => `<div class="content ${cls}">${h}</div>`;
+const dock = (h, cls = '') => `<div class="dock ${cls}">${h}</div>`;
+const btn = (t, k = 'primary', ic, o = {}) => `<div class="btn ${k} ${o.sm ? 'sm' : ''}" ${o.disabled ? 'disabled' : ''} ${o.style ? `style="${o.style}"` : ''}>${ic ? I(ic, o.sm ? 18 : 20, 2) : ''}${t}</div>`;
+const sec = (title, h, right = '') => `<section class="stack sec" style="gap:4px"><div class="sec-h"><b>${title}</b>${right ? `<span>${right}</span>` : ''}</div>${h}</section>`;
+const list = (rows, inset) => `<div class="list" ${inset ? `style="--inset:${inset}px"` : ''}>${rows.join('')}</div>`;
+const li = (o) => `<div class="li ${o.sub ? 'two' : ''}">${o.lead || ''}<div class="grow" style="display:flex;flex-direction:column;gap:4px"><div class="t">${o.title}</div>${o.sub ? `<div class="s">${o.sub}</div>` : ''}</div>${o.trail || ''}${o.chev ? `<span class="chev">${I('chevron-right', 20, 2)}</span>` : ''}</div>`;
+/* Project switch in the navigation slot: the project's site photo + a dropdown arrow; opens W1 */
+const ws = (i = 0) => `<span class="ws">${wsTile(PROJECTS[i][2], 32, 8)}<span class="ws-name">${PROJECTS[i][0]}</span><span style="color:var(--ink2)">${I('chevron-down', 18, 2.4)}</span></span>`;
+const navbar = (on, badge = { Issues: 2 }) => `<div class="navbar">${[['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']].map(([i, l]) => `<div class="dest ${l === on ? 'on' : ''}"><span class="ind">${I(i, 22, l === on ? 2.2 : 1.8)}</span><span class="sys-label">${l}</span>${badge[l] ? `<span class="badge">${badge[l]}</span>` : ''}</div>`).join('')}</div>`;
+const field = (l, v, o = {}) => `<div class="ofield ${o.focus ? 'focus' : ''}" ${o.style ? `style="${o.style}"` : ''}>${l ? `<label>${l}</label>` : ''}<div class="box ${o.area ? 'area' : ''}">${o.ph ? `<span class="placeholder grow t-body">${v}</span>` : `<span class="grow t-body">${v}${o.focus ? '<span class="caret"></span>' : ''}</span>`}${o.icon ? `<span style="color:var(--ink2)">${I(o.icon, 22)}</span>` : ''}</div>${o.help ? `<div class="help">${o.help}</div>` : ''}</div>`;
+const segb = (items, on, cls = '') => `<div class="segb ${cls}">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t === on ? I('check', 16, 2.4) : ''}${t}</div>`).join('')}</div>`;
+const tabs = (items, on) => `<div class="tabs">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t}</div>`).join('')}</div>`;
+const chip = (t, on, ic) => `<span class="chip ${on ? 'on' : ''}">${on ? I('check', 16, 2.4) : ic ? I(ic, 16) : ''}${t}</span>`;
+const sheet = (title, body, dk, o = {}) => `<div class="dim"></div><div class="sheet ${o.full ? 'full' : ''}" ${o.style ? `style="${o.style}"` : ''}><div class="grab"></div>${title ? `<div class="sh"><span class="t-heading">${title}</span><span class="ibtn">${I('x', 22, 2)}</span></div>` : ''}<div class="sbody" ${o.after ? 'style="flex:1"' : ''}>${body}</div>${dk ? dock(dk) : ''}${o.after || ''}<div style="height:24px;flex:none"></div></div>`;
+const dialog = (title, text, acts) => `<div class="dim"></div><div class="dialog"><div class="t-heading">${title}</div><div class="t-body" style="color:var(--ink2)">${text}</div><div class="acts">${acts}</div></div>`;
+const snack = (text, act, bottom) => `<div class="snack" style="bottom:${bottom}px"><span class="grow">${text}</span>${act ? `<span class="tbtn" style="color:var(--hi)">${act}</span>` : ''}</div>`;
+const keyboard = () => `<div class="kb">${['qwertyuiop', 'asdfghjkl'].map(r => `<div class="kr">${[...r].map(k => `<span class="k">${k}</span>`).join('')}</div>`).join('')}<div class="kr"><span class="k fn" style="width:52px">${I('arrow-big-up', 20)}</span>${[...'zxcvbnm'].map(k => `<span class="k">${k}</span>`).join('')}<span class="k fn" style="width:52px">${I('delete', 20)}</span></div><div class="kr"><span class="k fn" style="width:64px">?123</span><span class="k fn" style="width:40px">,</span><span class="k" style="width:170px;font-size:14px"></span><span class="k fn" style="width:40px">.</span><span class="k go" style="width:64px">${I('arrow-right', 20, 2)}</span></div></div>`;
+const bab = (acts, fab = 'camera') => `<div class="bab">${acts.map(([ic, l]) => `<div class="act"><span class="ibtn" style="width:40px;height:32px">${I(ic, 22)}</span><span class="t-caption" style="color:var(--ink2)">${l}</span></div>`).join('')}<span class="grow"></span><span class="fab hi">${I(fab, 26, 2)}</span></div>`;
+const dots = (filled, n = 6) => `<div class="hstack" style="gap:16px;justify-content:center">${Array.from({ length: n }, (_, i) => `<span style="width:14px;height:14px;border-radius:7px;border:2px solid var(--ink);${i < filled ? 'background:var(--ink)' : ''}"></span>`).join('')}</div>`;
+const numpad = () => `<div style="flex:none;padding:0 48px 24px;display:grid;grid-template-columns:repeat(3,80px);justify-content:space-between;row-gap:12px">${['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(k => k === '' ? '<span></span>' : k === '⌫' ? `<span style="height:72px;display:grid;place-items:center;color:var(--ink)">${I('delete', 26, 1.8)}</span>` : `<span style="width:80px;height:72px;border-radius:36px;background:var(--sunken);display:grid;place-items:center;font-size:28px;font-weight:400">${k}</span>`).join('')}</div>`;
+const titleBlock = (t, sub) => `<div style="padding:0 16px 12px;flex:none"><h1 class="t-title">${t}</h1>${sub ? `<div class="t-caption" style="color:var(--ink2);margin-top:4px">${sub}</div>` : ''}</div>`;
+const CHECK_ROW = (on) => on ? `<span class="radio on"></span>` : `<span class="radio"></span>`;
+
+/* ======================= Access ======================= */
+group('Access', 'specs 07, 08', [
+screen('A1', 'Biometric unlock', `
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding-bottom:180px">
+    ${appMark(72, 0.5)}
+    <div class="stack" style="gap:4px"><div class="t-heading">SiteLog is locked</div><div class="fn">Unlock to view site photos and reports.</div></div>
+  </div>`)}
+  <div class="dim"></div>
+  <div class="sheet" style="align-items:center;text-align:center;padding:24px 24px 0"><div class="t-heading" style="margin-top:8px">Unlock SiteLog</div><div class="fn" style="margin-top:8px">Use your fingerprint or face</div>
+    <span style="width:72px;height:72px;border-radius:36px;background:var(--sunken);display:grid;place-items:center;margin:32px 0 12px;color:var(--ink)">${I('fingerprint', 40, 1.6)}</span><div class="fn">Touch the sensor</div>
+    <div class="hstack" style="width:100%;justify-content:flex-start;margin:20px 0 4px">${btn('Use passcode', 'text', null, { sm: true })}</div><div style="height:24px"></div></div>`, { over: true }),
+screen('A3', 'Enter passcode', `
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+    ${appMark(48, 0.5)}
+    <div class="t-heading">Enter passcode</div>
+    ${dots(2)}
+    <div class="fn">2 tries left before a 1-minute wait</div>
+  </div>`)}
+  ${numpad()}
+  <div class="hstack" style="justify-content:center;padding-bottom:8px">${btn('Forgot passcode?', 'text', null, { sm: true })}</div>`),
+screen('A2', 'Sign in (optional)', `
+  ${content(`<div style="padding-top:48px;align-items:center;text-align:center" class="stack">
+    ${appMark(56, 0.5)}
+    <div class="t-title" style="margin-top:24px">Your site log,<br>on every device.</div>
+    <div class="t-body" style="color:var(--ink2);margin-top:8px">Sign in to back up projects and hand off between your phone and tablet. Everything still works offline without an account.</div>
+  </div>
+  <div class="stack" style="margin-top:auto;gap:12px;align-items:center">
+    ${[['wifi-off', 'Works with zero signal'], ['shield-check', 'Photos hashed at capture'], ['file-text', 'Signed PDF in one tap']].map(([i, t]) => `<div class="hstack" style="gap:12px"><span style="width:36px;height:36px;border-radius:18px;background:var(--sunken);display:grid;place-items:center">${I(i, 18)}</span><span class="t-body">${t}</span></div>`).join('')}
+  </div>`)}
+  ${dock(`${btn('Continue with Google', 'primary', 'chrome')}${btn('Continue with email', 'outlined', 'mail')}${btn('Continue offline', 'text')}`, 'clear')}`),
+]);
+
+/* ======================= Home & projects ======================= */
+const PLAN_ICON = `<span style="width:56px;height:40px;border-radius:4px;background:var(--plan);border:1px solid var(--line-strong);position:relative;overflow:hidden;flex:none"><svg viewBox="0 0 56 40" style="position:absolute;inset:0" fill="none" stroke="#9A9DA3" stroke-width="1"><rect x="4" y="4" width="48" height="32"/><line x1="28" y1="4" x2="28" y2="20"/><line x1="4" y1="20" x2="52" y2="20"/></svg></span>`;
+const ring = (done) => `<span style="width:24px;height:24px;border-radius:12px;flex:none;background:conic-gradient(var(--ok) ${done * 360}deg, var(--sunken) 0)"></span>`;
+const TAB_BODY = {
+  Sessions: () => list([
+      li({ lead: `<span style="width:12px"></span>`, title: 'Tue 12 Aug', sub: '112 photos · 14 issues · Hanh', trail: `<span class="file-tag">PDF</span>`, chev: true }),
+      li({ lead: `<span style="width:12px"></span>`, title: 'Mon 28 Jul', sub: '87 photos · 9 issues · Hanh', trail: `<span class="file-tag">PDF</span>`, chev: true }),
+      li({ lead: `<span style="width:12px"></span>`, title: 'Thu 10 Jul', sub: '64 photos · 5 issues · Minh', chev: true }),
+    ], 44),
+  Locations: () => [['Level 7', '37 of 82 rooms', [['Unit 7A', '3 of 4 rooms checked', 'crit', '2 critical'], ['Unit 7C', '5 of 5 rooms checked', 'ok', 'Done']]], ['Level 8', '0 of 41 rooms', [['Unit 8A', '0 of 4 rooms checked', 'major', '1 major']]]].map(([lvl, count, units]) => sec(lvl, list(units.map(([u, sub, k, n]) => li({ lead: ring(+sub.split(' ')[0] / +sub.split(' ')[2]), title: u, sub, trail: k ? sev(k, n) : '', chev: true })), 56), count)).join('')
+    + `<div class="efab">${I('list-plus', 22, 2.2)}Add rooms</div>`,
+  Plans: () => list([['Level 7 architectural', 'PDF · 7 pins'], ['Level 8 architectural', 'PDF · 3 pins'], ['Level 9 architectural', 'Photo of printed sheet · no pins'], ['Level 7 electrical', 'PDF, sheet 2 of 6 · 1 pin']].map(([t, s]) => li({ lead: `<span style="width:56px;height:40px;border-radius:4px;background:var(--plan);border:1px solid var(--line-strong);position:relative;overflow:hidden;flex:none"><svg viewBox="0 0 56 40" style="position:absolute;inset:0" fill="none" stroke="#9A9DA3" stroke-width="1"><rect x="4" y="4" width="48" height="32"/><line x1="28" y1="4" x2="28" y2="20"/><line x1="4" y1="20" x2="52" y2="20"/></svg></span>`, title: t, sub: s, chev: true })), 88)
+    + `<div class="foot">Plans live on this phone and open without signal.</div><div class="efab">${I('file-up', 22, 2.2)}Import plan</div>`,
+};
+/* Home of the current project: live walkthrough on top, then Sessions · Locations · Plans */
+const syncLine = (text, icon = 'cloud-upload') => `<div class="sync-line">${I(icon, 18)}<span class="grow">${text}</span>${I('chevron-right', 16, 2.2)}</div>`;
+const homeBody = (tab = 'Sessions', o = {}) => `<div class="stack" style="gap:24px"><div class="stack" style="gap:12px">
+    ${o.sync || syncLine('56 files left to upload · about 6 min')}
+    ${o.top || `<div class="panel" style="gap:12px">
+      <div class="hstack" style="gap:8px"><span class="live"></span><span class="fn" style="color:var(--ink)">Walkthrough in progress · since 8:12</span></div>
+      <div><div class="t-bodyStrong">Level 7</div><div class="meta">37 of 82 rooms · 46 photos, 7 new issues</div></div>
+      ${progress(37 / 82)}
+      <div class="hstack" style="justify-content:flex-end">${btn('Resume', 'primary', null, { sm: true })}</div>
+    </div>`}</div>
+    <div class="stack" style="gap:16px">${tabsRow(tab)}${TAB_BODY[tab]()}</div></div>`;
+const filterBtn = (n = 0) => `<span class="ibtn fbtn">${I('list-filter', 22, 2.2)}${n ? `<span class="fbadge">${n}</span>` : ''}</span>`;
+const tabsRow = (tab, n = 0) => `<div class="home-tabs">${tabs(['Sessions', 'Locations', 'Plans'], tab)}${filterBtn(n)}</div>`;
+/* Scrolled Home: the walkthrough card and sync line are gone; the top app bar takes the scrolled tint and the tab row pins under it */
+const pinnedHome = (tab, n, body) => `<div class="pin-head">${tabSmall({ lead: ws(0), actions: ['@search', '@ellipsis-vertical'] })}${tabsRow(tab, n)}</div>${content(body, 'pinned')}`;
+const resultCount = (t) => `<div class="fn">${t}</div>`;
+const SCROLLED = {
+  Sessions: () => list(MORE_SESSIONS.map(([d, sub, pdf]) => li({ lead: `<span style="width:12px"></span>`, title: d, sub, trail: pdf ? `<span class="file-tag">PDF</span>` : '', chev: true })), 44),
+  Locations: () => resultCount('4 units') + UNITS_WITH_ISSUES.map(([lvl, units]) => sec(lvl, list(units.map(([u, sub, k, n]) => li({ lead: ring(+sub.split(' ')[0] / +sub.split(' ')[2]), title: u, sub, trail: sev(k, n), chev: true })), 56))).join('') + `<div class="efab">${I('list-plus', 22, 2.2)}Add rooms</div>`,
+  Plans: () => list(MORE_PLANS.map(([t, sub]) => li({ lead: PLAN_ICON, title: t, sub, chev: true })), 88) + `<div class="efab">${I('file-up', 22, 2.2)}Import plan</div>`,
+};
+const FILTERED = {
+  Sessions: () => resultCount('4 of 7 sessions') + list(FILTERED_SESSIONS.map(([d, sub]) => li({ lead: `<span style="width:12px"></span>`, title: d, sub, trail: `<span class="file-tag">PDF</span>`, chev: true })), 44),
+  Plans: () => resultCount('3 of 8 plans') + list(FILTERED_PLANS.map(([t, sub]) => li({ lead: PLAN_ICON, title: t, sub, chev: true })), 88),
+  PlansEmpty: () => empty(hero('neutral', 'search-x', 'No plans match', 'Level 9 has one plan, a photo of a printed sheet, and it has no pins yet.', { extra: btn('Clear filters', 'tonal', null, { sm: true }) })),
+};
+/* Every filter sheet ends with the same two buttons */
+const filterActions = () => `<div class="hstack">${btn('Clear', 'outlined')}${btn('Apply', 'primary')}</div>`;
+const filterSheet = (tab) => sheet(`Filter ${tab.toLowerCase()}`, HOME_FILTERS[tab].map(([label, opts, on]) => `<div class="stack" style="gap:8px"><span class="fn">${label}</span><div class="chips">${opts.map((o, i) => chip(o, on.includes(i))).join('')}</div></div>`).join(''), filterActions(), HOME_FILTERS[tab].length > 5 ? { full: true, style: 'top:48px' } : {});
+const homeBar = () => tabSmall({ lead: ws(0), actions: ['@search', '@ellipsis-vertical'] });
+const switcher = (cur = 0) => sheet('Projects', `
+    <div class="list sheet-list" style="--inset:88px">${PROJECTS.map(([n, p, v, open, late, live], i) => li({ lead: wsTile(v, 48, 12), title: `${live ? '<span class="live" style="display:inline-block;margin-right:8px;vertical-align:1px"></span>' : ''}${n}`, sub: `${p} · ${open ? `${open} open` : 'nothing open'}${late ? ` · <span style="color:var(--crit)">${late} overdue</span>` : ''}`, trail: i === cur ? `<span style="color:var(--ink)">${I('check', 22, 2.6)}</span>` : '' })).join('')}</div>
+    <div class="hstack" style="gap:8px">${btn('New project', 'primary', 'plus', { style: 'flex:1' })}${btn('Archived · 2', 'outlined', 'archive', { style: 'flex:1' })}</div>`);
+group('Home & projects', 'spec 01 · each project is a workspace', [
+screen('P1', 'Home', `
+  ${homeBar()}
+  ${content(homeBody(), 'home-tab')}
+  ${navbar('Home')}`),
+screen('W1', 'Switch project', `
+  ${homeBar()}
+  ${content(homeBody(), 'home-tab')}
+  ${switcher(0)}`, { over: true }),
+screen('P8', 'Home · Locations', `
+  ${homeBar()}
+  ${content(homeBody('Locations'), 'home-tab')}
+  ${navbar('Home')}`),
+screen('P9', 'Home · Plans', `
+  ${homeBar()}
+  ${content(homeBody('Plans'), 'home-tab')}
+  ${navbar('Home')}`),
+]);
+group('Home · scroll and filters', 'the tab row pins when scrolled; each sub-tab has its own filter', [
+screen('P1s', 'Home · Sessions · scrolled', `
+  ${pinnedHome('Sessions', 0, SCROLLED.Sessions())}
+  ${navbar('Home')}`),
+screen('P1f', 'Home · Sessions · filtered', `
+  ${pinnedHome('Sessions', 2, FILTERED.Sessions())}
+  ${navbar('Home')}`),
+screen('P8s', 'Home · Locations · scrolled, filtered', `
+  ${pinnedHome('Locations', 1, SCROLLED.Locations())}
+  ${navbar('Home')}`),
+screen('P9s', 'Home · Plans · scrolled', `
+  ${pinnedHome('Plans', 0, SCROLLED.Plans())}
+  ${navbar('Home')}`),
+screen('P9f', 'Home · Plans · filtered', `
+  ${pinnedHome('Plans', 2, FILTERED.Plans())}
+  ${navbar('Home')}`),
+screen('P9e', 'Home · Plans · no match', `
+  ${pinnedHome('Plans', 2, FILTERED.PlansEmpty())}
+  ${navbar('Home')}`),
+screen('HF1', 'Filter sessions', `
+  ${pinnedHome('Sessions', 0, SCROLLED.Sessions())}
+  ${filterSheet('Sessions')}`, { over: true }),
+screen('HF2', 'Filter locations', `
+  ${pinnedHome('Locations', 1, SCROLLED.Locations())}
+  ${filterSheet('Locations')}`, { over: true }),
+screen('HF3', 'Filter plans', `
+  ${pinnedHome('Plans', 0, SCROLLED.Plans())}
+  ${filterSheet('Plans')}`, { over: true }),
+]);
+const P5_INNER = `
+  ${tabSmall({ nav: 'arrow-left', title: 'Level 7', actions: ['@list-tree'] })}
+  ${content(`
+    <div class="stack" style="gap:8px"><div class="hstack" style="justify-content:space-between"><span class="fn">37 of 82 rooms checked</span><span class="fn">since 8:12</span></div>${progress(37 / 82)}</div>
+    <div class="chips">${chip('All', true)}${chip('Not checked')}${chip('Has issues')}${chip('Re-check due')}</div>
+    ${sec('Unit 7A', list([
+      li({ lead: `<span style="color:var(--ok)">${I('circle-check', 24, 1.8)}</span>`, title: 'Living room', trail: `<span class="hstack" style="gap:12px">${sev('crit', '2 critical')}<span class="val">4</span></span>` }),
+      li({ lead: `<span style="color:var(--ok)">${I('circle-check', 24, 1.8)}</span>`, title: 'Bedroom 1', trail: `<span class="val">3</span>` }),
+      li({ lead: `<span style="color:var(--ink3)">${I('circle', 24, 1.5)}</span>`, title: 'Bathroom', sub: '1 issue from 12 Aug to re-check', trail: sev('major') }),
+      li({ lead: `<span style="color:var(--ink3)">${I('circle', 24, 1.5)}</span>`, title: 'Kitchen' }),
+    ], 56), '3 of 4')}
+    ${sec('Unit 7B', list([li({ lead: `<span style="color:var(--ink3)">${I('circle', 24, 1.5)}</span>`, title: 'Living room' })], 56), '0 of 5')}
+    ${snack('Issue #7 saved in Living room', 'Undo', 16)}`, 'tight')}
+  ${bab([['flag', 'End'], ['map', 'Plan']])}`;
+group('Projects and walkthrough', 'spec 01', [
+screen('P2', 'New project · keyboard up', `
+  ${tabSmall({ nav: 'arrow-left', title: 'New project' })}
+  ${content(`
+    ${field('Name', 'Riverside Tower B', { focus: true })}
+    ${field('Site address', 'Street, district', { ph: true })}
+    ${field('Client', 'Optional', { ph: true })}
+    <div class="fn">You can add rooms, plans and checklists after it’s created.</div>`, 'tight')}
+  ${dock(btn('Create project', 'primary'), 'clear')}
+  ${keyboard()}`),
+screen('W2', 'Archived projects', `
+  ${tabSmall({ nav: 'arrow-left', title: 'Archived' })}
+  ${content(`
+    ${list([
+      li({ lead: wsTile(3, 48, 12), title: 'District 1 Office Fit-out', sub: 'Archived 3 Jun · 31 issues, all closed', trail: btn('Restore', 'outlined', null, { sm: true }) }),
+      li({ lead: wsTile(2, 48, 12), title: 'Thu Thiem Showroom', sub: 'Archived 12 Feb · 2 issues left open', trail: btn('Restore', 'outlined', null, { sm: true }) })
+    ], 80)}
+    <div class="fn">Archived projects keep every photo, issue and report. Restore one to see it in the project switch again.</div>`, 'tight')}`),
+screen('P4', 'Start session', `
+  ${tabSmall({ lead: ws(0) })}
+  ${sheet('New walkthrough', `
+    ${field('Inspector', 'Hanh Nguyen')}
+    <div class="stack" style="gap:8px"><span class="fn">Weather</span><div class="chips">${chip('Sunny', true)}${chip('Overcast', false, 'cloud')}${chip('Rain', false, 'cloud-rain')}</div></div>
+    ${field('Note for the report', 'e.g. finishing check, levels 7–9', { ph: true, area: true })}
+    <div class="hstack" style="gap:12px;align-items:flex-start"><span style="color:var(--ink2);flex:none">${I('rotate-ccw', 20)}</span><span class="meta" style="color:var(--ink)">14 issues from 12 Aug will be waiting in their rooms for you to re-check.</span></div>
+  `, btn('Start', 'primary'))}`, { over: true }),
+screen('P5', 'Walkthrough · rooms', `${P5_INNER}`),
+screen('P5J', 'Walkthrough · jump to a unit', `${P5_INNER}
+  ${sheet('Jump to', JUMP_UNITS.map(([lvl, count, units]) => sec(lvl, list(units.map(([u, d, t]) => li({ lead: ring(d / t), title: u, sub: `${d} of ${t} rooms checked`, chev: true })), 56), count)).join(''))}`, { over: true }),
+screen('P6', 'Generate locations', `
+  ${tabSmall({ nav: 'arrow-left', title: 'Add rooms in bulk' })}
+  ${content(`
+    <div class="hstack" style="gap:12px">${field('Levels', '7 to 9', { style: 'flex:1' })}${field('Units per level', 'A to H', { style: 'flex:1' })}</div>
+    ${field('Rooms in every unit', 'Living room, Bedroom 1, Bedroom 2, Bathroom, Kitchen', { area: true, help: 'Separate rooms with commas' })}
+    ${sec('Preview', `<div class="code" style="line-height:24px;color:var(--ink)">Level 7 › 7A › Living room<br>Level 7 › 7A › Bedroom 1<br>Level 7 › 7A › Bedroom 2<br><span class="muted">and 117 more</span></div>`, '120 rooms')}
+    <div class="fn">Already have this layout in another project? <span class="link">Copy its rooms</span></div>`, 'tight')}
+  ${dock(btn('Add 120 rooms', 'primary'))}`),
+screen('P7', 'Room', `
+  ${tabSmall({ nav: 'arrow-left', actions: ['@ellipsis-vertical'] })}${titleBlock('Living room', 'Unit 7A · Level 7')}
+  ${content(`
+    <div class="hstack" style="gap:12px;align-items:flex-start"><span style="color:var(--ink2);flex:none">${I('rotate-ccw', 20)}</span><div class="grow"><div class="t-body" style="font-weight:600">2 issues to re-check from 12 Aug</div><div class="meta">Crack by the skirting, loose socket cover</div></div><span class="link">Compare</span></div>
+    ${sec('Photos', `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:0 -16px">${[0, 3, 2, 0, 1, 3].map((v, i) => `<div style="aspect-ratio:1;position:relative">${scene(v, { crack: i === 0 })}${i === 0 ? `<span class="sev crit solid" style="position:absolute;left:6px;bottom:6px">#3</span>` : ''}${i === 5 ? `<span style="position:absolute;right:6px;bottom:6px;font-size:13px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">10:42</span>` : ''}</div>`).join('')}</div>`, '6 today')}
+    ${list([li({ title: 'Finishing checklist', sub: '14 of 22 answered', trail: `<span class="val">64%</span>`, chev: true })])}`, 'tight')}
+  ${bab([['triangle-alert', 'Issue'], ['list-checks', 'Checklist']])}`),
+]);
+
