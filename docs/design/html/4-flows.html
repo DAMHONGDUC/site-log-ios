@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteLog Flows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>window.TYPE_ALIAS = { title: '.lt h1', heading: '.sec-h > b, .h3', bodyStrong: '.nav .ti', body: '.body, .row .t', caption: '.meta, .row .s, .fn, .field > span', code: '.code', figure: '.figure' };</script>
+<script src="tokens.js"></script>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="ios.css">
+</head>
+<body class="p-ios">
+<header class="page-head">
+  <div class="kicker">Page 4 of 5 · Figma page “04 Flows”</div>
+  <h1>SiteLog — Flows</h1>
+  <p>How a person moves through the app, drawn with the iOS screens (Android follows the same flows with its own controls). In each row the ringed control is the one to tap; the arrow and its label lead to the screen it opens. Every screen here is the same one as on page 2, scaled to 50%.</p>
+</header>
+<main id="app"></main>
+<script src="kit.js"></script>
+<script src="ios-screens.js"></script>
+<script>
+const FLOWS = [
+  { name: 'Switch project', steps: [{ id: 'P1', hot: '.ws', label: 'Tap the project' }, { id: 'W1', hot: 'Harbor View Villas', label: 'Pick a project' }, { id: 'P1' }] },
+  { name: 'New and archived projects', steps: [{ id: 'W1', hot: 'New project', label: 'New project' }, { id: 'P2', hot: 'Create project', label: 'Create' }, { id: 'P1' }] },
+  { name: 'Restore an archived project', steps: [{ id: 'W1', hot: 'Archived', label: 'Archived' }, { id: 'W2', hot: 'Restore', label: 'Restore' }, { id: 'W1' }] },
+  { name: 'Home tabs', steps: [{ id: 'P1', hot: 'Locations', label: 'Locations' }, { id: 'P8', hot: 'Plans', label: 'Plans' }, { id: 'P9' }] },
+  { name: 'Scroll Home, filter a tab', steps: [{ id: 'P1', hot: '', label: 'Scroll down' }, { id: 'P1s', hot: '.fbtn', label: 'Filter' }, { id: 'HF1', hot: 'Apply', label: 'Apply' }, { id: 'P1f' }] },
+  { name: 'Filter plans with no match', steps: [{ id: 'P9s', hot: '.fbtn', label: 'Filter' }, { id: 'HF3', hot: 'Apply', label: 'Apply' }, { id: 'P9f', hot: '.fbtn', label: 'Filter Level 9 instead' }, { id: 'P9e', hot: 'Clear filters', label: 'Clear filters' }, { id: 'P9s' }] },
+  { name: 'From a plan to an issue', steps: [{ id: 'P9', hot: 'Level 7 architectural', label: 'Open a plan' }, { id: 'M4', hot: '.pin', label: 'Tap a pin' }, { id: 'M5', hot: 'Open', label: 'Open' }, { id: 'C6' }] },
+  { name: 'Walk a room and log an issue', steps: [{ id: 'P1', hot: 'Resume', label: 'Resume' }, { id: 'P5', hot: '.capture', label: 'Capture' }, { id: 'C1', hot: 'Issue', label: 'Issue' }, { id: 'C2', hot: 'Save, next photo', label: 'Save' }, { id: 'C1' }] },
+  { name: 'Filter issues: all filters', steps: [{ id: 'C5', hot: '.lucide-list-filter', label: 'All filters' }, { id: 'F1', hot: 'Apply', label: 'Apply' }, { id: 'C5f' }] },
+  { name: 'Filter issues: one group from its chip', steps: [{ id: 'C5', hot: 'Severity', label: 'Severity' }, { id: 'F1s', hot: 'Apply', label: 'Apply' }, { id: 'C5f', hot: 'Critical, Major', label: 'Pick Minor' }, { id: 'C5e' }] },
+  { name: 'Jump to a unit', steps: [{ id: 'P5', hot: '.lucide-list-tree', label: 'Jump to' }, { id: 'P5J', hot: 'Unit 8A', label: 'Pick a unit' }, { id: 'P5' }] },
+  { name: 'Choose what the plan shows', steps: [{ id: 'M4', hot: '.lucide-layers', label: 'Layers' }, { id: 'M4L', hot: 'Apply', label: 'Apply' }, { id: 'M4' }] },
+  { name: 'Re-check an issue', steps: [{ id: 'C5', hot: 'Hairline crack by the skirting', label: 'Open issue' }, { id: 'C6', hot: 'Re-check now', label: 'Re-check now' }, { id: 'C3', hot: '.shutter', label: 'Shoot' }, { id: 'C4', hot: 'Save', label: 'Save' }, { id: 'C6' }] },
+  { name: 'Run a checklist', steps: [{ id: 'P7', hot: 'Checklist', label: 'Checklist' }, { id: 'K1', hot: 'Bathroom waterproofing', label: 'Pick one' }, { id: 'K2', hot: '.fail.on', label: 'Fail' }, { id: 'K3', hot: 'Save issue', label: 'Save issue' }, { id: 'K4' }] },
+  { name: 'Finish and report', steps: [{ id: 'P5', hot: 'End', label: 'End walkthrough' }, { id: 'R1', hot: 'Make the report', label: 'Make the report' }, { id: 'R2', hot: 'Create PDF', label: 'Create PDF' }, { id: 'R5', hot: 'Send', label: 'Send' }] },
+  { name: 'Unlock', steps: [{ id: 'A1', hot: 'Enter passcode', label: 'Use passcode' }, { id: 'A3' }] },
+  { name: 'Sync status on Home', steps: [{ id: 'P1', hot: '.sync-line', label: 'Upload status' }, { id: 'U2' }] },
+  { name: 'Sync across projects', steps: [{ id: 'U1', hot: '.tag', label: 'Open a project' }, { id: 'U2' }] },
+  { name: 'Invite a member', steps: [{ id: 'S1', hot: 'Team', label: 'Team' }, { id: 'T1', hot: '.lucide-plus', label: 'Invite' }, { id: 'T2', hot: 'Send invite', label: 'Send invite' }, { id: 'T5', hot: 'Continue with Apple', label: 'They sign in' }, { id: 'P1' }] },
+  { name: 'Change a role, project access', steps: [{ id: 'T1', hot: 'Le Thu', label: 'Open member' }, { id: 'T3' }] },
+  { name: 'You and app lock', steps: [{ id: 'S1', hot: 'App lock', label: 'App lock' }, { id: 'S4', hot: 'Change passcode', label: 'Change passcode' }, { id: 'S5' }] },
+];
+renderFlows('app', FLOWS);
+</script>
+</body>
+</html>
