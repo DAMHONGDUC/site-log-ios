@@ -462,3 +462,142 @@ screen('U3', 'Diagnostics', `
   ${dock(`${btn('Free up 1.6 GB', 'secondary')}${btn('Send diagnostics to support', 'ghost')}`)}`),
 ]]);
 
+/* ======================= Settings ======================= */
+G.push(['Settings & devices', 'specs 06, 07, 08', [
+screen('S1', 'You', `
+  ${nav({})}${lt('You')}
+  ${content(`
+    ${list([row({ lead: avatar('HN', '#C9B79C', 48), title: 'Hanh Nguyen', sub: 'Admin · synced 2 minutes ago' }), row({ lead: `<span style="width:48px;height:48px;display:grid;place-items:center;color:var(--ink2)">${I('users', 22)}</span>`, title: 'Team', sub: '5 members, 2 invited' })], 76)}
+    ${sec('On site', list([row({ title: 'Laser meter', trail: `<span class="val">DISTO D2</span>` }), row({ title: 'Quick phrases', trail: `<span class="val">18</span>` }), row({ title: 'Report letterhead' })]))}
+    ${sec('Privacy', list([row({ title: 'App lock', trail: `<span class="val">Face ID · 5 min</span>` })]))}
+    ${list([row({ title: 'Diagnostics' }), row({ title: '<span style="color:var(--crit)">Delete account</span>', chev: false })])}`, 'tight')}
+  ${tabbar('You')}`),
+screen('S2', 'Laser meter', `
+  ${nav({ back: 'Settings', title: 'Laser meter' })}
+  ${content(`
+    ${sec('My devices', list([row({ title: 'Leica DISTO D2', sub: 'Connected · last reading 3.42 m', trail: sev('ok', ''), chev: false }), row({ title: 'Bosch GLM 50C', sub: 'Not nearby', chev: false })]))}
+    ${sec('Nearby', list([row({ title: 'Leica DISTO X3', trail: btn('Pair', 'secondary', null, { sm: true }), chev: false }), row({ title: 'Stanley TLM99', sub: 'Weak signal, move closer', trail: btn('Pair', 'secondary', null, { sm: true }), chev: false })]), 'Searching…')}
+    <div class="fn">The camera never waits for the meter. If it disconnects, you keep shooting and we reconnect quietly.</div>`)}`),
+screen('S3', 'Delete account', `
+  ${nav({})}${lt('You')}
+  <div class="dim"></div>
+  <div class="alert"><b>Delete your account?</b><span>We’ll remove the cloud copies of 3 projects and 1,284 photos within 30 days. What’s on this iPhone stays until you delete the app.</span><div class="aa"><div>Cancel</div><div style="color:var(--crit)">Delete</div></div></div>`),
+screen('S4', 'App lock', `
+  ${nav({ back: 'Settings', title: 'App lock' })}
+  ${content(`
+    <div class="stack" style="gap:8px">
+      ${sec('Lock app', list([row({ title: 'Lock app', trail: `<span class="toggle on"></span>`, chev: false }), row({ title: 'Unlock with Face ID', trail: `<span class="toggle on"></span>`, chev: false }), row({ title: 'Change passcode' })]))}
+      <div class="fn">Face ID can fail under a helmet or mask. Your passcode always works.</div>
+    </div>
+    <div class="stack" style="gap:8px">
+      ${sec('Lock after', list([['Immediately', false], ['1 minute', false], ['5 minutes', true], ['15 minutes', false], ['1 hour', false]].map(([t, on]) => row({ lead: on ? `<span class="radio on">${I('check', 14, 3)}</span>` : `<span class="radio"></span>`, title: t, chev: false })), 50))}
+      <div class="fn">Counted from when you leave SiteLog. Uploads keep running while it’s locked.</div>
+    </div>`, 'tight')}`),
+screen('S5', 'Set passcode', `
+  ${nav({ left: `<div class="gbtn lg">${I('x', 22, 2.2)}</div>`, title: 'Set passcode' })}
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+    <div class="t-heading">Enter a 6-digit passcode</div>
+    ${dots(3)}
+    <div class="fn" style="max-width:280px">You’ll use it when Face ID can’t see you. It stays on this iPhone and is never uploaded.</div>
+  </div>`)}
+  ${numpad()}`),
+]]);
+
+for (const [name, spec, arr] of G) group(name, spec, arr);
+/* ======================= Team and roles ======================= */
+group('Team and roles', 'one company · Admin, Manager, Inspector, Viewer · site-log-be 05-team-and-roles', [
+screen('T1', 'Team (Admin)', `
+  ${nav({ back: 'You', title: 'Team', right: ['@plus'] })}
+  ${content(`
+    ${sec('Members', list(MEMBERS.map(([n, e, r, ini, c, pr]) => row({ lead: avatar(ini, c), title: n, sub: `${e} · ${pr}`, trail: roleTag(r) })), 68), '5')}
+    ${sec('Invited', list(INVITES.map(([e, r, x]) => row({ lead: `<span style="width:40px;height:40px;border-radius:20px;border:1.5px dashed var(--line-strong);display:grid;place-items:center;color:var(--ink3);flex:none">${I('mail', 18)}</span>`, title: e, sub: x, trail: roleTag(r) })), 68), '2')}
+    `, 'tight')}`),
+screen('T2', 'Invite a member', `
+  ${nav({ back: 'Team', title: 'Invite' })}
+  ${content(`
+    ${field('Email', 'vu@eastline.vn', { focus: true })}
+    ${sec('Role', list(ROLES.map(([k, n, d]) => row({ lead: k === 'inspector' ? `<span class="radio on">${I('check', 14, 3)}</span>` : `<span class="radio"></span>`, title: n, sub: d, chev: false })), 52))}
+    ${sec('Projects', list(PROJECTS.slice(0, 2).map(([n, p, v], i) => row({ lead: wsTile(v, 36, 8), title: n, sub: p, trail: i < 2 ? `<span class="toggle on"></span>` : `<span class="toggle"></span>`, chev: false })), 60), 'Inspectors and Viewers')}`, 'tight')}
+  ${dock(btn('Send invite', 'primary', 'send'))}`),
+screen('T3', 'Member', `
+  ${nav({ back: 'Team', title: 'Le Thu' })}
+  ${content(`
+    <div class="hstack" style="gap:12px">${avatar('LT', '#B8A59D', 56)}<div class="grow"><div class="t-bodyStrong">Le Thu</div><div class="meta">thu@eastline.vn · last seen today 9:12</div></div></div>
+    ${sec('Role', list(ROLES.map(([k, n, d]) => row({ lead: k === 'inspector' ? `<span class="radio on">${I('check', 14, 3)}</span>` : `<span class="radio"></span>`, title: n, sub: d, chev: false })), 52))}
+    ${sec('Projects', list(PROJECTS.slice(0, 2).map(([n, p, v], i) => row({ lead: wsTile(v, 36, 8), title: n, sub: p, trail: i < 2 ? `<span class="toggle on"></span>` : `<span class="toggle"></span>`, chev: false })), 60), '2 of 5')}
+    <div>${btn('Remove from company', 'danger', 'user-minus', { sm: true, style: 'display:inline-flex;padding-left:0' })}</div>`, 'tight')}`),
+screen('T4', 'Project members', `
+  ${nav({ back: 'Riverside', title: 'Members', right: ['@plus'] })}
+  ${content(`
+    <div class="fn">Admins and Managers see every project. Add Inspectors and Viewers who work on Riverside Tower B.</div>
+    ${sec('Sees every project', list(MEMBERS.slice(0, 2).map(([n, e, r, ini, c]) => row({ lead: avatar(ini, c), title: n, sub: e, trail: roleTag(r), chev: false })), 68))}
+    ${sec('On this project', list([MEMBERS[2], MEMBERS[4]].map(([n, e, r, ini, c]) => row({ lead: avatar(ini, c), title: n, sub: e, trail: roleTag(r) })), 68), '2')}
+    `, 'tight')}
+  ${tabbar('Home')}`),
+screen('T5', 'Join from an invite', `
+  ${content(`<div class="empty" style="gap:24px;align-items:stretch">
+    <div class="stack" style="align-items:center;gap:16px;text-align:center">${appMark(64)}<div class="stack" style="gap:8px"><div class="t-heading">Hanh Nguyen invited you</div><div class="t-body" style="color:var(--ink2)">Join SiteLog as an <b>Inspector</b> on Riverside Tower B and Harbor View Villas. Sign in with vu@eastline.vn.</div></div></div>
+  </div>`)}
+  ${dock(`${btn('Continue with Apple', 'primary', 'apple')}${btn('Continue with email', 'secondary', 'mail')}`, 'clear')}`),
+screen('T6', 'Signed in, not a member', `
+  ${content(empty(hero('neutral', 'user-x', 'Ask an Admin to invite you', 'SiteLog is for Eastline’s team. thu.le@gmail.com is not a member yet.', { extra: btn('Sign out', 'secondary', null, { sm: true }) })))}`),
+screen('T7', 'Home as a Viewer', `
+  ${nav({ left: ws(0), right: ['@search'] })}
+  ${content(`<div class="stack" style="gap:24px">
+    <div class="panel" style="gap:8px"><div class="hstack" style="gap:8px"><span style="color:var(--ink2)">${I('eye', 20)}</span><span class="t-bodyStrong">You can view this project</span></div><div class="fn">Photos, issues, plans and reports. Ask a Manager if you need to change anything.</div></div>
+    <div class="stack" style="gap:16px">${seg(['Sessions', 'Locations', 'Plans'], 'Sessions')}${TAB_BODY.Sessions()}</div></div>`, 'home-tab')}
+  ${tabbar('Home')}`),
+screen('T8', 'Issue as a Viewer', `
+  ${nav({ back: 'Issues', right: ['@share'] })}
+  <div style="height:250px;flex:none;position:relative">${scene(0, { crack: true })}</div>
+  ${content(`
+    <div class="stack" style="gap:8px;padding-top:16px">${sev('major', 'Major · #3')}<div class="t-heading">Hairline crack by the skirting, about 40 cm</div></div>
+    ${list([row({ title: '<span class="meta">Room</span>', trail: `<span class="t-body">7A Living room</span>`, chev: false }), row({ title: '<span class="meta">Assigned to</span>', trail: assigneeLine('Tuan’s masonry crew'), chev: false }), row({ title: '<span class="meta">Logged by</span>', trail: `<span class="t-body">Le Thu · 12 Aug</span>`, chev: false })])}
+    <div class="hstack" style="gap:8px;color:var(--ink2)">${I('eye', 18)}<span class="fn">View only. Re-check and mark up are for Inspectors and Managers.</span></div>`, 'tight')}`),
+]);
+
+/* ======================= States ======================= */
+const ART = (icon) => `<div style="width:200px;height:144px;border-radius:24px;overflow:hidden;position:relative;margin:0 auto">${scene(0)}<span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:32px;background:var(--hi);color:var(--hi-ink);display:grid;place-items:center;box-shadow:0 8px 24px rgba(122,90,0,.28)">${I(icon, 28, 2)}</span></div>`;
+const skeleton = (w) => `<div class="row" style="gap:12px"><span style="width:44px;height:44px;border-radius:8px;background:var(--sunken);flex:none"></span><div class="grow stack" style="gap:8px"><span style="height:12px;width:${w}%;border-radius:4px;background:var(--sunken)"></span><span style="height:12px;width:${w - 24}%;border-radius:4px;background:var(--sunken)"></span></div></div>`;
+group('States', 'empty, offline, loading, error, end, search', [
+screen('E1', 'No projects yet', `
+  ${content(`<div class="empty" style="gap:24px;align-items:stretch">
+    ${ART('map-pin')}
+    <div class="stack" style="gap:8px"><div class="t-heading">Start your first site log</div><div class="t-body" style="color:var(--ink2)">Each project gets its own home, issues and plans. Photos, issues and the report stay on this iPhone, even with no signal.</div></div>
+    <div class="stack" style="gap:8px">${btn('Create a project', 'primary')}${btn('Try a sample project', 'ghost')}</div>
+  </div>`)}`),
+screen('E2', 'Offline', `
+  ${nav({ left: ws(0), right: ['@search', '@ellipsis'] })}
+  ${content(homeBody('Sessions', { sync: syncLine('12 photos wait for signal', 'cloud-off'), top: `<div class="panel" style="gap:8px"><div class="hstack" style="gap:8px"><span style="color:var(--ink2)">${I('wifi-off', 20)}</span><span class="t-bodyStrong">No signal. Keep working.</span></div><div class="fn">Everything is saved on this iPhone. 12 photos upload by themselves when you’re back online.</div></div>` }), 'home-tab')}
+  ${tabbar('Home')}`),
+screen('E3', 'First sync after sign-in', `
+  ${nav({})}${lt('Getting your projects')}
+  ${content(`
+    <div class="stack" style="gap:8px"><div class="t-bodyStrong">Bringing 5 projects to this iPhone</div>${progress(0.4)}<div class="fn">2 of 5 done · photos load when you open them</div></div>
+    ${sec('Projects', `<div class="list">${[78, 64, 70, 56].map(skeleton).join('')}</div>`)}`)}`),
+screen('E4', 'Sync paused', `
+  ${nav({})}${lt('Sync')}
+  ${content(`
+    ${hero('neutral', 'cloud-off', 'Sync is paused', 'The server isn’t answering. Your 46 photos are safe on this iPhone; we’ll try again at 9:46.', { style: 'padding-top:8px', extra: btn('Try now', 'primary', null, { sm: true }) })}
+    ${sec('Waiting', list([
+      row({ title: '46 photos', sub: 'Riverside Tower B, today', trail: sev('wait', ''), chev: false }),
+      row({ title: '3 videos', sub: 'Waiting for Wi-Fi', trail: sev('wait', ''), chev: false }),
+    ]))}`)}
+  ${tabbar('Sync')}`),
+screen('E5', 'Nothing open', `
+  ${nav({ title: 'Issues', sub: 'Riverside Tower B', leading: true, right: ['@search'] })}
+  ${content(`
+    ${issueChips(ISSUE_STATES.all)}
+    <div class="empty">
+      ${hero('ok', 'check', 'Nothing open on Riverside Tower B', 'Hanh closed the last one today. 23 issues fixed on this project.')}
+      ${btn('See closed issues', 'secondary', null, { sm: true })}
+    </div>`)}
+  ${tabbar('Issues', {})}`),
+screen('E6', 'Search (never blank)', `
+  ${nav({ back: 'Issues', title: 'Search' })}
+  ${content(`
+    <div class="search" style="background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)">${I('search', 20)}<span>cra<span class="caret"></span></span></div>
+    ${sec('Recent', list(['Crack', 'Tuan’s masonry crew', 'Level 8 bathroom'].map(t => row({ lead: `<span style="color:var(--ink3)">${I('clock', 20)}</span>`, title: t, chev: false })), 48))}
+    ${sec('Quick filters', `<div class="chips" style="flex-wrap:wrap">${['Overdue', 'Critical', 'No photo', 'Due this week'].map(t => `<span class="chip">${t}</span>`).join('')}</div>`)}
+    ${sec('Matches', list([row({ lead: thumb(0, 44, 8, { crack: true }), title: 'Hairline <b>cra</b>ck by the skirting', sub: '7A Living room · Major' })], 72), '1')}`, 'tight')}`),
+]);
