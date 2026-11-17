@@ -63,6 +63,7 @@ flowchart TD
     S6 --> S7["S7 · F12 Checklists, F13 DeviceLink, F14 Diagnostics<br/>TestFlight #2"]
     S7 --> S8["S8 · F15 Realtime, F16 Push, F17 Accessibility"]
     S8 --> S9["S9 · F18 UI finish<br/>App Store"]
+    S9 --> S10["S10 · F19 Team and roles"]
 
     classDef ship fill:#EEEDFE,stroke:#534AB7,color:#3C3489
     class S4,S7,S9 ship
@@ -354,6 +355,26 @@ flowchart TD
 - [ ] **F18.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
 - [ ] **F18.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing); not counted in the 54h
 - [ ] **F18.11** - [Backend] - [6h] - [site-log-be F18](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S9-release/F18-production.md): production, purge, alarms, backups
+
+</dd></dl>
+
+## S10 — Team and roles · 30h
+
+<dl><dd>
+
+- Demo: an Admin invites an Inspector; the Inspector joins from the link and sees only their projects; a Viewer reads but cannot change anything.
+- Overview: [S10](feature-guide/S10-team-roles/README.md)
+
+**F19 — Team and roles · 30h** · [guide](feature-guide/S10-team-roles/F19-team-roles.md)
+
+- [ ] **F19.1** - [Contract] - [2h] - `/me`, members, invitations, `createdBy`
+- [ ] **F19.2** - [Domain] - [4h] - Roles and permissions
+- [ ] **F19.3** - [Data] - [4h] - Team repository, role cache
+- [ ] **F19.4** - [UI] - [6h] - Gate every screen by role (T7, T8)
+- [ ] **F19.5** - [UI] - [8h] - Team screens T1–T4
+- [ ] **F19.6** - [Platform] - [4h] - Invite universal link, T5 Join, T6 Not a member
+- [ ] **F19.7** - [Data] - [2h] - `403 forbidden`, rejected `forbidden:<action>`, resync
+- [ ] **F19.8** - [Backend] - [16h] - [site-log-be F19](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S10-team-roles/F19-team-roles.md): shared sync, roles, invites
 
 </dd></dl>
 
