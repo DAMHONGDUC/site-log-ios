@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteLog System Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>window.TYPE_ALIAS = { title: '.lt h1, .tab-large .big h1', heading: '.sec-h > b, .h3, .tab-small .ti', bodyStrong: '.nav .ti', body: '.body, .row .t, .li .t', caption: '.meta, .row .s, .li .s, .fn, .field > span', code: '.code', figure: '.figure' };</script>
+<script src="tokens.js"></script>
+<link rel="stylesheet" href="base.css">
+<!-- Both platform sheets: every rule in them is scoped to .p-ios / .p-android, so they live side by side -->
+<link rel="stylesheet" href="ios.css">
+<link rel="stylesheet" href="android.css">
+<style>
+/* Page layout only; every component below is drawn by ios.css / android.css */
+body { --sans: 'IBM Plex Sans', system-ui, sans-serif; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; max-width: 1200px; }
+.toc a { font-size: 13px; font-weight: 600; color: #16181B; background: #fff; border-radius: 16px; padding: 4px 12px; text-decoration: none; box-shadow: 0 0 0 1px rgba(22,24,27,.08); }
+.cmp { padding: 48px 0; border-top: 1px solid #D4D6DA; max-width: 1200px; }
+.cmp-head { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.cmp h3 { font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -0.02em; }
+.cmp .code-name { font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 20px; color: #63676E; margin-top: 4px; }
+.cmp ul { padding-left: 16px; font-size: 13px; line-height: 20px; color: #3C4046; }
+.cmp li + li { margin-top: 4px; }
+.lbl { font-size: 13px; line-height: 20px; font-weight: 600; color: #63676E; margin: 24px 0 8px; }
+table.spec { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgba(22,24,27,.08); font-size: 13px; line-height: 20px; }
+table.spec th { text-align: left; font-weight: 600; color: #63676E; padding: 8px 12px; background: #F6F6F7; }
+table.spec td { padding: 8px 12px; border-top: 1px solid #ECECEE; vertical-align: top; color: #16181B; }
+table.spec td:first-child { font-weight: 600; width: 180px; }
+table.spec code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+.vars { display: grid; grid-template-columns: 180px 393px 412px; gap: 16px 24px; align-items: start; }
+.vars .vh { font-size: 13px; font-weight: 600; color: #63676E; }
+.vars .vl { font-size: 13px; line-height: 20px; font-weight: 600; padding-top: 12px; }
+.vars .vl small { display: block; font-weight: 400; color: #63676E; }
+.surface { position: relative; background: var(--bg); color: var(--ink); border-radius: 16px; padding: 12px 16px; box-shadow: 0 0 0 1px rgba(22,24,27,.08); display: flex; flex-direction: column; gap: 12px; font-size: 17px; line-height: 24px; overflow: hidden; }
+.surface.bars { height: 128px; padding: 0; }
+.surface.tall { height: 300px; padding: 0; }
+.surface .content { padding: 0; overflow: visible; flex: none; }
+.vars code.case { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 20px; font-weight: 600; color: #16181B; }
+.dim-note { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #63676E; }
+</style>
+</head>
+<body>
+<header class="page-head">
+  <div class="kicker">Page 5 of 5 · Figma page “05 System design”</div>
+  <h1>SiteLog — System design</h1>
+  <p>Every shared UI part, with its types, sizes, variants and states, measured on both platforms. Each part lists what it is for, its name in code (<code>DS…</code> in the iOS <code>DesignSystem</code> package and the Android <code>:designsystem</code> module), a spec table (sizes in pt on iOS, dp on Android; type, colour and spacing names from page 1), and one row per variant with iOS 26 and Android side by side. Variants follow one rule so each maps 1:1 to an enum in code: a component has a few <b>properties</b>, each one enum with exclusive cases and a default; the same names everywhere (<code>type</code> = what it is for, <code>size</code>, <code>state</code> = changes at run time, then slots such as <code>icon</code>, <code>lead</code>, <code>trail</code>); text and numbers are parameters, not variants; each variant row changes one property from the defaults and is named <code>property.case</code>. Everything is drawn by the same CSS as the screens on pages 2 and 3.</p>
+  <div class="toc" id="toc"></div>
+</header>
+<main id="app" class="group"></main>
+<script src="kit.js"></script>
+<script>
+/* ---------- small builders (iOS / Android markup) ---------- */
+const chev = () => `<span class="chev">${I('chevron-right', 17, 2.2)}</span>`;
+const B = (t, k = 'primary', o = {}) => `<div class="btn ${k} ${o.sm ? 'sm' : ''}" ${o.dis ? 'disabled' : ''} ${o.style ? `style="${o.style}"` : ''}>${o.ic ? I(o.ic, o.sm ? 18 : 20, 2) : ''}${t}</div>`;
+const iRow = (o) => `<div class="row">${o.lead || ''}<div class="grow" style="display:flex;flex-direction:column"><div class="t">${o.title}</div>${o.sub ? `<div class="s">${o.sub}</div>` : ''}</div>${o.trail || ''}${o.chev === false ? '' : chev()}</div>`;
+const aRow = (o) => `<div class="li ${o.sub ? 'two' : ''}">${o.lead || ''}<div class="grow" style="display:flex;flex-direction:column;gap:4px"><div class="t">${o.title}</div>${o.sub ? `<div class="s">${o.sub}</div>` : ''}</div>${o.trail || ''}${o.chev ? `<span class="chev">${I('chevron-right', 20, 2)}</span>` : ''}</div>`;
+const L = (rows) => `<div class="list" style="margin:0 -16px">${rows.join('')}</div>`;
+const issueTrail = (k, late, who) => withAssignee(who, `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${sev(k)}<span class="fn" style="color:var(--crit)">${late}</span></div>`);
+const iField = (l, v, o = {}) => `<div class="field">${l ? `<span>${l}</span>` : ''}<div class="input ${o.focus ? 'focus' : ''} ${o.area ? 'area' : ''}">${o.ph ? `<span class="placeholder grow">${v}</span>` : `<span class="grow">${v}${o.focus ? '<span class="caret"></span>' : ''}</span>`}${o.icon ? `<span style="color:var(--ink2)">${I(o.icon, 20)}</span>` : ''}</div></div>`;
+const aField = (l, v, o = {}) => `<div class="ofield ${o.focus ? 'focus' : ''}" style="--fieldbg:var(--bg);margin-top:8px">${l ? `<label>${l}</label>` : ''}<div class="box ${o.area ? 'area' : ''}">${o.ph ? `<span class="placeholder grow">${v}</span>` : `<span class="grow">${v}${o.focus ? '<span class="caret"></span>' : ''}</span>`}${o.icon ? `<span style="color:var(--ink2)">${I(o.icon, 22)}</span>` : ''}</div>${o.help ? `<div class="help">${o.help}</div>` : ''}</div>`;
+const iSeg = (items, on, cls = '') => `<div class="seg ${cls}">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t}</div>`).join('')}</div>`;
+const aSeg = (items, on, cls = '') => `<div class="segb ${cls}">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t === on ? I('check', 16, 2.4) : ''}${t}</div>`).join('')}</div>`;
+const aTabs = (items, on) => `<div class="tabs" style="margin:0">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t}</div>`).join('')}</div>`;
+const groupChip = (t, on) => `<span class="chip ${on ? 'on' : ''}">${t}${I('chevron-down', 16, 2.4)}</span>`;
+const mainChip = (n) => `<span class="chip fbtn" style="padding:0 12px;position:relative">${I('list-filter', 18, 2.2)}${n ? `<span class="fbadge">${n}</span>` : ''}</span>`;
+const aChip = (t, on, ic) => `<span class="chip ${on ? 'on' : ''}">${on ? I('check', 16, 2.4) : ic ? I(ic, 16) : ''}${t}</span>`;
+const row1 = (...x) => `<div class="hstack" style="gap:8px;flex-wrap:wrap">${x.join('')}</div>`;
+const tabsIOS = `<div class="tabbar lg">${[['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']].map(([i, l]) => `<div class="tab ${l === 'Home' ? 'on' : ''}">${I(i, 25, 2)}<span class="sys-label">${l}</span>${l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+const tabsAND = `<div class="navbar" style="position:absolute;left:0;right:0;bottom:0">${[['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']].map(([i, l]) => `<div class="dest ${l === 'Home' ? 'on' : ''}"><span class="ind">${I(i, 22, 2)}</span><span class="sys-label">${l}</span>${l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+const backdrop = `<div style="position:absolute;inset:0;background:var(--sunken)"></div>`;
+
+/* ---------- component registry ----------
+   Rules for variants (so each property maps 1:1 to an enum in code):
+   1. A component has a few properties; each property is one enum; its cases are exclusive and complete.
+   2. The same names everywhere: type (what it is for), size, state (changes at run time), then slots (icon, lead, trail, title…).
+   3. Every property has a default. A variant row changes ONE property from the defaults; the row is named property.case.
+   4. Free values (text, numbers, counts) are parameters, not variants.
+   5. Things that are different components get their own section (status marker, tag, panel, sync line…). */
+const C = [];
+const cmp = (o) => C.push(o);
+const V = (prop, kase, ios, android, note) => ({ prop, kase, ios, android, note });
+const none = '<span class="dim-note">— not on this platform</span>';
+
+/* 1. Button */
+cmp({ id: 'button', name: 'Button', code: 'DSButton',
+  purpose: ['One primary per screen or sheet: the main job.', 'Secondary for a second action of equal weight; outline beside a primary; ghost for a quiet escape; danger only to remove or delete.'],
+  props: [['type', 'primary · secondary · outline · ghost · danger', 'primary', 'Android draws secondary as tonal, outline as outlined, ghost as text'], ['size', 'regular · small', 'regular', ''], ['state', 'enabled · disabled', 'enabled', 'pressed is the system highlight'], ['icon', 'none · leading · only', 'none', 'only: square, needs an accessibility label']],
+  spec: [
+    ['Height', 'regular 50 · small 44', 'regular 52 · small 48'],
+    ['Corner radius', 'height / 2 (capsule)', 'height / 2 (pill)'],
+    ['Padding (h)', 'regular 20 · small 16', 'regular 20 · small 16'],
+    ['Label', 'bodyStrong 17 / 600 (ghost 17 / 400)', 'bodyStrong 17 / 600'],
+    ['Icon', 'regular 20 · small 17, gap 8', 'regular 20 · small 18, gap 8'],
+    ['type.primary', 'fill text/primary · label on-primary', 'same'],
+    ['type.secondary', 'fill bg/fill · label text/primary', 'same'],
+    ['type.outline', '1 px line/strong, no fill', 'same'],
+    ['type.ghost', 'no fill, no border', 'same'],
+    ['type.danger', 'label severity/critical, no fill', 'same'],
+    ['state.disabled', 'opacity 0.30', 'opacity 0.38'],
+    ['Width', 'full width in a dock; equal split in a pair; hugs when small', 'same'],
+  ],
+  variants: [
+    V('type', 'primary', B('Create project'), B('Create project')),
+    V('type', 'secondary', B('Mark up', 'secondary'), B('Mark up', 'tonal')),
+    V('type', 'outline', B('Clear', 'outline'), B('Clear', 'outlined')),
+    V('type', 'ghost', B('Later', 'ghost'), B('Later', 'text')),
+    V('type', 'danger', B('Remove from company', 'danger'), B('Remove from company', 'danger')),
+    V('size', 'small', row1(B('Resume', 'primary', { sm: true })), row1(B('Resume', 'primary', { sm: true }))),
+    V('state', 'disabled', B('Finish', 'primary', { dis: true }), B('Finish', 'primary', { dis: true })),
+    V('icon', 'leading', B('Share', 'primary', { ic: 'share' }), B('Share', 'primary', { ic: 'share-2' })),
+    V('icon', 'only', row1(B('', 'primary', { ic: 'map-pin', style: 'width:50px;padding:0;flex:none' })), row1(B('', 'primary', { ic: 'map-pin', style: 'width:52px;padding:0;flex:none' }))),
+  ] });
+
+/* 2. Chip */
+cmp({ id: 'chip', name: 'Chip', code: 'DSChip',
+  purpose: ['filter: one option, on or off.', 'group: one filter group; shows its name, or its value once set; opens that group alone.', 'mainFilter: first in a chip row, icon only; opens every group; its badge counts the groups in use.', 'A chip row wider than the screen scrolls sideways with a fade at the right edge.'],
+  props: [['type', 'filter · group · mainFilter', 'filter', ''], ['state', 'off · on', 'off', 'group: on = a value is set · mainFilter: on = a badge with the count']],
+  spec: [
+    ['Height', '44', '48'],
+    ['Radius', '22 (capsule)', '12'],
+    ['Padding (h)', '16 · mainFilter 12', '16 · mainFilter 12'],
+    ['Label', 'body 17 / 400', 'body 17 / 400'],
+    ['state.off', 'fill bg/fill, text/primary', 'no fill, 1 px line/strong'],
+    ['state.on', 'fill text/primary, label on-primary', 'fill bg/fill, no border, leading check 16'],
+    ['type.group', 'chevron 16 after the label', 'same'],
+    ['type.mainFilter', 'icon 18; badge 20 circle, caption 13 / 600', 'same'],
+    ['Gap in a row', '8', '8'],
+  ],
+  variants: [
+    V('type', 'filter', '<span class="chip">Overcast</span>', aChip('Overcast', false)),
+    V('type', 'group', groupChip('Severity'), groupChip('Severity')),
+    V('type', 'mainFilter', mainChip(0), mainChip(0)),
+    V('state', 'on', row1('<span class="chip on">Overcast</span>', groupChip('Critical, Major', true), mainChip(2)), row1(aChip('Overcast', true), groupChip('Critical, Major', true), mainChip(2)), 'each type, on'),
+  ] });
+
+/* 3. Segmented control */
+cmp({ id: 'segmented', name: 'Segmented control', code: 'DSSegmented',
+  purpose: ['Two to four views of the same content, or one choice of a short fixed list in a sheet.', 'The number of segments is a parameter (2…4), not a variant.'],
+  props: [['type', 'text · severity', 'text', 'severity: a coloured 8 dot before each label']],
+  spec: [
+    ['Height', 'track 48 (segment 40 + 4 inset)', '48'],
+    ['Radius', 'track 22 · segment 20', '24'],
+    ['Label', 'caption 13 · selected 13 / 600', 'caption 13'],
+    ['Selected', 'raised white segment, soft shadow', 'bg/fill + check 16'],
+    ['Segments', '2–4, equal width', 'same'],
+  ],
+  variants: [
+    V('type', 'text', iSeg(['Room', 'Contractor', 'Level'], 'Room'), aSeg(['Room', 'Contractor', 'Level'], 'Room')),
+    V('type', 'severity', iSeg(['Critical', 'Major', 'Minor'], 'Major', 'sev3'), aSeg(['Critical', 'Major', 'Minor'], 'Major', 'sev3')),
+  ] });
+
+/* 4. Tab row */
+cmp({ id: 'tabrow', name: 'Tab row', code: 'DSTabRow',
+  purpose: ['Home sub-tabs (Sessions · Locations · Plans).', 'iOS draws it as a segmented control, type.text.'],
+  props: [['itemState', 'selected · unselected', 'unselected', 'one item is always selected']],
+  spec: [
+    ['Height', '48 (segmented)', '48'],
+    ['Label', 'caption 13 · selected 600', 'body 17 · selected 600'],
+    ['Selected', 'raised segment', '64 × 3 text/primary indicator under the label'],
+  ],
+  variants: [
+    V('itemState', 'selected', iSeg(['Sessions', 'Locations', 'Plans'], 'Sessions'), aTabs(['Sessions', 'Locations', 'Plans'], 'Sessions'), 'Sessions selected, the rest unselected'),
+  ] });
+
+/* 5. List row */
+const T = 'Unit 7A';
+const ringLead = `<span style="width:24px;height:24px;border-radius:12px;background:conic-gradient(var(--ok) 270deg, var(--sunken) 0)"></span>`;
+const RR = (o) => [L([iRow({ title: T, ...o })]), L([aRow({ title: T, chev: o.chev !== false, ...o })])];
+cmp({ id: 'row', name: 'List row', code: 'DSListRow',
+  purpose: ['Plain full-width rows separated by an inset hairline; no card around a group.', 'Title says what it is; subtitle gives place, count or state.', 'Title and subtitle are text parameters; the slots below are the variants.'],
+  props: [['lines', 'one · two', 'one', 'two = with subtitle'], ['lead', 'none · thumb · project · avatar · ring · control', 'none', 'control → Selection control'], ['trail', 'none · value · tag · fileTag · status · issueStatus · control', 'none', 'control → Selection control'], ['accessory', 'chevron · none', 'chevron', 'none when the row does not open anything']],
+  spec: [
+    ['Height', 'lines.one 52 · lines.two 68 · padding 12 / 16', 'lines.one 56 · lines.two 72 · padding 8 / 16'],
+    ['Gap', 'lead → text 12', 'lead → text 16'],
+    ['Title · subtitle', 'body 17 · caption 13 text/secondary', 'same'],
+    ['lead.thumb', '48, r8', '48, r8'],
+    ['lead.project', '44, r12', '48, r12'],
+    ['lead.avatar · lead.ring', 'Avatar size.m 40 · ring 24', 'same'],
+    ['trail.issueStatus', 'severity on top; due date + Avatar size.xs to its right; right-aligned', 'same'],
+    ['Separator', '0.5 hairline, inset to the text', '1 px divider, inset to the text'],
+    ['accessory.chevron', '17, text/tertiary', '20, text/tertiary'],
+  ],
+  variants: [
+    V('lines', 'two', ...RR({ sub: '3 of 4 rooms checked' })),
+    V('lead', 'thumb', ...RR({ lead: thumb(3, 48) })),
+    V('lead', 'project', ...RR({ lead: wsTile(0, 44, 12) })),
+    V('lead', 'avatar', ...RR({ lead: avatar('LT', '#B8A59D', 40) })),
+    V('lead', 'ring', ...RR({ lead: ringLead })),
+    V('trail', 'value', ...RR({ trail: '<span class="val">82 rooms</span>' })),
+    V('trail', 'tag', ...RR({ trail: '<span class="tag" style="margin:0">Current</span>' })),
+    V('trail', 'fileTag', ...RR({ trail: '<span class="file-tag">PDF</span>' })),
+    V('trail', 'status', ...RR({ trail: sev('crit', '2 critical') })),
+    V('trail', 'issueStatus', ...RR({ trail: issueTrail('crit', '2 days late', 'Phuc Electric') })),
+    V('accessory', 'none', L([iRow({ title: T, chev: false })]), L([aRow({ title: T })])),
+  ] });
+
+/* 6. Section header */
+const secDemo = (rowFn, divider) => `<div class="content">${divider ? `<section class="stack sec" style="gap:4px"><div class="sec-h"><b>Level 6</b><span>0 open</span></div></section>` : ''}<section class="stack sec" style="gap:4px"><div class="sec-h"><b>Level 7</b><span>3 open</span></div>${L([rowFn({ title: 'Unit 7A', chev: true })])}</section></div>`;
+cmp({ id: 'section', name: 'Section header', code: 'DSSectionHeader',
+  purpose: ['Names a group of rows; the count on the right says how many (a text parameter).', 'Every section after the first starts with a full-width divider.'],
+  props: [['separator', 'none · divider', 'none', 'divider on every section after the first']],
+  spec: [
+    ['Title', 'heading 20 / 600, sentence case', 'same'],
+    ['Count', 'caption 13 text/secondary, right', 'same'],
+    ['Title → rows', '4', '4'],
+    ['separator.divider', '1 px line/hairline, full bleed; 16 above the title', 'same'],
+  ],
+  variants: [
+    V('separator', 'none', secDemo(iRow, false), secDemo(aRow, false)),
+    V('separator', 'divider', secDemo(iRow, true), secDemo(aRow, true), 'second section'),
+  ] });
+
+/* 7. Status marker */
+const SM = (h) => [h, h];
+cmp({ id: 'marker', name: 'Status marker', code: 'DSStatusMarker',
+  purpose: ['The same 8 dot, told apart by colour, always next to its words.', 'waiting is a dashed ring and never red; live is the only hi-vis on a list.'],
+  props: [['type', 'critical · major · minor · resolved · waiting · late · live', '—', 'required'], ['style', 'plain · solid', 'plain', 'solid: on a photo']],
+  spec: [
+    ['Dot', '8 circle · gap 8 · caption 13 text/primary', 'same'],
+    ['Colours', 'critical severity/critical · major severity/major · minor severity/minor · resolved status/success', 'same'],
+    ['type.waiting', '9 dashed ring 1.5 status/waiting; text secondary', 'same'],
+    ['type.late', 'critical dot, text severity/critical', 'same'],
+    ['type.live', '10 accent/hi-vis with 1.5 ink ring', 'same'],
+    ['style.solid', 'white pill r8, padding 4 / 8, shadow', 'same'],
+  ],
+  variants: [
+    V('type', 'critical', ...SM(sev('crit'))),
+    V('type', 'major', ...SM(sev('major'))),
+    V('type', 'minor', ...SM(sev('minor'))),
+    V('type', 'resolved', ...SM(sev('ok'))),
+    V('type', 'waiting', ...SM(sev('wait'))),
+    V('type', 'late', ...SM(sev('crit', '2 days late', 'late'))),
+    V('type', 'live', ...SM('<span class="hstack"><span class="live"></span><span class="fn" style="color:var(--ink)">Live session</span></span>')),
+    V('style', 'solid', ...SM(`<div style="height:72px;border-radius:8px;overflow:hidden;position:relative">${scene(0)}<span class="sev crit solid" style="position:absolute;left:8px;bottom:8px">#3</span></div>`), 'type.critical'),
+  ] });
+
+/* 8. Tag */
+cmp({ id: 'tag', name: 'Tag', code: 'DSTag',
+  purpose: ['label: names a state or a role (Current, Admin).', 'file: names a file kind (PDF, ZIP).'],
+  props: [['type', 'label · file', 'label', '']],
+  spec: [
+    ['Height', '24', '24'],
+    ['type.label', 'r12 · padding 8 · bg/fill · caption 13 / 600', 'same'],
+    ['type.file', 'r4 · 1 px text/secondary · padding 8 · caption 13 / 600', 'same'],
+  ],
+  variants: [
+    V('type', 'label', ...SM(row1('<span class="tag" style="margin:0">Current</span>', roleTag('admin')))),
+    V('type', 'file', ...SM(row1('<span class="file-tag">PDF</span>', '<span class="file-tag">ZIP</span>'))),
+  ] });
+
