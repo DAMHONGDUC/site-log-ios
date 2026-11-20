@@ -42,7 +42,7 @@
 | PlanRadar | Tickets pinned on drawings, report templates | Report builder with section toggles |
 | CompanyCam | Photo-first timeline, markup after every shot | Camera is home; markup opens from the photo |
 | SafetyCulture | Big Pass/Fail/N/A answers, one tap per item | Checklist answer row |
-| GoAudits | Photo proof before closing, PDF at the end of a walk | Verify flow with 30% overlay; session summary ends in "Create report" |
+| GoAudits | Photo proof before closing, PDF at the end of a walk | Verify flow with 30% overlay; session summary ends in "Make the report" |
 
 - Most competitors (and most generated UI) look the same: saturated blue, Inter, pastel pill chips,
   big soft cards. SiteLog uses a **field-ledger** look instead:
@@ -112,8 +112,8 @@
   with SwiftUI and Compose mapping) in [html/tokens.js](html/tokens.js) are the single source; `DesignSystem` (iOS) and
   `:designsystem` (Android) mirror them.
 - **HTML pages** (one per Figma page, see §2): [1-foundations](html/1-foundations.html),
-  [2-ios](html/2-ios.html) (69 screens), [3-android](html/3-android.html) (the same 69 in Material 3),
-  [4-flows](html/4-flows.html) (21 flows), [5-system-design](html/5-system-design.html) (21 components).
+  [2-ios](html/2-ios.html) (79 screens), [3-android](html/3-android.html) (the same 79 in Material 3),
+  [4-flows](html/4-flows.html) (25 flows), [5-system-design](html/5-system-design.html) (28 components).
 
 </dd></dl>
 
@@ -128,10 +128,10 @@
 | Page | HTML | Contents |
 |---|---|---|
 | 01 Foundations | [1-foundations.html](html/1-foundations.html) | App icon (iOS masters, Android adaptive layers and masks, Google Play), text styles for both platforms, colour tokens light + dark, spacing scale and layout constants |
-| 02 iOS | [2-ios.html](html/2-ios.html) | 69 screens in 12 groups (§3, the last is 6 states), iPhone 16 (393×852), plus 3 dark screens |
-| 03 Android | [3-android.html](html/3-android.html) | The same 69 screens in Material 3, Android compact (412×917 dp), plus 3 dark screens |
-| 04 Flows | [4-flows.html](html/4-flows.html) | 21 flows drawn with the iOS screens: ringed control → arrow with the action → next screen |
-| 05 System design | [5-system-design.html](html/5-system-design.html) | 21 shared components, each with purpose, `DS…` name, properties (enum-like: `type` · `size` · `state` · slots, each with cases and a default), spec (pt / dp) and one variant row per `property.case`, iOS and Android side by side, drawn by the same CSS as the screens |
+| 02 iOS | [2-ios.html](html/2-ios.html) | 79 screens in 13 groups (§3, the last is 6 states), iPhone 16 (393×852), plus 3 dark screens |
+| 03 Android | [3-android.html](html/3-android.html) | The same 79 screens in Material 3, Android compact (412×917 dp), plus 3 dark screens |
+| 04 Flows | [4-flows.html](html/4-flows.html) | 25 flows drawn with the iOS screens: ringed control → arrow with the action → next screen |
+| 05 System design | [5-system-design.html](html/5-system-design.html) | 28 shared components (push notification, plan pin, checklist answer, camera controls, toast, passcode and thumbnail included), each with purpose, `DS…` name, properties (enum-like: `type` · `size` · `state` · slots, each with cases and a default), spec (pt / dp) and one variant row per `property.case`, iOS and Android side by side, drawn by the same CSS as the screens |
 
 - Preview locally: `python3 -m http.server 8765 --directory docs/design`, then open `http://localhost:8765/html/1-foundations.html`.
 - Import: [figma-sync](figma-sync/README.md) serialises each page from the local server (the pages load `tokens.js`, `kit.js` and the CSS beside them) and rebuilds it through the Figma MCP.
@@ -146,7 +146,7 @@
 
 | # | Group | Screens | Spec | Feature |
 |---|---|---|---|---|
-| S1 | Launch & security | Face ID lock (A1), passcode unlock (A3), app-switcher overlay, sign-in (A2) | 07, 08 | F01 (F12 sign-in) |
+| S1 | Launch & security | Face ID lock (A1), passcode unlock (A3), passcode locked (A3l), app-switcher overlay, sign-in (A2) | 07, 08 | F01 (F12 sign-in) |
 | S2 | Home & projects | Home tab of the current project (live walkthrough, Sessions · Locations · Plans), project switcher (W1), new project sheet | 01 | F02 |
 | S3 | Sessions & locations | Start session sheet, survey screen (location tree + badges), bulk-generate locations, clone tree, end session | 01 | F02 |
 | S4 | Capture | Camera, capture review, measurement overlay + device status dot | 02, 06 | F03, F10 |
@@ -157,7 +157,8 @@
 | S9 | Reports | Report builder (grouping, sections), branding settings, signature pad (two parties), PDF preview + share | 05 | F07 |
 | S10 | Uploads & diagnostics | Upload status screen, diagnostic bundle export | 04, 09, 10 | F04, F11, F13 |
 | S11 | Settings | Account, devices (BLE pairing), app lock (S4: Lock app + Lock after), set passcode (S5), storage cleanup, delete account | 06, 07, 08, 09 | F01, F10, F11, F12 |
-| S12 | Team and roles | Team list (T1), invite (T2), member role and projects (T3), project members (T4), join from invite (T5), not a member (T6), Viewer read-only Home and issue (T7, T8) | site-log-be 05 | F19 |
+| S12 | Team and roles | Team list (T1), Team offline (T1o), invite (T2), member role and projects (T3), project members (T4), join from invite (T5), invite replaced (T5x), not a member (T6), Viewer read-only Home and issue (T7, T8), not allowed for your role (T8n), team activity (T9) | site-log-be 05 | F19 |
+| S13 | Notifications | Why turn them on (N1, first launch after sign-in), system prompt (N2), pushes on the lock screen (N3), notification settings with one switch per kind (N4), notifications off (N4o) | 18 · site-log-be 01-api §10 | F16 (kinds beyond uploads: F19) |
 
 </dd></dl>
 
@@ -168,10 +169,10 @@
 | Page | HTML | Figma |
 |---|---|---|
 | 01 Foundations | Done | Imported 2026-11-17 |
-| 02 iOS | Done: 63 screens + 6 states + 3 dark | Imported 2026-11-17 (app mark corners and new frame spacing still to sync) |
-| 03 Android | Done: 63 screens + 6 states + 3 dark | Imported 2026-11-17, not yet checked (same two fixes to sync) |
-| 04 Flows | Done: 21 flows | Not imported: second file, after the Figma MCP limit resets |
-| 05 System design | Done: 21 components | Not imported: second file, after the Figma MCP limit resets |
+| 02 iOS | Done: 73 screens + 6 states + 3 dark | Imported 2026-11-17 (still to sync: app mark corners, frame spacing, 2026-11-20 changes: T1 / T5 / T9, S1, Notifications group) |
+| 03 Android | Done: 73 screens + 6 states + 3 dark | Imported 2026-11-17, not yet checked (same fixes to sync) |
+| 04 Flows | Done: 25 flows | Not imported: second file, after the Figma MCP limit resets |
+| 05 System design | Done: 28 components | Not imported: second file, after the Figma MCP limit resets |
 
 - The new Figma file replaces the old one (`3Ru8x4sFZSQwlFI42wqrbH`). Import log, what is left and how to resume: [figma-sync/README.md](figma-sync/README.md) (stopped by the Starter plan limit, 20 MCP calls a month).
 - States designed (E1–E6): first launch, offline, first sync, sync paused, nothing open, search with recents.
