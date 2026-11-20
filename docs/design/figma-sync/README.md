@@ -46,12 +46,13 @@
 |---|---|---|
 | 1 | Pages 02, 03: wrap the app mark on A1, A2, A3, T5 in a rounded clipping frame (iOS radius 16 / 11 / 13 / 14, Android 36 / 24 / 28 / 32) | 2 |
 | 2 | Pages 01–03: re-space frames to the new HTML gaps (`base.css`: rows 96, screens 64, boards 64; they were 48 / 40 / 40 at import) | 3 |
+| 2b | Pages 02, 03: re-export the groups changed on 2026-11-20 (Settings & devices: S1 / S3; new Notifications group N1–N4; Team and roles: T1, T5, new T9) and replace their frames; groups below them shift down | 2 |
 | 3 | Page 03: screenshot check against the HTML | 1–2 |
 | 4 | Create file 2 (`create_new_file`, exempt from the limit), pages 04 Flows and 05 System design: export, upload, build | 6–8 |
 | 5 | Remove the builder carrier `figx-builder` (`54:4` on page 01) when everything is built | 1 |
 | 6 | Update the status in [00-design-plan §4](../00-design-plan.md#4-status-2026-11-17) and this log; put the file 2 page links in the README Design sections (iOS §4, Android §6), replacing "Not imported yet" | — |
 
-- About 15 calls in all: fits in one month of the Starter limit if nothing fails. Do the read-only checks last.
+- About 17 calls in all: fits in one month of the Starter limit (20) if nothing fails. Do the read-only checks last.
 - Any later change to the HTML pages makes the Figma copy stale: re-export only the changed groups and replace their frames.
 
 </dd></dl>
