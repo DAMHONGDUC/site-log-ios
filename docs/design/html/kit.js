@@ -90,6 +90,38 @@ const MEMBERS = [
   ['Riverside Development', 'pm@riverside.vn', 'viewer', 'RD', '#B3A9C2', '1 project'],
 ];
 const INVITES = [['vu@eastline.vn', 'inspector', 'Expires in 6 days'], ['qa@aquaseal.vn', 'viewer', 'Expires in 2 days']];
+/* Push notifications: the kinds a member can turn on or off (per device), and sample pushes */
+const PUSH_KINDS = [
+  // [kind, title in Settings, what triggers it, on by default in the samples]
+  ['uploadsVerified', 'Photos are safe', 'A walkthrough’s photos are uploaded and verified', true],
+  ['issueAssigned', 'Assigned to you', 'An issue is assigned to you, or to someone else after you', true],
+  ['issueRechecked', 'Re-check results', 'An issue you logged or own is re-checked: resolved, still open or worse', true],
+  ['dueSoon', 'Due tomorrow', 'One summary at 8:00 of your open issues due the next day', false],
+  ['access', 'Projects and role', 'You are added to or removed from a project, or your role changes', true],
+];
+const PUSH_SAMPLES = {
+  // kind: [title, body, time]
+  issueAssigned: ['Assigned to you · Major', 'Hairline crack by the skirting, 7A Living room. Due Fri.', 'now'],
+  uploadsVerified: ['Level 7 walkthrough is safe', 'All 112 photos are uploaded and verified.', '9:12'],
+  issueRechecked: ['Re-check: still open', 'Le Thu re-checked Exposed wiring at socket, 7A Kitchen.', 'Yesterday'],
+  dueSoon: ['2 issues due tomorrow', 'Riverside Tower B · Phuc Electric, Tuan’s crew.', '8:00'],
+  access: ['Added to Harbor View Villas', 'Hanh Nguyen added you as Inspector.', 'Mon'],
+};
+/* A push as the system draws it (system chrome: 15 pt text, not app tokens). iOS: glass card with the app icon; Android: card with a small icon and the app name. */
+const pushCardIOS = (kind, o = {}) => { const [t, b, time] = PUSH_SAMPLES[kind]; return `<div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:24px;background:${o.lock ? 'rgba(245,245,245,.72)' : '#fff'};${o.lock ? 'backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);' : 'box-shadow:0 6px 20px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.06);'}color:#16181B;text-align:left">${appMark(38)}<div style="flex:1;min-width:0"><div style="display:flex;gap:8px;align-items:baseline"><span style="flex:1;font-size:15px;line-height:20px;font-weight:600">${t}</span><span style="font-size:13px;line-height:20px;color:rgba(22,24,27,.55)">${time}</span></div><div style="font-size:15px;line-height:20px">${b}</div></div></div>`; };
+const pushCardAND = (kind, o = {}) => { const [t, b, time] = PUSH_SAMPLES[kind]; return `<div style="padding:14px 16px;border-radius:24px;background:${o.lock ? '#2A2C30' : '#fff'};color:${o.lock ? '#F2F0EC' : '#16181B'};${o.lock ? '' : 'box-shadow:0 4px 16px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.05);'}text-align:left;display:flex;flex-direction:column;gap:4px"><div style="display:flex;gap:8px;align-items:center;font-size:13px;line-height:20px;color:${o.lock ? '#A4A7AD' : '#63676E'}"><span style="width:20px;height:20px;border-radius:10px;background:#FFD400;display:grid;place-items:center;color:#1B1700">${I('camera', 12, 2.4)}</span>SiteLog · ${time === 'now' ? 'now' : time}</div><div style="font-size:15px;line-height:20px;font-weight:600">${t}</div><div style="font-size:15px;line-height:20px">${b}</div></div>`; };
+/* Team activity (member_events): [day, [[initials, colour, who, what, time]]] */
+const ACTIVITY = [
+  ['Today', [
+    ['HN', '#C9B79C', 'Hanh Nguyen', 'invited vu@eastline.vn as Inspector', '9:40'],
+    ['HN', '#C9B79C', 'Hanh Nguyen', 'changed Le Thu from Viewer to Inspector', '9:12'],
+    ['TM', '#9DB0B8', 'Tran Minh', 'added Pham Quang to Riverside Tower B', '8:05'],
+  ]],
+  ['Yesterday', [
+    ['HN', '#C9B79C', 'Hanh Nguyen', 'resent the invite to qa@aquaseal.vn', '17:20'],
+    ['RD', '#B3A9C2', 'Riverside Development', 'joined as Viewer', '14:02'],
+  ]],
+];
 /* Default avatar: initials always centred in the circle (line-height 1, no inherited line box); size → initials size */
 const AVATAR_TEXT = { 56: 20, 48: 17, 40: 15, 24: 10, 20: 9 };
 const avatar = (ini, color, s = 40) => `<span style="width:${s}px;height:${s}px;border-radius:${s / 2}px;background:${color};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-size:${AVATAR_TEXT[s] || Math.round(s * 0.38)}px;line-height:1;letter-spacing:0;text-align:center;flex:none;overflow:hidden">${ini}</span>`;
