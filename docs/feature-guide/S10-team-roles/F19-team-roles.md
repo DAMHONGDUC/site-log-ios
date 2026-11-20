@@ -35,7 +35,7 @@
 
 | Step | Layer | Hours | Status | What |
 |---|---|---|---|---|
-| [1](#1-contract) | Contract | 2h | not start | DTOs for `/me`, members, invitations; `createdBy` |
+| [1](#1-contract) | Contract | 2h | not start | DTOs for `/me`, members, invitations (preview, resend), member events; `createdBy` |
 | [2](#2-domain--roles-and-permissions) | Domain | 4h | not start | `Role`, `Action`, `Permissions.can(role, action, row)` |
 | [3](#3-data--team-repository) | Data | 4h | not start | Team repository, role cache, `/me` on start |
 | [4](#4-gate-every-screen-by-role) | UI | 6h | not start | Hide or disable actions; Viewer read-only Home and issue (T7, T8) |
@@ -59,7 +59,7 @@ flowchart LR
 
 <dl><dd>
 
-- `DataLayer/Models/Remote/MemberDTO.swift`, `InvitationDTO.swift`, `MeDTO.swift`; `createdBy` on synced DTOs.
+- `DataLayer/Models/Remote/MemberDTO.swift`, `InvitationDTO.swift`, `InvitePreviewDTO.swift`, `MemberEventDTO.swift`, `MeDTO.swift`; `createdBy` on synced DTOs.
 - `role` is `admin` · `manager` · `inspector` · `viewer`; `projectIds` is a list or `"all"`.
 - **Check:** the DTOs decode the JSON samples of [01-api §13](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/01-api.md#13-team) byte for byte.
 
@@ -69,7 +69,7 @@ flowchart LR
 
 <dl><dd>
 
-- `DomainLayer/Entities/Team/` (`Role`, `Member`, `Invitation`, `Action`), `UseCases/Team/` (one per action).
+- `DomainLayer/Entities/Team/` (`Role`, `Member`, `Invitation`, `InvitePreview`, `MemberEvent`, `Action`), `UseCases/Team/` (one per action).
 - `Permissions.can(role, action, row)` is the table of [05 §3](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/05-team-and-roles.md#3-permissions) as data, including "own, same day" (needs `createdBy` and the creation time).
 - Use cases: `LoadMe`, `ListMembers`, `InviteMember`, `CancelInvitation`, `ChangeRole`, `RemoveMember`, `SetProjectMembers`, `AcceptInvitation`.
 - **Check:** a unit test walks the whole permission table for the four roles.
@@ -110,16 +110,17 @@ flowchart LR
 
 <dl><dd>
 
-- `Presentation/Team/` (`TeamScreen`, `InviteScreen`, `MemberScreen`, `ProjectMembersScreen`).
+- `Presentation/Team/` (`TeamScreen`, `InviteScreen`, `MemberScreen`, `ProjectMembersScreen`, `ActivityScreen`).
 
 | Screen | Who | Does |
 |---|---|---|
-| T1 Team | Admin | Members with role tags, pending invitations; `+` / Invite |
+| T1 Team | Admin | Members with role tags, pending invitations (Resend · Cancel); `+` / Invite; Activity row |
 | T2 Invite | Admin | Email, role (four, with descriptions), projects for Inspector and Viewer; Send invite |
-| T3 Member | Admin | Change role, project switches, Remove from company (confirm) |
+| T3 Member | Admin | Change role, project switches (both saved with one `PATCH /members/:uid`), Remove from company (confirm) |
 | T4 Project members | Admin, Manager | Home ⋯ → Members: who sees every project, who is on this one; add people |
+| T9 Activity | Admin | Team → Activity: who did what to whom, newest first, loads 50 more at the end (`GET /member-events`) |
 
-- **Check:** invite, change role and remove on staging; the last Admin cannot be demoted (`409 last_admin` shown as a sentence).
+- **Check:** invite, resend (the old link shows "This invite was replaced"), change role and projects, remove and read it in Activity on staging; the last Admin cannot be demoted (`409 last_admin` shown as a sentence).
 
 </dd></dl>
 
@@ -128,7 +129,7 @@ flowchart LR
 <dl><dd>
 
 - Associated Domains `applinks:app.<domain>` in `project.yml`; `apple-app-site-association` served by the backend host; `DeepLinkRouter` route `.invite(token)`; `Presentation/Team/Join/`.
-- T5 Join: "Name invited you", role and projects, sign-in buttons; after sign-in `POST /invitations/accept`, then pull from `0`.
+- T5 Join: `GET /invitations/:token` before sign-in fills "Name invited you", role and projects; expired or used → a sentence and "Ask for a new invite"; after sign-in `POST /invitations/accept`, then pull from `0`.
 - T6 Not a member: `403 not_invited` after sign-in → "Ask an Admin to invite you" and Sign out.
 - **Check:** open the link from Mail / Gmail on a phone without the app signed in; it lands on T5.
 

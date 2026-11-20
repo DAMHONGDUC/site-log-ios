@@ -41,7 +41,7 @@ flowchart LR
 
 | Task | Step | Layer | Hours | Status |
 |---|---|---|---|---|
-| F19.1 | Contract: `/me`, members, invitations, `createdBy` | Contract | 2 | not start |
+| F19.1 | Contract: `/me`, members, invitations, member events, `createdBy` | Contract | 2 | not start |
 | F19.2 | Domain: roles and permissions | Domain | 4 | not start |
 | F19.3 | Data: team repository, role cache | Data | 4 | not start |
 | F19.4 | Gate every screen by role (T7, T8) | UI | 6 | not start |
