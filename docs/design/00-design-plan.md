@@ -168,9 +168,9 @@
 
 | Page | HTML | Figma |
 |---|---|---|
-| 01 Foundations | Done | Imported 2026-11-17 |
-| 02 iOS | Done: 73 screens + 6 states + 3 dark | Imported 2026-11-17 (still to sync: app mark corners, frame spacing, 2026-11-20 changes: T1 / T5 / T9, S1, Notifications group) |
-| 03 Android | Done: 73 screens + 6 states + 3 dark | Imported 2026-11-17, not yet checked (same fixes to sync) |
+| 01 Foundations | Done | Up to date (rebuilt 2026-11-21) |
+| 02 iOS | Done: 73 screens + 6 states + 3 dark | Stale: 2026-11-17 version; new version uploaded, waiting for the Figma limit |
+| 03 Android | Done: 73 screens + 6 states + 3 dark | Stale, same as 02 |
 | 04 Flows | Done: 25 flows | Not imported: second file, after the Figma MCP limit resets |
 | 05 System design | Done: 28 components | Not imported: second file, after the Figma MCP limit resets |
 
