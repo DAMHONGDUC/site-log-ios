@@ -74,7 +74,13 @@ async function build(n, parent, svgs) {
   made++;
   for (const k of (n[6] || [])) await build(k, f, svgs);
 }
-const carriers = page.children.filter(n => n.name.startsWith('figx-c-')).sort((a, b) => a.name < b.name ? -1 : 1);
+// Carriers may sit on another page (args.src) and are picked by name prefix (args.prefix, default 'figx-c-').
+const srcPage = args.src ? await figma.getNodeByIdAsync(args.src) : page;
+if (srcPage !== page) await srcPage.loadAsync();
+const prefix = args.prefix || 'figx-c-';
+const removed = [];
+if (args.clear) for (const n of [...page.children]) { if (!n.name.startsWith('figx-')) { removed.push(n.name); n.remove(); } }
+const carriers = srcPage.children.filter(n => n.name.startsWith(prefix)).sort((a, b) => a.name < b.name ? -1 : 1);
 const todo = carriers.slice(0, args.max || 2);
 const done = [];
 for (const c of todo) {
@@ -83,8 +89,9 @@ for (const c of todo) {
   const root = data.d[0];
   await build(root, page, data.s);
   const top = page.children[page.children.length - 1];
+  if (top.name === 'page-head') top.name = 'Page header';
   done.push(c.name + ' -> ' + top.id + ' ' + top.name);
   c.remove();
 }
 if (args.bg) page.backgrounds = [solid(args.bg)];
-return { done, remaining: carriers.length - todo.length, made, errors: errors.slice(0, 10) };
+return { done, removed: removed.length, remaining: carriers.length - todo.length, made, errors: errors.slice(0, 10) };

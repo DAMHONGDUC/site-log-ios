@@ -83,6 +83,15 @@
         if (s !== el && cs.opacity !== '1') d.setAttribute('opacity', cs.opacity);
         d.removeAttribute('class'); d.removeAttribute('style'); d.removeAttribute('data-lucide');
       });
+      cl.querySelectorAll('[marker-end]').forEach(path => {
+        const n = (path.getAttribute('d') || '').match(/-?[\d.]+/g); if (!n || n.length < 4) return;
+        const [x1, y1, x2, y2] = n.slice(-4).map(Number); const a = Math.atan2(y2 - y1, x2 - x1);
+        const P = (d, w) => `${(x2 - d * Math.cos(a) - w * Math.sin(a)).toFixed(1)},${(y2 - d * Math.sin(a) + w * Math.cos(a)).toFixed(1)}`;
+        const tri = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        tri.setAttribute('d', `M${P(8, -5)} L${x2 + 2 * Math.cos(a)},${y2 + 2 * Math.sin(a)} L${P(8, 5)} Z`); tri.setAttribute('fill', path.getAttribute('stroke') || '#2563EB');
+        path.removeAttribute('marker-end'); path.parentNode.appendChild(tri);
+      });
+      cl.querySelectorAll('marker').forEach(m => m.remove());
       cl.setAttribute('width', Math.round(r.width)); cl.setAttribute('height', Math.round(r.height));
       cl.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
       return addSvg(cl.outerHTML.replace(/\s+/g, ' ').replace(/> </g, '><').replace(/(\d+\.\d{2})\d+/g, '$1'));
@@ -95,7 +104,7 @@
       else if (deg > 0) { const a = (deg - 90) * Math.PI / 180; const x = cx + R * Math.cos(a), y = cy + R * Math.sin(a); s += `<path d="M${cx} ${cy} L${cx} ${cy - R} A${R} ${R} 0 ${deg > 180 ? 1 : 0} 1 ${x.toFixed(2)} ${y.toFixed(2)} Z" fill="#${c1.slice(0, 6)}"/>`; }
       return addSvg(s + '</svg>');
     }
-    function textRun(node, px, py, cs) {
+    function textRun(node, px, py, cs, sc = 1) {
       let t = node.textContent.replace(/\s+/g, ' ');
       if (!t.trim()) return null;
       const range = document.createRange(); range.selectNodeContents(node);
@@ -106,14 +115,14 @@
       if (node.nextSibling == null || cs.display === 'flex') t = t.replace(/ $/, '');
       if (!t) return null;
       if (cs.textTransform === 'uppercase') t = t.toUpperCase();
-      const fs = parseFloat(cs.fontSize);
-      const L = cs.lineHeight === 'normal' ? Math.round(fs * 1.25) : parseFloat(cs.lineHeight);
+      const fs = parseFloat(cs.fontSize) * sc;
+      const L = (cs.lineHeight === 'normal' ? Math.round(parseFloat(cs.fontSize) * 1.25) : parseFloat(cs.lineHeight)) * sc;
       const lines = new Set(rects.map(r => Math.round(r.top))).size;
       const ch = rects[0].height;
       const y = u.t - (L - ch) / 2;
       const p = { t, z: r1(fs), w: +cs.fontWeight, f: famCode(cs.fontFamily), c: hex(cs.color) || '000000', l: r1(L) };
       if (lines > 1) { p.ml = 1; if (cs.textAlign === 'center') p.a = 'c'; else if (cs.textAlign === 'right' || cs.textAlign === 'end') p.a = 'r'; }
-      const ls = parseFloat(cs.letterSpacing); if (ls) p.ls = Math.round(ls * 100) / 100;
+      const ls = parseFloat(cs.letterSpacing) * sc; if (ls) p.ls = Math.round(ls * 100) / 100;
       if (cs.fontStyle === 'italic') p.it = 1;
       const td = cs.textDecorationLine || ''; if (td.includes('underline')) p.u = 1; if (td.includes('line-through')) p.st = 1;
       const w = lines > 1 ? u.r - u.l + 2 : u.r - u.l;
@@ -124,7 +133,7 @@
       if (el.matches('section, .group, .cmp')) { const h = el.querySelector('h1, h2, h3'); if (h) return ((h.firstChild && h.firstChild.nodeType === 3 ? h.firstChild.textContent : h.textContent) || '').replace(/\s+/g, ' ').trim().slice(0, 60); }
       return el.classList[0] || el.tagName.toLowerCase();
     }
-    function walk(el, px, py, out, isRoot) {
+    function walk(el, px, py, out, isRoot, psc = 1) {
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return;
       const tag = el.tagName.toLowerCase();
@@ -139,22 +148,23 @@
         else out.push(['S', ...box(r, px, py), sv[5]]);
         return;
       }
+      const sc = el.offsetWidth > 0 && r.width > 0 ? r.width / el.offsetWidth : psc;
       const p = {};
       const fill = hex(cs.backgroundColor); if (fill) p.f = fill;
       const cg = conic(cs.backgroundImage);
       if (cg && cg[0]) { out.push(['S', ...box(r, px, py), pie(Math.round(r.width), Math.round(r.height), cg[0], cg[1], cg[2])]); return; }
       const lg = linear(cs.backgroundImage); if (lg) p.g = lg;
-      const bw = ['Top', 'Right', 'Bottom', 'Left'].map(s => parseFloat(cs['border' + s + 'Width']) || 0);
+      const bw = ['Top', 'Right', 'Bottom', 'Left'].map(s => r1((parseFloat(cs['border' + s + 'Width']) || 0) * sc));
       const bc = ['Top', 'Right', 'Bottom', 'Left'].map((s, i) => bw[i] && cs['border' + s + 'Style'] !== 'none' ? hex(cs['border' + s + 'Color']) : null);
       const dashed = ['Top', 'Right', 'Bottom', 'Left'].some(s => cs['border' + s + 'Style'] === 'dashed') ? 1 : 0;
       if (bc.some(Boolean)) {
         if (bw.every(w => w === bw[0]) && bc.every(c => c === bc[0])) p.s = [bw[0], bc[0], dashed];
         else p.sw = [bw.map((w, i) => bc[i] ? w : 0), bc.find(Boolean), dashed];
       }
-      const rad = ['TopLeft', 'TopRight', 'BottomRight', 'BottomLeft'].map(k => { const v = cs['border' + k + 'Radius']; return v.includes('%') ? Math.min(r.width, r.height) * parseFloat(v) / 100 : parseFloat(v) || 0; }).map(v => r1(Math.min(v, Math.min(r.width, r.height) / 2)));
+      const rad = ['TopLeft', 'TopRight', 'BottomRight', 'BottomLeft'].map(k => { const v = cs['border' + k + 'Radius']; return v.includes('%') ? Math.min(r.width, r.height) * parseFloat(v) / 100 : (parseFloat(v) || 0) * sc; }).map(v => r1(Math.min(v, Math.min(r.width, r.height) / 2)));
       if (rad.some(Boolean)) p.r = rad.every(v => v === rad[0]) ? rad[0] : rad;
-      const sh = shadows(cs.boxShadow); if (sh) p.e = sh;
-      const bm = (cs.backdropFilter || cs.webkitBackdropFilter || '').match(/blur\(([\d.]+)px\)/); if (bm) p.b = +bm[1];
+      const sh = shadows(cs.boxShadow); if (sh) p.e = sc === 1 ? sh : sh.map(([k, x, y, b, sp, c]) => [k, r1(x * sc), r1(y * sc), r1(b * sc), r1(sp * sc), c]);
+      const bm = (cs.backdropFilter || cs.webkitBackdropFilter || '').match(/blur\(([\d.]+)px\)/); if (bm) p.b = r1(+bm[1] * sc);
       if (+cs.opacity < 1) p.o = +(+cs.opacity).toFixed(2);
       if ((cs.overflowX !== 'visible' || cs.overflowY !== 'visible') && el.children.length) p.c = 1;
       const kept = isRoot || (keep && el.matches(keep));
@@ -162,8 +172,8 @@
       const nx = visual ? r.left + scrollX : px, ny = visual ? r.top + scrollY : py;
       const kids = [];
       for (const c of el.childNodes) {
-        if (c.nodeType === 3) { const t = textRun(c, nx, ny, cs); if (t) kids.push(t); }
-        else if (c.nodeType === 1) walk(c, nx, ny, kids, false);
+        if (c.nodeType === 3) { const t = textRun(c, nx, ny, cs, sc); if (t) kids.push(t); }
+        else if (c.nodeType === 1) walk(c, nx, ny, kids, false, sc);
       }
       if (visual && r.width > 0 && r.height > 0) {
         p.n = nameOf(el);
