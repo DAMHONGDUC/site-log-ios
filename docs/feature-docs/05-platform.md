@@ -525,8 +525,9 @@ shared `DeepLink` type; a link during cold launch is not lost.
   id is ignored and logged. The parser is pure; ids are opaque data.
 - Delivery: Firebase Cloud Messaging → APNs ([D21](00-overview.md#d21--firebase-cloud-messaging-for-push)); the APNs key is uploaded to the Firebase project, never shipped.
 - Payload (FCM, `platform: "ios"`): `notification` (title, body) + data `deepLink` (`sitelog://session/<id>`), `account` (uid hash — ignore it when it is not the signed-in user); a destination only,
-  state comes from the local store. The server sends only `session` links today; `issue` links come from URLs.
-- Authorization is requested at a moment that makes sense, not blindly at first launch.
+  state comes from the local store. Routes: `session`, `issue`, `project` (opens that project; with `kind: dueSoon` its Issues filtered to due tomorrow).
+- Kinds (`uploadsVerified`, `issueAssigned`, `issueRechecked`, `dueSoon`, `access`; [site-log-be 01-api §10](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/01-api.md#10-devices)): You → Notifications (N4) has one switch per kind; the chosen list is sent as `kinds` with `POST /devices`, so each device keeps its own choices. F16 ships only `uploadsVerified` (one switch); the other kinds and `kinds` arrive with F19.
+- Authorization is requested on first launch, right after sign-in or Continue offline: the N1 screen explains why, then the system prompt (N2). iOS shows that prompt only once; after a denial, You → Notifications (N4) shows "Off" and opens iOS Settings.
 - Token: APNs token → `Messaging.messaging().apnsToken`; the FCM token from `MessagingDelegate` goes to `POST /devices`, logged truncated, re-sent when it changes.
 - Routing: `URL / push → parser → router (pending) → tab + <Feature>Route pushed on that tab’s NavigationCoordinator` (D19). The router
   **holds** the destination until a view consumes it (cold launch), consuming clears it, and a deleted
