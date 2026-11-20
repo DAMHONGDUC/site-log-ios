@@ -166,9 +166,9 @@ site-log-ios/
 | Page | HTML | Figma |
 |---|---|---|
 | 01 Foundations: app icon, text styles, colours, spacing | [1-foundations.html](docs/design/html/1-foundations.html) | [01 Foundations](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=0-1) |
-| 02 iOS: 69 screens + 3 dark | [2-ios.html](docs/design/html/2-ios.html) | [02 iOS](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-2) |
-| 04 Flows: 21 flows on the iOS screens | [4-flows.html](docs/design/html/4-flows.html) | Not imported yet |
-| 05 System design: 21 components, iOS and Android | [5-system-design.html](docs/design/html/5-system-design.html) | Not imported yet |
+| 02 iOS: 79 screens + 3 dark | [2-ios.html](docs/design/html/2-ios.html) | [02 iOS](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-2) |
+| 04 Flows: 25 flows on the iOS screens | [4-flows.html](docs/design/html/4-flows.html) | Not imported yet |
+| 05 System design: 28 components, iOS and Android | [5-system-design.html](docs/design/html/5-system-design.html) | Not imported yet |
 
 - Plan, principles, screen inventory: [00-design-plan.md](docs/design/00-design-plan.md). Android screens: [3-android.html](docs/design/html/3-android.html), Figma [03 Android](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-3).
 
