@@ -43,7 +43,7 @@
 | [1](#1-contract--push-payload-and-device-token) | Contract | 1h | not start | Payload with `deepLink`; `POST /devices` with the FCM token |
 | [2](#2-domain--deep-link-parser) | Domain | 1h | not start | Pure `DeepLink` parser |
 | [3](#3-fake-data--token-data-source-in-memory) | Fake data | 1h | not start | Real `PushRepositoryImpl` over an in-memory token data source |
-| [4](#4-view-models--permission-and-settings) | View models | 2h | not start | Permission moment, notification row |
+| [4](#4-view-models--permission-and-settings) | View models | 2h | not start | Permission moment (N1, N2), Notifications screen (N4) |
 | [5](#5-local--push-registration-and-routing) | Local | 4h | not start | Push capability, `FirebaseMessaging` token, URL scheme, router |
 | [6](#6-backend--in-site-log-be) | Backend | 3h | not start | site-log-be F16: `POST /devices`, FCM send |
 | [7](#7-sync--token-to-the-backend) | Sync | 2h | not start | Token registered through `HTTPClient` |
@@ -166,16 +166,16 @@ flowchart LR
 
 <dl><dd>
 
-- **Goal:** ask at a moment that makes sense, never at first launch; show a notification row in Settings.
+- **Goal:** ask on first launch, right after sign-in or Continue offline (N1, then the system prompt N2); You → Notifications (N4): permission state and one switch per push kind, sent as `kinds` with `POST /devices`.
 
 | Action | Skeleton folder | View model work |
 |---|---|---|
 | <b class="tag-new">New</b> view model · <b class="tag-edit">Edit</b> view | `Presentation/Notifications/` | Explain the benefit, then the system prompt |
-| <b class="tag-edit">Edit</b> view model | `Presentation/Settings/SettingsHome/` | Notification status row |
+| <b class="tag-edit">Edit</b> view model | `Presentation/Settings/SettingsHome/` | Notifications row ("4 of 5 on") → N4 |
 
 ```mermaid
 flowchart LR
-    Moment["first upload done"] --> Explain["benefit sheet"] --> Prompt["system prompt"]
+    Moment["first launch, after sign-in"] --> Explain["N1 why"] --> Prompt["N2 system prompt"]
 ```
 
 - **Check:** denied → everything still works.
