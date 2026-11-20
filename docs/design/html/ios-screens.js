@@ -1,7 +1,7 @@
 /* iOS screens: used by 2-ios.html (all screens) and 4-flows.html (flows built from the same screens). */
 /* ---------- iOS helpers ---------- */
 const sb = (o = {}) => `<div class="sb"><span>${o.time || '9:41'}</span><span class="island"></span><span class="r">${signal('currentColor')}${o.noWifi ? '' : wifi('currentColor')}${battery('currentColor')}</span></div>`;
-const screen = (id, title, inner, o = {}) => figure(id, title, `<div class="phone ${o.dark ? 'dark' : ''}">${sb(o)}${inner}<div class="home ${o.lightHome ? 'light' : ''}"></div></div>`, 393);
+const screen = (id, title, inner, o = {}) => figure(id, title, `<div class="phone ${o.dark ? 'dark' : ''}" ${o.bg ? `style="background:${o.bg}"` : ''}>${sb(o)}${inner}<div class="home ${o.lightHome ? 'light' : ''}"></div></div>`, 393);
 const G = [];
 
 
@@ -53,6 +53,15 @@ screen('A3', 'Enter passcode', `
     <div class="fn">2 tries left before a 1-minute wait</div>
   </div>`)}
   ${numpad()}
+  <div class="fn" style="position:absolute;bottom:28px;left:0;right:0;text-align:center;font-weight:600;color:var(--ink)">Forgot passcode?</div>`),
+screen('A3l', 'Too many tries', `
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+    ${appMark(48)}
+    <div class="t-heading">Enter passcode</div>
+    ${dots(0)}
+    <div class="fn" style="color:var(--crit)">Too many tries. Try again in 1 min.</div>
+  </div>`)}
+  <div style="opacity:.3">${numpad()}</div>
   <div class="fn" style="position:absolute;bottom:28px;left:0;right:0;text-align:center;font-weight:600;color:var(--ink)">Forgot passcode?</div>`),
 screen('A2', 'Sign in (optional)', `
   ${content(`<div style="padding-top:48px;align-items:center;text-align:center" class="stack">
@@ -469,7 +478,7 @@ screen('S1', 'You', `
   ${content(`
     ${list([row({ lead: avatar('HN', '#C9B79C', 48), title: 'Hanh Nguyen', sub: 'Admin · synced 2 minutes ago' }), row({ lead: `<span style="width:48px;height:48px;display:grid;place-items:center;color:var(--ink2)">${I('users', 22)}</span>`, title: 'Team', sub: '5 members, 2 invited' })], 76)}
     ${sec('On site', list([row({ title: 'Laser meter', trail: `<span class="val">DISTO D2</span>` }), row({ title: 'Quick phrases', trail: `<span class="val">18</span>` }), row({ title: 'Report letterhead' })]))}
-    ${sec('Privacy', list([row({ title: 'App lock', trail: `<span class="val">Face ID · 5 min</span>` })]))}
+    ${sec('This iPhone', list([row({ title: 'Notifications', trail: `<span class="val">4 of 5 on</span>` }), row({ title: 'App lock', trail: `<span class="val">Face ID · 5 min</span>` })]))}
     ${list([row({ title: 'Diagnostics' }), row({ title: '<span style="color:var(--crit)">Delete account</span>', chev: false })])}`, 'tight')}
   ${tabbar('You')}`),
 screen('S2', 'Laser meter', `
@@ -504,14 +513,48 @@ screen('S5', 'Set passcode', `
 ]]);
 
 for (const [name, spec, arr] of G) group(name, spec, arr);
+/* ======================= Notifications ======================= */
+const notifAsk = () => `${content(`<div class="empty" style="gap:24px;align-items:stretch">
+    <div class="stack" style="gap:16px;align-items:center;text-align:center">
+      <span style="width:64px;height:64px;border-radius:32px;display:grid;place-items:center;background:var(--sunken);color:var(--ink)">${I('bell', 30, 2)}</span>
+      <div class="stack" style="gap:8px"><div class="t-heading">Know when your photos are safe</div><div class="t-body" style="color:var(--ink2)">We tell you when a walkthrough is verified, when an issue is assigned to you and what is due tomorrow. Change it any time in You → Notifications.</div></div></div>
+    ${pushCardIOS('uploadsVerified')}</div>`)}
+  ${dock(`${btn('Turn on notifications', 'primary', 'bell')}${btn('Not now', 'ghost')}`, 'clear')}`;
+group('Notifications', 'spec 18 · asked on first launch, right after sign-in or Continue offline', [
+screen('N1', 'Turn on notifications (first launch)', notifAsk()),
+screen('N2', 'System prompt', `
+  ${notifAsk()}
+  <div class="dim"></div>
+  <div class="alert"><b>“SiteLog” Would Like to Send You Notifications</b><span>Notifications may include alerts, sounds and icon badges. These can be configured in Settings.</span><div class="aa"><div>Don’t Allow</div><div>Allow</div></div></div>`),
+screen('N3', 'Pushes on the Lock Screen', `
+  ${content(`<div class="stack" style="align-items:center;gap:0;color:#fff;padding-top:8px">
+    <div style="font-size:20px;line-height:28px;font-weight:600;opacity:.85">Wednesday 20 November</div>
+    <div style="font-size:96px;line-height:104px;font-weight:600;letter-spacing:-0.02em">9:41</div></div>
+    <div class="stack" style="gap:8px;margin-top:auto;padding-bottom:96px">${pushCardIOS('issueAssigned', { lock: true })}${pushCardIOS('uploadsVerified', { lock: true })}${pushCardIOS('issueRechecked', { lock: true })}</div>`)}`, { dark: true, lightHome: true, bg: 'linear-gradient(180deg,#3B4A5C 0%,#222A33 55%,#121417 100%)' }),
+screen('N4', 'Notification settings', `
+  ${nav({ back: 'You', title: 'Notifications' })}
+  ${content(`
+    ${list([row({ lead: `<span style="color:var(--ok)">${I('circle-check', 22)}</span>`, title: 'Allowed on this iPhone', sub: 'Change sounds and banners in iOS Settings' })])}
+    ${sec('Tell me when', list(PUSH_KINDS.map(([k, t, d, on]) => row({ title: t, sub: d, trail: `<span class="toggle ${on ? 'on' : ''}"></span>`, chev: false })), 16))}
+    <div class="fn">Each device keeps its own choices. Pushes never show photos, only what changed and where.</div>`, 'tight')}`),
+screen('N4o', 'Notifications off', `
+  ${nav({ back: 'You', title: 'Notifications' })}
+  ${content(`
+    <div class="panel" style="gap:12px"><div class="hstack" style="gap:8px"><span style="color:var(--ink2)">${I('bell-off', 20)}</span><span class="t-bodyStrong">Notifications are off</span></div><div class="fn">You turned them off for SiteLog. Turn them on in iOS Settings to hear about verified photos and issues assigned to you.</div><div>${btn('Open Settings', 'primary', null, { sm: true })}</div></div>
+    <div style="opacity:.3">${sec('Tell me when', list(PUSH_KINDS.map(([k, t, d, on]) => row({ title: t, sub: d, trail: `<span class="toggle ${on ? 'on' : ''}"></span>`, chev: false })), 16))}</div>`, 'tight')}`),
+]);
+
 /* ======================= Team and roles ======================= */
 group('Team and roles', 'one company · Admin, Manager, Inspector, Viewer · site-log-be 05-team-and-roles', [
 screen('T1', 'Team (Admin)', `
-  ${nav({ back: 'You', title: 'Team', right: ['@plus'] })}
+  ${nav({ back: 'You', title: 'Team', right: ['@history', '@plus'] })}
   ${content(`
     ${sec('Members', list(MEMBERS.map(([n, e, r, ini, c, pr]) => row({ lead: avatar(ini, c), title: n, sub: `${e} · ${pr}`, trail: roleTag(r) })), 68), '5')}
     ${sec('Invited', list(INVITES.map(([e, r, x]) => row({ lead: `<span style="width:40px;height:40px;border-radius:20px;border:1.5px dashed var(--line-strong);display:grid;place-items:center;color:var(--ink3);flex:none">${I('mail', 18)}</span>`, title: e, sub: x, trail: roleTag(r) })), 68), '2')}
     `, 'tight')}`),
+screen('T1o', 'Team offline', `
+  ${nav({ back: 'You', title: 'Team' })}
+  ${content(empty(hero('neutral', 'cloud-off', 'Needs a connection', 'Members and invites load live, so they can’t be seen or changed offline. Your projects still work.', { extra: btn('Try again', 'secondary', 'refresh-cw', { sm: true }) })))}`),
 screen('T2', 'Invite a member', `
   ${nav({ back: 'Team', title: 'Invite' })}
   ${content(`
@@ -536,9 +579,11 @@ screen('T4', 'Project members', `
   ${tabbar('Home')}`),
 screen('T5', 'Join from an invite', `
   ${content(`<div class="empty" style="gap:24px;align-items:stretch">
-    <div class="stack" style="align-items:center;gap:16px;text-align:center">${appMark(64)}<div class="stack" style="gap:8px"><div class="t-heading">Hanh Nguyen invited you</div><div class="t-body" style="color:var(--ink2)">Join SiteLog as an <b>Inspector</b> on Riverside Tower B and Harbor View Villas. Sign in with vu@eastline.vn.</div></div></div>
+    <div class="stack" style="align-items:center;gap:16px;text-align:center">${appMark(64)}<div class="stack" style="gap:8px"><div class="t-heading">Hanh Nguyen invited you</div><div class="t-body" style="color:var(--ink2)">Join SiteLog as an <b>Inspector</b> on Riverside Tower B and Harbor View Villas. Sign in with v••@eastline.vn.</div></div></div>
   </div>`)}
   ${dock(`${btn('Continue with Apple', 'primary', 'apple')}${btn('Continue with email', 'secondary', 'mail')}`, 'clear')}`),
+screen('T5x', 'Invite no longer valid', `
+  ${content(empty(hero('neutral', 'link-2-off', 'This invite was replaced', 'Hanh Nguyen sent you a newer invite. Open the latest email, or ask for a new one.', { extra: btn('Ask for a new invite', 'secondary', 'mail', { sm: true }) })))}`),
 screen('T6', 'Signed in, not a member', `
   ${content(empty(hero('neutral', 'user-x', 'Ask an Admin to invite you', 'SiteLog is for Eastline’s team. thu.le@gmail.com is not a member yet.', { extra: btn('Sign out', 'secondary', null, { sm: true }) })))}`),
 screen('T7', 'Home as a Viewer', `
@@ -554,6 +599,17 @@ screen('T8', 'Issue as a Viewer', `
     <div class="stack" style="gap:8px;padding-top:16px">${sev('major', 'Major · #3')}<div class="t-heading">Hairline crack by the skirting, about 40 cm</div></div>
     ${list([row({ title: '<span class="meta">Room</span>', trail: `<span class="t-body">7A Living room</span>`, chev: false }), row({ title: '<span class="meta">Assigned to</span>', trail: assigneeLine('Tuan’s masonry crew'), chev: false }), row({ title: '<span class="meta">Logged by</span>', trail: `<span class="t-body">Le Thu · 12 Aug</span>`, chev: false })])}
     <div class="hstack" style="gap:8px;color:var(--ink2)">${I('eye', 18)}<span class="fn">View only. Re-check and mark up are for Inspectors and Managers.</span></div>`, 'tight')}`),
+screen('T8n', 'Not allowed for your role', `
+  ${nav({ back: 'Issues', right: ['@share'] })}
+  <div style="height:250px;flex:none;position:relative">${scene(0, { crack: true })}</div>
+  ${content(`
+    <div class="stack" style="gap:8px;padding-top:16px">${sev('major', 'Major · #3')}<div class="t-heading">Hairline crack by the skirting, about 40 cm</div></div>
+    ${list([row({ title: '<span class="meta">Room</span>', trail: `<span class="t-body">7A Living room</span>`, chev: false }), row({ title: '<span class="meta">Assigned to</span>', trail: assigneeLine('Tuan’s masonry crew'), chev: false })])}`, 'tight')}
+  ${dock(`<div class="hstack">${btn('Mark up', 'secondary', 'pencil')}${btn('Re-check', 'primary', 'camera')}</div>`)}
+  <div class="toast">${I('ban', 18, 2)}<span class="grow">Not allowed for your role. Your access changed; updating now.</span></div>`),
+screen('T9', 'Team activity', `
+  ${nav({ back: 'Team', title: 'Activity' })}
+  ${content(ACTIVITY.map(([day, rows]) => sec(day, list(rows.map(([ini, c, who, what, t]) => row({ lead: avatar(ini, c), title: `${who} ${what}`, sub: t, chev: false })), 68))).join(''), 'tight')}`),
 ]);
 
 /* ======================= States ======================= */

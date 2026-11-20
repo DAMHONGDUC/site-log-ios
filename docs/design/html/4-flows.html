@@ -43,6 +43,10 @@ const FLOWS = [
   { name: 'Sync across projects', steps: [{ id: 'U1', hot: '.tag', label: 'Open a project' }, { id: 'U2' }] },
   { name: 'Invite a member', steps: [{ id: 'S1', hot: 'Team', label: 'Team' }, { id: 'T1', hot: '.lucide-plus', label: 'Invite' }, { id: 'T2', hot: 'Send invite', label: 'Send invite' }, { id: 'T5', hot: 'Continue with Apple', label: 'They sign in' }, { id: 'P1' }] },
   { name: 'Change a role, project access', steps: [{ id: 'T1', hot: 'Le Thu', label: 'Open member' }, { id: 'T3' }] },
+  { name: 'Team activity', steps: [{ id: 'T1', hot: '.lucide-history', label: 'Activity' }, { id: 'T9' }] },
+  { name: 'First launch: turn on notifications', steps: [{ id: 'A2', hot: 'Sign in with Apple', label: 'Sign in' }, { id: 'N1', hot: 'Turn on notifications', label: 'Turn on' }, { id: 'N2', hot: 'Allow', label: 'Allow' }, { id: 'E1' }] },
+  { name: 'Open a push', steps: [{ id: 'N3', hot: 'Assigned to you · Major', label: 'Tap the push' }, { id: 'C6' }] },
+  { name: 'Choose notifications', steps: [{ id: 'S1', hot: 'Notifications', label: 'Notifications' }, { id: 'N4' }] },
   { name: 'You and app lock', steps: [{ id: 'S1', hot: 'App lock', label: 'App lock' }, { id: 'S4', hot: 'Change passcode', label: 'Change passcode' }, { id: 'S5' }] },
 ];
 renderFlows('app', FLOWS);

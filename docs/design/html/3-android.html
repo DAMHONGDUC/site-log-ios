@@ -23,7 +23,7 @@
 <script>
 /* ---------- Android helpers ---------- */
 const sb = (o = {}) => `<div class="sb"><span>${o.time || '9:41'}</span><span class="cam"></span><span class="r">${o.noWifi ? '' : wifi('currentColor')}${signal('currentColor')}${battery('currentColor')}</span></div>`;
-const screen = (id, title, inner, o = {}) => figure(id, title, `<div class="phone ${o.dark ? 'dark' : ''}">${sb(o)}${inner}<div class="gnav ${o.over ? 'over' : ''} ${o.lightNav ? 'light' : ''}"></div></div>`, 412);
+const screen = (id, title, inner, o = {}) => figure(id, title, `<div class="phone ${o.dark ? 'dark' : ''}" ${o.bg ? `style="background:${o.bg}"` : ''}>${sb(o)}${inner}<div class="gnav ${o.over ? 'over' : ''} ${o.lightNav ? 'light' : ''}"></div></div>`, 412);
 
 const actions = (list = []) => list.map(a => { if (!a.startsWith('@')) return `<span class="tbtn">${a}</span>`; const [n, c] = a.slice(1).split('#'); return `<span class="ibtn ${c ? 'fbtn' : ''}">${I(n, 22)}${c ? `<span class="fbadge">${c}</span>` : ''}</span>`; }).join('');
 const tabSmall = (o = {}) => `<div class="tab-small">${o.lead || ''}${o.nav ? `<span class="ibtn nav-ic">${I(o.nav, 24)}</span>` : ''}<span class="ti">${o.title || ''}${o.sub ? `<span class="ti-sub">${o.sub}</span>` : ''}</span>${actions(o.actions)}</div>`;
@@ -70,6 +70,15 @@ screen('A3', 'Enter passcode', `
     <div class="fn">2 tries left before a 1-minute wait</div>
   </div>`)}
   ${numpad()}
+  <div class="hstack" style="justify-content:center;padding-bottom:8px">${btn('Forgot passcode?', 'text', null, { sm: true })}</div>`),
+screen('A3l', 'Too many tries', `
+  ${content(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+    ${appMark(48, 0.5)}
+    <div class="t-heading">Enter passcode</div>
+    ${dots(0)}
+    <div class="fn" style="color:var(--crit)">Too many tries. Try again in 1 min.</div>
+  </div>`)}
+  <div style="opacity:.38">${numpad()}</div>
   <div class="hstack" style="justify-content:center;padding-bottom:8px">${btn('Forgot passcode?', 'text', null, { sm: true })}</div>`),
 screen('A2', 'Sign in (optional)', `
   ${content(`<div style="padding-top:48px;align-items:center;text-align:center" class="stack">
@@ -485,11 +494,11 @@ screen('U3', 'Diagnostics', `
 /* ======================= Settings ======================= */
 group('Settings & devices', 'specs 06, 07, 08', [
 screen('S1', 'You', `
-  ${tabLarge('You')}
+  ${tabSmall({ title: 'You' })}
   ${content(`
     ${list([li({ lead: avatar('HN', '#C9B79C', 48), title: 'Hanh Nguyen', sub: 'Admin · synced 2 minutes ago', chev: true }), li({ lead: `<span style="width:48px;height:48px;display:grid;place-items:center;color:var(--ink2)">${I('users', 22)}</span>`, title: 'Team', sub: '5 members, 2 invited', chev: true })], 80)}
     ${sec('On site', list([li({ title: 'Laser meter', trail: `<span class="val">DISTO D2</span>`, chev: true }), li({ title: 'Quick phrases', trail: `<span class="val">18</span>`, chev: true }), li({ title: 'Report letterhead', chev: true })]))}
-    ${sec('Privacy', list([li({ title: 'App lock', trail: `<span class="val">Fingerprint · 5 min</span>`, chev: true })]))}
+    ${sec('This phone', list([li({ title: 'Notifications', trail: `<span class="val">4 of 5 on</span>`, chev: true }), li({ title: 'App lock', trail: `<span class="val">Fingerprint · 5 min</span>`, chev: true })]))}
     ${list([li({ title: 'Diagnostics', chev: true }), li({ title: '<span style="color:var(--crit)">Delete account</span>' })])}`, 'tight')}
   ${navbar('You')}`),
 screen('S2', 'Laser meter', `
@@ -499,7 +508,7 @@ screen('S2', 'Laser meter', `
     ${sec('Nearby', list([li({ title: 'Leica DISTO X3', trail: btn('Pair', 'outlined', null, { sm: true }) }), li({ title: 'Stanley TLM99', sub: 'Weak signal, move closer', trail: btn('Pair', 'outlined', null, { sm: true }) })]), 'Searching…')}
     <div class="fn">The camera never waits for the meter. If it disconnects, you keep shooting and we reconnect quietly.</div>`)}`),
 screen('S3', 'Delete account', `
-  ${tabLarge('You')}
+  ${tabSmall({ title: 'You' })}
   ${dialog('Delete your account?', 'We’ll remove the cloud copies of 3 projects and 1,284 photos within 30 days. What’s on this phone stays until you uninstall the app.', `${btn('Cancel', 'text', null, { sm: true })}${btn('Delete account', 'danger', null, { sm: true })}`)}`, { over: true }),
 screen('S4', 'App lock', `
   ${tabSmall({ nav: 'arrow-left', title: 'App lock' })}
@@ -522,14 +531,49 @@ screen('S5', 'Set passcode', `
   ${numpad()}`),
 ]);
 
+/* ======================= Notifications ======================= */
+const notifAsk = () => `${content(`<div class="empty" style="gap:24px;align-items:stretch">
+    <div class="stack" style="gap:16px;align-items:center;text-align:center">
+      <span style="width:64px;height:64px;border-radius:32px;display:grid;place-items:center;background:var(--sunken);color:var(--ink)">${I('bell', 30, 2)}</span>
+      <div class="stack" style="gap:8px"><div class="t-heading">Know when your photos are safe</div><div class="t-body" style="color:var(--ink2)">We tell you when a walkthrough is verified, when an issue is assigned to you and what is due tomorrow. Change it any time in You → Notifications.</div></div></div>
+    ${pushCardAND('uploadsVerified')}</div>`)}
+  ${dock(`${btn('Turn on notifications', 'primary', 'bell')}${btn('Not now', 'text')}`, 'clear')}`;
+group('Notifications', 'spec 18 · asked on first launch, right after sign-in or Continue offline', [
+screen('N1', 'Turn on notifications (first launch)', notifAsk()),
+screen('N2', 'System prompt', `
+  ${notifAsk()}
+  <div class="dim"></div>
+  <div class="dialog" style="align-items:center;text-align:center;gap:16px"><span style="color:var(--ink2)">${I('bell', 28, 2)}</span><div class="t-body">Allow <b>SiteLog</b> to send you notifications?</div>
+    <div class="stack" style="gap:8px;width:100%">${btn('Allow', 'tonal')}${btn('Don’t allow', 'tonal')}</div></div>`),
+screen('N3', 'Pushes on the lock screen', `
+  ${content(`<div class="stack" style="align-items:center;gap:4px;color:#F2F0EC;padding-top:32px">
+    <div style="font-size:88px;line-height:96px;font-weight:400">9:41</div>
+    <div style="font-size:17px;line-height:24px;opacity:.85">Wed, 20 Nov</div></div>
+    <div class="stack" style="gap:8px;margin-top:auto;padding-bottom:88px">${pushCardAND('issueAssigned', { lock: true })}${pushCardAND('uploadsVerified', { lock: true })}${pushCardAND('issueRechecked', { lock: true })}</div>`)}`, { dark: true, lightNav: true, bg: 'linear-gradient(180deg,#2E3640 0%,#1B2027 55%,#101215 100%)' }),
+screen('N4', 'Notification settings', `
+  ${tabSmall({ nav: 'arrow-left', title: 'Notifications' })}
+  ${content(`
+    ${list([li({ lead: `<span style="color:var(--ok)">${I('circle-check', 24)}</span>`, title: 'Allowed on this phone', sub: 'Sound and pop-up style in Android settings', chev: true })])}
+    ${sec('Tell me when', list(PUSH_KINDS.map(([k, t, d, on]) => li({ title: t, sub: d, trail: `<span class="switch ${on ? 'on' : ''}"></span>` })), 16))}
+    <div class="fn">Each device keeps its own choices. Pushes never show photos, only what changed and where.</div>`, 'tight')}`),
+screen('N4o', 'Notifications off', `
+  ${tabSmall({ nav: 'arrow-left', title: 'Notifications' })}
+  ${content(`
+    <div class="panel" style="gap:12px"><div class="hstack" style="gap:8px"><span style="color:var(--ink2)">${I('bell-off', 20)}</span><span class="t-bodyStrong">Notifications are off</span></div><div class="fn">You turned them off for SiteLog. Turn them on in Android settings to hear about verified photos and issues assigned to you.</div><div>${btn('Open settings', 'primary', null, { sm: true })}</div></div>
+    <div style="opacity:.38">${sec('Tell me when', list(PUSH_KINDS.map(([k, t, d, on]) => li({ title: t, sub: d, trail: `<span class="switch ${on ? 'on' : ''}"></span>` })), 16))}</div>`, 'tight')}`),
+]);
+
 /* ======================= Team and roles ======================= */
 group('Team and roles', 'one company · Admin, Manager, Inspector, Viewer · site-log-be 05-team-and-roles', [
 screen('T1', 'Team (Admin)', `
-  ${tabSmall({ nav: 'arrow-left', title: 'Team', actions: ['@user-plus'] })}
+  ${tabSmall({ nav: 'arrow-left', title: 'Team', actions: ['@history'] })}
   ${content(`
     ${sec('Members', list(MEMBERS.map(([n, e, r, ini, c, pr]) => li({ lead: avatar(ini, c), title: n, sub: `${e} · ${pr}`, trail: roleTag(r), chev: true })), 68), '5')}
     ${sec('Invited', list(INVITES.map(([e, r, x]) => li({ lead: `<span style="width:40px;height:40px;border-radius:20px;border:1.5px dashed var(--line-strong);display:grid;place-items:center;color:var(--ink3);flex:none">${I('mail', 18)}</span>`, title: e, sub: x, trail: roleTag(r), chev: true })), 68), '2')}
     <div class="efab">${I('user-plus', 22, 2.2)}Invite</div>`, 'tight')}`),
+screen('T1o', 'Team offline', `
+  ${tabSmall({ nav: 'arrow-left', title: 'Team' })}
+  ${content(empty(hero('neutral', 'cloud-off', 'Needs a connection', 'Members and invites load live, so they can’t be seen or changed offline. Your projects still work.', { extra: btn('Try again', 'outlined', 'refresh-cw', { sm: true }) })))}`),
 screen('T2', 'Invite a member', `
   ${tabSmall({ nav: 'arrow-left', title: 'Invite' })}
   ${content(`
@@ -554,9 +598,11 @@ screen('T4', 'Project members', `
   ${navbar('Home')}`),
 screen('T5', 'Join from an invite', `
   ${content(`<div class="empty" style="gap:24px;align-items:stretch">
-    <div class="stack" style="align-items:center;gap:16px;text-align:center">${appMark(64, 0.5)}<div class="stack" style="gap:8px"><div class="t-heading">Hanh Nguyen invited you</div><div class="t-body" style="color:var(--ink2)">Join SiteLog as an <b>Inspector</b> on Riverside Tower B and Harbor View Villas. Sign in with vu@eastline.vn.</div></div></div>
+    <div class="stack" style="align-items:center;gap:16px;text-align:center">${appMark(64, 0.5)}<div class="stack" style="gap:8px"><div class="t-heading">Hanh Nguyen invited you</div><div class="t-body" style="color:var(--ink2)">Join SiteLog as an <b>Inspector</b> on Riverside Tower B and Harbor View Villas. Sign in with v••@eastline.vn.</div></div></div>
   </div>`)}
   ${dock(`${btn('Continue with Google', 'primary', 'chrome')}${btn('Continue with email', 'outlined', 'mail')}`, 'clear')}`),
+screen('T5x', 'Invite no longer valid', `
+  ${content(empty(hero('neutral', 'link-2-off', 'This invite was replaced', 'Hanh Nguyen sent you a newer invite. Open the latest email, or ask for a new one.', { extra: btn('Ask for a new invite', 'outlined', 'mail', { sm: true }) })))}`),
 screen('T6', 'Signed in, not a member', `
   ${content(empty(hero('neutral', 'user-x', 'Ask an Admin to invite you', 'SiteLog is for Eastline’s team. thu.le@gmail.com is not a member yet.', { extra: btn('Sign out', 'outlined', null, { sm: true }) })))}`),
 screen('T7', 'Home as a Viewer', `
@@ -572,6 +618,17 @@ screen('T8', 'Issue as a Viewer', `
     <div class="stack" style="gap:8px;padding-top:16px">${sev('major', 'Major · #3')}<div class="t-heading">Hairline crack by the skirting, about 40 cm</div></div>
     ${list([li({ title: '<span class="meta">Room</span>', trail: `<span class="t-body">7A Living room</span>` }), li({ title: '<span class="meta">Assigned to</span>', trail: assigneeLine('Tuan’s masonry crew') }), li({ title: '<span class="meta">Logged by</span>', trail: `<span class="t-body">Le Thu · 12 Aug</span>` })])}
     <div class="hstack" style="gap:8px;color:var(--ink2)">${I('eye', 18)}<span class="fn">View only. Re-check and mark up are for Inspectors and Managers.</span></div>`, 'tight')}`),
+screen('T8n', 'Not allowed for your role', `
+  ${tabSmall({ nav: 'arrow-left', actions: ['@share-2'] })}
+  <div style="height:250px;flex:none;position:relative">${scene(0, { crack: true })}</div>
+  ${content(`
+    <div class="stack" style="gap:8px;padding-top:16px">${sev('major', 'Major · #3')}<div class="t-heading">Hairline crack by the skirting, about 40 cm</div></div>
+    ${list([li({ title: '<span class="meta">Room</span>', trail: `<span class="t-body">7A Living room</span>` }), li({ title: '<span class="meta">Assigned to</span>', trail: assigneeLine('Tuan’s masonry crew') })])}`, 'tight')}
+  ${dock(`<div class="hstack">${btn('Mark up', 'tonal', 'pencil')}${btn('Re-check', 'primary', 'camera')}</div>`, 'clear')}
+  ${snack('Not allowed for your role. Your access changed; updating now.', '', 96)}`),
+screen('T9', 'Team activity', `
+  ${tabSmall({ nav: 'arrow-left', title: 'Activity' })}
+  ${content(ACTIVITY.map(([day, rows]) => sec(day, list(rows.map(([ini, c, who, what, t]) => li({ lead: avatar(ini, c), title: `${who} ${what}`, sub: t })), 72))).join(''), 'tight')}`),
 ]);
 
 /* ======================= States ======================= */
