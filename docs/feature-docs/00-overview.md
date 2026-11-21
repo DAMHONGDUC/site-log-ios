@@ -653,6 +653,7 @@ struct SplashScreen: View {
 | [03-backend.md](03-backend.md) | 14 Backend API (client guide); the server: [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](04-reporting-security.md) | 05 PDF and spreadsheet export · 07 Security and audit log |
 | [05-platform.md](05-platform.md) | 09 Diagnostics · 17 CI/CD and TestFlight · 18 Push and deep links · 19 Instruments |
+| [06-navigation.md](06-navigation.md) | Navigation map: root states, tabs, routes, sheets, deep links |
 
 - Every spec has the same shape: goal and scope, design, rules and risks, done and tests.
 
@@ -1131,6 +1132,7 @@ struct SplashScreen: View {
   - Deep links (F16) map a URL to a tab and a route, then push on that tab’s coordinator.
   - A sheet that opens a full screen dismisses itself, then pushes on the tab’s coordinator.
   - With view models, routes keep ids; the destination builds the view model from `Container.shared` (D14).
+  - Every screen's place (root state, tab, route, sheet) and every deep link: [06-navigation](06-navigation.md).
 
 </dd></dl>
 
