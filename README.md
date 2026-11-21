@@ -48,6 +48,7 @@
 | [03-backend.md](docs/feature-docs/03-backend.md) | 14 Backend API: what the app calls; the server lives in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](docs/feature-docs/04-reporting-security.md) | 05 PDF and CSV export · 07 Security and audit log |
 | [05-platform.md](docs/feature-docs/05-platform.md) | Dev setup · 09 Diagnostics · Testing · 17 CI/CD · 18 Push and deep links · 19 Instruments |
+| [06-navigation.md](docs/feature-docs/06-navigation.md) | Navigation map: root states, tabs, every route, sheets and covers, deep links |
 | [00-design-plan.md](docs/design/00-design-plan.md) | Design principles, tokens, screen inventory; HTML pages and Figma links: [§4 Design](#4-design) |
 | [swiftui-rules.md](docs/swiftui-rules.md) | SwiftUI rules: small views, state, design tokens, strings |
 
@@ -167,7 +168,7 @@ site-log-ios/
 |---|---|---|
 | 01 Foundations: app icon, text styles, colours, spacing | [1-foundations.html](docs/design/html/1-foundations.html) | [01 Foundations](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=0-1) |
 | 02 iOS: 79 screens + 3 dark | [2-ios.html](docs/design/html/2-ios.html) | [02 iOS](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-2) |
-| 04 Flows: 25 flows on the iOS screens | [4-flows.html](docs/design/html/4-flows.html) | Not imported yet |
+| 04 Flows: 46 flows on the iOS screens, every screen covered | [4-flows.html](docs/design/html/4-flows.html) | Not imported yet |
 | 05 System design: 28 components, iOS and Android | [5-system-design.html](docs/design/html/5-system-design.html) | Not imported yet |
 
 - Plan, principles, screen inventory: [00-design-plan.md](docs/design/00-design-plan.md). Android screens: [3-android.html](docs/design/html/3-android.html), Figma [03 Android](https://www.figma.com/design/uJZcCP6lzw8QTSkcu8uqvV/Site-Log-iOS-Design?node-id=54-3).
