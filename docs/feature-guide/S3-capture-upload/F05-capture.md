@@ -94,8 +94,8 @@ SiteLog/
 |---|---|
 | Links | `projectId`, `sessionId`, `locationId` |
 | Evidence | `kind`, `sha256`, `byteSize`, `capturedAt`, `timeConfidence` |
-| Place and device | `latitude`, `longitude`, `accuracy` (all or none), `deviceModel`, `durationSeconds` |
-| Storage | `remoteKey` (set by F06), `excludedFromReport` |
+| Place and device | `latitude`, `longitude` (both or none), `horizontalAccuracy`, `deviceModel`, `durationSeconds`, `deviceReading` |
+| Storage | `remoteKey`, `verificationCode` (set by F06), `excludedFromReport` |
 | Sync | `id`, `rev`, `clientUpdatedAt`, `deletedAt` |
 
 ```mermaid

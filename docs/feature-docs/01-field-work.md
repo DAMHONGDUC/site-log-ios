@@ -53,11 +53,11 @@ one-handed.
 
 | In | Out |
 |---|---|
-| CRUD for all three; 3-level tree (`floor → unit → room`) | Multi-user sharing (v2) |
+| CRUD for all three; 3-level tree (`floor → unit → room`); shared with project members by role ([site-log-be · 05-team-and-roles](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/05-team-and-roles.md)) | Sharing outside the company |
 | Bulk generation from a template; cloning a tree from another project | Excel/CAD import |
 | Closing and reopening sessions | |
 
-```
+```text
 Project list → [+] New project → Project detail: [Sessions] [Locations] [Plans]
   → [+] Start session → Survey screen: locations + capture/issue badges
       → Select location → Capture (02) / Checklist (13) / Plan (11)
@@ -132,7 +132,7 @@ before it reaches the DB.
 
 <dl><dd>
 
-```
+```text
 AVCaptureSession
 ├── inputs:  video (back/front), audio (mic)
 ├── outputs: AVCapturePhotoOutput → photos
@@ -183,8 +183,8 @@ func sha256(ofFileAt url: URL) throws -> String {
 }
 ```
 
-`HashConstants.streamingChunkBytes` is declared in the same feature module. The function propagates
-read and close errors to its caller; the repository boundary logs the failure.
+- `HashConstants.streamingChunkBytes` lives in the same feature module.
+- Read and close errors go to the caller; the repository logs the failure.
 
 - Stream in chunks: `Data(contentsOf:)` on a 1.5 GB video triggers jetsam.
 - Files: `media/<project>/<session>/<capture>.<ext>`, `.completeUnlessOpen`, excluded from backup.
@@ -256,7 +256,7 @@ shoot verification, render the pair in the PDF.
 
 | In | Out |
 |---|---|
-| Issue CRUD, multiple captures, severity, status, due date | Account-linked assignment (subcontractors have no app) |
+| Issue CRUD, multiple captures, severity, status, due date | Account-linked assignment before F19 (from F19 a member can be picked; subcontractors stay a typed name) |
 | Assignee and trade (free text, autocompleted) | Multi-user comment threads (v2) |
 | Carry-over of open issues; pairing and closure by verification photo | |
 | Phrase library, on-device dictation, voice notes | |
@@ -265,7 +265,7 @@ shoot verification, render the pair in the PDF.
 
 <dl><dd>
 
-```
+```text
 Log:     Capture → shoot → [Attach issue] → sheet (description, severity=Major,
          assignee, due, 🎤 dictate · 🔊 voice note · 📍 pin) → Save → back to camera
 Verify:  New session → location → banner "3 open issues from 12 Aug" → issue
@@ -278,7 +278,7 @@ Close:   new Issue (status .verified, verification photo); old.resolvedByIssue =
 |---|---|
 | Sheet returns to the camera | The user is walking a room; each camera restart costs ~1 s |
 | Default severity `.major` | Defaulting to minor makes everything minor |
-| `assigneeName` is free text | A name that groups the PDF is what gets used on site |
+| `assigneeName` is free text; from F19 `assigneeUid` when the assignee is a member | A name that groups the PDF is what gets used on site; a member shows their photo or initials |
 | 30% overlay | Without it the angles differ and the pair is worthless |
 
 - Phrase library: ~30 seeded phrases; new typed phrases added; sorted by usage; synced via the

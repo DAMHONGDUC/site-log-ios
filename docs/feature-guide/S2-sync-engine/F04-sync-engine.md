@@ -95,7 +95,7 @@ SiteLog/
 | Call | Request | Response |
 |---|---|---|
 | `POST /sync/pull` | `{ since: rev, limit }` | `{ changes: {table: [rows]}, nextRev, hasMore }` or `{ resyncRequired: true }` |
-| `POST /sync/push` | `{ mutations: [{ table, id, op, clientUpdatedAt, fields }] }` | `{ results: [{ id, status: applied \| superseded, serverRow? }], serverRev }` |
+| `POST /sync/push` | `{ mutations: [{ table, id, op, clientUpdatedAt, fields }] }` | `{ results: [{ id, status: applied \| superseded \| rejected, serverRow?, reason? }], serverRev }` |
 
 ```mermaid
 sequenceDiagram

@@ -1,0 +1,132 @@
+/* Page chrome and the pieces both platforms share. Colours come from tokens.js. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #E6E7EA; font-family: var(--sans); color: #16181B; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum'; }
+.page-head { padding: 56px 64px 8px; max-width: 1400px; }
+.page-head .kicker { font-size: 14px; font-weight: 600; color: #63676E; margin-bottom: 8px; }
+.page-head h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+.page-head p { color: #63676E; font-size: 17px; margin-top: 8px; max-width: 880px; line-height: 1.5; }
+.group { padding: 48px 64px 16px; }
+.group > h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; display: flex; gap: 12px; align-items: baseline; }
+.group > h2 small { font-size: 14px; font-weight: 400; color: #63676E; }
+.group > p.note { color: #63676E; font-size: 15px; margin-top: 8px; max-width: 880px; line-height: 1.5; }
+.row-screens { display: flex; flex-wrap: wrap; gap: 96px 64px; margin-top: 24px; align-items: flex-start; }
+figcaption { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; gap: 8px; align-items: baseline; }
+figcaption span { font-weight: 400; color: #63676E; }
+
+/* ---------- Shared layout helpers ---------- */
+.stack { display: flex; flex-direction: column; gap: 8px; }
+.hstack { display: flex; gap: 8px; align-items: center; }
+.grow { flex: 1; min-width: 0; }
+.meta, .fn, .sub { color: var(--ink2); }
+.muted { color: var(--ink2); }
+.code { color: var(--ink2); }
+b, strong { font-weight: 600; }
+.link { font-size: inherit; font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+/* ---------- Severity / status markers: shape + ink text, readable in grayscale ---------- */
+.sev { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; line-height: 20px; color: var(--ink); white-space: nowrap; }
+.sev::before { content: ''; flex: none; width: 8px; height: 8px; }
+.sev.crit::before, .sev.major::before, .sev.minor::before { border-radius: 50%; }
+.sev.crit::before { background: var(--crit); }
+.sev.major::before { background: var(--major); }
+.sev.minor::before { background: var(--minor); }
+.sev.ok::before { background: var(--ok); border-radius: 50%; }
+.sev.wait::before { border: 1.5px dashed var(--wait); border-radius: 50%; width: 9px; height: 9px; box-sizing: border-box; }
+.sev.ok, .sev.wait { color: var(--ink2); }
+.sev.late { color: var(--crit); }
+.sev.solid { padding: 4px 8px; border-radius: 8px; background: #fff; color: #16181B; box-shadow: 0 1px 2px rgba(0,0,0,.25); font-weight: 600; }
+.file-tag { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px solid var(--ink2); border-radius: 4px; font-size: 13px; font-weight: 600; color: var(--ink2); }
+.live { width: 10px; height: 10px; border-radius: 5px; background: var(--hi); box-shadow: 0 0 0 1.5px var(--ink); flex: none; }
+.progress { height: 4px; border-radius: 2px; background: var(--sunken); overflow: hidden; }
+.progress > i { display: block; height: 100%; background: var(--ink); border-radius: 2px; }
+.thumb { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; flex: none; display: block; }
+.ph { display: block; width: 100%; height: 100%; }
+.panel { background: var(--sunken); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.foot { font-size: 13px; line-height: 20px; color: var(--ink2); text-align: center; }
+
+/* ---------- Result hero: success, error and empty results, always centred ---------- */
+.hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding-top: 32px; }
+.hero .hero-ic { width: 64px; height: 64px; border-radius: 32px; display: grid; place-items: center; flex: none; }
+.hero .hero-ic.ok { background: var(--ok); color: #fff; }
+.hero .hero-ic.crit { background: var(--crit); color: #fff; }
+.hero .hero-ic.neutral { background: var(--sunken); color: var(--ink2); }
+.hero .hero-txt { display: flex; flex-direction: column; gap: 8px; }
+
+/* ---------- Camera (always dark) ---------- */
+.glass { background: rgba(20,20,20,.5); color: #fff; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.viewfinder { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+.cam-pill { height: 44px; border-radius: 22px; padding: 0 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+.cam-btn { width: 44px; height: 44px; border-radius: 22px; display: grid; place-items: center; }
+.modes { display: flex; justify-content: center; gap: 24px; font-size: 13px; font-weight: 600; letter-spacing: .06em; color: rgba(255,255,255,.55); }
+.modes .on { color: var(--hi); }
+.shutter-row { display: flex; align-items: center; justify-content: space-between; }
+.shutter { width: 76px; height: 76px; border-radius: 38px; border: 4px solid #fff; display: grid; place-items: center; }
+.shutter i { display: block; width: 62px; height: 62px; border-radius: 31px; background: #fff; }
+.side-btn { width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: #fff; }
+.side-btn .c { width: 48px; height: 48px; border-radius: 24px; display: grid; place-items: center; }
+.overlay-card { position: absolute; left: 16px; right: 16px; border-radius: 12px; padding: 12px 12px; }
+.focus-box { position: absolute; left: 186px; top: 214px; width: 72px; height: 72px; border: 1.5px solid var(--hi); }
+.focus-box::before, .focus-box::after { content: ''; position: absolute; background: var(--hi); }
+.focus-box::before { left: 50%; top: -1px; width: 1.5px; height: 6px; } .focus-box::after { top: 50%; left: -1px; height: 1.5px; width: 6px; }
+
+/* ---------- Plan ---------- */
+.plan { position: relative; flex: 1; min-height: 0; background: var(--plan); overflow: hidden; }
+.pin { position: absolute; width: 28px; height: 28px; border-radius: 14px 14px 14px 2px; transform: rotate(-45deg); display: grid; place-items: center; box-shadow: 0 2px 5px rgba(0,0,0,.25); border: 2px solid #fff; }
+.pin b { transform: rotate(45deg); font-size: 13px; color: #fff; }
+.pin.hollow { background: #fff !important; border: 2.5px solid var(--ok); }
+.pin.hollow b { color: var(--ok); }
+.cluster { position: absolute; width: 36px; height: 36px; border-radius: 18px; background: var(--ink); color: var(--on-ink); display: grid; place-items: center; font-weight: 600; font-size: 13px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,.25); }
+
+/* ---------- Checklist answers ---------- */
+.ans { display: flex; gap: 8px; }
+.ans { gap: 8px; }
+.ans > div { flex: 1; height: 48px; border-radius: 12px; background: var(--sunken); display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 17px; font-weight: 600; color: var(--ink); }
+.ans .pass.on { background: var(--ok); color: #fff; }
+.ans .fail.on { background: var(--crit); color: #fff; }
+.ans .na.on { background: var(--ink2); color: #fff; }
+
+/* ---------- Foundations boards (always light) ---------- */
+.boards { display: flex; flex-wrap: wrap; gap: 64px; margin-top: 24px; align-items: flex-start; }
+.board { background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 0 0 1px rgba(22,24,27,.08); color: #16181B; }
+.board h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
+.board > p { font-size: 14px; line-height: 20px; color: #63676E; margin-bottom: 20px; max-width: 760px; }
+.grid-head span { font-size: 13px; color: #63676E; padding-bottom: 12px; border-bottom: 1px solid #E8E5E0; }
+.grid-row { padding: 12px 0; border-bottom: 1px solid #E8E5E0; }
+.grid-head, .grid-row { display: grid; gap: 16px; align-items: center; }
+.tk-group { font-size: 15px; font-weight: 600; margin: 24px 0 4px; }
+.tk-name { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #16181B; }
+.tk-var { font-size: 12px; line-height: 17px; color: #63676E; }
+.tk-var.mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.tk-use { font-size: 13px; line-height: 18px; color: #63676E; }
+.tk-sw { display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 12px; border-radius: 10px; border: 1px solid #E8E5E0; }
+.tk-sw span { width: 28px; height: 28px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(128,128,128,.35); flex: none; }
+.tk-sw code { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; }
+
+/* ---------- Flows: annotation colour, not an app token ---------- */
+.flow { margin-top: 32px; }
+.flow h3 { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
+.flow-row { position: relative; display: flex; gap: 160px; align-items: flex-start; }
+.flow-step { flex: none; }
+.flow-cap { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; }
+.flow-cap span { font-weight: 400; color: #63676E; }
+.flow-card { overflow: hidden; border-radius: 24px; }
+.flow-card .phone { box-shadow: none; }
+svg.flow-ink { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+.flow-ring { position: absolute; border: 2px solid #2563EB; border-radius: 12px; background: rgba(37,99,235,.08); pointer-events: none; }
+.flow-label { position: absolute; transform: translate(-50%, -150%); background: #2563EB; color: #fff; font-size: 13px; font-weight: 600; line-height: 20px; padding: 4px 12px; border-radius: 16px; white-space: nowrap; }
+
+/* ---------- Tag: a short label beside a title (e.g. Current) ---------- */
+.tag { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 12px; background: var(--sunken); color: var(--ink); font-size: 13px; line-height: 20px; font-weight: 600; margin-left: 8px; vertical-align: 1px; }
+
+/* ---------- Sync line on Home: the current project's upload state, opens its files ---------- */
+.sync-line { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); color: var(--ink2); font-size: 13px; line-height: 20px; }
+.sync-line .grow { color: var(--ink); }
+
+/* ---------- Section divider: a full-width line between groups (levels, units, sections) ---------- */
+.content .sec + .sec { position: relative; padding-top: 16px; }
+.content .sec + .sec::before { content: ''; position: absolute; top: 0; left: -16px; right: -16px; height: 1px; background: var(--line); }
+
+
+/* ---------- Empty state: fills the free space of the view and sits in its vertical centre ---------- */
+.empty { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; text-align: center; }
+.empty .hero { padding-top: 0; }

@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteLog System Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>window.TYPE_ALIAS = { title: '.lt h1, .tab-large .big h1', heading: '.sec-h > b, .h3, .tab-small .ti', bodyStrong: '.nav .ti', body: '.body, .row .t, .li .t', caption: '.meta, .row .s, .li .s, .fn, .field > span', code: '.code', figure: '.figure' };</script>
+<script src="tokens.js"></script>
+<link rel="stylesheet" href="base.css">
+<!-- Both platform sheets: every rule in them is scoped to .p-ios / .p-android, so they live side by side -->
+<link rel="stylesheet" href="ios.css">
+<link rel="stylesheet" href="android.css">
+<style>
+/* Page layout only; every component below is drawn by ios.css / android.css */
+body { --sans: 'IBM Plex Sans', system-ui, sans-serif; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; max-width: 1200px; }
+.toc a { font-size: 13px; font-weight: 600; color: #16181B; background: #fff; border-radius: 16px; padding: 4px 12px; text-decoration: none; box-shadow: 0 0 0 1px rgba(22,24,27,.08); }
+.cmp { padding: 48px 0; border-top: 1px solid #D4D6DA; max-width: 1200px; }
+.cmp-head { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.cmp h3 { font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -0.02em; }
+.cmp .code-name { font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 20px; color: #63676E; margin-top: 4px; }
+.cmp ul { padding-left: 16px; font-size: 13px; line-height: 20px; color: #3C4046; }
+.cmp li + li { margin-top: 4px; }
+.lbl { font-size: 13px; line-height: 20px; font-weight: 600; color: #63676E; margin: 24px 0 8px; }
+table.spec { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgba(22,24,27,.08); font-size: 13px; line-height: 20px; }
+table.spec th { text-align: left; font-weight: 600; color: #63676E; padding: 8px 12px; background: #F6F6F7; }
+table.spec td { padding: 8px 12px; border-top: 1px solid #ECECEE; vertical-align: top; color: #16181B; }
+table.spec td:first-child { font-weight: 600; width: 180px; }
+table.spec code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+.vars { display: grid; grid-template-columns: 180px 393px 412px; gap: 16px 24px; align-items: start; }
+.vars .vh { font-size: 13px; font-weight: 600; color: #63676E; }
+.vars .vl { font-size: 13px; line-height: 20px; font-weight: 600; padding-top: 12px; }
+.vars .vl small { display: block; font-weight: 400; color: #63676E; }
+.surface { position: relative; background: var(--bg); color: var(--ink); border-radius: 16px; padding: 12px 16px; box-shadow: 0 0 0 1px rgba(22,24,27,.08); display: flex; flex-direction: column; gap: 12px; font-size: 17px; line-height: 24px; overflow: hidden; }
+.surface.bars { height: 128px; padding: 0; }
+.surface.tall { height: 300px; padding: 0; }
+.surface .content { padding: 0; overflow: visible; flex: none; }
+.vars code.case { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 20px; font-weight: 600; color: #16181B; }
+.dim-note { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #63676E; }
+</style>
+</head>
+<body>
+<header class="page-head">
+  <div class="kicker">Page 5 of 5 · Figma page “05 System design”</div>
+  <h1>SiteLog — System design</h1>
+  <p>Every shared UI part, with its types, sizes, variants and states, measured on both platforms. Each part lists what it is for, its name in code (<code>DS…</code> in the iOS <code>DesignSystem</code> package and the Android <code>:designsystem</code> module), a spec table (sizes in pt on iOS, dp on Android; type, colour and spacing names from page 1), and one row per variant with iOS 26 and Android side by side. Variants follow one rule so each maps 1:1 to an enum in code: a component has a few <b>properties</b>, each one enum with exclusive cases and a default; the same names everywhere (<code>type</code> = what it is for, <code>size</code>, <code>state</code> = changes at run time, then slots such as <code>icon</code>, <code>lead</code>, <code>trail</code>); text and numbers are parameters, not variants; each variant row changes one property from the defaults and is named <code>property.case</code>. Everything is drawn by the same CSS as the screens on pages 2 and 3.</p>
+  <div class="toc" id="toc"></div>
+</header>
+<main id="app" class="group"></main>
+<script src="kit.js"></script>
+<script>
+/* ---------- small builders (iOS / Android markup) ---------- */
+const chev = () => `<span class="chev">${I('chevron-right', 17, 2.2)}</span>`;
+const B = (t, k = 'primary', o = {}) => `<div class="btn ${k} ${o.sm ? 'sm' : ''}" ${o.dis ? 'disabled' : ''} ${o.style ? `style="${o.style}"` : ''}>${o.ic ? I(o.ic, o.sm ? 18 : 20, 2) : ''}${t}</div>`;
+const iRow = (o) => `<div class="row">${o.lead || ''}<div class="grow" style="display:flex;flex-direction:column"><div class="t">${o.title}</div>${o.sub ? `<div class="s">${o.sub}</div>` : ''}</div>${o.trail || ''}${o.chev === false ? '' : chev()}</div>`;
+const aRow = (o) => `<div class="li ${o.sub ? 'two' : ''}">${o.lead || ''}<div class="grow" style="display:flex;flex-direction:column;gap:4px"><div class="t">${o.title}</div>${o.sub ? `<div class="s">${o.sub}</div>` : ''}</div>${o.trail || ''}${o.chev ? `<span class="chev">${I('chevron-right', 20, 2)}</span>` : ''}</div>`;
+const L = (rows) => `<div class="list" style="margin:0 -16px">${rows.join('')}</div>`;
+const issueTrail = (k, late, who) => withAssignee(who, `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${sev(k)}<span class="fn" style="color:var(--crit)">${late}</span></div>`);
+const iField = (l, v, o = {}) => `<div class="field">${l ? `<span>${l}</span>` : ''}<div class="input ${o.focus ? 'focus' : ''} ${o.area ? 'area' : ''}">${o.ph ? `<span class="placeholder grow">${v}</span>` : `<span class="grow">${v}${o.focus ? '<span class="caret"></span>' : ''}</span>`}${o.icon ? `<span style="color:var(--ink2)">${I(o.icon, 20)}</span>` : ''}</div></div>`;
+const aField = (l, v, o = {}) => `<div class="ofield ${o.focus ? 'focus' : ''}" style="--fieldbg:var(--bg);margin-top:8px">${l ? `<label>${l}</label>` : ''}<div class="box ${o.area ? 'area' : ''}">${o.ph ? `<span class="placeholder grow">${v}</span>` : `<span class="grow">${v}${o.focus ? '<span class="caret"></span>' : ''}</span>`}${o.icon ? `<span style="color:var(--ink2)">${I(o.icon, 22)}</span>` : ''}</div>${o.help ? `<div class="help">${o.help}</div>` : ''}</div>`;
+const iSeg = (items, on, cls = '') => `<div class="seg ${cls}">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t}</div>`).join('')}</div>`;
+const aSeg = (items, on, cls = '') => `<div class="segb ${cls}">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t === on ? I('check', 16, 2.4) : ''}${t}</div>`).join('')}</div>`;
+const aTabs = (items, on) => `<div class="tabs" style="margin:0">${items.map(t => `<div class="${t === on ? 'on' : ''}">${t}</div>`).join('')}</div>`;
+const groupChip = (t, on) => `<span class="chip ${on ? 'on' : ''}">${t}${I('chevron-down', 16, 2.4)}</span>`;
+const mainChip = (n) => `<span class="chip fbtn" style="padding:0 12px;position:relative">${I('list-filter', 18, 2.2)}${n ? `<span class="fbadge">${n}</span>` : ''}</span>`;
+const aChip = (t, on, ic) => `<span class="chip ${on ? 'on' : ''}">${on ? I('check', 16, 2.4) : ic ? I(ic, 16) : ''}${t}</span>`;
+const row1 = (...x) => `<div class="hstack" style="gap:8px;flex-wrap:wrap">${x.join('')}</div>`;
+const tabsIOS = `<div class="tabbar lg">${[['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']].map(([i, l]) => `<div class="tab ${l === 'Home' ? 'on' : ''}">${I(i, 25, 2)}<span class="sys-label">${l}</span>${l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+const tabsAND = `<div class="navbar" style="position:absolute;left:0;right:0;bottom:0">${[['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']].map(([i, l]) => `<div class="dest ${l === 'Home' ? 'on' : ''}"><span class="ind">${I(i, 22, 2)}</span><span class="sys-label">${l}</span>${l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+const backdrop = `<div style="position:absolute;inset:0;background:var(--sunken)"></div>`;
+
+/* ---------- component registry ----------
+   Rules for variants (so each property maps 1:1 to an enum in code):
+   1. A component has a few properties; each property is one enum; its cases are exclusive and complete.
+   2. The same names everywhere: type (what it is for), size, state (changes at run time), then slots (icon, lead, trail, title…).
+   3. Every property has a default. A variant row changes ONE property from the defaults; the row is named property.case.
+   4. Free values (text, numbers, counts) are parameters, not variants.
+   5. Things that are different components get their own section (status marker, tag, panel, sync line…). */
+const C = [];
+const cmp = (o) => C.push(o);
+const V = (prop, kase, ios, android, note) => ({ prop, kase, ios, android, note });
+const none = '<span class="dim-note">— not on this platform</span>';
+
+/* 1. Button */
+cmp({ id: 'button', name: 'Button', code: 'DSButton',
+  purpose: ['One primary per screen or sheet: the main job.', 'Secondary for a second action of equal weight; outline beside a primary; ghost for a quiet escape; danger only to remove or delete.'],
+  props: [['type', 'primary · secondary · outline · ghost · danger', 'primary', 'Android draws secondary as tonal, outline as outlined, ghost as text'], ['size', 'regular · small', 'regular', ''], ['state', 'enabled · disabled', 'enabled', 'pressed is the system highlight'], ['icon', 'none · leading · only', 'none', 'only: square, needs an accessibility label']],
+  spec: [
+    ['Height', 'regular 50 · small 44', 'regular 52 · small 48'],
+    ['Corner radius', 'height / 2 (capsule)', 'height / 2 (pill)'],
+    ['Padding (h)', 'regular 20 · small 16', 'regular 20 · small 16'],
+    ['Label', 'bodyStrong 17 / 600 (ghost 17 / 400)', 'bodyStrong 17 / 600'],
+    ['Icon', 'regular 20 · small 17, gap 8', 'regular 20 · small 18, gap 8'],
+    ['type.primary', 'fill text/primary · label on-primary', 'same'],
+    ['type.secondary', 'fill bg/fill · label text/primary', 'same'],
+    ['type.outline', '1 px line/strong, no fill', 'same'],
+    ['type.ghost', 'no fill, no border', 'same'],
+    ['type.danger', 'label severity/critical, no fill', 'same'],
+    ['state.disabled', 'opacity 0.30', 'opacity 0.38'],
+    ['Width', 'full width in a dock; equal split in a pair; hugs when small', 'same'],
+  ],
+  variants: [
+    V('type', 'primary', B('Create project'), B('Create project')),
+    V('type', 'secondary', B('Mark up', 'secondary'), B('Mark up', 'tonal')),
+    V('type', 'outline', B('Clear', 'outline'), B('Clear', 'outlined')),
+    V('type', 'ghost', B('Later', 'ghost'), B('Later', 'text')),
+    V('type', 'danger', B('Remove from company', 'danger'), B('Remove from company', 'danger')),
+    V('size', 'small', row1(B('Resume', 'primary', { sm: true })), row1(B('Resume', 'primary', { sm: true }))),
+    V('state', 'disabled', B('Finish', 'primary', { dis: true }), B('Finish', 'primary', { dis: true })),
+    V('icon', 'leading', B('Share', 'primary', { ic: 'share' }), B('Share', 'primary', { ic: 'share-2' })),
+    V('icon', 'only', row1(B('', 'primary', { ic: 'map-pin', style: 'width:50px;padding:0;flex:none' })), row1(B('', 'primary', { ic: 'map-pin', style: 'width:52px;padding:0;flex:none' }))),
+  ] });
+
+/* 2. Chip */
+cmp({ id: 'chip', name: 'Chip', code: 'DSChip',
+  purpose: ['filter: one option, on or off.', 'group: one filter group; shows its name, or its value once set; opens that group alone.', 'mainFilter: first in a chip row, icon only; opens every group; its badge counts the groups in use.', 'A chip row wider than the screen scrolls sideways with a fade at the right edge.'],
+  props: [['type', 'filter · group · mainFilter', 'filter', ''], ['state', 'off · on', 'off', 'group: on = a value is set · mainFilter: on = a badge with the count']],
+  spec: [
+    ['Height', '44', '48'],
+    ['Radius', '22 (capsule)', '12'],
+    ['Padding (h)', '16 · mainFilter 12', '16 · mainFilter 12'],
+    ['Label', 'body 17 / 400', 'body 17 / 400'],
+    ['state.off', 'fill bg/fill, text/primary', 'no fill, 1 px line/strong'],
+    ['state.on', 'fill text/primary, label on-primary', 'fill bg/fill, no border, leading check 16'],
+    ['type.group', 'chevron 16 after the label', 'same'],
+    ['type.mainFilter', 'icon 18; badge 20 circle, caption 13 / 600', 'same'],
+    ['Gap in a row', '8', '8'],
+  ],
+  variants: [
+    V('type', 'filter', '<span class="chip">Overcast</span>', aChip('Overcast', false)),
+    V('type', 'group', groupChip('Severity'), groupChip('Severity')),
+    V('type', 'mainFilter', mainChip(0), mainChip(0)),
+    V('state', 'on', row1('<span class="chip on">Overcast</span>', groupChip('Critical, Major', true), mainChip(2)), row1(aChip('Overcast', true), groupChip('Critical, Major', true), mainChip(2)), 'each type, on'),
+  ] });
+
+/* 3. Segmented control */
+cmp({ id: 'segmented', name: 'Segmented control', code: 'DSSegmented',
+  purpose: ['Two to four views of the same content, or one choice of a short fixed list in a sheet.', 'The number of segments is a parameter (2…4), not a variant.'],
+  props: [['type', 'text · severity', 'text', 'severity: a coloured 8 dot before each label']],
+  spec: [
+    ['Height', 'track 48 (segment 40 + 4 inset)', '48'],
+    ['Radius', 'track 22 · segment 20', '24'],
+    ['Label', 'caption 13 · selected 13 / 600', 'caption 13'],
+    ['Selected', 'raised white segment, soft shadow', 'bg/fill + check 16'],
+    ['Segments', '2–4, equal width', 'same'],
+  ],
+  variants: [
+    V('type', 'text', iSeg(['Room', 'Contractor', 'Level'], 'Room'), aSeg(['Room', 'Contractor', 'Level'], 'Room')),
+    V('type', 'severity', iSeg(['Critical', 'Major', 'Minor'], 'Major', 'sev3'), aSeg(['Critical', 'Major', 'Minor'], 'Major', 'sev3')),
+  ] });
+
+/* 4. Tab row */
+cmp({ id: 'tabrow', name: 'Tab row', code: 'DSTabRow',
+  purpose: ['Home sub-tabs (Sessions · Locations · Plans).', 'iOS draws it as a segmented control, type.text.'],
+  props: [['itemState', 'selected · unselected', 'unselected', 'one item is always selected']],
+  spec: [
+    ['Height', '48 (segmented)', '48'],
+    ['Label', 'caption 13 · selected 600', 'body 17 · selected 600'],
+    ['Selected', 'raised segment', '64 × 3 text/primary indicator under the label'],
+  ],
+  variants: [
+    V('itemState', 'selected', iSeg(['Sessions', 'Locations', 'Plans'], 'Sessions'), aTabs(['Sessions', 'Locations', 'Plans'], 'Sessions'), 'Sessions selected, the rest unselected'),
+  ] });
+
+/* 5. List row */
+const T = 'Unit 7A';
+const ringLead = `<span style="width:24px;height:24px;border-radius:12px;background:conic-gradient(var(--ok) 270deg, var(--sunken) 0)"></span>`;
+const RR = (o) => [L([iRow({ title: T, ...o })]), L([aRow({ title: T, chev: o.chev !== false, ...o })])];
+cmp({ id: 'row', name: 'List row', code: 'DSListRow',
+  purpose: ['Plain full-width rows separated by an inset hairline; no card around a group.', 'Title says what it is; subtitle gives place, count or state.', 'Title and subtitle are text parameters; the slots below are the variants.'],
+  props: [['lines', 'one · two', 'one', 'two = with subtitle'], ['lead', 'none · thumb · project · avatar · ring · control', 'none', 'control → Selection control'], ['trail', 'none · value · tag · fileTag · status · issueStatus · control', 'none', 'control → Selection control'], ['accessory', 'chevron · none', 'chevron', 'none when the row does not open anything']],
+  spec: [
+    ['Height', 'lines.one 52 · lines.two 68 · padding 12 / 16', 'lines.one 56 · lines.two 72 · padding 8 / 16'],
+    ['Gap', 'lead → text 12', 'lead → text 16'],
+    ['Title · subtitle', 'body 17 · caption 13 text/secondary', 'same'],
+    ['lead.thumb', '48, r8', '48, r8'],
+    ['lead.project', '44, r12', '48, r12'],
+    ['lead.avatar · lead.ring', 'Avatar size.m 40 · ring 24', 'same'],
+    ['trail.issueStatus', 'severity on top; due date + Avatar size.xs to its right; right-aligned', 'same'],
+    ['Separator', '0.5 hairline, inset to the text', '1 px divider, inset to the text'],
+    ['accessory.chevron', '17, text/tertiary', '20, text/tertiary'],
+  ],
+  variants: [
+    V('lines', 'two', ...RR({ sub: '3 of 4 rooms checked' })),
+    V('lead', 'thumb', ...RR({ lead: thumb(3, 48) })),
+    V('lead', 'project', ...RR({ lead: wsTile(0, 44, 12) })),
+    V('lead', 'avatar', ...RR({ lead: avatar('LT', '#B8A59D', 40) })),
+    V('lead', 'ring', ...RR({ lead: ringLead })),
+    V('trail', 'value', ...RR({ trail: '<span class="val">82 rooms</span>' })),
+    V('trail', 'tag', ...RR({ trail: '<span class="tag" style="margin:0">Current</span>' })),
+    V('trail', 'fileTag', ...RR({ trail: '<span class="file-tag">PDF</span>' })),
+    V('trail', 'status', ...RR({ trail: sev('crit', '2 critical') })),
+    V('trail', 'issueStatus', ...RR({ trail: issueTrail('crit', '2 days late', 'Phuc Electric') })),
+    V('accessory', 'none', L([iRow({ title: T, chev: false })]), L([aRow({ title: T })])),
+  ] });
+
+/* 6. Section header */
+const secDemo = (rowFn, divider) => `<div class="content">${divider ? `<section class="stack sec" style="gap:4px"><div class="sec-h"><b>Level 6</b><span>0 open</span></div></section>` : ''}<section class="stack sec" style="gap:4px"><div class="sec-h"><b>Level 7</b><span>3 open</span></div>${L([rowFn({ title: 'Unit 7A', chev: true })])}</section></div>`;
+cmp({ id: 'section', name: 'Section header', code: 'DSSectionHeader',
+  purpose: ['Names a group of rows; the count on the right says how many (a text parameter).', 'Every section after the first starts with a full-width divider.'],
+  props: [['separator', 'none · divider', 'none', 'divider on every section after the first']],
+  spec: [
+    ['Title', 'heading 20 / 600, sentence case', 'same'],
+    ['Count', 'caption 13 text/secondary, right', 'same'],
+    ['Title → rows', '4', '4'],
+    ['separator.divider', '1 px line/hairline, full bleed; 16 above the title', 'same'],
+  ],
+  variants: [
+    V('separator', 'none', secDemo(iRow, false), secDemo(aRow, false)),
+    V('separator', 'divider', secDemo(iRow, true), secDemo(aRow, true), 'second section'),
+  ] });
+
+/* 7. Status marker */
+const SM = (h) => [h, h];
+cmp({ id: 'marker', name: 'Status marker', code: 'DSStatusMarker',
+  purpose: ['The same 8 dot, told apart by colour, always next to its words.', 'waiting is a dashed ring and never red; live is the only hi-vis on a list.'],
+  props: [['type', 'critical · major · minor · resolved · waiting · late · live', '—', 'required'], ['style', 'plain · solid', 'plain', 'solid: on a photo']],
+  spec: [
+    ['Dot', '8 circle · gap 8 · caption 13 text/primary', 'same'],
+    ['Colours', 'critical severity/critical · major severity/major · minor severity/minor · resolved status/success', 'same'],
+    ['type.waiting', '9 dashed ring 1.5 status/waiting; text secondary', 'same'],
+    ['type.late', 'critical dot, text severity/critical', 'same'],
+    ['type.live', '10 accent/hi-vis with 1.5 ink ring', 'same'],
+    ['style.solid', 'white pill r8, padding 4 / 8, shadow', 'same'],
+  ],
+  variants: [
+    V('type', 'critical', ...SM(sev('crit'))),
+    V('type', 'major', ...SM(sev('major'))),
+    V('type', 'minor', ...SM(sev('minor'))),
+    V('type', 'resolved', ...SM(sev('ok'))),
+    V('type', 'waiting', ...SM(sev('wait'))),
+    V('type', 'late', ...SM(sev('crit', '2 days late', 'late'))),
+    V('type', 'live', ...SM('<span class="hstack"><span class="live"></span><span class="fn" style="color:var(--ink)">Live session</span></span>')),
+    V('style', 'solid', ...SM(`<div style="height:72px;border-radius:8px;overflow:hidden;position:relative">${scene(0)}<span class="sev crit solid" style="position:absolute;left:8px;bottom:8px">#3</span></div>`), 'type.critical'),
+  ] });
+
+/* 8. Tag */
+cmp({ id: 'tag', name: 'Tag', code: 'DSTag',
+  purpose: ['label: names a state or a role (Current, Admin).', 'file: names a file kind (PDF, ZIP).'],
+  props: [['type', 'label · file', 'label', '']],
+  spec: [
+    ['Height', '24', '24'],
+    ['type.label', 'r12 · padding 8 · bg/fill · caption 13 / 600', 'same'],
+    ['type.file', 'r4 · 1 px text/secondary · padding 8 · caption 13 / 600', 'same'],
+  ],
+  variants: [
+    V('type', 'label', ...SM(row1('<span class="tag" style="margin:0">Current</span>', roleTag('admin')))),
+    V('type', 'file', ...SM(row1('<span class="file-tag">PDF</span>', '<span class="file-tag">ZIP</span>'))),
+  ] });
+
+/* 9. Avatar */
+const AV = (s) => SM(`<span class="hstack" style="gap:8px">${avatar('HN', '#C9B79C', s)}<span class="dim-note">${s}</span></span>`);
+cmp({ id: 'avatar', name: 'Avatar', code: 'DSAvatar',
+  purpose: ['A member\'s photo; without one, their initials on their colour; a typed-in subcontractor gets initials on a neutral colour.', 'Lists show the avatar only; the detail shows avatar + name.'],
+  props: [['size', 'xl · l · m · s · xs', 'm', 'xl 56 profile · l 48 You row · m 40 member row · s 24 detail line · xs 20 issue row'], ['content', 'initials · photo · typedName', 'initials', ''], ['label', 'none · name', 'none', 'name: avatar + name in one line']],
+  spec: [
+    ['Diameter', 'xl 56 · l 48 · m 40 · s 24 · xs 20', 'same'],
+    ['Initials', 'two letters, 600, white, centred both ways · xl 20 · l 17 · m 15 · s 10 · xs 9', 'same'],
+    ['content.initials', 'member colour', 'same'],
+    ['content.typedName', 'neutral #A0A3A9', 'same'],
+    ['label.name', 'size.s + gap 8 + body 17', 'same'],
+  ],
+  variants: [
+    V('size', 'xl', ...AV(56)), V('size', 'l', ...AV(48)), V('size', 'm', ...AV(40)), V('size', 's', ...AV(24)), V('size', 'xs', ...AV(20)),
+    V('content', 'photo', ...SM(wsTile(1, 40, 20))),
+    V('content', 'typedName', ...SM(assigneeAvatar('Vu Construction', 40))),
+    V('label', 'name', ...SM(assigneeLine('Tuan’s masonry crew')), 'size.s'),
+  ] });
+
+/* 10. Text field */
+cmp({ id: 'field', name: 'Text field', code: 'DSTextField',
+  purpose: ['iOS: filled field, label above. Android: outlined field, label on the border.', 'Label, value and placeholder are text parameters; an empty value shows the placeholder.'],
+  props: [['type', 'text · multiline · search', 'text', ''], ['state', 'idle · focused · disabled', 'idle', ''], ['trailing', 'none · icon', 'none', 'e.g. dictation mic'], ['help', 'none · text', 'none', 'one line under the field']],
+  spec: [
+    ['Height', 'type.text 46 · multiline 72+ · search 44', 'type.text 56 · multiline 88+ · search 56'],
+    ['Radius', '11 · search 22', '12 · search 28'],
+    ['Padding (h)', '16', '16'],
+    ['Text · label', 'body 17 · caption 13 text/secondary, 8 above', 'body 17 · caption 13 on the border'],
+    ['state.idle', 'fill bg/fill, no border', '1 px line/strong'],
+    ['state.focused', 'bg/raised, 1.5 text/primary border, caret', '2 px text/primary, label 600'],
+    ['state.disabled', 'opacity 0.30', 'opacity 0.38'],
+    ['trailing.icon', '20 text/secondary', '22 text/secondary'],
+    ['help.text', 'caption 13 text/secondary, 4 below', 'same'],
+  ],
+  variants: [
+    V('type', 'text', iField('Site address', 'Street, district'), aField('Site address', 'Street, district')),
+    V('type', 'multiline', iField('Rooms in every unit', 'Living room, Bedroom 1, Kitchen', { area: true }), aField('Rooms in every unit', 'Living room, Bedroom 1, Kitchen', { area: true })),
+    V('type', 'search', `<div class="search">${I('search', 20)}Search</div>`, `<div class="search">${I('search', 20)}Search</div>`),
+    V('state', 'focused', iField('Name', 'Riverside Tower B', { focus: true }), aField('Name', 'Riverside Tower B', { focus: true })),
+    V('state', 'disabled', `<div style="opacity:.3">${iField('Client', 'Eastline')}</div>`, `<div style="opacity:.38">${aField('Client', 'Eastline')}</div>`),
+    V('trailing', 'icon', iField('What’s wrong', 'Hairline crack', { icon: 'mic' }), aField('What’s wrong', 'Hairline crack', { icon: 'mic' })),
+    V('help', 'text', `${iField('Rooms', 'Kitchen, Bath')}<span class="fn" style="margin-top:-8px;color:var(--ink2)">Separate rooms with commas</span>`, aField('Rooms', 'Kitchen, Bath', { help: 'Separate rooms with commas' })),
+  ] });
+
+/* 11. Selection control */
+const SEL = {
+  toggle: (on) => [`<span class="toggle ${on ? 'on' : ''}"></span>`, `<span class="switch ${on ? 'on' : ''}"></span>`],
+  radio: (on) => [on ? `<span class="radio on">${I('check', 14, 3)}</span>` : '<span class="radio"></span>', `<span class="radio ${on ? 'on' : ''}"></span>`],
+  checkbox: (on) => [on ? `<span>${I('check', 22, 2.6)}</span>` : '<span style="width:22px"></span>', on ? `<span class="cbox on">${I('check', 14, 3)}</span>` : '<span class="cbox"></span>'],
+};
+const SELR = (on) => [row1(...['toggle', 'radio', 'checkbox'].map(k => SEL[k](on)[0])), row1(...['toggle', 'radio', 'checkbox'].map(k => SEL[k](on)[1]))];
+cmp({ id: 'selection', name: 'Selection control', code: 'DSSelectionControl',
+  purpose: ['toggle: a setting that applies at once.', 'radio: one of a list.', 'checkbox: several of a list (iOS draws it as a check mark at the end of the row).', 'The whole row is the touch target.'],
+  props: [['type', 'toggle · radio · checkbox', 'toggle', ''], ['state', 'off · on', 'off', '']],
+  spec: [
+    ['type.toggle', '64 × 28, thumb 38 × 24; on status/success', '52 × 32, thumb 16 → 24 with check; on text/primary'],
+    ['type.radio', '22, 1.5 line/strong; on: ink fill + white check 14', '20, 2 text/secondary; on: ink ring + 10 dot'],
+    ['type.checkbox', 'check mark 22 text/primary at the trail; off: nothing', '20 r4; on: ink fill + white check 14'],
+  ],
+  variants: [
+    V('type', 'toggle', ...SEL.toggle(false)),
+    V('type', 'radio', ...SEL.radio(false)),
+    V('type', 'checkbox', ...SEL.checkbox(false), 'iOS: off shows nothing'),
+    V('state', 'on', ...SELR(true), 'each type, on'),
+  ] });
+
+/* 12. App bar */
+const iNav = (l, t, r, lead) => `<div class="nav" style="padding:0"><div class="l">${l || ''}${lead || ''}</div>${t ? `<div class="ti">${t}</div>` : ''}<div class="rt">${r || ''}</div></div>`;
+const cap = (...ic) => `<div class="gcap lg">${ic.map(i => `<span class="ic">${I(i, 21)}</span>`).join('')}</div>`;
+const aBar = (inner) => `<div class="tab-small" style="margin:0 -16px">${inner}</div>`;
+const iBack = `<div class="gbtn lg">${I('chevron-left', 24, 2.2)}</div>`;
+const aBack = `<span class="ibtn nav-ic">${I('arrow-left', 24)}</span>`;
+cmp({ id: 'appbar', name: 'App bar', code: 'DSAppBar',
+  purpose: ['iOS 26: no bar background; back is a glass circle, actions sit in one glass capsule.', 'Android: small top app bar.', 'Title text and subtitle are parameters.'],
+  props: [['title', 'centre · leading · projectSwitch', 'centre', 'Android draws centre at the start · projectSwitch: Home only'], ['leading', 'none · back', 'none', ''], ['actions', 'none · icons · text', 'none', 'icons: 1–3 · text: one word, prominent'], ['size', 'small · large', 'small', 'large: top-level tabs (Sync, You) and lists; collapses to small on scroll']],
+  spec: [
+    ['Height', '52', '64'],
+    ['title.centre', 'bodyStrong 17 / 600, centred', 'heading 20 / 600 at the start'],
+    ['title.leading', 'heading 20 / 600 + caption 13 subtitle', 'same'],
+    ['title.projectSwitch', 'glass pill 44: photo 28 r8 + name 17 / 600 + chevron 16, max 248', 'photo 32 r8 + name 20 / 600 + chevron 18'],
+    ['leading.back', 'glass circle 44, chevron 24', 'icon button 48, arrow 24'],
+    ['actions.icons', 'one glass capsule 44, icon 21 in 40 slots', 'icon buttons 48, icon 22'],
+    ['actions.text', 'glass capsule, padding 16, ink fill', 'text button'],
+    ['size.large', 'large title under the bar: title 28 / 600, caption 13 subtitle, 16 side margin', 'large top app bar: title 28 / 600, caption 13 subtitle'],
+    ['Scrolled', 'content runs under; scroll-edge fade; large collapses to small', 'bar takes the bg/fill tint; large collapses to small'],
+  ],
+  variants: [
+    V('title', 'centre', iNav('', 'Level 7', ''), aBar('<span class="ti">Level 7</span>')),
+    V('title', 'leading', iNav('', '', '', `<div class="ti-lead">Issues<span class="ti-sub">Riverside Tower B</span></div>`), aBar('<span class="ti">Issues<span class="ti-sub">Riverside Tower B</span></span>')),
+    V('title', 'projectSwitch', iNav(`<div class="ws lg">${wsTile(0, 28, 8)}<span class="ws-name">Riverside Tower B</span><span style="color:var(--ink2)">${I('chevron-down', 16, 2.4)}</span></div>`, '', ''), aBar(`<span class="ws">${wsTile(0, 32, 8)}<span class="ws-name">Riverside Tower B</span><span style="color:var(--ink2)">${I('chevron-down', 18, 2.4)}</span></span>`)),
+    V('leading', 'back', iNav(iBack, 'Level 7', ''), aBar(`${aBack}<span class="ti">Level 7</span>`)),
+    V('actions', 'icons', iNav('', 'Level 7', cap('search', 'ellipsis')), aBar(`<span class="ti">Level 7</span><span class="ibtn">${I('search', 22)}</span><span class="ibtn">${I('ellipsis-vertical', 22)}</span>`)),
+    V('actions', 'text', iNav('', 'Report', '<div class="gcap txt prom">Next</div>'), aBar('<span class="ti">Report</span><span class="tbtn">Next</span>')),
+    V('size', 'large', `<div style="margin:0 -16px">${iNav('', '', cap('plus'))}<div class="lt"><h1>Sync</h1><div class="sub t-caption">All projects on this iPhone</div></div></div>`, `<div style="margin:-12px -16px"><div class="tab-large"><div class="tab-small"><span class="ti"></span><span class="ibtn">${I('plus', 22)}</span></div><div class="big"><h1>Sync</h1><div class="sub t-caption" style="color:var(--ink2)">All projects on this phone</div></div></div></div>`),
+  ] });
+
+/* 13. Tab bar */
+const DESTS = [['house', 'Home'], ['triangle-alert', 'Issues'], ['refresh-cw', 'Sync'], ['circle-user', 'You']];
+const tabsI = (badge) => `${backdrop}<div class="tabbar lg">${DESTS.map(([i, l]) => `<div class="tab ${l === 'Home' ? 'on' : ''}">${I(i, 25, 2)}<span class="sys-label">${l}</span>${badge && l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+const tabsA = (badge) => `<div class="navbar" style="position:absolute;left:0;right:0;bottom:0">${DESTS.map(([i, l]) => `<div class="dest ${l === 'Home' ? 'on' : ''}"><span class="ind">${I(i, 22, 2)}</span><span class="sys-label">${l}</span>${badge && l === 'Issues' ? '<span class="badge">2</span>' : ''}</div>`).join('')}</div>`;
+cmp({ id: 'tabbar', name: 'Tab bar', code: 'DSTabBar',
+  purpose: ['Four destinations, always the same: home · issues · sync · you.', 'iOS: one floating glass capsule; content scrolls under it. Android: navigation bar with a pill indicator.'],
+  props: [['destination', 'home · issues · sync · you', '—', 'fixed list, not a variant of the bar'], ['itemState', 'unselected · selected', 'unselected', ''], ['itemBadge', 'none · count', 'none', 'issues: open-issue count']],
+  spec: [
+    ['Size', 'capsule 64 high, 20 from the sides, 26 above the bottom, r32', '80 high, full width'],
+    ['Item', 'icon 25 + label 10 / 500', 'indicator 64 × 32 r16, icon 22 + label 12 / 500'],
+    ['itemState.selected', 'lighter pill behind the item', 'indicator bg/fill, label 700'],
+    ['itemBadge.count', '18 circle severity/critical, 11 / 600', '16 circle severity/critical, 11 / 600'],
+  ],
+  variants: [
+    V('itemState', 'selected', tabsI(false), tabsA(false), 'home selected'),
+    V('itemBadge', 'count', tabsI(true), tabsA(true), 'on issues'),
+  ], bars: true });
+
+/* 14. Capture bar */
+cmp({ id: 'capture', name: 'Capture bar', code: 'DSCaptureBar',
+  purpose: ['The bottom of a live session: end · capture · plan.', 'The hi-vis capture button is the only large hi-vis element in the app.', 'No variants: the side actions are parameters (icon + label).'],
+  props: [['—', 'no variants', '—', '']],
+  spec: [
+    ['Bar', 'no background; capture centred, side capsules left and right', 'bottom app bar 80; actions 64 wide; FAB at the end'],
+    ['Capture', '72 circle accent/hi-vis, icon 30, 5 glass ring', 'FAB type.capture'],
+    ['Side actions', 'glass capsules 56 high r28, icon 20 + body 17', 'icon 22 + caption 13'],
+  ],
+  variants: [
+    V('—', 'default', `${backdrop}<div class="toolbar"><div class="side lg">${I('flag', 20)}End</div><div class="capture">${I('camera', 30, 2)}</div><div class="side lg">${I('map', 20)}Plan</div></div>`, `<div class="bab" style="position:absolute;left:0;right:0;bottom:0">${[['flag', 'End'], ['map', 'Plan']].map(([ic, l]) => `<div class="act"><span class="ibtn" style="width:40px;height:32px">${I(ic, 22)}</span><span class="t-caption" style="color:var(--ink2)">${l}</span></div>`).join('')}<span class="grow"></span><span class="fab hi">${I('camera', 26, 2)}</span></div>`),
+  ], bars: true });
+
+/* 15. FAB */
+cmp({ id: 'fab', name: 'Floating action button', code: 'DSFab',
+  purpose: ['Android only. The screen\'s main add action (New project, Import plan, Add rooms, Invite) or capture.', 'iOS puts the add action as + in the app bar actions.'],
+  props: [['type', 'capture · add', 'add', 'capture: hi-vis · add: ink'], ['size', 'regular · extended', 'regular', 'extended: icon + label']],
+  spec: [
+    ['size.regular', '—', '56, r16, icon 26'],
+    ['size.extended', '—', '56 high, r16, padding 16 / 20, icon 22 + bodyStrong 17'],
+    ['type.capture', '—', 'accent/hi-vis, icon ink'],
+    ['type.add', '—', 'text/primary fill, icon on-primary'],
+    ['Place', '—', '16 from the bottom-right corner'],
+  ],
+  variants: [
+    V('type', 'add', none, `<span class="fab ink">${I('plus', 26, 2)}</span>`),
+    V('type', 'capture', none, `<span class="fab hi">${I('camera', 26, 2)}</span>`),
+    V('size', 'extended', none, `<div style="position:absolute;inset:0"><div class="efab">${I('file-up', 22, 2.2)}Import plan</div></div>`, 'type.add'),
+  ] });
+
+/* 16. Sheet */
+const iSheet = (full, actions) => `${backdrop}<div class="sheet ${full ? 'full' : ''}" ${full ? 'style="top:16px"' : ''}><div class="grab"></div><div class="sh"><span class="h3">Severity</span><div class="gbtn lg">${I('x', 18, 2.4)}</div></div><div class="sbody" style="padding-bottom:0">${L([iRow({ lead: '<span class="sev major"></span>', title: 'Major', trail: `<span>${I('check', 22, 2.6)}</span>`, chev: false })])}</div>${full ? '<span class="grow"></span>' : ''}${actions ? `<div class="dock"><div class="hstack">${actions === 'pair' ? B('Clear', 'outline') + B('Apply') : B('Apply')}</div></div>` : '<div style="height:20px"></div>'}</div>`;
+const aSheet = (full, actions) => `${backdrop}<div class="sheet ${full ? 'full' : ''}" ${full ? 'style="top:16px"' : ''}><div class="grab"></div><div class="sh"><span class="t-heading">Severity</span><span class="ibtn">${I('x', 22, 2)}</span></div><div class="sbody" style="padding-bottom:0"><div class="list sheet-list">${aRow({ lead: `<span class="cbox on">${I('check', 14, 3)}</span>`, title: 'Major', trail: '<span class="sev major"></span>' })}</div></div>${full ? '<span class="grow"></span>' : ''}${actions ? `<div class="dock"><div class="hstack">${actions === 'pair' ? B('Clear', 'outlined') + B('Apply') : B('Apply')}</div></div>` : ''}<div style="height:24px"></div></div>`;
+cmp({ id: 'sheet', name: 'Sheet', code: 'DSSheet',
+  purpose: ['A focused task over the current screen: filters, pick a project, new issue.', 'Title and body are parameters.'],
+  props: [['detent', 'medium · large', 'medium', 'large: body scrolls, actions stay pinned'], ['actions', 'none · primary · clearApply', 'none', 'clearApply: Clear (outline) + Apply (primary), equal width']],
+  spec: [
+    ['detent.medium', 'inset 8, r40, glass bg (bg/raised 88%)', 'full width, top r28, bg/raised'],
+    ['detent.large', 'full width, top r40, bg/raised', 'top r28, from the top safe area'],
+    ['Grab handle', '36 × 5, line/strong', '32 × 4, line/strong'],
+    ['Header', '56: heading 20 / 600 + close glass 44', '52: heading 20 / 600 + close 48'],
+    ['Body padding', '20', '24'],
+    ['actions', 'Button size.regular; pair = equal width, gap 12', 'same'],
+    ['Scrim', 'black 28%', 'black 32%'],
+  ],
+  variants: [
+    V('detent', 'medium', iSheet(false), aSheet(false)),
+    V('detent', 'large', iSheet(true), aSheet(true)),
+    V('actions', 'primary', iSheet(false, 'one'), aSheet(false, 'one')),
+    V('actions', 'clearApply', iSheet(false, 'pair'), aSheet(false, 'pair')),
+  ], tall: true });
+
+/* 17. Dialog */
+const iAlert = (d) => `${backdrop}<div class="alert" style="top:40px;left:40px"><b>${d ? 'Delete your account?' : 'Leave this session?'}</b><span>${d ? 'Company records you made stay.' : 'It keeps running; you can come back.'}</span><div class="aa"><div>Cancel</div><div style="${d ? 'color:var(--crit)' : 'font-weight:600'}">${d ? 'Delete' : 'Leave'}</div></div></div>`;
+const aDialog = (d) => `${backdrop}<div class="dialog" style="top:40px"><div class="t-heading">${d ? 'Delete your account?' : 'Leave this session?'}</div><div class="t-body" style="color:var(--ink2)">${d ? 'Company records you made stay.' : 'It keeps running; you can come back.'}</div><div class="acts">${B('Cancel', 'text', { sm: true })}${d ? B('Delete', 'danger', { sm: true }) : B('Leave', 'text', { sm: true })}</div></div>`;
+cmp({ id: 'dialog', name: 'Dialog', code: 'DSDialog',
+  purpose: ['Confirms an action that cannot be undone or leaves something unfinished.', 'Title, message and button words are parameters.'],
+  props: [['type', 'default · destructive', 'default', 'destructive: confirm word in severity/critical']],
+  spec: [
+    ['Box', 'alert 313 wide, r34, padding 24', 'r28, padding 24'],
+    ['Title · message', 'bodyStrong 17 / 600 · caption 13', 'heading 20 · body 17 text/secondary'],
+    ['Buttons', 'capsules 48, side by side', 'text buttons, right-aligned'],
+  ],
+  variants: [
+    V('type', 'default', iAlert(false), aDialog(false)),
+    V('type', 'destructive', iAlert(true), aDialog(true)),
+  ], tall: true });
+
+/* 17b. Push notification */
+const lockBg = (h) => `<div style="margin:-12px -16px;padding:16px;background:linear-gradient(180deg,#3B4A5C,#121417)">${h}</div>`;
+cmp({ id: 'push', name: 'Push notification', code: 'DSPushKind (payload) · drawn by the system',
+  purpose: ['The system draws it; the app chooses only the kind, title, body and deep link.', 'One push per event, never a photo; the title says what happened, the body says where.', 'Each kind can be turned off per device in You → Notifications (N4).'],
+  props: [['kind', 'uploadsVerified · issueAssigned · issueRechecked · dueSoon · access', '—', 'required; decides who gets it and where the tap goes'], ['placement', 'banner · lockScreen', 'banner', 'system state, not set by the app']],
+  spec: [
+    ['Card', 'system: glass r24, padding 12 / 14, app icon 38', 'system: r24, padding 14 / 16, small icon 20 + “SiteLog · time”'],
+    ['Text', 'title 15 / 600 · body 15 / 400 (system sizes, not app tokens)', 'same'],
+    ['Title', 'what happened, ≤ 40 characters', 'same'],
+    ['Body', 'where: room, project, who; ≤ 2 lines', 'same'],
+    ['Tap', '<code>deepLink</code>: <code>sitelog://session/&lt;id&gt;</code> or <code>sitelog://issue/&lt;id&gt;</code>', 'same'],
+    ['Payload', 'alert (<code>notification</code>) + data <code>kind</code>, <code>deepLink</code>, <code>account</code>', 'data only; the app builds the notification on the channel named by <code>kind</code>'],
+  ],
+  variants: [
+    V('kind', 'uploadsVerified', pushCardIOS('uploadsVerified'), pushCardAND('uploadsVerified'), '→ session'),
+    V('kind', 'issueAssigned', pushCardIOS('issueAssigned'), pushCardAND('issueAssigned'), '→ issue'),
+    V('kind', 'issueRechecked', pushCardIOS('issueRechecked'), pushCardAND('issueRechecked'), '→ issue'),
+    V('kind', 'dueSoon', pushCardIOS('dueSoon'), pushCardAND('dueSoon'), '→ project: its Issues, due tomorrow'),
+    V('kind', 'access', pushCardIOS('access'), pushCardAND('access'), '→ that project’s Home'),
+    V('placement', 'lockScreen', lockBg(pushCardIOS('issueAssigned', { lock: true })), lockBg(pushCardAND('issueAssigned', { lock: true }))),
+  ] });
+
+/* 22. Plan pin */
+const pinBox = (h, w = 56) => `<div style="position:relative;width:${w}px;height:48px">${h}</div>`;
+const pinEl = (k, n, hollow) => pinBox(`<div class="pin ${hollow ? 'hollow' : ''}" style="left:14px;top:8px;${hollow ? '' : `background:var(--${k})`}"><b>${n}</b></div>`);
+cmp({ id: 'pin', name: 'Plan pin', code: 'DSPlanPin',
+  purpose: ['An issue on a floor plan: a teardrop pointing at the spot, its number inside.', 'Open pins take the severity colour; resolved pins are hollow green; pins that overlap at this zoom merge into a cluster with a count.'],
+  props: [['type', 'open · resolved · cluster', 'open', 'cluster: count of the pins under it; a tap zooms in'], ['severity', 'critical · major · minor', 'major', 'open only'], ['state', 'idle · selected', 'idle', 'selected opens the pin preview (M5)']],
+  spec: [
+    ['Pin', '28 teardrop (r14, tip r2, rotated −45°), tip on the spot; number 13 / 600 white', 'same'],
+    ['type.resolved', 'white fill, 2.5 status/success border, green number', 'same'],
+    ['type.cluster', '36 circle text/primary, count 13 / 600 on-primary', 'same'],
+    ['state.selected', 'grows to 36 with a 3 white ring', 'same'],
+    ['Shadow', '0 2 5 black 25%', 'same'],
+  ],
+  variants: [
+    V('severity', 'critical', ...SM(pinEl('crit', 1))), V('severity', 'major', ...SM(pinEl('major', 2))), V('severity', 'minor', ...SM(pinEl('minor', 4))),
+    V('type', 'resolved', ...SM(pinEl('ok', 5, true))),
+    V('type', 'cluster', ...SM(pinBox('<div class="cluster" style="left:10px;top:6px">5</div>'))),
+    V('state', 'selected', ...SM(pinBox(`<div class="pin" style="left:10px;top:4px;width:36px;height:36px;border-radius:18px 18px 18px 2px;background:var(--crit);box-shadow:0 0 0 3px #fff,0 2px 5px rgba(0,0,0,.25)"><b>1</b></div>`))),
+  ] });
+
+/* 23. Checklist answer */
+const ans = (on) => `<div class="ans">${[['pass', 'Pass'], ['fail', 'Fail'], ['na', 'N/A']].map(([k, t]) => `<div class="${k} ${on === k ? 'on' : ''}">${on === k ? I(k === 'pass' ? 'check' : k === 'fail' ? 'x' : 'minus', 18, 2.6) : ''}${t}</div>`).join('')}</div>`;
+cmp({ id: 'answer', name: 'Checklist answer', code: 'DSChecklistAnswer',
+  purpose: ['Three equal buttons under each checklist item: one tap answers it.', 'Fail opens the issue sheet (K3) with the item filled in.'],
+  props: [['state', 'none · pass · fail · na', 'none', 'one answer at a time; tap again to clear']],
+  spec: [
+    ['Button', '48 high, r12, equal width, gap 8; label bodyStrong 17', 'same'],
+    ['state.none', 'all three bg/fill, text/primary', 'same'],
+    ['state.pass · fail · na', 'that one fills status/success · severity/critical · text/secondary, white label + icon 18', 'same'],
+    ['Indent', 'starts under the item text (32 from the row edge)', 'same'],
+  ],
+  variants: [V('state', 'none', ...SM(ans(''))), V('state', 'pass', ...SM(ans('pass'))), V('state', 'fail', ...SM(ans('fail'))), V('state', 'na', ...SM(ans('na')))] });
+
+/* 24. Camera controls */
+const camBg = (h, hh = 120) => `<div style="margin:-12px -16px;height:${hh}px;position:relative;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:24px">${h}</div>`;
+cmp({ id: 'camera', name: 'Camera controls', code: 'DSCameraControls',
+  purpose: ['The capture screen: shutter in the middle, last photo and issue on the sides, modes above, context pill on top.', 'Always on the dark camera background; only the focus box and the selected mode are hi-vis.'],
+  props: [['part', 'shutter · modes · sideButton · pill · iconButton · focusBox · overlayCard', '—', 'each part is placed by the camera screen (C1, C3), not reused elsewhere']],
+  spec: [
+    ['part.shutter', '76 ring (4 white) around a 62 white disc', 'same'],
+    ['part.modes', 'VIDEO · PHOTO · CHECK, 13 / 600, tracking 0.06 em; selected accent/hi-vis', 'same'],
+    ['part.sideButton', '64 wide: 48 glass circle (or 46 last-photo tile r9) + label 13 / 600', 'last-photo tile is round'],
+    ['part.pill', 'glass capsule 44, padding 16, 13 / 600 + chevron 14', 'same'],
+    ['part.iconButton', 'glass circle 44, icon 18–22', 'same'],
+    ['part.focusBox', '72 square, 1.5 accent/hi-vis with ticks', 'same'],
+    ['part.overlayCard', 'glass card r12, padding 12, inset 16: ghost alignment or the open-issues note', 'same'],
+  ],
+  variants: [
+    V('part', 'shutter', ...SM(camBg('<div class="shutter"><i></i></div>'))),
+    V('part', 'modes', ...SM(camBg('<div class="modes"><span>VIDEO</span><span class="on">PHOTO</span><span>CHECK</span></div>', 64))),
+    V('part', 'sideButton', camBg(`<div class="side-btn"><span class="thumb" style="width:46px;height:46px;border:2px solid #fff;border-radius:9px">${scene(0)}</span><span>4 here</span></div><div class="side-btn"><span class="c glass">${I('triangle-alert', 22, 2)}</span><span>Issue</span></div>`), camBg(`<div class="side-btn"><span class="thumb" style="width:46px;height:46px;border:2px solid #fff;border-radius:23px">${scene(0)}</span><span>4 here</span></div><div class="side-btn"><span class="c glass">${I('triangle-alert', 22, 2)}</span><span>Issue</span></div>`)),
+    V('part', 'pill', ...SM(camBg(`<div class="cam-pill glass">7A Living room${I('chevron-down', 14, 2)}</div>`, 72))),
+    V('part', 'iconButton', ...SM(camBg(`<div class="cam-btn glass">${I('zap-off', 18, 2)}</div><div class="cam-btn glass">${I('chevron-down', 22, 2)}</div>`, 72))),
+    V('part', 'focusBox', ...SM(`<div style="margin:-12px -16px;height:120px;position:relative;overflow:hidden">${scene(0)}<div class="focus-box" style="left:50%;top:24px;transform:translateX(-50%)"></div></div>`)),
+    V('part', 'overlayCard', ...SM(`<div style="margin:-12px -16px;height:96px;position:relative;overflow:hidden">${scene(0)}<div class="overlay-card glass" style="top:16px"><div class="hstack" style="justify-content:space-between"><span style="font-size:13px;font-weight:600">3 open issues from 12 Aug</span><span style="font-size:13px;opacity:.7">Show</span></div></div></div>`)),
+  ] });
+
+/* 25. Toast · snackbar */
+const tWrap = (h, hh = 56) => `<div style="position:relative;height:${hh}px">${h}</div>`;
+cmp({ id: 'toast', name: 'Toast · snackbar', code: 'DSToast',
+  purpose: ['A short message after an action, at the bottom, gone after 4 s; never for something the user must decide (use a dialog).', 'Used for "Not allowed for your role" (403), "Saved offline", "Issue deleted" with Undo.'],
+  props: [['action', 'none · button', 'none', 'one text action, e.g. Undo'], ['tone', 'neutral · error', 'neutral', 'error: leading icon, same colours']],
+  spec: [
+    ['Box', 'ink capsule r24, min 48, padding 12 / 16, 112 above the bottom (clear of docks and the tab bar)', 'snackbar r8, min 48, 16 from the sides, above the bottom bar'],
+    ['Text', 'captionStrong 13 / 600 on-primary, up to 2 lines', 'same'],
+    ['action.button', 'text action in accent/hi-vis, right', 'same'],
+    ['Time', '4 s, or until the next one', 'same'],
+  ],
+  variants: [
+    V('action', 'none', tWrap('<div class="toast" style="bottom:4px;left:0;right:0">Saved offline. It uploads when you have signal.</div>'), tWrap('<div class="snack" style="bottom:4px;left:0;right:0"><span class="grow">Saved offline. It uploads when you have signal.</span></div>')),
+    V('action', 'button', tWrap('<div class="toast" style="bottom:4px;left:0;right:0"><span class="grow">Issue deleted</span><span style="color:var(--hi)">Undo</span></div>'), tWrap('<div class="snack" style="bottom:4px;left:0;right:0"><span class="grow">Issue deleted</span><span class="tbtn" style="color:var(--hi)">Undo</span></div>')),
+    V('tone', 'error', tWrap(`<div class="toast" style="bottom:4px;left:0;right:0">${I('ban', 18, 2)}<span class="grow">Not allowed for your role. Your access changed; updating now.</span></div>`, 72), tWrap('<div class="snack" style="bottom:4px;left:0;right:0"><span class="grow">Not allowed for your role. Your access changed; updating now.</span></div>', 72)),
+  ] });
+
+/* 26. Passcode */
+const pdots = (n, b) => `<div class="hstack" style="gap:16px;justify-content:center">${Array.from({ length: 6 }, (_, i) => `<span style="width:14px;height:14px;border-radius:7px;border:${b}px solid var(--ink);${i < n ? 'background:var(--ink)' : ''}"></span>`).join('')}</div>`;
+const pkeys = (sz, dim) => `<div style="display:grid;grid-template-columns:repeat(3,${sz}px);justify-content:center;gap:12px 32px;${dim ? `opacity:${dim}` : ''}">${['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(k => k === '' ? '<span></span>' : k === '⌫' ? `<span style="height:${sz}px;display:grid;place-items:center">${I('delete', 24, 1.8)}</span>` : `<span style="width:${sz}px;height:${sz}px;border-radius:${sz / 2}px;background:var(--sunken);display:grid;place-items:center;font-size:28px">${k}</span>`).join('')}</div>`;
+cmp({ id: 'passcode', name: 'Passcode', code: 'DSPasscodeDots · DSKeypad',
+  purpose: ['Six dots and a number pad for the app passcode (A3, S5): the fallback when Face ID or the fingerprint fails.', 'After 5 wrong tries the pad locks for a minute (A3l).'],
+  props: [['state', 'entering · wrong · locked', 'entering', 'wrong: dots shake once and clear; locked: pad dimmed, countdown in red']],
+  spec: [
+    ['Dots', '6 × 13 circles, gap 16, 1.5 text/primary; filled when typed', '6 × 14, 2 border'],
+    ['Keys', '78 circles bg/fill, digits 28 / 400, 3 columns (shown smaller here)', '80 circles'],
+    ['Message', 'caption 13 under the dots; locked: severity/critical', 'same'],
+    ['state.locked', 'keypad opacity 0.30', 'opacity 0.38'],
+  ],
+  variants: [
+    V('state', 'entering', `<div class="stack" style="gap:16px">${pdots(2, 1.5)}${pkeys(56)}</div>`, `<div class="stack" style="gap:16px">${pdots(2, 2)}${pkeys(56)}</div>`),
+    V('state', 'wrong', `<div class="stack" style="gap:12px;align-items:center">${pdots(0, 1.5)}<span class="fn">Wrong passcode. 4 tries left.</span></div>`, `<div class="stack" style="gap:12px;align-items:center">${pdots(0, 2)}<span class="fn">Wrong passcode. 4 tries left.</span></div>`),
+    V('state', 'locked', `<div class="stack" style="gap:12px;align-items:center">${pdots(0, 1.5)}<span class="fn" style="color:var(--crit)">Too many tries. Try again in 1 min.</span>${pkeys(44, .3)}</div>`, `<div class="stack" style="gap:12px;align-items:center">${pdots(0, 2)}<span class="fn" style="color:var(--crit)">Too many tries. Try again in 1 min.</span>${pkeys(44, .38)}</div>`),
+  ] });
+
+/* 27. Thumbnail · text link */
+cmp({ id: 'thumb', name: 'Thumbnail · text link', code: 'DSThumbnail · DSTextLink',
+  purpose: ['Thumbnail: a photo, a plan sheet or a project at the lead of a row or in a grid; always cropped to fill.', 'Text link: an inline action in a sentence or under a form ("Forgot passcode?").'],
+  props: [['type', 'photo · plan · project', 'photo', 'plan: sheet outline on bg/plan; project: site photo'], ['size', 's · m · l', 'm', 's 36 · m 48 · l 56'], ['link', 'inline', '—', 'text link, separate part']],
+  spec: [
+    ['type.photo', 's 36 · m 48 · l 56, r8, cover', 'same'],
+    ['type.plan', '56 × 40, r4, bg/plan, 1 line/strong', 'same'],
+    ['type.project', '36–48, r8 (r12 in project lists)', 'same'],
+    ['Text link', 'inherits the text size, 600, underline 1 at 3 offset; touch target 44', 'touch target 48'],
+  ],
+  variants: [
+    V('type', 'photo', ...SM(row1(thumb(0, 36), thumb(3, 48), thumb(1, 56)))),
+    V('type', 'plan', ...SM('<span style="width:56px;height:40px;border-radius:4px;background:var(--plan);border:1px solid var(--line-strong);display:block"></span>')),
+    V('type', 'project', ...SM(row1(wsTile(0, 36, 8), wsTile(1, 48, 12)))),
+    V('link', 'inline', ...SM('<span class="t-body">Forgot your passcode? <span class="link">Reset it</span></span>')),
+  ] });
+
+/* 18. Panel */
+const PANELS = {
+  live: `<div class="panel"><div class="hstack"><span class="live"></span><span class="fn" style="color:var(--ink)">Walkthrough in progress · since 8:12</span></div><div><b>Level 7</b><div class="meta">37 of 82 rooms</div></div>${progress(37 / 82)}</div>`,
+  offline: `<div class="panel"><div class="hstack" style="color:var(--ink2)">${I('cloud-off', 18)}<span class="fn">Offline</span></div><div><b>12 photos wait for signal</b><div class="meta">They upload on their own.</div></div></div>`,
+  paused: `<div class="panel"><div class="hstack" style="color:var(--ink2)">${I('pause', 18)}<span class="fn">Paused · yesterday 17:40</span></div><div><b>Level 7</b><div class="meta">37 of 82 rooms</div></div>${row1(B('Resume', 'primary', { sm: true }))}</div>`,
+};
+cmp({ id: 'panel', name: 'Panel', code: 'DSPanel',
+  purpose: ['At most one card per screen, for the one thing that needs attention now.'],
+  props: [['type', 'live · offline · paused', '—', 'required']],
+  spec: [
+    ['Box', 'bg/fill, r14, padding 16, gap 8–12', 'same'],
+    ['Head', 'type.live: live dot · offline / paused: icon 18 text/secondary; caption 13', 'same'],
+    ['type.live', '+ Progress type.bar', 'same'],
+    ['type.paused', '+ Button size.small', 'same'],
+  ],
+  variants: [V('type', 'live', ...SM(PANELS.live)), V('type', 'offline', ...SM(PANELS.offline)), V('type', 'paused', ...SM(PANELS.paused))] });
+
+/* 19. Sync line */
+const syncDemo = (t, ic) => `<div class="sync-line">${I(ic, 18)}<span class="grow">${t}</span>${I('chevron-right', 16, 2.2)}</div>`;
+cmp({ id: 'sync', name: 'Sync line', code: 'DSSyncLine',
+  purpose: ['The current project\'s upload state on Home; opens its files.'],
+  props: [['state', 'uploading · waiting · done', '—', 'counts and time are parameters']],
+  spec: [
+    ['Box', 'min 44 high, r12, 1 px line/hairline, padding 12', 'same'],
+    ['Content', 'icon 18 · caption 13 · chevron 16', 'same'],
+  ],
+  variants: [
+    V('state', 'uploading', ...SM(syncDemo('56 files left to upload · about 6 min', 'cloud-upload'))),
+    V('state', 'waiting', ...SM(syncDemo('12 photos wait for signal', 'cloud-off'))),
+    V('state', 'done', ...SM(syncDemo('Everything uploaded', 'circle-check'))),
+  ] });
+
+/* 20. Progress */
+const ring = (d) => `<span class="stack" style="align-items:center;gap:4px"><span style="width:24px;height:24px;border-radius:12px;background:conic-gradient(var(--ok) ${d * 360}deg, var(--sunken) 0)"></span><span class="dim-note">${Math.round(d * 100)}%</span></span>`;
+cmp({ id: 'progress', name: 'Progress', code: 'DSProgress',
+  purpose: ['bar: counts (rooms checked, files uploaded).', 'ring: one unit or room\'s done ratio, as a row lead.', 'The value 0…1 is a parameter.'],
+  props: [['type', 'bar · ring', 'bar', '']],
+  spec: [
+    ['type.bar', '4 high, r2, track bg/fill, value text/primary', 'same'],
+    ['type.ring', '24 circle, status/success over bg/fill', 'same'],
+  ],
+  variants: [
+    V('type', 'bar', ...SM(progress(0.45))),
+    V('type', 'ring', ...SM(row1(ring(0), ring(0.4), ring(0.75), ring(1))), 'value 0 · 0.4 · 0.75 · 1'),
+  ] });
+
+/* 21. Empty state */
+const emptyDemo = (tone, ic, t, d, b) => `<div style="height:240px;display:flex">${empty(hero(tone, ic, t, d, b ? { extra: b } : {}))}</div>`;
+cmp({ id: 'empty', name: 'Empty state', code: 'DSEmptyState',
+  purpose: ['Icon, title, one sentence, at most one button, centred in the free space of the view.', 'Title and message are parameters.'],
+  props: [['type', 'neutral · ok · critical', 'neutral', 'ok: done · neutral: paused, no match · critical: failed'], ['action', 'none · button', 'none', 'Button type.secondary size.small']],
+  spec: [
+    ['Icon', '64 circle; icon 32', 'same'],
+    ['type.neutral', 'bg/fill circle, text/secondary icon', 'same'],
+    ['type.ok', 'status/success circle, white icon', 'same'],
+    ['type.critical', 'severity/critical circle, white icon', 'same'],
+    ['Title · message', 'heading 20 / 600 · body 17 text/secondary, centred', 'same'],
+    ['Gaps', 'icon → text 16 · title → message 8 · text → button 16', 'same'],
+    ['Placement', 'vertical centre of the free space, above the floating tab bar', 'vertical centre of the free space'],
+  ],
+  variants: [
+    V('type', 'neutral', ...SM(emptyDemo('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue.'))),
+    V('type', 'ok', ...SM(emptyDemo('ok', 'check', 'Nothing open', 'Hanh closed the last one today.'))),
+    V('type', 'critical', ...SM(emptyDemo('crit', 'x', 'Upload failed', 'The server rejected 2 photos.'))),
+    V('action', 'button', emptyDemo('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue.', B('Change filters', 'secondary', { sm: true })), emptyDemo('neutral', 'search-x', 'No issues match', 'No Minor issue is overdue.', B('Change filters', 'tonal', { sm: true }))),
+  ] });
+
+/* ---------- render ---------- */
+const isDefault = (c, v) => (c.props.find(p => p[0] === v.prop) || [])[2] === v.kase;
+document.getElementById('toc').innerHTML = C.map(c => `<a href="#${c.id}">${c.name}</a>`).join('');
+document.getElementById('app').innerHTML = C.map(c => `
+  <section class="cmp" id="${c.id}">
+    <div class="cmp-head"><div><h3>${c.name}</h3><div class="code-name">${c.code}</div></div><ul>${c.purpose.map(n => `<li>${n}</li>`).join('')}</ul></div>
+    <div class="lbl">Properties</div>
+    <table class="spec props"><tr><th>Property</th><th>Cases</th><th>Default</th><th>Note</th></tr>${c.props.map(([p, cs, d, n]) => `<tr><td><code>${p}</code></td><td><code>${cs}</code></td><td><code>${d}</code></td><td>${n}</td></tr>`).join('')}</table>
+    <div class="lbl">Spec</div>
+    <table class="spec"><tr><th>Part</th><th>iOS 26 (pt)</th><th>Android (dp)</th></tr>${c.spec.map(([p, i, a]) => `<tr><td>${p}</td><td>${i}</td><td>${a === 'same' ? '<span style="color:#63676E">same as iOS</span>' : a}</td></tr>`).join('')}</table>
+    <div class="lbl">Variants · each row changes one property from the defaults</div>
+    <div class="vars"><span class="vh">property.case</span><span class="vh">iOS 26</span><span class="vh">Android</span>
+      ${c.variants.map(v => `<div class="vl"><code class="case">${v.prop}.${v.kase}</code>${isDefault(c, v) ? '<small>default</small>' : ''}${v.note ? `<small>${v.note}</small>` : ''}</div><div class="p-ios"><div class="surface ${c.bars ? 'bars' : ''} ${c.tall ? 'tall' : ''}">${v.ios}</div></div><div class="p-android"><div class="surface ${c.bars ? 'bars' : ''} ${c.tall ? 'tall' : ''}">${v.android}</div></div>`).join('')}
+    </div>
+  </section>`).join('');
+lucide.createIcons();
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 
 - Product, market, data model, architecture, data flows, infrastructure, conventions.
 - Feature specs live in five files ([§8](#8-feature-specs)); spec numbers `01`–`19` are stable and
-  used by [ROADMAP.md](../../ROADMAP.md), which also owns the build order.
+  used by [ROADMAP.md](../ROADMAP.md), which also owns the build order.
 - This is the approved target design, not a claim that every feature or dependency is implemented.
   `project.yml` and source files show the current implementation; feature guides show the build steps.
 - **Suggested reading order:** read this overview first, then the feature spec you need, then its
@@ -25,7 +25,7 @@
 6. [Infrastructure](#6-infrastructure)
 7. [Conventions](#7-conventions)
 8. [Feature specs](#8-feature-specs)
-9. [Decisions](#9-decisions) — D01–D20, why each library, engine and package split
+9. [Decisions](#9-decisions) — D01–D21, why each library, engine and package split
 10. [Beginner glossary](#beginner-glossary) — common SwiftUI and architecture terms
 
 </dd></dl>
@@ -63,7 +63,7 @@
 | Deliverable | Signed PDF inspection report |
 | Users | Site supervisors, subcontractors, apartment handover teams |
 
-```
+```text
 Create project → start session → walk floors/rooms, capture + log issues
 → reach WiFi, background upload → export signed PDF report
 ```
@@ -114,7 +114,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 | Object storage | Amazon S3, multipart + presigned URLs |
 | Realtime | Hand-written `URLSessionWebSocketTask` channel ([D04](#d04--websocket-realtime-channel)) |
 | Remote images | [Kingfisher](https://github.com/onevcat/Kingfisher) 8.x ([D05](#d05--kingfisher-for-remote-images)) |
-| Auth / crash | Firebase iOS SDK 12.x: Auth, Crashlytics — **no Firestore** ([D07](#d07--firebase-crashlytics)) |
+| Auth / crash / push | Firebase iOS SDK 12.x: Auth, Crashlytics, Messaging — **no Firestore** ([D07](#d07--firebase-crashlytics), [D21](#d21--firebase-cloud-messaging-for-push)) |
 | Tests | Swift Testing, `FactoryTesting`; swift-snapshot-testing optional, last (F18) ([testing](05-platform.md#testing-strategy)) |
 | Tooling | XcodeGen, SwiftLint, swift-format, Fastlane, GitHub Actions |
 | Dev only | [Inject](https://github.com/krzysztofzablocki/Inject) 1.6.0 + InjectionNext (hot reload, Debug) |
@@ -133,7 +133,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 |---|---|
 | Firebase Storage, third-party upload libraries | The transfer engine is the core of the product |
 | `UIImagePickerController` / `PhotosPicker` | A hash only means something for a file the app produced |
-| Firebase touching file bytes or data | Identity and crash reporting only |
+| Firebase touching file bytes or data | Identity, crash reporting and push only |
 | Burning annotations into original pixels | Destroys the hash |
 | RFIs, scheduling, budgets, CAD, real-time multi-user editing, cloud AI defect detection | Different product, or indefensible in a dispute |
 
@@ -178,7 +178,7 @@ Create project → start session → walk floors/rooms, capture + log issues
 
 <dl><dd>
 
-```
+```text
 Project
  ├ PlanSheet                                → 11
  ├ ChecklistTemplate                        → 13
@@ -204,7 +204,7 @@ Project
 | `Session` | `id`, `startedAt`, `endedAt?`, `surveyorName`, `note`, `state` | `draft → active → closed → exported`; `closed` blocks captures, `exported` is read-only |
 | `Location` | `id` (stable across renames), `code` (`"A-12.05"`), `kind` (`floor/unit/room`), `parent?`, `sortIndex` | Max depth 3 |
 | `Capture` | `id`, `kind`, `fileURL` (**relative**), `sha256`, `byteSize`, `capturedAt`, `trustedTime`, `verificationCode?`, `latitude?`/`longitude?`/`horizontalAccuracy?`, `deviceModel`, `duration?`, `deviceReading?`, `uploadState`, `remoteKey?`, `isExcludedFromReport` | GPS nullable — basements have none |
-| `Issue` | `id`, `title`, `detail`, `severity` (`critical/major/minor`), `status` (`open → inProgress → resolved → verified`), `dueDate?`, `location`, `assigneeName?`, `trade?`, `planPin?`, `sourceChecklistResult?`, `captures`, `resolvedByIssue?` | Anchored to `Location`; `severity` drives upload priority |
+| `Issue` | `id`, `title`, `detail`, `severity` (`critical/major/minor`), `status` (`open → inProgress → resolved → verified`), `dueDate?`, `location`, `assigneeName?`, `assigneeUid?` (F19), `trade?`, `planPin?`, `sourceChecklistResult?`, `captures`, `resolvedByIssue?` | Anchored to `Location`; `severity` drives upload priority |
 
 - **Frozen after creation:** `id`, `fileURL`, `sha256`, `capturedAt`, `trustedTime`, GPS,
   `deviceModel`, `byteSize`, `kind`.
@@ -257,7 +257,7 @@ flowchart LR
     P --> D["DomainLayer package<br/>entities, use cases, repository protocols"]
     Data --> D
     Data --> I["PlatformKit package (system services)<br/>Permissions · Camera · Bluetooth · Biometrics · Speech<br/>Rendering · Device · Push · CrashReporting<br/>Networking · UploadKit · Realtime"]
-    P --> C["Core package<br/>logger, clock"]
+    P --> C["Core package<br/>logger, clock, crypto"]
     Data --> C
     I --> C
 ```
@@ -266,7 +266,7 @@ flowchart LR
 
 <dl><dd>
 
-```
+```text
 site-log-ios/
 ├── SiteLog/                          # app target: composition root + Presentation
 │   ├── App/                          # composition root: may use everything
@@ -288,14 +288,14 @@ site-log-ios/
 │   ├── DomainLayer/                  # Entities/<Feature>/ Repositories/ (all boundary protocols) UseCases/<Feature>/ — Foundation only
 │   ├── DataLayer/                    # Repositories/ DataSources/ Models/ Mappers/ — uses DomainLayer + PlatformKit + Core
 │   │                                 #   Models/Local/: SwiftData @Model + Schema/ · Models/Remote/: DTOs
-│   │                                 #   DataSources/Local/:  Persistence/ (SwiftData) Keychain/ FileStorage/ — protocol + Impl only
+│   │                                 #   DataSources/Local/:  one folder per area — Access/ Biometrics/ Persistence/ (SwiftData) Keychain/ FileStorage/ … — protocol + Impl only
 │   │                                 #   DataSources/Remote/: <Noun>RemoteDataSource + Impl over PlatformKit engines; Auth/ (Firebase)
-│   ├── PlatformKit/               # system services, like an outside library — uses Core only
+│   ├── PlatformKit/                  # system services, like an outside library — uses Core only
 │   │                                 #   Permissions/ Camera/ Bluetooth/ Biometrics/ Speech/
 │   │                                 #   Rendering/ (PDF, CSV, PDF / image tiles, stamps) Device/ Push/ CrashReporting/
 │   │                                 #   Networking/ (HTTP client) UploadKit/ Realtime/ (standalone engines)
 │   ├── Core/                         # Logger/AppLogger, Clock/AppClock + SystemClock, Crypto/ (PasscodeHasher, FileHasher); no business logic
-│   └── DesignSystem/                 # Tokens/ Components/ (UI only)
+│   └── DesignSystem/                 # Tokens/ Components/ Modifiers/ (UI only)
 ├── SiteLogTests/                     # app tests: Presentation/ (package tests live in each package)
 ├── SiteLogUITests/
 ├── Tools/CI/                         # CI guard scripts
@@ -436,13 +436,14 @@ struct SplashScreen: View {
 }
 ```
 
-This is the current splash screen pattern: the View receives its ViewModel through `init`, renders its state, and starts async work with `.task`. Real feature screens receive use cases through their ViewModel initializer; `Container.shared` is resolved at the composition boundary ([D14](#d14--view-models-take-use-cases-through-init)).
+- Splash pattern: the View gets its ViewModel through `init`, renders its state, starts async work in `.task`.
+- Feature screens pass use cases to the ViewModel `init`; `Container.shared` resolves them at the composition boundary ([D14](#d14--view-models-take-use-cases-through-init)).
 
 | Rule | Detail |
 |---|---|
 | Scope | PlatformKit services and stateful services `.singleton`; use cases unscoped |
 | Resolution | View models take use cases through `init` and never import `FactoryKit`; the view resolves them with `Container.shared` ([D14](#d14--view-models-take-use-cases-through-init)) |
-| Previews | The registered repositories; Debug `seed()` gives them sample data |
+| Previews | The registered repositories; Debug `seedSampleData()` gives them sample data |
 | Tests | View models: built directly on test doubles, no container; registrations: `@Suite(.container)` from `FactoryTesting` |
 | Injected seams | Repositories, `AppClock`, `UploadStore`, `UploadTransport`, `CaptureSessionControlling`, `RandomNumberGenerator` |
 
@@ -652,6 +653,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | [03-backend.md](03-backend.md) | 14 Backend API (client guide); the server: [site-log-be](https://github.com/DAMHONGDUC/site-log-be) |
 | [04-reporting-security.md](04-reporting-security.md) | 05 PDF and spreadsheet export · 07 Security and audit log |
 | [05-platform.md](05-platform.md) | 09 Diagnostics · 17 CI/CD and TestFlight · 18 Push and deep links · 19 Instruments |
+| [06-navigation.md](06-navigation.md) | Navigation map: root states, tabs, routes, sheets, deep links |
 
 - Every spec has the same shape: goal and scope, design, rules and risks, done and tests.
 
@@ -686,8 +688,9 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 | [D18](#d18--dev-menu-data-through-use-cases) | Dev menu data through use cases | Accepted |
 | [D19](#d19--feature-routes-and-a-coordinator-per-stack) | Feature routes and a coordinator per stack | Accepted |
 | [D20](#d20--di-files-split-by-layer) | DI files split by layer | Accepted |
+| [D21](#d21--firebase-cloud-messaging-for-push) | Firebase Cloud Messaging for push | Accepted |
 
-- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D20 2026-10-14. New decision: copy a section, keep its four parts, add a row above.
+- D01–D08 accepted 2026-09-30, D09 2026-10-04, D10 2026-10-12, D11–D17 2026-10-13, D18–D20 2026-10-14, D21 2026-11-15. New decision: copy a section, keep its four parts, add a row above.
 
 ---
 
@@ -957,7 +960,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
     - They return DTOs / records and their own errors, never entities; repositories map.
   - `Packages/PlatformKit`: system services and standalone engines on system APIs; uses `Core` only.
     - `Permissions/`, `Camera/` (AVFoundation), `Bluetooth/` (CoreBluetooth), `Biometrics/` (LocalAuthentication), `Speech/`.
-    - `Rendering/` (PDF, CSV, PDF / image tiles, stamped copies), `Device/` (disk, battery, thermal), `Push/` (APNs), `CrashReporting/` (Crashlytics).
+    - `Rendering/` (PDF, CSV, PDF / image tiles, stamped copies), `Device/` (disk, battery, thermal), `Push/` (APNs registration, FCM token), `CrashReporting/` (Crashlytics).
     - Standalone engines on system APIs: `Networking/` (`HTTPClient`), `UploadKit/` (background `URLSession`), `Realtime/` (WebSocket).
   - Direction: `DataLayer` → `PlatformKit` → `Core`.
 
@@ -1129,6 +1132,7 @@ This is the current splash screen pattern: the View receives its ViewModel throu
   - Deep links (F16) map a URL to a tab and a route, then push on that tab’s coordinator.
   - A sheet that opens a full screen dismisses itself, then pushes on the tab’s coordinator.
   - With view models, routes keep ids; the destination builds the view model from `Container.shared` (D14).
+  - Every screen's place (root state, tab, route, sheet) and every deep link: [06-navigation](06-navigation.md).
 
 </dd></dl>
 
@@ -1151,6 +1155,27 @@ This is the current splash screen pattern: the View receives its ViewModel throu
 - **Consequences:**
   - Adding a feature edits `RepositoriesDI` and `UseCasesDI` (its DevData use cases under `#if DEBUG`).
   - Only `App/DI/` imports `DataLayer` and `PlatformKit` for registration.
+
+</dd></dl>
+
+### D21 — Firebase Cloud Messaging for push
+
+<dl><dd>
+
+- **Context:** iOS and Android both need "uploads verified" pushes; the backend sent APNs itself (HTTP/2, JWT, `.p8` key in SSM) and Android would need a second sender.
+- **Decision:** both apps use Firebase Cloud Messaging; iOS adds the `FirebaseMessaging` product and registers the FCM token.
+  - The APNs key is uploaded to each Firebase project (`sitelog-dev`, `sitelog-prod`); FCM forwards iOS pushes to APNs.
+  - `POST /devices { token, platform }`; no sandbox / production field.
+  - Swizzling off (`FirebaseAppDelegateProxyEnabled = NO`): `AppDelegate` hands the APNs token to `Messaging` itself.
+
+| Rejected | Why not |
+|---|---|
+| Direct APNs from the backend | A second sender next to FCM for Android; `.p8` key on the server |
+| OneSignal or another push vendor | A new vendor next to Firebase, which already handles identity |
+
+- **Consequences:**
+  - The app links one more Firebase product; push still lives in `PlatformKit/Push/`, wrapped by `PushRemoteDataSourceImpl`.
+  - Backend: [site-log-be B09](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-docs/00-overview.md#b09--firebase-cloud-messaging-for-push).
 
 </dd></dl>
 

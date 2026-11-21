@@ -29,7 +29,7 @@
 
 <dl><dd>
 
-- **Goal:** files under 5 MB reach storage through a background `URLSession`, survive suspension, and get a server-confirmed hash. Large files and resume are F07.
+- **Goal:** files under 5 MiB reach storage through a background `URLSession`, survive suspension, and get a server-confirmed hash. Large files and resume are F07.
 - **Demo — offline:** airplane mode → captures wait on the Sync tab with a plain reason; nothing is red.
 - **Demo — signed in:** network back → photos upload; kill the app mid-way → they still finish; the server's hash matches.
 - **Spec:** [04 Upload engine](../../feature-docs/02-upload-sync.md#04-upload-engine), [03-backend §7](../../feature-docs/03-backend.md#7-uploads)

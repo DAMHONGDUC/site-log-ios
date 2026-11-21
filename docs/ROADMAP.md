@@ -3,7 +3,7 @@
 <dl><dd>
 
 - Work runs **by sprint**: 2 weeks each, 1 developer, ~60h. Inside a sprint, a feature's app and backend work go together; the backend is built in [site-log-be](https://github.com/DAMHONGDUC/site-log-be) and its rows here link to its guides.
-- Specs: [docs/feature-docs](docs/feature-docs/); guides: [docs/feature-guide](docs/feature-guide/README.md), one folder per sprint, one guide per feature.
+- Specs: [feature-docs](feature-docs/); guides: [feature-guide](feature-guide/README.md), one folder per sprint, one guide per feature.
 - This file owns the ticks. Each sprint's `README.md` holds its overview; each guide holds the steps.
 
 </dd></dl>
@@ -39,7 +39,7 @@ flowchart LR
     L --> B["Backend"] --> S["Sync<br/>signed in works"] --> T["Tests"]
 ```
 
-- Every feature runs these steps; a step that does not apply is skipped ([how every feature runs](docs/feature-guide/README.md#how-every-feature-runs)).
+- Every feature runs these steps; a step that does not apply is skipped ([how every feature runs](feature-guide/README.md#how-every-feature-runs)).
 - **No fake repository.** Fake data lives only in data source `Impl`s; the repository is real from the fake-data step. The local and sync steps replace data source insides, never a type or its registration in `App/DI/`.
 - **Offline first inside every feature:** Continue offline works before the backend and sync steps start.
 - The UI skeleton (~30% of Figma, every screen) is done; a feature's view models replace its `FakeData` use in `App/Fakes/FakeData.swift`. The other ~70% of the UI is `F18`, last.
@@ -63,6 +63,7 @@ flowchart TD
     S6 --> S7["S7 · F12 Checklists, F13 DeviceLink, F14 Diagnostics<br/>TestFlight #2"]
     S7 --> S8["S8 · F15 Realtime, F16 Push, F17 Accessibility"]
     S8 --> S9["S9 · F18 UI finish<br/>App Store"]
+    S9 --> S10["S10 · F19 Team and roles"]
 
     classDef ship fill:#EEEDFE,stroke:#534AB7,color:#3C3489
     class S4,S7,S9 ship
@@ -82,9 +83,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: zero warnings, CI green for app and backend; Face ID / passcode lock with Continue offline; staging `/health`.
-- Overview: [S0](docs/feature-guide/S0-foundation-access/README.md)
+- Overview: [S0](feature-guide/S0-foundation-access/README.md)
 
-**F00 — Foundation · 38h** · [guide](docs/feature-guide/S0-foundation-access/F00-foundation.md)
+**F00 — Foundation · 38h** · [guide](feature-guide/S0-foundation-access/F00-foundation.md)
 
 - [x] **F00.0** - [Tooling] - [8h] - Xcode project, XcodeGen, SwiftLint, hot reload, entry point
 - [x] **F00.1** - [Architecture] - [6h] - Layer packages (incl. `PlatformKit`), Factory DI, injected `AppClock`, test libraries
@@ -94,7 +95,7 @@ flowchart TD
 - [ ] **F00.5** - [Backend] - [11h] - [site-log-be S0](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S0-foundation/README.md): setup, API skeleton, AWS staging
 - [ ] **F00.6** - [Config] - [1h] - Backend base URL per build configuration, local-network ATS
 
-**F01 — Access and app lock · 16h** · [guide](docs/feature-guide/S0-foundation-access/F01-access.md)
+**F01 — Access and app lock · 16h** · [guide](feature-guide/S0-foundation-access/F01-access.md)
 
 - [x] **F01.1** - [Domain] - [1h] - `AccessSetting`, `PasscodeCheck`, `AccessError`, `AccessRepository`, use cases
 - [x] **F01.2** - [Fake data] - [2h] - Real `AccessRepositoryImpl` over in-memory data sources, registrations, dev menu
@@ -109,9 +110,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: Apple / email sign-in next to Continue offline; project → 80 locations → walkthrough offline; backend rejects calls without a token.
-- Overview: [S1](docs/feature-guide/S1-auth-projects/README.md)
+- Overview: [S1](feature-guide/S1-auth-projects/README.md)
 
-**F02 — Auth · 21h** · [guide](docs/feature-guide/S1-auth-projects/F02-auth.md)
+**F02 — Auth · 21h** · [guide](feature-guide/S1-auth-projects/F02-auth.md)
 
 - [ ] **F02.1** - [Contract] - [1h] - Bearer token, `DELETE /account` response
 - [ ] **F02.2** - [Domain] - [1h] - `AuthUser`, `AuthError`, `AuthRepository`, use cases
@@ -120,7 +121,7 @@ flowchart TD
 - [ ] **F02.5** - [Local] - [10h] - Firebase Auth, `HTTPClient` with token and one 401 refresh
 - [ ] **F02.6** - [Backend] - [4h] - [site-log-be F02](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S1-auth-projects/F02-auth.md): `requireUser`, `DELETE /account`
 
-**F03 — Projects, sessions, locations · 35h** · [guide](docs/feature-guide/S1-auth-projects/F03-projects.md)
+**F03 — Projects, sessions, locations · 35h** · [guide](feature-guide/S1-auth-projects/F03-projects.md)
 
 - [ ] **F03.1** - [Contract] - [1h] - Project, session, location DTOs and columns
 - [ ] **F03.2** - [Domain] - [4h] - Sync-ready entities, protocols, use cases
@@ -137,9 +138,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: two iPhones on one account converge; deletes propagate; offline edits wait in the outbox.
-- Overview: [S2](docs/feature-guide/S2-sync-engine/README.md)
+- Overview: [S2](feature-guide/S2-sync-engine/README.md)
 
-**F04 — Sync engine · 45h** · [guide](docs/feature-guide/S2-sync-engine/F04-sync-engine.md)
+**F04 — Sync engine · 45h** · [guide](feature-guide/S2-sync-engine/F04-sync-engine.md)
 
 - [ ] **F04.1** - [Contract] - [2h] - `/sync/pull`, `/sync/push` DTOs
 - [ ] **F04.2** - [Domain] - [1h] - `SyncStatus`, `SyncRepository`, use cases
@@ -157,9 +158,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: hashed photo offline; small files upload after a kill with matching server hashes.
-- Overview: [S3](docs/feature-guide/S3-capture-upload/README.md)
+- Overview: [S3](feature-guide/S3-capture-upload/README.md)
 
-**F05 — Capture · 24h** · [guide](docs/feature-guide/S3-capture-upload/F05-capture.md)
+**F05 — Capture · 24h** · [guide](feature-guide/S3-capture-upload/F05-capture.md)
 
 - [ ] **F05.1** - [Contract] - [1h] - `CaptureDTO` and columns
 - [ ] **F05.2** - [Domain] - [1h] - `CameraRepository`, `RecordCaptureUseCase`
@@ -169,7 +170,7 @@ flowchart TD
 - [ ] **F05.6** - [Backend] - [2h] - [site-log-be F05](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S3-capture-upload/F05-captures.md): `0003_captures.sql`
 - [ ] **F05.7** - [Sync] - [1h] - Captures syncable, insert-only
 
-**F06 — Upload (single PUT) · 36h** · [guide](docs/feature-guide/S3-capture-upload/F06-upload.md)
+**F06 — Upload (single PUT) · 36h** · [guide](feature-guide/S3-capture-upload/F06-upload.md)
 
 - [ ] **F06.1** - [Contract] - [1h] - Begin and complete DTOs
 - [ ] **F06.2** - [Domain] - [1h] - UploadKit job, states, `UploadStore` protocol
@@ -187,9 +188,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: 200 files / 2 GB survive kill and airplane mode; first TestFlight build.
-- Overview: [S4](docs/feature-guide/S4-resumable-upload/README.md)
+- Overview: [S4](feature-guide/S4-resumable-upload/README.md)
 
-**F07 — Resumable upload · 47h** · [guide](docs/feature-guide/S4-resumable-upload/F07-resumable-upload.md)
+**F07 — Resumable upload · 47h** · [guide](feature-guide/S4-resumable-upload/F07-resumable-upload.md)
 
 - [ ] **F07.1** - [Contract] - [1h] - Multipart plan, refresh, abort DTOs
 - [ ] **F07.2** - [Backend] - [6h] - [site-log-be F07](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S4-resumable-upload/F07-multipart.md): multipart begin, `/parts/refresh`, abort
@@ -207,9 +208,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: issue → re-check → before/after pair; markup layer; stamped copy with trusted time; both on two devices.
-- Overview: [S5](docs/feature-guide/S5-issues-markup/README.md)
+- Overview: [S5](feature-guide/S5-issues-markup/README.md)
 
-**F08 — Issues and before/after · 26h** · [guide](docs/feature-guide/S5-issues-markup/F08-issues.md)
+**F08 — Issues and before/after · 26h** · [guide](feature-guide/S5-issues-markup/F08-issues.md)
 
 - [ ] **F08.1** - [Contract] - [1h] - Issue, issue capture, phrase DTOs
 - [ ] **F08.2** - [Domain] - [3h] - Entities, pure pairing, close, carry-over
@@ -219,7 +220,7 @@ flowchart TD
 - [ ] **F08.6** - [Backend] - [2h] - [site-log-be F08](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S5-issues-markup/F08-issues.md): `0005_issues.sql`
 - [ ] **F08.7** - [Sync] - [2h] - Three tables syncable
 
-**F09 — Markup and stamps · 22h** · [guide](docs/feature-guide/S5-issues-markup/F09-markup.md)
+**F09 — Markup and stamps · 22h** · [guide](feature-guide/S5-issues-markup/F09-markup.md)
 
 - [ ] **F09.1** - [Contract] - [1h] - `AnnotationDTO`
 - [ ] **F09.2** - [Domain] - [1h] - `AnnotationShape`, `NormalizedPoint`, `TrustedTimestamp`
@@ -237,9 +238,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: signed, branded PDF + CSV shared offline; printed code verifies; issues pinned on a real plan.
-- Overview: [S6](docs/feature-guide/S6-reports-plans/README.md)
+- Overview: [S6](feature-guide/S6-reports-plans/README.md)
 
-**F10 — Reports and audit log · 37h** · [guide](docs/feature-guide/S6-reports-plans/F10-reports.md)
+**F10 — Reports and audit log · 37h** · [guide](feature-guide/S6-reports-plans/F10-reports.md)
 
 - [ ] **F10.1** - [Contract] - [1h] - `VerifyDTO`, `ReportBrandingDTO`
 - [ ] **F10.2** - [Domain] - [3h] - Report types, `AuditEntry`, `LayOutReportUseCase`
@@ -249,7 +250,7 @@ flowchart TD
 - [ ] **F10.6** - [Backend] - [4h] - [site-log-be F10](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S6-reports-plans/F10-reports-verify.md): `0007_report_branding.sql`, `GET /verify/:code`
 - [ ] **F10.7** - [Sync] - [2h] - Branding syncable
 
-**F11 — Floor plans and pins · 21h** · [guide](docs/feature-guide/S6-reports-plans/F11-plans.md)
+**F11 — Floor plans and pins · 21h** · [guide](feature-guide/S6-reports-plans/F11-plans.md)
 
 - [ ] **F11.1** - [Contract] - [1h] - `PlanSheetDTO`, plan file key
 - [ ] **F11.2** - [Domain] - [1h] - `PlanSheet`, `Pin`, import / pin / move use cases
@@ -267,9 +268,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: a checklist Fail opens one issue; a reading from the second iPhone (mock meter) shows on the camera; diagnostics and cleanup; TestFlight #2.
-- Overview: [S7](docs/feature-guide/S7-checklists-devices-diagnostics/README.md)
+- Overview: [S7](feature-guide/S7-checklists-devices-diagnostics/README.md)
 
-**F12 — Checklists · 14h** · [guide](docs/feature-guide/S7-checklists-devices-diagnostics/F12-checklists.md)
+**F12 — Checklists · 14h** · [guide](feature-guide/S7-checklists-devices-diagnostics/F12-checklists.md)
 
 - [ ] **F12.1** - [Contract] - [1h] - Template, item, run, result DTOs
 - [ ] **F12.2** - [Domain] - [1h] - Types; answer use case (Fail → issue)
@@ -279,7 +280,7 @@ flowchart TD
 - [ ] **F12.6** - [Backend] - [2h] - [site-log-be F12](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S7-checklists/F12-checklists.md): `0009_checklists.sql`
 - [ ] **F12.7** - [Sync] - [1h] - Four tables syncable
 
-**F13 — DeviceLink (BLE meters) · 18h** · [guide](docs/feature-guide/S7-checklists-devices-diagnostics/F13-devicelink.md)
+**F13 — DeviceLink (BLE meters) · 18h** · [guide](feature-guide/S7-checklists-devices-diagnostics/F13-devicelink.md)
 
 - [ ] **F13.1** - [Contract] - [1h] - Mock meter profile: service, characteristic, bytes
 - [ ] **F13.2** - [Domain] - [1h] - `DeviceReading`, `DeviceLinkRepository`
@@ -289,7 +290,7 @@ flowchart TD
 - [ ] **F13.6** - [Mock] - [3h] - Debug-only mock meter on the second iPhone
 - [ ] **F13.7** - [Release] - [1h] - Feature flag, off for users until a real meter passes
 
-**F14 — Diagnostics · 17h** · [guide](docs/feature-guide/S7-checklists-devices-diagnostics/F14-diagnostics.md)
+**F14 — Diagnostics · 17h** · [guide](feature-guide/S7-checklists-devices-diagnostics/F14-diagnostics.md)
 
 - [ ] **F14.1** - [Domain] - [1h] - Integrity result, storage breakdown, device flags
 - [ ] **F14.2** - [Fake data] - [1h] - Real `DiagnosticsRepositoryImpl` over fixed values
@@ -305,9 +306,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: live “verified” on the Sync tab; push and cold-launch links open their target; VoiceOver walk; budgets met.
-- Overview: [S8](docs/feature-guide/S8-realtime-push-quality/README.md)
+- Overview: [S8](feature-guide/S8-realtime-push-quality/README.md)
 
-**F15 — Realtime progress and verification · 21h** · [guide](docs/feature-guide/S8-realtime-push-quality/F15-realtime.md)
+**F15 — Realtime progress and verification · 21h** · [guide](feature-guide/S8-realtime-push-quality/F15-realtime.md)
 
 - [ ] **F15.1** - [Contract] - [1h] - WebSocket messages
 - [ ] **F15.2** - [Domain] - [1h] - `UploadEvent`, `RealtimeRepository`
@@ -316,17 +317,17 @@ flowchart TD
 - [ ] **F15.5** - [Backend] - [8h] - [site-log-be F15](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F15-realtime.md): `/ws`, verify worker, abandoned uploads
 - [ ] **F15.6** - [Sync] - [8h] - `URLSessionWebSocketTask` inside the data source
 
-**F16 — Push and deep links · 14h** · [guide](docs/feature-guide/S8-realtime-push-quality/F16-push-deeplinks.md)
+**F16 — Push and deep links · 14h** · [guide](feature-guide/S8-realtime-push-quality/F16-push-deeplinks.md)
 
-- [ ] **F16.1** - [Contract] - [1h] - Push payload with `deepLink`; `POST /devices`
+- [ ] **F16.1** - [Contract] - [1h] - Push payload with `deepLink`; `POST /devices` with the FCM token
 - [ ] **F16.2** - [Domain] - [1h] - Pure `DeepLink` parser
 - [ ] **F16.3** - [Fake data] - [1h] - Real `PushRepositoryImpl` over an in-memory token data source
 - [ ] **F16.4** - [View models] - [2h] - Permission moment, notification row
-- [ ] **F16.5** - [Local] - [4h] - Push capability, token, URL scheme, router
-- [ ] **F16.6** - [Backend] - [3h] - [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, APNs
+- [ ] **F16.5** - [Local] - [4h] - Push capability, `FirebaseMessaging` token, URL scheme, router
+- [ ] **F16.6** - [Backend] - [3h] - [site-log-be F16](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S8-realtime-push/F16-push.md): `0011_devices.sql`, `POST /devices`, FCM sender
 - [ ] **F16.7** - [Sync] - [2h] - Token registered through `HTTPClient`
 
-**F17 — Accessibility and performance · 14h** · [guide](docs/feature-guide/S8-realtime-push-quality/F17-accessibility-performance.md)
+**F17 — Accessibility and performance · 14h** · [guide](feature-guide/S8-realtime-push-quality/F17-accessibility-performance.md)
 
 - [ ] **F17.1** - [Polish] - [8h] - Accessibility pass
 - [ ] **F17.2** - [Release] - [6h] - Budgets, privacy manifest, feedback
@@ -339,9 +340,9 @@ flowchart TD
 <dl><dd>
 
 - Demo: every screen next to its Figma frame, light and dark; production backend; build submitted.
-- Overview: [S9](docs/feature-guide/S9-release/README.md)
+- Overview: [S9](feature-guide/S9-release/README.md)
 
-**F18 — UI finish and App Store · 54h** · [guide](docs/feature-guide/S9-release/F18-ui-finish.md)
+**F18 — UI finish and App Store · 54h** · [guide](feature-guide/S9-release/F18-ui-finish.md)
 
 - [ ] **F18.1** - [UI] - [6h] - Components to Figma
 - [ ] **F18.2** - [UI] - [3h] - Figma S1: access screens
@@ -354,6 +355,26 @@ flowchart TD
 - [ ] **F18.9** - [Release] - [6h] - Accessibility re-check, App Store listing, submission
 - [ ] **F18.10** - [Tests] - [6h] - Optional: snapshot tests (swift-snapshot-testing); not counted in the 54h
 - [ ] **F18.11** - [Backend] - [6h] - [site-log-be F18](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S9-release/F18-production.md): production, purge, alarms, backups
+
+</dd></dl>
+
+## S10 — Team and roles · 30h
+
+<dl><dd>
+
+- Demo: an Admin invites an Inspector; the Inspector joins from the link and sees only their projects; a Viewer reads but cannot change anything.
+- Overview: [S10](feature-guide/S10-team-roles/README.md)
+
+**F19 — Team and roles · 30h** · [guide](feature-guide/S10-team-roles/F19-team-roles.md)
+
+- [ ] **F19.1** - [Contract] - [2h] - `/me`, members, invitations, `createdBy`
+- [ ] **F19.2** - [Domain] - [4h] - Roles and permissions
+- [ ] **F19.3** - [Data] - [4h] - Team repository, role cache
+- [ ] **F19.4** - [UI] - [6h] - Gate every screen by role (T7, T8)
+- [ ] **F19.5** - [UI] - [8h] - Team screens T1–T4
+- [ ] **F19.6** - [Platform] - [4h] - Invite universal link, T5 Join, T6 Not a member
+- [ ] **F19.7** - [Data] - [2h] - `403 forbidden`, rejected `forbidden:<action>`, resync
+- [ ] **F19.8** - [Backend] - [16h] - [site-log-be F19](https://github.com/DAMHONGDUC/site-log-be/blob/main/docs/feature-guide/S10-team-roles/F19-team-roles.md): shared sync, roles, invites
 
 </dd></dl>
 

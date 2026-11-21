@@ -85,7 +85,7 @@ SiteLog/
 
 | Row | Fields |
 |---|---|
-| Template / template item | `name`, `appliesTo`, `isBuiltIn`, `usageCount` / `ordinal`, `text`, `defaultSeverity`, `requiresPhotoOnFail` |
+| Template / template item | `projectId`, `name`, `appliesTo`, `isBuiltIn`, `usageCount` / `ordinal`, `text`, `defaultSeverity`, `requiresPhotoOnFail` |
 | Run / result | template, session, location, times / `runId`, `templateItemId`, `outcome`, `note`, `issueId`, `answeredAt` |
 
 ```mermaid

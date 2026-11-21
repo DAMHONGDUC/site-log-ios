@@ -88,7 +88,7 @@ SiteLog/
 | Direction | Messages |
 |---|---|
 | App → server | `auth` (token, first message), `subscribe`, `ping` |
-| Server → app | `snapshot`, `jobCompleted` (`jobID`, `sha256`, `verifyState`), `jobFailed` (`reason`), `pong` |
+| Server → app | `snapshot`, `jobCompleted` (`jobID`, `remoteKey`, `sha256`, `verified`), `jobFailed` (`reason`), `pong` |
 
 ```mermaid
 sequenceDiagram
@@ -120,7 +120,7 @@ sequenceDiagram
 
 | Action | File | Holds |
 |---|---|---|
-| <b class="tag-new">New</b> | `Entities/Uploads/UploadEvent.swift` | `completed(jobID, sha256, verifyState)`, `failed(jobID, reason)` |
+| <b class="tag-new">New</b> | `Entities/Uploads/UploadEvent.swift` | `completed(jobID, remoteKey, sha256, verified)`, `failed(jobID, reason)` |
 | <b class="tag-new">New</b> | `Repositories/RealtimeRepository.swift` | Start, stop, connection status |
 
 ```mermaid

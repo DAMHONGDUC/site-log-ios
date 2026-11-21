@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteLog Foundations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="tokens.js"></script>
+<link rel="stylesheet" href="base.css">
+<style>
+body { --sans: 'IBM Plex Sans', system-ui, sans-serif; }
+.icon-row { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-end; }
+.icon-cell { display: flex; flex-direction: column; gap: 12px; }
+.icon-cell .cap { font-size: 13px; font-weight: 600; color: #16181B; }
+.icon-cell .cap small { display: block; font-weight: 400; color: #63676E; margin-top: 4px; }
+.layer { width: 216px; height: 216px; position: relative; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px rgba(22,24,27,.12); }
+.layer.checker { background: repeating-conic-gradient(#EEECE8 0% 25%, #FFFFFF 0% 50%) 0 0 / 16px 16px; }
+.layer .safe { position: absolute; left: 50%; top: 50%; width: 132px; height: 132px; transform: translate(-50%, -50%); border-radius: 50%; border: 1.5px dashed #D8342A; }
+.layer .vis { position: absolute; left: 36px; top: 36px; width: 144px; height: 144px; border-radius: 50%; border: 1px solid rgba(22,24,27,.35); }
+.home-strip { display: flex; gap: 28px; align-items: center; padding: 28px 32px; border-radius: 16px; }
+.home-strip .app { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; }
+.boards .board { width: 100%; max-width: 1240px; }
+.col-color .grid-head, .col-color .grid-row { grid-template-columns: 190px 170px 170px 170px 180px 1fr; }
+.col-type .grid-head, .col-type .grid-row { grid-template-columns: 170px 1fr 230px 250px; }
+.col-space .grid-head, .col-space .grid-row { grid-template-columns: 150px 120px 260px 1fr; }
+.col-layout .grid-head, .col-layout .grid-row { grid-template-columns: 260px 1fr 1fr 1fr; }
+.bar { height: 24px; background: #FFD400; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(27,23,0,.25); }
+.legend { display: flex; gap: 24px; font-size: 13px; color: #63676E; margin-top: 16px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+<header class="page-head">
+  <div class="kicker">Page 1 of 5 · Figma page “01 Foundations”</div>
+  <h1>SiteLog — Foundations</h1>
+  <p>App icon, text styles, colour tokens and spacing shared by iOS (page 2) and Android (page 3). Every value is generated from <code>tokens.js</code>; <code>DSColor</code> and <code>DSTextStyle</code> mirror it in Swift and Kotlin. In Figma, turn the colour table into variables (one collection, light values; the dark column is the reference for code) and the type rows into text styles.</p>
+</header>
+<main id="app"></main>
+<script src="kit.js"></script>
+<script>
+const W = 1024;
+const svg = (inner, size, o = {}) => `<svg viewBox="${o.viewBox || `0 0 ${W} ${W}`}" width="${size}" height="${size}" style="display:block;${o.radius != null ? `border-radius:${o.radius};` : ''}${o.style || ''}">${MARK_DEFS}${inner}</svg>`;
+/* Android adaptive icon: a 108 dp canvas; launchers show the middle 72 dp; keep artwork inside the 66 dp safe circle. */
+const FG = `<g transform="translate(512 512) scale(0.55) translate(-512 -512)">${markArt()}</g>`;
+const MONO = (fill) => `<g transform="translate(512 512) scale(0.55) translate(-512 -512)">${markMono(fill)}</g>`;
+const VISIBLE = `${Math.round(W * 18 / 108)} ${Math.round(W * 18 / 108)} ${Math.round(W * 72 / 108)} ${Math.round(W * 72 / 108)}`;
+const adaptive = (size, radius, inner = MARK_BG + FG) => svg(inner, size, { viewBox: VISIBLE, radius });
+
+const cell = (art, cap, sub) => `<div class="icon-cell">${art}<div class="cap">${cap}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
+const iosMasters = [['Default', 'app-icon.svg'], ['Dark', 'app-icon-dark.svg'], ['Tinted', 'app-icon-tinted.svg']]
+  .map(([l, f]) => cell(`<img src="../app-icon/${f}" width="280" height="280" style="display:block;box-shadow:0 0 0 1px rgba(0,0,0,.08)" alt="SiteLog app icon, ${l}">`, `${l} · 1024×1024 master`, `docs/design/app-icon/${f} · square, iOS applies the mask`)).join('');
+const iosHome = (dark) => `<div class="home-strip" style="background:${dark ? '#1C1D20' : '#F2F2F2'};color:${dark ? '#fff' : '#16181B'}">${[180, 120, 80, 60].map(s => `<div class="app">${dark ? `<img src="../app-icon/app-icon-dark.svg" width="${s}" height="${s}" style="border-radius:${Math.round(s * 0.225)}px;display:block">` : appMark(s)}<span>${s} px</span></div>`).join('')}</div>`;
+
+const androidLayers = [
+  cell(`<div class="layer">${svg(MARK_BG, 216)}<span class="vis"></span></div>`, 'Background layer', '108 dp · yellow gradient, full bleed'),
+  cell(`<div class="layer checker">${svg(FG, 216)}<span class="safe"></span><span class="vis"></span></div>`, 'Foreground layer', 'Art at 55 %, inside the 66 dp safe circle (red)'),
+  cell(`<div class="layer checker">${svg(MONO('#16181B'), 216)}<span class="safe"></span><span class="vis"></span></div>`, 'Monochrome layer', 'Alpha only: themed icons tint it'),
+].join('');
+const androidMasks = [
+  cell(adaptive(144, '50%'), 'Circle', 'Pixel'),
+  cell(adaptive(144, '30%'), 'Squircle', 'Samsung One UI'),
+  cell(adaptive(144, '16%'), 'Rounded square', 'other launchers'),
+  cell(adaptive(144, '50%', `<rect width="${W}" height="${W}" fill="#DCE5F3"/>${MONO('#33415C')}`), 'Themed, light', 'Material You tint'),
+  cell(adaptive(144, '50%', `<rect width="${W}" height="${W}" fill="#2F3747"/>${MONO('#C9D6EC')}`), 'Themed, dark', 'Material You tint'),
+  cell(svg(MARK_BG + `<g transform="translate(512 512) scale(0.7) translate(-512 -512)">${markArt()}</g>`, 160, { radius: '20%' }), 'Google Play · 512×512', 'full square, Play applies the 20 % radius'),
+].join('');
+
+/* Text styles: one board per platform, both read TYPE_TOKENS; one sample word so only the style changes */
+const TYPE_SAMPLE = 'SiteLog';
+const fam = (p, f) => FONTS[p][f];
+const wName = { 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold' };
+const typeBoard = (p) => {
+  const idx = p === 'ios' ? 5 : 6;
+  const rows = TYPE_TOKENS.filter(t => t[idx]).map(t => {
+    const [n, f, w, tr, tab, , , use, swift, compose] = t;
+    const [s, lh] = t[idx];
+    const code = p === 'ios' ? swift : (compose.startsWith('DSTextStyle') ? compose : `DSTextStyle.${n} → MaterialTheme.typography.${compose}`);
+    return `<div class="grid-row"><div><div class="tk-name">type/${n}</div><div class="tk-use">${use}</div></div><div class="t-${n}" style="color:#16181B">${TYPE_SAMPLE}</div><div class="tk-var">${fam(p, f)}<br>${s}/${lh} ${p === 'ios' ? 'pt' : 'sp'} · ${wName[w]}${tr !== '0' ? ' · ' + tr : ''}${tab ? ' · tabular' : ''}</div><div class="tk-var mono">${code}</div></div>`;
+  }).join('');
+  const title = p === 'ios' ? 'Text styles · iOS' : 'Text styles · Android';
+  const note = (p === 'ios'
+    ? 'IBM Plex Sans / Mono stand in for SF Pro / SF Mono in Figma. Each token is a Dynamic Type style, so text grows with the user’s setting.'
+    : 'Inter and JetBrains Mono ship in <code>:designsystem</code> (Vietnamese covered). Sizes in sp follow the user’s font scale.')
+    + ' Four sizes (28, 20, 17, 13) and two weights (400, 600). Status bar, tab and navigation bar labels, badges and keyboards are drawn by the system at its own sizes and are not tokens.';
+  return `<div class="board col-type p-${p}"><h3>${title}</h3><p>${note}</p><div class="grid-head"><span>Token</span><span>Sample</span><span>Spec</span><span>${p === 'ios' ? 'SwiftUI' : 'Compose'}</span></div>${rows}</div>`;
+};
+
+/* Spacing: the scale with a bar at real size, then the fixed layout values */
+const spacingBoard = `<div class="board col-space"><h3>Spacing</h3><p>Every padding, margin and gap on the screens is one of these values, on the 4 / 8 pt grid. Related things sit closer than unrelated ones: if two lines are 4 apart, the next group starts at least 8 further. Code: <code>DSSpacing.spacingN</code> on iOS (pt) and Android (dp).</p>
+  <div class="grid-head"><span>Token</span><span>Value</span><span>Size</span><span>Used for</span></div>
+  ${SPACING_TOKENS.map(([n, v, u]) => `<div class="grid-row"><div class="tk-name">${n}</div><div class="tk-var mono">${v} pt · ${v} dp</div><div>${v ? `<div class="bar" style="width:${v * 2}px"></div>` : '<span class="tk-use">—</span>'}</div><div class="tk-use">${u}</div></div>`).join('')}
+  <p style="margin:12px 0 0">Bars are drawn at 2× so the small steps stay visible.</p></div>`;
+const layoutBoard = `<div class="board col-layout"><h3>Layout constants</h3><p>Fixed values set by the platform or by the touch-target rule. They are not spacing tokens and are not picked per screen.</p>
+  <div class="grid-head"><span>Constant</span><span>iOS</span><span>Android</span><span>Why</span></div>
+  ${LAYOUT_CONSTANTS.map(([n, i, a, w]) => `<div class="grid-row"><div class="tk-name" style="font-family:inherit;font-weight:600">${n}</div><div class="tk-var">${i}</div><div class="tk-var">${a}</div><div class="tk-use">${w}</div></div>`).join('')}</div>`;
+
+/* Colour tokens: one table, light and dark, with the names code and Material use */
+const sw = (hex, dark) => `<div class="tk-sw" style="background:${dark ? '#0F1011' : '#FFFFFF'};color:${dark ? '#A4A7AD' : '#63676E'}"><span style="background:${hex}"></span><code>${hex}</code></div>`;
+const colorBoard = `<div class="board col-color"><h3>Colour tokens</h3><p>17 tokens, light and dark. Text is ink or text/secondary (at least 4.5:1); text/tertiary is only for icons and disabled controls (at least 3:1). Hi-vis yellow only on the app mark, the capture button and the live-session dot. Severity is a same-size dot told apart by colour, always shown with its name. Android sets dynamic colour off and maps these onto the Material 3 <code>ColorScheme</code>.</p>
+  <div class="grid-head"><span>Figma variable</span><span>Code (DSColor)</span><span>Light</span><span>Dark</span><span>Material 3 role</span><span>Used for</span></div>
+  ${COLOR_TOKENS.map(([g, toks]) => `<div class="tk-group">${g}</div>${toks.map(([n, v, code, l, d, m3, u]) => `<div class="grid-row"><div><div class="tk-name">${n}</div><div class="tk-var mono">--${v}</div></div><div class="tk-var mono">DSColor.${code}</div>${sw(l)}${sw(d, true)}<div class="tk-var mono">${m3}</div><div class="tk-use">${u}</div></div>`).join('')}`).join('')}
+  <div class="legend"><span>${sev('crit')}</span><span>${sev('major')}</span><span>${sev('minor')}</span><span>${sev('ok')}</span><span>${sev('wait')}</span><span><span class="live"></span>Live session</span></div></div>`;
+
+document.getElementById('app').innerHTML = `
+  <section class="group"><h2>App icon<small>iOS · Android adaptive · Google Play</small></h2>
+    <div class="boards">
+      <div class="board"><h3>iOS</h3><p>One square 1024×1024 master per appearance (iOS 18): default, dark and tinted. No transparency, no rounded corners in the file.</p><div class="icon-row">${iosMasters}</div>
+        <div class="stack" style="gap:16px;margin-top:32px">${iosHome(false)}${iosHome(true)}</div></div>
+      <div class="board"><h3>Android</h3><p>Adaptive icon from the same artwork: three 108 dp layers. The thin circle marks the 72 dp the launcher shows; the dashed red circle is the 66 dp safe zone that every mask keeps. The monochrome layer drives themed icons.</p><div class="icon-row">${androidLayers}</div>
+        <div class="icon-row" style="margin-top:32px">${androidMasks}</div></div>
+    </div></section>
+  <section class="group"><h2>Text styles<small>${TYPE_TOKENS.length} tokens · 4 sizes · 2 weights</small></h2><div class="boards">${typeBoard('ios')}${typeBoard('android')}</div></section>
+  <section class="group"><h2>Colour tokens<small>light and dark</small></h2><div class="boards">${colorBoard}</div></section>
+  <section class="group"><h2>Spacing<small>${SPACING_TOKENS.length} tokens · 4 / 8 pt grid</small></h2><div class="boards">${spacingBoard}${layoutBoard}</div></section>`;
+</script>
+</body>
+</html>

@@ -89,7 +89,7 @@ SiteLog/
 
 | Field | Shape |
 |---|---|
-| `captureId` | Primary key, 1:1 with the capture |
+| `id` | The capture id: primary key, 1:1 with the capture |
 | `shapes` | JSON array of `AnnotationShape` (points 0…1) |
 | Sync | `rev`, `clientUpdatedAt`, `deletedAt` |
 

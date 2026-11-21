@@ -70,6 +70,7 @@
 		3FBD90C31B8BFC41DF60AED8 /* check-imports.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "check-imports.sh"; sourceTree = "<group>"; };
 		4034CCC34C86992BE3FF4F82 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		4062AE2D59156E4E49049A87 /* swiftui-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "swiftui-rules.md"; sourceTree = "<group>"; };
+		41B8893CF37D1B19EBCA09D3 /* ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ROADMAP.md; sourceTree = "<group>"; };
 		42E117CC01310213F02250D5 /* F17-accessibility-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F17-accessibility-performance.md"; sourceTree = "<group>"; };
 		46C6F6FC727C73F9451904BC /* react_native.mk */ = {isa = PBXFileReference; path = react_native.mk; sourceTree = "<group>"; };
 		47A98ACE570C4E3B3E6F3848 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
@@ -143,7 +144,6 @@
 		AE04F1637B4E0C5A0E65BDB4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AE12B7DA7CCD9688C1F33993 /* TemplateInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = TemplateInfo.plist; sourceTree = "<group>"; };
 		B06E96414E2DA09289C89827 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B16EC63A2BA655E4224D459A /* ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ROADMAP.md; sourceTree = "<group>"; };
 		B339156F5ADF07788A31806D /* F18-ui-finish.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F18-ui-finish.md"; sourceTree = "<group>"; };
 		B484643F314F6403FF3538E0 /* app-icon-tinted.svg */ = {isa = PBXFileReference; path = "app-icon-tinted.svg"; sourceTree = "<group>"; };
 		B49AD455DCC78C208C588365 /* F02-auth.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "F02-auth.md"; sourceTree = "<group>"; };
@@ -550,6 +550,7 @@
 				B0EE980A4E88922590291190 /* feature-docs */,
 				188C18BC51FFD63DACD62D9D /* feature-guide */,
 				2E165B5DC07B03C4B49FE764 /* images */,
+				41B8893CF37D1B19EBCA09D3 /* ROADMAP.md */,
 				4062AE2D59156E4E49049A87 /* swiftui-rules.md */,
 			);
 			path = docs;
@@ -633,7 +634,6 @@
 				0C382647849273800997DC28 /* Makefile */,
 				61996AB7DB87AFD0F031E82D /* project.yml */,
 				34FB39010F292720B1ADF77D /* README.md */,
-				B16EC63A2BA655E4224D459A /* ROADMAP.md */,
 				5FE675530A26A174DB7E080D /* script-tools.properties */,
 				225EEE7FD5C901AD44124FCA /* Products */,
 			);
