@@ -113,7 +113,7 @@
   `:designsystem` (Android) mirror them.
 - **HTML pages** (one per Figma page, see §2): [1-foundations](html/1-foundations.html),
   [2-ios](html/2-ios.html) (79 screens), [3-android](html/3-android.html) (the same 79 in Material 3),
-  [4-flows](html/4-flows.html) (25 flows), [5-system-design](html/5-system-design.html) (28 components).
+  [4-flows](html/4-flows.html) (46 flows), [5-system-design](html/5-system-design.html) (28 components).
 
 </dd></dl>
 
@@ -130,7 +130,7 @@
 | 01 Foundations | [1-foundations.html](html/1-foundations.html) | App icon (iOS masters, Android adaptive layers and masks, Google Play), text styles for both platforms, colour tokens light + dark, spacing scale and layout constants |
 | 02 iOS | [2-ios.html](html/2-ios.html) | 79 screens in 13 groups (§3, the last is 6 states), iPhone 16 (393×852), plus 3 dark screens |
 | 03 Android | [3-android.html](html/3-android.html) | The same 79 screens in Material 3, Android compact (412×917 dp), plus 3 dark screens |
-| 04 Flows | [4-flows.html](html/4-flows.html) | 25 flows drawn with the iOS screens: ringed control → arrow with the action → next screen |
+| 04 Flows | [4-flows.html](html/4-flows.html) | 46 flows drawn with the iOS screens, every screen in at least one: ringed control → arrow with the action → next screen |
 | 05 System design | [5-system-design.html](html/5-system-design.html) | 28 shared components (push notification, plan pin, checklist answer, camera controls, toast, passcode and thumbnail included), each with purpose, `DS…` name, properties (enum-like: `type` · `size` · `state` · slots, each with cases and a default), spec (pt / dp) and one variant row per `property.case`, iOS and Android side by side, drawn by the same CSS as the screens |
 
 - Preview locally: `python3 -m http.server 8765 --directory docs/design`, then open `http://localhost:8765/html/1-foundations.html`.
@@ -171,7 +171,7 @@
 | 01 Foundations | Done | Up to date (rebuilt 2026-11-21) |
 | 02 iOS | Done: 73 screens + 6 states + 3 dark | Stale: 2026-11-17 version; new version uploaded, waiting for the Figma limit |
 | 03 Android | Done: 73 screens + 6 states + 3 dark | Stale, same as 02 |
-| 04 Flows | Done: 25 flows | Not imported: second file, after the Figma MCP limit resets |
+| 04 Flows | Done: 46 flows | Not imported: second file, after the Figma MCP limit resets |
 | 05 System design | Done: 28 components | Not imported: second file, after the Figma MCP limit resets |
 
 - The new Figma file replaces the old one (`3Ru8x4sFZSQwlFI42wqrbH`). Import log, what is left and how to resume: [figma-sync/README.md](figma-sync/README.md) (stopped by the Starter plan limit, 20 MCP calls a month).
