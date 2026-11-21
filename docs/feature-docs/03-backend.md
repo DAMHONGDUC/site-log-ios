@@ -347,7 +347,7 @@ DELETE /devices/:token                                                   → { "
 | Hide what the role cannot do | Buttons, menus and swipe actions follow the permission table; a Viewer gets a read-only Home, Issues and plan |
 | Never trust only the UI | A `403 forbidden` from the API, or a push result `rejected` with `forbidden:<action>`, drops the action, shows "Not allowed for your role" and logs the code |
 | Sign-in only by invite | `403 not_invited` after sign-in → "Ask an Admin to invite you" screen; sign out locally |
-| Invite link | `https://app.<domain>/invite/<token>` opens the app (universal link); `GET /invitations/:token` (no sign-in) fills the join screen; sign in, then `POST /invitations/accept { token }`; on success pull from `0` |
+| Invite link | `https://app.<domain>/invite/<token>` opens the app (universal link); `GET /invitations/preview/:token` (no sign-in) fills the join screen; sign in, then `POST /invitations/accept { token }`; on success pull from `0` |
 | Team calls (Admin) | Resend `POST /invitations/:id/resend`, cancel `DELETE /invitations/:id`; change role and / or projects `PATCH /members/:uid`; activity `GET /member-events?before=&limit=` (paged, read live, never cached) |
 | Access changed | `resyncRequired` after a role or project change: wipe synced data, pull from `0`; projects no longer reachable disappear from the switcher |
 | Who made it | Rows carry `createdBy`; names come from `GET /members` (Admins and Managers) or `GET /me` for yourself; others show "Team member" |

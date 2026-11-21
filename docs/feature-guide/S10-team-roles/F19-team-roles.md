@@ -129,7 +129,7 @@ flowchart LR
 <dl><dd>
 
 - Associated Domains `applinks:app.<domain>` in `project.yml`; `apple-app-site-association` served by the backend host; `DeepLinkRouter` route `.invite(token)`; `Presentation/Team/Join/`.
-- T5 Join: `GET /invitations/:token` before sign-in fills "Name invited you", role and projects; expired or used → a sentence and "Ask for a new invite"; after sign-in `POST /invitations/accept`, then pull from `0`.
+- T5 Join: `GET /invitations/preview/:token` before sign-in fills "Name invited you", role and projects; expired or used → a sentence and "Ask for a new invite"; after sign-in `POST /invitations/accept`, then pull from `0`.
 - T6 Not a member: `403 not_invited` after sign-in → "Ask an Admin to invite you" and Sign out.
 - **Check:** open the link from Mail / Gmail on a phone without the app signed in; it lands on T5.
 
