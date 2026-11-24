@@ -20,9 +20,11 @@ public actor AccessRepositoryImpl: AccessRepository {
         do {
             let model = try await accessLocalDataSource.loadSetting()
             let setting = AccessSettingMapper.toEntity(model: model)
+
             return .success(setting)
         } catch {
             AppLogger.access.error("Load access setting failed: \(error.localizedDescription)")
+
             return .failure(.storageUnavailable)
         }
     }
@@ -30,11 +32,14 @@ public actor AccessRepositoryImpl: AccessRepository {
     public func saveAccessSetting(newSetting: AccessSetting) async -> Result<Void, AccessError> {
         do {
             let model = AccessSettingMapper.toModel(setting: newSetting)
+
             try await accessLocalDataSource.saveSetting(model: model)
             AppLogger.access.info("Access setting saved")
+
             return .success(())
         } catch {
             AppLogger.access.error("Save access setting failed: \(error.localizedDescription)")
+
             return .failure(.storageUnavailable)
         }
     }
@@ -42,12 +47,15 @@ public actor AccessRepositoryImpl: AccessRepository {
     public func markWelcomeScreen() async -> Result<Void, AccessError> {
         do {
             var model = try await accessLocalDataSource.loadSetting()
+
             model.isShowWelcomeScreen = true
             try await accessLocalDataSource.saveSetting(model: model)
             AppLogger.access.info("Welcome screen marked as shown")
+
             return .success(())
         } catch {
             AppLogger.access.error("Mark welcome screen failed: \(error.localizedDescription)")
+
             return .failure(.storageUnavailable)
         }
     }
@@ -61,24 +69,30 @@ public actor AccessRepositoryImpl: AccessRepository {
             // correct
             if isCorrect {
                 try await accessLocalDataSource.saveWrongTries(count: 0)
+
                 return .success(.correct)
             }
 
             // wrong
             let wrongTries = try await accessLocalDataSource.loadWrongTries() + 1
+
             try await accessLocalDataSource.saveWrongTries(count: wrongTries)
 
             let triesLeft = AccessRepositoryImpl.freeTries - wrongTries
+
             if triesLeft > 0 {
                 AppLogger.access.info("Wrong passcode, \(triesLeft) tries left")
+
                 return .success(.wrong(triesLeft: triesLeft))
             }
 
             // lockout
             AppLogger.access.info("Passcode locked out")
+
             return .success(.lockedOut(wait: AccessRepositoryImpl.lockoutWait))
         } catch {
             AppLogger.access.error("Check passcode failed: \(error.localizedDescription)")
+
             return .failure(.storageUnavailable)
         }
     }
@@ -88,9 +102,11 @@ public actor AccessRepositoryImpl: AccessRepository {
             try await accessLocalDataSource.savePasscode(newPasscode: newPasscode)
             try await accessLocalDataSource.saveWrongTries(count: 0)
             AppLogger.access.info("Passcode changed")
+
             return .success(())
         } catch {
             AppLogger.access.error("Set passcode failed: \(error.localizedDescription)")
+
             return .failure(.storageUnavailable)
         }
     }
@@ -98,10 +114,13 @@ public actor AccessRepositoryImpl: AccessRepository {
     public func unlockWithBiometrics() async -> Result<Bool, AccessError> {
         do {
             let isMatched = try await biometricLocalDataSource.authenticate()
+
             AppLogger.access.info("Face ID matched: \(isMatched)")
+
             return .success(isMatched)
         } catch {
             AppLogger.access.error("Face ID failed: \(error.localizedDescription)")
+
             return .failure(.biometricsUnavailable)
         }
     }
@@ -122,6 +141,7 @@ public actor AccessRepositoryImpl: AccessRepository {
         public func seedSampleData() async {
             do {
                 var model = try await accessLocalDataSource.loadSetting()
+
                 model.isShowWelcomeScreen = false
                 try await accessLocalDataSource.saveSetting(model: model)
                 AppLogger.devMenu.info("Access data seeded")

@@ -8,6 +8,7 @@ enum AccessSettingMapper {
             isFaceIdOn: model.isFaceIdOn,
             lockAfterTime: .seconds(model.lockAfterSeconds)
         )
+
         return setting
     }
 
@@ -19,6 +20,7 @@ enum AccessSettingMapper {
             isFaceIdOn: setting.isFaceIdOn,
             lockAfterSeconds: seconds
         )
+
         return model
     }
 }

@@ -4,6 +4,7 @@ public struct BiometricLocalDataSourceImpl: BiometricLocalDataSource {
 
     public func authenticate() async throws -> Bool {
         try await Task.sleep(for: .milliseconds(5))
+
         return true
     }
 }
