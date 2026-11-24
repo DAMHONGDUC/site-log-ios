@@ -597,6 +597,8 @@ struct SplashScreen: View {
 | Style | Explicit types, `let` by default |
 | Existentials | A protocol used as a type is written `any P` (`any AccessRepository`); `some P` or a generic when one concrete type is fixed at build |
 | Formatting | `.swift-format` on save: one line when it fits, otherwise one argument per line and `)` on its own line |
+| Comments | Only when the code cannot say it; inside code at most 2 lines, a `///` doc comment at most 3 |
+| Blank lines | One after the variable declarations, one before every `return` unless it opens its block |
 
 | Kind | Pattern | Example |
 |---|---|---|
