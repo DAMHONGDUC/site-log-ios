@@ -11,6 +11,7 @@ struct DesignSystemTests {
         var green: CGFloat = 0
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
+
         color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
 
         #expect(red == 1)
