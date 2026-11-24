@@ -1,6 +1,7 @@
 protocol StartupStep {
     var name: String { get }
     var blocksLaunch: Bool { get }
+
     func run() async throws
 }
 

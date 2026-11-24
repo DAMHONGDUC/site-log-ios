@@ -11,6 +11,7 @@ struct StartupSequence {
                 AppLogger.startup.info("Step ok - \(step.name, privacy: .public)")
             } catch {
                 let errorType = String(describing: type(of: error))
+
                 AppLogger.startup.error(
                     "Step failed - \(step.name, privacy: .public), error \(errorType, privacy: .public)"
                 )

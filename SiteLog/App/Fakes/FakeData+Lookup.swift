@@ -20,6 +20,7 @@ extension FakeData {
                 return (room, unit.name)
             }
         }
+
         return nil
     }
 }
